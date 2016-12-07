@@ -9,14 +9,14 @@ data Tag = T { tagname :: String, tagatts :: Util.KeyVals, tagchildren :: [Tag] 
 emit tag = if notag then inner else open++atts++inner++close where
     open = "<"++tname
     atts = concat $ map emitatt $ tatts where
-        emitatt (n,v) = when (n=="" || v=="") "" (" "++n++"='"++v++"'")
-    inner = (if notag then "" else when noinner "/>" ">")++(concat $ map emit tchildren)++tinner
-    close = when noinner "" ("</"++tname++">")
+        emitatt (n,v) = if (n=="" || v=="") then "" else (" "++n++"='"++v++"'")
+    inner = (if notag then "" else if noinner then "/>" else ">")++(concat $ map emit tchildren)++tinner
+    close = if noinner then "" else ("</"++tname++">")
 
     notag = null tname
     tname = tagname tag
     tatts = tagatts tag
-    tinner = when (tatts/=[] && att0n=="") att0v "" where att0n = fst att0 ; att0v = snd att0 ; att0 = head tatts
+    tinner = if (tatts/=[] && att0n=="") then att0v else "" where att0n = fst att0 ; att0v = snd att0 ; att0 = head tatts
     tchildren = tagchildren tag
     noinner = tchildren==[] && tinner==""
 

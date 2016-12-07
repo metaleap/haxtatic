@@ -5,7 +5,6 @@ import Data.List.Utils
 
 import Util
 
-
 data Post = Post { fn :: Util.FName, subcat :: String, title :: String, link :: String, pic :: String, text :: String, cat :: String, origraw :: String } deriving (Read)
 
 

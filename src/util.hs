@@ -1,5 +1,6 @@
 module Util where
 
+import Control.Monad
 import Data.List
 import Data.List.Utils
 import System.Directory
@@ -15,19 +16,24 @@ fnName (_:_:_:n:_) = n
 
 
 type KeyVals = [(String,String)]
-keyVal [] _ def _ = def
-keyVal ((k,v):kvt) key def append
-    | key==k = v++append
+keyVal [] _ def = def
+keyVal ((k,v):kvt) key def
+    | key==k = v
     | null kvt = def
-    | otherwise = keyVal kvt key def append
+    | otherwise = keyVal kvt key def
+keyValApp [] _ def _ = def
+keyValApp ((k,v):kvt) key def app
+    | key==k = v++app
+    | null kvt = def
+    | otherwise = keyValApp kvt key def app
 
 
 -- readability-sugar helpers
-when True dis _ = dis ; when False _ dat = dat
-whennot True _ dat = dat ; whennot False dis _ = dis
+iif True dis _ = dis ; iif False _ dat = dat
 is [] = False ; is _ = True
 isin _ [] = False
 isin v (lh:lt) = (v == lh) || isin v lt
+within minval maxval val = val>=minval && val<=maxval
 swapargs fn x y = fn y x
 readInt s = read s :: Int
 drop3 = drop 3 ; take3 = take 3
@@ -35,11 +41,10 @@ join = Data.List.intercalate
 
 
 -- the Phil standard library..
-fsPath dir = (++) (dir++[System.FilePath.pathSeparator])
 replace str [] = str
 replace str ((old,new):rest) =
     Data.List.Utils.replace old new (Util.replace str rest)
-swapout old new = map (\item -> when (item==old) new item)
+swapout old new = map (\item -> if (item==old) then new else item)
 splitBy delim = foldr per_elem [[]] where
     per_elem el elems@(first:rest) | (el==delim) = []:elems | otherwise = (el:first):rest
 quickSort prop less greater = sorted where
@@ -48,21 +53,28 @@ quickSort prop less greater = sorted where
         cmp op = [e | e <- rest, op (prop e) (prop el)]
 
 
-monthNames = ["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-monthName m = monthNames!!(readInt m)
-
-
 -- copy all files & folders within srcdir into dstdir
 copyDirTree srcdir dstdir =
     System.Directory.createDirectoryIfMissing True dstdir >>
         System.Directory.getDirectoryContents srcdir >>=
-            copyFiles srcdir dstdir
+            copyAll srcdir dstdir
 
 
 -- copy all files & folders (named in fsnames) within srcdir into dstdir
-copyFiles srcdir dstdir fsnames =
+copyAll srcdir dstdir fsnames =
     mapM_ per_fsname fsnames where
         per_fsname "." = return () ; per_fsname ".." = return ()
         per_fsname fsname =
-            doesFileExist srcpath >>= \isfile -> (when isfile System.Directory.copyFile copyDirTree) srcpath dstpath
-                where srcpath = fsPath srcdir fsname ; dstpath = fsPath dstdir fsname
+            doesFileExist srcpath >>= \isfile ->
+                (if isfile then System.Directory.copyFile else copyDirTree) srcpath dstpath
+                    where srcpath = srcdir </> fsname ; dstpath = dstdir </> fsname
+
+getAllFiles rootdir curdir = let curpath = rootdir </> curdir in do
+    names <- getDirectoryContents curpath
+    let properNames = filter (`notElem` [".", ".."]) names
+    paths <- forM properNames $ \name -> do
+        let path = curpath </> name
+        isDirectory <- doesDirectoryExist path
+        let bla = curdir </> name in
+            if isDirectory then getAllFiles rootdir bla else return [bla]
+    return (concat paths)

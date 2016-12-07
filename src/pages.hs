@@ -4,8 +4,8 @@ import Html
 import Posts
 import Util
 
-data Page = Page { fname :: Util.FName, titles :: [String], body :: [String], bodyLen :: Int, now :: Int, allExts :: [X], allPosts :: [Posts.Post], allXTemplaters :: [Tmpl] }
-data Tmpl = Tmpl { tmplTag :: String, tmplApply :: String -> String -> Page -> [String] }
+data Ctx = Ctx { fname :: Util.FName, titles :: [String], body :: [String], bodyLen :: Int, now :: Int, daters :: [(String,[String]->String)], allExts :: [X], allPosts :: [Posts.Post], allXTemplaters :: [Tmpl] }
+data Tmpl = Tmpl { tmplTag :: String, tmplApply :: String -> String -> Ctx -> [String] }
 data X = X { xTemplaters :: [Tmpl] }
 
 
@@ -23,8 +23,8 @@ tmplSitemapUrl = "<url>\n\
 
 
 
-newPage now allexts allposts alltemplaters fname rawsrc = let
-    page = Page fname titles body (length rawsrc) now allexts allposts alltemplaters
+newPageContext now daters allexts allposts alltemplaters fname rawsrc = let
+    page = Ctx fname titles body (length rawsrc) now daters allexts allposts alltemplaters
     (titles,body) = foldl accum ([],[]) $ map perline $ lines rawsrc
     accum (tlines,blines) (tline,bline) = (tlines++tline , blines++bline)
     perline ln = (tline , bline) where
@@ -35,16 +35,15 @@ newPage now allexts allposts alltemplaters fname rawsrc = let
     in page
 
 
-processMarkupDumb fn title rawsrc alltemplaters =
-    let blines = lines rawsrc ; perline = processMarkupLn ptmp ; ptmp = Page fn [title] blines (length rawsrc) 0 [] [] alltemplaters in
-        unlines $ concat (map perline blines)
+processMarkupDumb fn title rawsrc alltemplaters daters =
+    let blines = lines rawsrc ; perline = processMarkupLn ptmp
+        ptmp = Ctx fn [title] blines (length rawsrc) 0 daters [] [] alltemplaters
+        in unlines $ concat (map perline blines)
 
 
-processMarkupLn page lin = concat $ map checkh2 (doline lin) where
+processMarkupLn page lin = concat $ map checkh2 (doline $ preline lin) where
     checkh2 ln = if null h2 then [ln] else [Html.out "a" [("", "&nbsp;"), ("class","haxt-para"), ("id",h2), ("name",h2)] [], ln] where
         h2 = Html.tagInner "h2" ln
-    doline "{{P:Title}}" = [ head $ titles page ]
-    doline "{{P:Date}}" = [unwords [Util.fnDay fn, Util.monthName $ Util.fnMonth fn, Util.fnYear fn]] where fn = fname page
     doline ln = let ll = length ln in
         if not $ ("{{X:"==take 4 ln) && ("}}"==drop (ll-2) ln) then [ln] else let
             tagfull = Util.splitBy ':' $ take (ll-6) $ drop 4 ln
@@ -52,9 +51,13 @@ processMarkupLn page lin = concat $ map checkh2 (doline lin) where
             apply = \tmpl -> let ttag = head (Util.splitBy ':' $ tmplTag tmpl) in
                 if tagname/=ttag then [] else tmplApply tmpl tagname tagargs page
             in concat $ map apply $ allXTemplaters page
+    preline ln = Util.replace ln ([("{{P:Title}}", head $ titles page)] ++ dateformatters)
+    dateformatters = map formatter (daters page) where
+        formatter (name,func) = ("{{P:Date"++name++"}}", func $ fname page)
 
 
-toSitemap domain pagefns blognames =
+
+toSitemap domain pagefns blognames exclnames =
     Util.replace tmplSitemap [
             ("&DOMAIN;", domain),
             ("&URLS;", concat (map perpfn $ (++) (filter isincluded pagefns) (blogpfns blognames)))
@@ -62,10 +65,10 @@ toSitemap domain pagefns blognames =
             blogpfns [] = []
             blogpfns (bname:rest) = let
                     dorest = blogpfns rest
-                    blogmatches = filter (\pfn -> bname==(Util.fnName pfn)) pagefns
+                    blogmatches = filter (\pfn -> (bname==(Util.fnName pfn)) && (isincluded pfn)) pagefns
                 in if (length blogmatches)==0 then dorest else
                     ((take3 (head blogmatches))++[bname,"html"]):dorest
-            isincluded pfn = "___" /= (take3 $ Util.fnName pfn)
+            isincluded pfn = not $ Util.isin (Util.fnName pfn) exclnames
             perpfn pfn =
                 Util.replace tmplSitemapUrl [
                     ("&DATE;", Util.join "-" $ take3 pfn),
