@@ -3,36 +3,36 @@ module Html where
 import Util
 
 
-data Tag = T { tagname :: String, tagatts :: Util.KeyVals, tagchildren :: [Tag] } deriving (Eq)
+data Tag = T { name :: String, attr :: Util.KeyVals, sub :: [Tag] } deriving (Eq, Read)
 
 
 emit tag = if notag then inner else open++atts++inner++close where
     open = "<"++tname
     atts = concat $ map emitatt $ tatts where
-        emitatt (n,v) = if (n=="" || v=="") then "" else (" "++n++"='"++v++"'")
+        emitatt (n,v) = if (n=="" || v=="") then "" else (" "++n++"=\""++v++"\"")
     inner = (if notag then "" else if noinner then "/>" else ">")++(concat $ map emit tchildren)++tinner
     close = if noinner then "" else ("</"++tname++">")
 
     notag = null tname
-    tname = tagname tag
-    tatts = tagatts tag
+    tname = name tag
+    tatts = attr tag
     tinner = if (tatts/=[] && att0n=="") then att0v else "" where att0n = fst att0 ; att0v = snd att0 ; att0 = head tatts
-    tchildren = tagchildren tag
+    tchildren = sub tag
     noinner = tchildren==[] && tinner==""
 
 
-noTag tag = null $ tagname tag
+noTag tag = null $ name tag
 
 
 out tname tatts tchildren = emit $ T tname tatts tchildren
 
 
 -- HACKY! if line starts with <name> and ends with </name>, get inner text, else empty
-t name = "<"++name++">"
-t' name = "</"++name++">"
-tagInner name line =
-    let ll = length line ; lt = length name ; ls = lt+2 ; le = lt+3
-        in if ll>(ls+le) && ((t name)==(take ls line)) && ((t' name)==(drop (ll-le) line))
+t n = "<"++n++">"
+t' n = "</"++n++">"
+tagInner tn line =
+    let ll = length line ; lt = length tn ; ls = lt+2 ; le = lt+3
+        in if ll>(ls+le) && ((t tn)==(take ls line)) && ((t' tn)==(drop (ll-le) line))
             then drop ls (take (ll-le) line) else ""
 
 

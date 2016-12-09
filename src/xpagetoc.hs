@@ -13,5 +13,5 @@ ext tagname cfg = Pages.X [ Pages.Tmpl tagname apply ] where
         headings = tail $ Pages.titles page
         per_heading h2 = Html.emit t where
             lnk = Html.T "a" ([("",h2),("href","#"++h2)]++(linkAtts cfg)) []
-            t = if (Html.noTag outertag) then lnk else outertag { Html.tagchildren = [lnk] }
+            t = if (Html.noTag outertag) then lnk else outertag { Html.sub = [lnk] }
     outertag = Html.T (outerTag cfg) [] []

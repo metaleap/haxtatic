@@ -9,6 +9,9 @@ data Tmpl = Tmpl { tmplTag :: String, tmplApply :: String -> String -> Ctx -> [S
 data X = X { xTemplaters :: [Tmpl] }
 
 
+_join = Util.join "."
+
+
 tmplSitemap = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\
     \<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">\n\
     \    &URLS;\n\
@@ -51,7 +54,13 @@ processMarkupLn page lin = concat $ map checkh2 (doline $ preline lin) where
             apply = \tmpl -> let ttag = head (Util.splitBy ':' $ tmplTag tmpl) in
                 if tagname/=ttag then [] else tmplApply tmpl tagname tagargs page
             in concat $ map apply $ allXTemplaters page
-    preline ln = Util.replace ln ([("{{P:Title}}", head $ titles page)] ++ dateformatters)
+    preline ln = Util.replace ln ([
+            ("{{P:Title}}", head $ titles page),
+            ("{{P:FileName}}", pfname),
+            ("{{P:PostDesc}}", if post>=0 then (Posts.text ((allPosts page)!!post)) else ""),
+            ("{{P:BaseName}}", if (length pfn)>2 then head (tail pfn) else head pfn)
+        ] ++ dateformatters) where
+            pfn = Util.drop3 (fname page) ; pfname = _join pfn ; post = Util.indexif (((==) pfname) . Posts.link) (allPosts page)
     dateformatters = map formatter (daters page) where
         formatter (name,func) = ("{{P:Date"++name++"}}", func $ fname page)
 
@@ -72,8 +81,10 @@ toSitemap domain pagefns blognames exclnames =
             perpfn pfn =
                 Util.replace tmplSitemapUrl [
                     ("&DATE;", Util.join "-" $ take3 pfn),
-                    ("&FILENAME;", Util.join "." pfn3),
+                    ("&FILENAME;", _join pfn3),
                     ("&PRIORITY;", priority pfn3)
                 ] where pfn3 = drop3 pfn
-            priority [] = "0.0" ; priority ["index", _] = "1.0"
-            priority pfn3 = take3 $ show $ 1 / (fromIntegral $ length pfn3)
+            priority [] = "0.0" ; priority ["index",_] = "1.0" ; priority ["default",_] = "0.9"
+            priority [n,_] = let b = bidx n in if b<0 then "0.8" else take3 (show (0.8-((fromIntegral b)/10.0)))
+            priority (lh:lt) = let b = bidx lh in take3 (show ((1.0/(fromIntegral (length lt)))-((fromIntegral b)/10.0)))
+            bidx n = 1+(Util.indexof n blognames)

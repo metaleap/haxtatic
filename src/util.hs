@@ -33,7 +33,17 @@ iif True dis _ = dis ; iif False _ dat = dat
 is [] = False ; is _ = True
 isin _ [] = False
 isin v (lh:lt) = (v == lh) || isin v lt
+count p [] = 0
+count p (lh:lt) = (if (p lh) then 1 else 0)+(count p lt)
+indexif p [] = minBound::Int
+indexif p (lh:lt) = if (p lh) then 0 else 1+(indexif p lt)
+indexof v = (indexif . (==)) v
 within minval maxval val = val>=minval && val<=maxval
+whilein l i p next def
+    | (i<0) || (i>=(length l)) = def
+    | (p v) = whilein l (next i) p next def
+    | otherwise = v
+    where v = l!!i
 swapargs fn x y = fn y x
 readInt s = read s :: Int
 drop3 = drop 3 ; take3 = take 3

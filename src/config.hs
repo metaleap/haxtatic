@@ -12,6 +12,7 @@ import XLinks
 import XListing
 import XPageToc
 import XRandom
+import XRepeater
 import XSnippets
 
 
@@ -38,6 +39,7 @@ exts cfglines blognames =
         persplit ("X":"PageToc":name:rest) = [XPageToc.ext name (read (wc rest) :: XPageToc.Cfg)]
         persplit ("X":"Listing":name:rest) = [XListing.ext name (read (wc rest) :: XListing.Cfg)]
         persplit ("X":"Random":name:rest) = [XRandom.ext name (read (wc rest) :: XRandom.Cfg)]
+        persplit ("X":"Repeater":name:rest) = [XRepeater.ext name (read (wc rest) :: XRepeater.Cfg)]
         persplit _ = []
         wl = wrap "[" "]" ; wc = wrap "Cfg {" "}"
         wrap pre post splits = pre++(_join splits)++post
