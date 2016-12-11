@@ -1,5 +1,6 @@
 module Posts where
 
+import Blogs
 import Data.Char
 import Data.List.Utils
 
@@ -34,18 +35,18 @@ loadPosts fname rawsrc =
         perline ln = (read ("Post {"++ln++", cat=\""++fname++"\", origraw=\"\"}") :: Post)
 
 
-toAtom domain feedname posts = (feedname++".atom",rawxml) where
-    rawxml = Util.replace tmplAtom [
+toAtom domain feedname posts bbn = (feedname++".atom",rawxml) where
+    rawxml = if (pblog && (not $ Blogs.atom $ bbn p0fnn)) then "" else Util.replace tmplAtom [
             ("&TITLE;", feedname),
-            ("&PAGENAME;", if pblog then (Util.fnName p0fn) else map Data.Char.toLower feedname),
+            ("&PAGENAME;", if pblog then p0fnn else map Data.Char.toLower feedname),
             ("&DATE;", Util.join "-" $ take3 p0fn),
             ("&DOMAIN;", domain),
             ("&ENTRIES;", concat entries)
         ] where
-            pblog = (length p0fn) > 4 ; p0fn = fn $ head posts ; entries = map perpost posts
+            pblog = (length p0fn) > 4 ; p0fn = fn $ head posts ; p0fnn = Util.fnName p0fn ; entries = map perpost posts
             perpost p = let pfn = fn p ; repl = Data.List.Utils.replace "&" "&amp;" in
                 Util.replace tmplAtomEntry [
-                    ("&POSTTITLE;", repl $ title p),
+                    ("&POSTTITLE;", repl $ Posts.title p),
                     ("&POSTURL;", if pblog then (link p) else ("&PAGENAME;.html#"++(Util.join "_" pfn))),
                     ("&POSTDATE;", Util.join "-" $ take3 pfn),
                     ("&POSTDESC;", repl $ if pblog then text p else subcat p),

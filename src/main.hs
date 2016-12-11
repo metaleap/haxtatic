@@ -26,7 +26,8 @@ main = do
     cmdargs <- System.Environment.getArgs
     let numargs = length cmdargs in if numargs < 1 then putStrLn helpmsg else
         let dirsite = head cmdargs ; path = (</>) dirsite
-            pagesnositemap = splitarg 1 ; pagesskip = splitarg 2 ; pagesonly = splitarg 3
+            pagesnositemap = splitarg 2 ; pagesskip = splitarg 3 ; pagesonly = splitarg 4
+            skipstaticfolders = numargs>1 && ("True"==(cmdargs!!1))
             splitarg i = if numargs > i then (Util.splitBy ',' $ cmdargs!!i) else []
             ispageskip name = Util.isin name pagesskip
             ispageonly name = Util.isin name pagesonly
@@ -87,19 +88,19 @@ main = do
                                     pcat = Blogs.title blog
                                     (pname, ptitle, plink) = (fn, h1, Util.join "." (Util.drop3 fn))
                                     psubcat = (Util.keyVal daters (Blogs.df blog) (snd $ head daters)) fn
-                                    in return $ [Posts.Post pname psubcat ptitle plink "" ptext pcat (Pages.processMarkupDumb pname ptitle raw alltemplaters daters)]
+                                    in return $ [Posts.Post pname psubcat ptitle plink "" ptext pcat (Pages.processMarkupDumb pname (Blogs.name blog) (fn!!4) ptitle raw alltemplaters daters)]
                             isblogpage (_,pfn) = Util.isin (Util.fnName pfn) blognames
                         alltemplaters = concat $ map Pages.xTemplaters cfgexts
                         mergePosts allfileposts = blogposts >>= (return . concat . (++)allfileposts)
                         toAtoms allposts = map percat cats where
                             cats = Data.List.nub $ map Posts.cat allposts
-                            percat cat = Posts.toAtom sitename cat $ filter (\p->(cat==(Posts.cat p))) allposts
+                            percat cat = Posts.toAtom sitename cat (filter (\p->(cat==(Posts.cat p))) allposts) blogbyname
                     in System.Directory.doesDirectoryExist dirposts >>=
                         (\isdir ->if isdir then System.Directory.getDirectoryContents dirposts else return []) >>=
                             Control.Monad.filterM ispostfile >>= Control.Monad.mapM per_postsfile >>= mergePosts >>=
                                 \allposts -> let
                                     atoms = toAtoms allposts ; pfns = map snd pagepaths
-                                    peratom a = writefile (fst a) (snd a)
+                                    peratom a = if not (null txt) then writefile (fst a) txt else return () where txt = (snd a)
                                     sortedposts = sortposts allposts
                                     in do
                                         Control.Monad.mapM peratom atoms
@@ -146,7 +147,7 @@ main = do
                     Control.Monad.mapM (System.Directory.createDirectoryIfMissing False) [dirout, dirpages, dirposts, dirstatic]
                     >> putStrLn ("\n=== HAXTATIC ===\nCopying everything inside '"++dirstatic++"'\nover into '"++dirout++"'..")
                     >> System.Directory.getDirectoryContents dirstatic
-                    >>= Util.copyAll dirstatic dirout
+                    >>= Util.copyAll dirstatic dirout (not skipstaticfolders)
                     >> putStrLn ("\t[ OK ]\nLoading from '"++dirpages++"' & '"++dirposts++"'\nand generating in '"++dirout++"'..")
                     >> Util.getAllFiles dirpages ""
                     >>= filterPageFileNames

@@ -1,6 +1,7 @@
 module Util where
 
 import Control.Monad
+import Data.Char
 import Data.List
 import Data.List.Utils
 import System.Directory
@@ -34,7 +35,7 @@ is [] = False ; is _ = True
 isin _ [] = False
 isin v (lh:lt) = (v == lh) || isin v lt
 count p [] = 0
-count p (lh:lt) = (if (p lh) then 1 else 0)+(count p lt)
+count p (lh:lt) = (b2i $ p lh)+(count p lt) where b2i True = 1 ; b2i False = 0
 indexif p [] = minBound::Int
 indexif p (lh:lt) = if (p lh) then 0 else 1+(indexif p lt)
 indexof v = (indexif . (==)) v
@@ -48,6 +49,8 @@ swapargs fn x y = fn y x
 readInt s = read s :: Int
 drop3 = drop 3 ; take3 = take 3
 join = Data.List.intercalate
+trimChar ch = Data.List.dropWhile ((==) ch)
+trimSpace = Data.List.dropWhile Data.Char.isSpace
 
 
 -- the Phil standard library..
@@ -67,17 +70,16 @@ quickSort prop less greater = sorted where
 copyDirTree srcdir dstdir =
     System.Directory.createDirectoryIfMissing True dstdir >>
         System.Directory.getDirectoryContents srcdir >>=
-            copyAll srcdir dstdir
+            copyAll srcdir dstdir True
 
 
 -- copy all files & folders (named in fsnames) within srcdir into dstdir
-copyAll srcdir dstdir fsnames =
+copyAll srcdir dstdir dofolders fsnames =
     mapM_ per_fsname fsnames where
         per_fsname "." = return () ; per_fsname ".." = return ()
-        per_fsname fsname =
-            doesFileExist srcpath >>= \isfile ->
-                (if isfile then System.Directory.copyFile else copyDirTree) srcpath dstpath
-                    where srcpath = srcdir </> fsname ; dstpath = dstdir </> fsname
+        per_fsname fsname = doesFileExist srcpath >>= \isfile ->
+            (if isfile then (System.Directory.copyFile srcpath dstpath) else if dofolders then (copyDirTree  srcpath dstpath) else return ())
+                where srcpath = srcdir </> fsname ; dstpath = dstdir </> fsname
 
 getAllFiles rootdir curdir = let curpath = rootdir </> curdir in do
     names <- getDirectoryContents curpath

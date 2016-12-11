@@ -3,7 +3,7 @@ module Blogs where
 import Util
 
 
-data Blog = Blog { name :: String, title :: String, desc :: String, df :: String } deriving (Read)
+data Blog = Blog { name :: String, title :: String, desc :: String, atom :: Bool, df :: String } deriving (Read)
 
 
 tmplMarkupSrc blogs src curbname =

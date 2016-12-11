@@ -28,11 +28,17 @@ buildLi_Full cfg args post datecat = let
     psubcat = if null datecat then Posts.subcat post else datecat
     nocats = (not (Util.is csscat)) || ((null psubcat) && ((null pcat) || subcatonly)) ; subcatonly = subcatsonly args
     linkhref = Util.keyValApp (linkers args) pcat (Posts.link post) ("#"++pid)
-    ppic = pic post ; picsrc = picSrc cfg ppic
+    ppic = if null (pic post) then autoicon else pic post ; picsrc = picSrc cfg ppic
+    autoicon = firstimg firstimginner where
+        firstimginner = let
+            l = filter Util.is $ map (Html.tagInner2 "img") $ lines (origraw post)
+            in if null l then "" else Util.trimSpace (head l)
+        firstimg ('s':'r':'c':'=':'\"':src) = take (max 0 (Util.indexof '\"' src)) src
+        firstimg _ = ""
     in Html.T "li" [("name",pid),("id",pid)] [
         Html.T (if null linkhref then "" else "a") [("href",linkhref)] [
                 Html.T (if nocats then "" else "div") [("",(if subcatonly then "" else ""++pcat++": ")++psubcat),("class",csscat)] [],
-                Html.T "h3" [("",ptitle),("class",csstitle)] $ if null ppic then [] else [Html.T "img" [("src",picsrc),("title",ptitle)] []],
+                Html.T "h3" [("",ptitle),("class",csstitle)] $ if null ppic then [] else [Html.T "img" [("src", if null picsrc then autoicon else picsrc),("class", if null autoicon then "" else "ml-feed-autoicon"),("title",ptitle)] []],
                 Html.T "div" [("",ptext),("class",cssdesc)] []
             ]
         ]

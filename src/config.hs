@@ -1,6 +1,5 @@
 module Config where
 
-import Data.Char
 import Data.List
 
 import Blogs
@@ -18,8 +17,7 @@ import XSnippets
 
 _split = Util.splitBy ':'
 _join = Util.join ":"
-_trim = Data.List.dropWhile Data.Char.isSpace
-_trim0 = Data.List.dropWhile (\c -> c == '0')
+_trim0 = Util.trimChar '0'
 
 
 blogs cfglines =
@@ -48,14 +46,14 @@ exts cfglines blognames =
 txts cfglines =
     [] ++ (concat $ map perline cfglines) where
         perline "" = [] ; perline ln = persplit $ _split ln
-        persplit ("T":name:rest) = [("{{T:"++name++"}}", _trim $ _join rest)]
+        persplit ("T":name:rest) = [("{{T:"++name++"}}", Util.trimSpace $ _join rest)]
         persplit _ = []
 
 
 _daters cfglines =
     [("","YYYY/MM/DD"),("_MonthYear","month YYYY"),("_Year","YYYY")] ++ (concat $ map perline cfglines) where
         perline "" = [] ; perline ln = persplit $ _split ln
-        persplit ("D":name:rest) = [(name, _trim $ _join rest)]
+        persplit ("D":name:rest) = [(name, Util.trimSpace $ _join rest)]
         persplit _ = []
 
 daters cfglines monthname =
