@@ -12,6 +12,7 @@ data Post = Post { fn :: Util.FName, subcat :: String, title :: String, link :: 
 
 tmplAtom = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
     \<feed xmlns=\"http://www.w3.org/2005/Atom\">\n\
+    \    <link rel=\"self\" type=\"application/rss+xml\" href=\"http://&DOMAIN;/&ATOMFILE;\" />\n\
     \    <title>&DOMAIN; &TITLE;</title><subtitle>&DOMAIN;/&PAGENAME;.html</subtitle>\n\
     \    <id>http://&DOMAIN;/&PAGENAME;.html</id>\n\
     \    <link href=\"http://&DOMAIN;/&PAGENAME;.html\"/>\n\
@@ -35,21 +36,26 @@ loadPosts fname rawsrc =
         perline ln = (read ("Post {"++ln++", cat=\""++fname++"\", origraw=\"\"}") :: Post)
 
 
-toAtom domain feedname posts bbn = (feedname++".atom",rawxml) where
-    rawxml = if (pblog && (not $ Blogs.atom $ bbn p0fnn)) then "" else Util.replace tmplAtom [
-            ("&TITLE;", feedname),
+toAtom domain feedname posts bbn = (atomfilename, rawxml) where
+    atomfilename = if pblog then (Blogs.atom blog) else feedname++".atom"
+    rawxml = if (pblog && (null atomfilename)) then "" else Util.replacein tmplAtom [
+            ("&TITLE;", if pblog then repl $ Blogs.title blog else feedname),
             ("&PAGENAME;", if pblog then p0fnn else map Data.Char.toLower feedname),
+            ("&ATOMFILE;", Util.replacein atomfilename [(" ","%20")]),
             ("&DATE;", Util.join "-" $ take3 p0fn),
             ("&DOMAIN;", domain),
             ("&ENTRIES;", concat entries)
         ] where
-            pblog = (length p0fn) > 4 ; p0fn = fn $ head posts ; p0fnn = Util.fnName p0fn ; entries = map perpost posts
-            perpost p = let pfn = fn p ; repl = Data.List.Utils.replace "&" "&amp;" in
-                Util.replace tmplAtomEntry [
-                    ("&POSTTITLE;", repl $ Posts.title p),
-                    ("&POSTURL;", if pblog then (link p) else ("&PAGENAME;.html#"++(Util.join "_" pfn))),
-                    ("&POSTDATE;", Util.join "-" $ take3 pfn),
-                    ("&POSTDESC;", repl $ if pblog then text p else subcat p),
-                    ("&POSTAUTHOR;", if pblog then "&DOMAIN;" else subcat p),
-                    ("&POST;", repl $ if pblog then origraw p else text p)
-                ]
+            entries = map perpost posts
+            perpost p =
+                let pfn = fn p in
+                    Util.replacein tmplAtomEntry [
+                        ("&POSTTITLE;", repl $ Posts.title p),
+                        ("&POSTURL;", if pblog then (link p) else ("&PAGENAME;.html#"++(Util.join "_" pfn))),
+                        ("&POSTDATE;", Util.join "-" $ take3 pfn),
+                        ("&POSTDESC;", repl $ if pblog then text p else subcat p),
+                        ("&POSTAUTHOR;", if pblog then "&DOMAIN;" else subcat p),
+                        ("&POST;", repl $ if pblog then origraw p else text p)
+                    ]
+    blog = bbn p0fnn ; repl s = Util.replacein s [("\"","&quot;"),("'","&apos;"),(">","&gt;"),("<","&lt;"),("&","&amp;"),("<link","<hax_link"),("<script","<!--hax_script"),("<input","<hax_input"),("</link","</hax_link"),("</script>","</hax_script-->"),("</input","</hax_input"),(" style=\""," hax_style=\"")]
+    pblog = (length p0fn) > 4 ; p0fn = fn $ head posts ; p0fnn = Util.fnName p0fn

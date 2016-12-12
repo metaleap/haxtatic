@@ -46,7 +46,7 @@ main = do
                 dirstatic = path "static"
                 sitename = (last $ Util.splitBy '/' $ Util.swapout '\\' '/' dirsite)
                 txts = Config.txts cfgtmp where cfgtmp = lines filestream_config
-                cfglines = lines $ Util.replace filestream_config txts
+                cfglines = lines $ Util.replacein filestream_config txts
                 cfgexts = Config.exts cfglines blognamesall ; blognamesall = map Blogs.name blogs
                 blogs = Config.blogs cfglines ; blognames = filter ispageused $ blognamesall
                 daters = Config.daters cfglines monthname ; monthname m = monthnames!!(readInt m)
@@ -85,7 +85,7 @@ main = do
                                     p = if (length ps) > 0 then head ps else ""
                                     ps = filter (\l -> Util.is $ tagInner "p" l) rawlines
                                     ptext = Html.tagInnerPlain p ; blog = blogbyname (Util.fnName fn)
-                                    pcat = Blogs.title blog
+                                    pcat = (if Blogs.nameAsCat blog then Blogs.name else Blogs.title) blog
                                     (pname, ptitle, plink) = (fn, h1, Util.join "." (Util.drop3 fn))
                                     psubcat = (Util.keyVal daters (Blogs.df blog) (snd $ head daters)) fn
                                     in return $ [Posts.Post pname psubcat ptitle plink "" ptext pcat (Pages.processMarkupDumb pname (Blogs.name blog) (fn!!4) ptitle raw alltemplaters daters)]
@@ -100,7 +100,8 @@ main = do
                             Control.Monad.filterM ispostfile >>= Control.Monad.mapM per_postsfile >>= mergePosts >>=
                                 \allposts -> let
                                     atoms = toAtoms allposts ; pfns = map snd pagepaths
-                                    peratom a = if not (null txt) then writefile (fst a) txt else return () where txt = (snd a)
+                                    peratom a = if (null txt) || (null afn) then return ()
+                                        else writefile afn txt where (afn,txt) = a
                                     sortedposts = sortposts allposts
                                     in do
                                         Control.Monad.mapM peratom atoms
@@ -138,10 +139,10 @@ main = do
 
                 -- given a Pages.Ctx (and list of all Pages.Ctx for blog posts), render final output-page content
                 applyTemplate page =
-                    return $ unlines $ map per_line (lines (applyprep replbod "")) where
-                        replbod = Data.List.Utils.replace "{{P:Body}}" (unlines $ Pages.body page) filestream_tmplmain
+                    return $ Pages.postProcessMarkup page $ unlines $ map per_line (lines (applyprep replbod "")) where
+                        replbod = Data.List.Utils.replace "{{P:Body}}" (Pages.body page) filestream_tmplmain
                         per_line ln = concat $ Pages.processMarkupLn page ln
-                applyprep s = Blogs.tmplMarkupSrc blogs $ Util.replace s txts
+                applyprep s = Blogs.tmplMarkupSrc blogs $ Util.replacein s txts
 
                 in -- now let's go!
                     Control.Monad.mapM (System.Directory.createDirectoryIfMissing False) [dirout, dirpages, dirposts, dirstatic]

@@ -54,9 +54,9 @@ trimSpace = Data.List.dropWhile Data.Char.isSpace
 
 
 -- the Phil standard library..
-replace str [] = str
-replace str ((old,new):rest) =
-    Data.List.Utils.replace old new (Util.replace str rest)
+replacein str [] = str
+replacein str ((old,new):rest) =
+    Data.List.Utils.replace old new (replacein str rest)
 swapout old new = map (\item -> if (item==old) then new else item)
 splitBy delim = foldr per_elem [[]] where
     per_elem el elems@(first:rest) | (el==delim) = []:elems | otherwise = (el:first):rest

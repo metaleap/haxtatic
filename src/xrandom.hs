@@ -10,7 +10,7 @@ data Cfg = Cfg { cssLink :: String, items :: [Item] } deriving (Read)
 
 
 rand page =
-    (abs $ nowint * year+(l fn)-(Pages.bodyLen page)) * (abs$day+month-nowint) * (lt+lb*nowint) * (nowint+(l$fn!!3)+(l$fn!!4)) where
+    (abs $ nowint * year+(l fn)-lb) * (abs$day+month-nowint) * (lt+lb*nowint) * (nowint+(l$fn!!3)+(l$fn!!4)) where
         nowint = Pages.now page ; l = length ; fn = Pages.fname page
         year = Util.readInt $ Util.fnYear fn ; month = Util.readInt $ Util.fnMonth fn ; day = Util.readInt $ Util.fnDay fn
         lt = l (Pages.titles page) ; lb = l (Pages.body page)

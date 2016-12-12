@@ -8,7 +8,7 @@ data Cfg = Cfg { v :: KeyVals, c :: String } deriving (Read)
 
 ext tagname cfg = Pages.X [ Pages.Tmpl tagname apply ] where
     apply _ argstr _ =
-        map (\(num,i) -> Util.replace html $ replvars++[("{{_v}}", if usealt then (alts!!(i-1)) else (show num)), ("{{_nr}}", show num),("{{_i}}", show i)]) $ map indices iter
+        map (\(num,i) -> Util.replacein html $ replvars++[("{{_v}}", if usealt then (alts!!(i-1)) else (show num)), ("{{_nr}}", show num),("{{_i}}", show i)]) $ map indices iter
         where
             usealt = lalt > 0 ; alts = alt args ; lalt = length alts
             args = read ("Args { "++argstr++" }") :: Args
@@ -22,5 +22,5 @@ ext tagname cfg = Pages.X [ Pages.Tmpl tagname apply ] where
                 pern n vs i = ("{{"++n++(show i)++"}}",val) where
                     val = if i>(length vs) then (Util.keyVal (vars args) key key) else (Util.whilein vs (i-1) null ((+) (-1)) ("{{"++key++"}}"))
                     key = "_"++n++"0"
-            html = Util.replace (c cfg) $ [("{{_c}}",show $ length iter)] ++ (repl $ v cfg) ++ replvars
+            html = Util.replacein (c cfg) $ [("{{_c}}",show $ length iter)] ++ (repl $ v cfg) ++ replvars
             (numfrom,numuntil) = if usealt then (1,lalt) else (nums args) ; fromto = [numfrom..numuntil]
