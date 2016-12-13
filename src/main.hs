@@ -82,9 +82,9 @@ main = do
                             topost (fullpath,fn) =
                                 readFile (fullpath) >>= \rawsrc -> let
                                     h1 = Html.tagInner "h1" $ head rawlines ; rawlines = lines raw ; raw = applyprep rawsrc pcat
-                                    p = if (length ps) > 0 then head ps else ""
+                                    p = if (length ps) > 0 then head ps else "" ; blog = blogbyname (Util.fnName fn)
                                     ps = filter (\l -> Util.is $ tagInner "p" l) rawlines
-                                    ptext = Html.tagInnerPlain p ; blog = blogbyname (Util.fnName fn)
+                                    ptext = Html.tagInnerPlain p
                                     pcat = (if Blogs.nameAsCat blog then Blogs.name else Blogs.title) blog
                                     (pname, ptitle, plink) = (fn, h1, Util.join "." (Util.drop3 fn))
                                     psubcat = (Util.keyVal daters (Blogs.df blog) (snd $ head daters)) fn
