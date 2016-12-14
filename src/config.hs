@@ -3,7 +3,7 @@ module Config where
 import Blogs
 import Util
 
-import XConsts
+--import XConsts
 import XImage
 import XLinks
 import XListing
@@ -28,7 +28,7 @@ blogs cfglines =
 exts cfglines blognames =
     [] ++ (concat $ map perline cfglines) where
         perline "" = [] ; perline ln = persplit $ _split ln
-        persplit ("X":"Consts":name:rest) = [XConsts.ext name (read (wl rest) :: XConsts.Cfg)]
+        --persplit ("X":"Consts":name:rest) = [XConsts.ext name (read (wl rest) :: XConsts.Cfg)]
         persplit ("X":"Snippets":name:rest) = [XSnippets.ext name (read (wl rest) :: XSnippets.Cfg)]
         persplit ("X":"Links":name:rest) = [XLinks.ext name (read (wc rest) :: XLinks.Cfg) blognames]
         persplit ("X":"Image":name:rest) = [XImage.ext name (read (wc rest) :: XImage.Cfg)]

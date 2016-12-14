@@ -1,10 +1,12 @@
 module Pages where
 
+import Data.List
+
 import Html
 import Posts
 import Util
 
-data Ctx = Ctx { fname :: Util.FName, titles :: [String], body :: String, now :: Int, daters :: [(String,[String]->String)], allExts :: [X], allPosts :: [Posts.Post], allXTemplaters :: [Tmpl] }
+data Ctx = Ctx { fname :: Util.FName, titles :: [String], body :: String, now :: Int, pageVars :: Util.KeyVals, daters :: [(String,[String]->String)], allExts :: [X], allPosts :: [Posts.Post], allXTemplaters :: [Tmpl] }
 data Tmpl = Tmpl { tmplTag :: String, tmplApply :: String -> String -> Ctx -> [String] }
 data X = X { xTemplaters :: [Tmpl] }
 
@@ -27,13 +29,19 @@ tmplSitemapUrl = "<url>\n\
 
 
 newPageContext now daters allexts allposts alltemplaters fname rawsrc = let
-    page = Ctx fname titles bodydone now daters allexts allposts alltemplaters
+    page = Ctx fname titles bodydone now vars daters allexts allposts alltemplaters
     bodydone = postProcessMarkup page (unlines bodytmp)
-    (titles,bodytmp) = foldl accum ([],[]) $ map perline $ lines rawsrc
-    accum (tlines,blines) (tline,bline) = (tlines++tline , blines++bline)
-    perline ln = (tline , bline) where
-        bline = processMarkupLn page ln
+    (titles,bodytmp,vars) = foldl accum ([],[],[]) $ map perline $ lines rawsrc
+    accum (tlines,blines,vlines) (tline,bline,vline) = (tlines++tline , blines++bline,vlines++vline)
+    perline ln = (tline , bline, vline) where
+        bline = if null vline then processMarkupLn page ln else []
         tline = concat $ map istitle bline
+        vline = let splits = Util.splitBy ':' (drop 2 (take ((length ln) -2) ln))
+                    vname = splits!!2 ; vval = Util.join ":" (Util.drop3 splits)
+                    in if
+                        (Data.List.isPrefixOf "{{P:Var:" ln) && (Data.List.isSuffixOf "}}" ln) &&
+                        ((length splits) >= 4) && (not (null vname)) && (not (null vval))
+                        then [("{{P:Var:"++vname++"}}",vval)] else []
         istitle bln = let h1 = Html.tagInner "h1" bln ; h2 = Html.tagInner "h2" bln ; h2_ = Html.tagInner3 "h2" bln in
             if Util.is h2 then [h2] else if Util.is h1 then [h1] else if Util.is h2_ then [drop (1+(max 0 $ Util.indexof '>' h2_)) h2_] else []
     in page
@@ -41,7 +49,7 @@ newPageContext now daters allexts allposts alltemplaters fname rawsrc = let
 
 processMarkupDumb fn bn pbn title rawsrc alltemplaters daters =
     let blines = lines $ repl rawsrc ; perline l = map repl (processMarkupLn ptmp l)
-        ptmp = Ctx fn [title] (unlines blines) 0 daters [] [] alltemplaters
+        ptmp = Ctx fn [title] (unlines blines) 0 [] daters [] [] alltemplaters
         repl s = Util.replacein s [("{{B:Name:}}",bn),("{{P:BaseName}}",pbn)]
         in postProcessMarkup ptmp $ unlines $ concat (map perline blines)
 
@@ -53,7 +61,7 @@ postProcessMarkup page src =
             ("{{P:PostDesc}}", if post>=0 then (Posts.text ((allPosts page)!!post)) else ""),
             ("{{P:BaseName}}", if lfn>2 then _join $ take (lfn-2) (tail pfn) else head pfn),
             ("{{B:Name:}}", if lfn>2 then head pfn else "")
-        ] ++ dateformatters) where
+        ] ++ dateformatters ++ (pageVars page)) where
             lfn = length pfn
             pfn = Util.drop3 (fname page) ; pfname = _join pfn ; post = Util.indexif (((==) pfname) . Posts.link) (allPosts page)
             dateformatters = map formatter (daters page) where

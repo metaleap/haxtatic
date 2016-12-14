@@ -126,7 +126,7 @@ main = do
                 genpages pages =
                     Control.Monad.mapM_ per_page allpages where
                         allpages = if ((length bpages) < 1) then pages else (blogindexpages ++ pages)
-                        per_page page = applyTemplate page >>= writefile (outfilename page)
+                        per_page page = applyTemplate page >>= clearpvars allpages >>= writefile (outfilename page)
                         bpages = filter isblog pages where isblog page = (Util.isin (Util.fnName $ Pages.fname page) blognames)
                         outfilename page = Util.join "." $ Util.drop3 $ Pages.fname page
                         blogindexpages = map blogindexpage blognames
@@ -143,6 +143,9 @@ main = do
                         replbod = Data.List.Utils.replace "{{P:Body}}" (Pages.body page) filestream_tmplmain
                         per_line ln = concat $ Pages.processMarkupLn page ln
                 applyprep s = Blogs.tmplMarkupSrc blogs $ Util.replacein s txts
+                clearpvars allpages outraw =
+                    let pvarnames = nub $ concat $ map (map (\(k,_) -> k)) $ map Pages.pageVars allpages
+                    in return (Util.replacein outraw (map (\k -> (k,"")) pvarnames))
 
                 in -- now let's go!
                     Control.Monad.mapM (System.Directory.createDirectoryIfMissing False) [dirout, dirpages, dirposts, dirstatic]
