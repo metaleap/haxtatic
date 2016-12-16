@@ -11,6 +11,7 @@ import System.FilePath
 import Blogs
 import Config
 import Html
+import MainDefaults
 import Pages
 import Posts
 import Util
@@ -26,25 +27,29 @@ main = do
     cmdargs <- System.Environment.getArgs
     let numargs = length cmdargs in if numargs < 1 then putStrLn helpmsg else
         let dirsite = head cmdargs ; path = (</>) dirsite
+            sitename = (last $ Util.splitBy '/' $ Util.swapout '\\' '/' dirsite)
             pagesnositemap = splitarg 2 ; pagesskip = splitarg 3 ; pagesonly = splitarg 4
             skipstaticfolders = numargs>1 && ("True"==(cmdargs!!1))
             splitarg i = if numargs > i then (Util.splitBy ',' $ cmdargs!!i) else []
             ispageskip name = Util.isin name pagesskip
             ispageonly name = Util.isin name pagesonly
             ispageused name = not (ispageskip name) && (null pagesonly || Util.isin name pagesonly)
-            readorcreate file = System.Directory.doesFileExist file >>=
-                \isfile -> if isfile then readFile file else writeFile file "" >> return ""
+            readorcreate defsrc file = System.Directory.doesFileExist file >>=
+                \isfile -> if isfile then readFile file else writefilein dirsite file defsrc >> return defsrc
+            writefilein dir fn c = putStr ("\t"++fn++" [ ") >> writeFile (dir </> fn) c >> putStrLn "OK ]"
         in do
+            putStrLn "\n==== HAXTATIC ====\n\n1. Reading (or re-creating) bare essentials.."
             System.Directory.createDirectoryIfMissing True dirsite
-            filestream_config <- readorcreate $ path "haxtatic.config"
-            filestream_tmplmain <- readorcreate $ path "theme.tmpl.html"
-            filestream_tmplblog <- readorcreate $ path "blog.tmpl.html"
+            dircur <- System.Directory.getCurrentDirectory
+            filestream_config <- readorcreate (MainDefaults.haxConf sitename) "haxtatic.config"
+            filestream_tmplmain <- readorcreate MainDefaults.themeHtml "theme.tmpl.html"
+            filestream_tmplblog <- readorcreate MainDefaults.blogHtml "blog.tmpl.html"
             let
+                writefile = writefilein dirout
                 dirout = path "build"
                 dirpages = path "pages"
                 dirposts = path "posts"
                 dirstatic = path "static"
-                sitename = (last $ Util.splitBy '/' $ Util.swapout '\\' '/' dirsite)
                 txts = Config.txts cfgtmp where cfgtmp = lines filestream_config
                 cfglines = lines $ Util.replacein filestream_config txts
                 cfgexts = Config.exts cfglines blognamesall ; blognamesall = map Blogs.name blogs
@@ -52,6 +57,12 @@ main = do
                 daters = Config.daters cfglines monthname ; monthname m = monthnames!!(readInt m)
                 monthnames = map (\mn -> Util.keyVal txts ("{{T:Hxm_"++(take 2 mn)++"}}") (drop 2 mn)) ["00","01January","02February","03March","04April","05May","06June","07July","08August","09September","10October","11November","12December"]
                 splitdot = Util.splitBy '.'
+
+                createDefaultPageIfEmpty filenames =
+                    if not $ null filenames then return filenames
+                        else let fn = "index.html" ; fp = dirpages </> fn in
+                            do writefilein dirpages fn $ MainDefaults.indexHtml dircur sitename dirsite dirpages fp (path "theme.tmpl.html") (dirout </> fn)
+                            >> return [fn]
 
                 -- in pages dir, ignore . and .. and pick files named yyyy.mm.dd.*.* (hackily enough, we really pick *.*.*.*.*)
                 filterPageFileNames filenames =
@@ -109,7 +120,6 @@ main = do
                                         return $ map (\(fullpath,pfn) -> ((fullpath, pfn), sortedposts, alltemplaters)) pagepaths
 
                 blogbyname bn = head $ filter (\b -> (Blogs.name b) == bn) blogs
-                writefile fn c = putStr ("\t"++fn++" [ ") >> writeFile (dirout </> fn) c >> putStrLn "OK ]"
 
                 -- read a page file and create a Pages.Ctx from its raw source
                 per_pagesrcfile ((fullpath,pfn),allposts,alltemplaters) =
@@ -149,11 +159,12 @@ main = do
 
                 in -- now let's go!
                     Control.Monad.mapM (System.Directory.createDirectoryIfMissing False) [dirout, dirpages, dirposts, dirstatic]
-                    >> putStrLn ("\n=== HAXTATIC ===\nCopying everything inside '"++dirstatic++"'\nover into '"++dirout++"'..")
+                    >> putStrLn ("2. Copying everything inside '"++dirstatic++"'\n   over into '"++dirout++"'..")
                     >> System.Directory.getDirectoryContents dirstatic
                     >>= Util.copyAll dirstatic dirout (not skipstaticfolders)
-                    >> putStrLn ("\t[ OK ]\nLoading from '"++dirpages++"' & '"++dirposts++"'\nand generating in '"++dirout++"'..")
+                    >> putStrLn ("\t[ OK ]\n3. Loading from '"++dirpages++"' & '"++dirposts++"'\n   and generating in '"++dirout++"'..")
                     >> Util.getAllFiles dirpages ""
+                    >>= createDefaultPageIfEmpty
                     >>= filterPageFileNames
                     >>= mapPageFileNames
                     >>= loadAllPosts
