@@ -1,11 +1,12 @@
 module Util where
 
-import Control.Monad
-import Data.Char
-import Data.List
-import Data.List.Utils
-import System.Directory
-import System.FilePath
+import qualified Control.Monad
+import qualified Data.Char
+import qualified Data.List
+import qualified Data.List.Utils
+import qualified System.Directory
+import qualified System.FilePath
+import System.FilePath ( (</>) )
 
 
 type FName = [String]
@@ -77,16 +78,16 @@ copyDirTree srcdir dstdir =
 copyAll srcdir dstdir dofolders fsnames =
     mapM_ per_fsname fsnames where
         per_fsname "." = return () ; per_fsname ".." = return ()
-        per_fsname fsname = doesFileExist srcpath >>= \isfile ->
+        per_fsname fsname = System.Directory.doesFileExist srcpath >>= \isfile ->
             (if isfile then (System.Directory.copyFile srcpath dstpath) else if dofolders then (copyDirTree  srcpath dstpath) else return ())
                 where srcpath = srcdir </> fsname ; dstpath = dstdir </> fsname
 
 getAllFiles rootdir curdir = let curpath = rootdir </> curdir in do
-    names <- getDirectoryContents curpath
+    names <- System.Directory.getDirectoryContents curpath
     let properNames = filter (`notElem` [".", ".."]) names
-    paths <- forM properNames $ \name -> do
+    paths <- Control.Monad.forM properNames $ \name -> do
         let path = curpath </> name
-        isDirectory <- doesDirectoryExist path
-        let bla = curdir </> name in
-            if isDirectory then getAllFiles rootdir bla else return [bla]
-    return (concat paths)
+        isDirectory <- System.Directory.doesDirectoryExist path
+        let relpath = curdir </> name in
+            if isDirectory then getAllFiles rootdir relpath else return [relpath]
+    return (concat $ Util.quickSort (length) (<) (>=) paths) -- why sort: want top-level files first. hacky but works for the very cases where it makes a difference

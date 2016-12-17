@@ -1,8 +1,8 @@
 module XPageToc where
 
-import Html
-import Pages
-import Util
+import qualified Html
+import qualified Pages
+import qualified Util
 
 
 data Cfg = Cfg { outerTag :: String, emptyMarkup :: String, linkAtts :: Util.KeyVals } deriving (Read)

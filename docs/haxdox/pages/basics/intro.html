@@ -1,0 +1,33 @@
+<h1>Project directories</h1>
+<p>Any project resides in its own project-directory, with a predefined (auto-generated) minimum-structure of 4 specific files plus these 4 folders:</p>
+<ul><li><b>build</b> (generated output)</li><li><b>pages</b> (all your authored content pages as likely-mostly-unstyled/unthemed/inner-body-only HTML files)</li><li><b>static</b> (raw files to copy unprocessed into <b>build</b>)</li><li><b>posts</b> (not important for now)</li></ul>
+<h2>Get started:</h2>
+<p>Run HaXtatic passing "the project-directory to process" and any missing parts from the above will be (re)created in-place.</p>
+<p>Example, say we want to create a new site project named <b>mydemosite.foo</b> (inside our existing ~/dev/ in this case). Just run <code><a href="https://www.haskell.org/downloads#stack">stack</a> runghc main.hs ~/dev/mydemosite.foo</code> (or your-own-compiled-binary of course) and we get:</p>
+<p>
+	<img src="img/fresh-project-directory.png" />
+</p>
+<p>
+	Now you just create/modify contents/templates/settings/etc. within this structure and then simply run the same command-line again specifying the very same directory path to fill <b>build</b> with your freshly re-generated static site.
+</p>
+<h2>4 standard folders:</h2>
+<h3>Directory <i>build</i>:</h3>
+<p>Contains the complete generated site after a successful run. No clean-ups done here by HaXtatic in-between runs at this point.</p>
+<h3>Directory <i>static</i>:</h3>
+<p>All contents (if any) will just be copied over straight into <b>build</b> (with no processing) as the first step.</p>
+<h3>Directory <i>posts</i>:</h3>
+<p>Leave it empty for now, described later.</p>
+<h3>Directory <i>pages</i>:</h3>
+<p>All files in here will then be interpreted as "likely mostly untemplated / unthemed / unstyled, essentially purely-content" HTML pages to be templated (resulting output page goes into <b>build</b>); if this has no files at all, a default <code>index.html</code> will be created to get you started with.</p>
+<p><b>No sub-folders for now: </b> their files won't just carry over into <b>build</b> quite in the same fashion (and their presence is reserved for a more advanced feature explained later) &mdash; so only top-level pages for your simple starter site contents for now. </p>
+<h2>4 standard files:</h2>
+<h3>Always created if missing:</h3>
+<ul>
+	<li><b>haxtatic.config</b> &mdash; initially near-empty file (and can well be empty) that you later stuff with all sorts of custom project-specific definitions used in your content source <b>pages</b> or from the following default templates:</li>
+	<li><b>theme.tmpl.html</b> &mdash; contains the complete outer HTML scaffolding markup that every generated page will embed its own unique contents into. If empty, all generated output pages will be empty. Needs at least the <code>{P{Body}}</code> tag for output pages to contain their source pages' contents.</li>
+	<li><b>blog.tmpl.html</b> &mdash; unused in the initial minimum default structure and can be empty; discussed later.</li>
+</ul>
+<h3>Only created in new projects:</h3>
+<ul>
+	<li><b>pages/index.html</b> &mdash; <i>only</i> created <i>whenever</i> the <b>pages</b> directory is entirely devoid of any files, as a handy example content source page to get you started with.</li>
+</ul>

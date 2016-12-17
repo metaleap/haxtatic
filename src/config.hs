@@ -1,7 +1,7 @@
 module Config where
 
-import Blogs
-import Util
+import qualified Blogs
+import qualified Util
 
 --import XConsts
 import XImage
@@ -44,7 +44,7 @@ exts cfglines blognames =
 txts cfglines =
     [] ++ (concat $ map perline cfglines) where
         perline "" = [] ; perline ln = persplit $ _split ln
-        persplit ("T":name:rest) = [("{{T:"++name++"}}", Util.trimSpace $ _join rest)]
+        persplit ("T":name:rest) = [("{T{"++name++"}}", Util.trimSpace $ _join rest)]
         persplit _ = []
 
 

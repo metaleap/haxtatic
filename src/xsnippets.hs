@@ -1,7 +1,7 @@
 module XSnippets where
 
-import Pages
-import Util
+import qualified Pages
+import qualified Util
 
 type Args = (String,Util.KeyVals)
 type Cfg = Util.KeyVals

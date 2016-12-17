@@ -1,6 +1,6 @@
 module Html where
 
-import Util
+import qualified Util
 
 
 data Tag = T { name :: String, attr :: Util.KeyVals, sub :: [Tag] } deriving (Eq, Read)
@@ -10,7 +10,7 @@ emit tag = if notag then inner else open++atts++inner++close where
     open = "<"++tname
     atts = concat $ map emitatt $ tatts where
         emitatt (n,v) = if (n=="" || v=="") then "" else (" "++n++"=\""++v++"\"")
-    inner = (if notag then "" else if noinner then "/>\n" else ">"++(if is tinner then "" else "\n"))++(concat $ map emit tchildren)++tinner
+    inner = (if notag then "" else if noinner then "/>\n" else ">"++(if not $ null tinner then "" else "\n"))++(concat $ map emit tchildren)++tinner
     close = if noinner then "" else ("</"++tname++">")
 
     notag = null tname

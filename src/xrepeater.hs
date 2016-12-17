@@ -1,10 +1,10 @@
 module XRepeater where
 
-import Pages
-import Util
+import qualified Pages
+import qualified Util
 
-data Args = Args { nums :: (Int,Int), alt :: [String], skip :: [Int], vars :: KeyVals, nvars :: [(String,[String])] } deriving (Read, Show)
-data Cfg = Cfg { v :: KeyVals, p :: String, c :: String, ps :: String } deriving (Read)
+data Args = Args { nums :: (Int,Int), alt :: [String], skip :: [Int], vars :: Util.KeyVals, nvars :: [(String,[String])] } deriving (Read, Show)
+data Cfg = Cfg { v :: Util.KeyVals, p :: String, c :: String, ps :: String } deriving (Read)
 
 ext tagname cfg = Pages.X [ Pages.Tmpl tagname apply ] where
     apply _ argstr _ =

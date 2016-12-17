@@ -1,0 +1,87 @@
+body {
+	background-color: Menu;
+	color: MenuText;
+	font-family: sans-serif;
+}
+h1 {
+	color: ThreeDShadow;
+}
+h3 {
+	color: ThreeDDarkShadow;
+}
+h2 {
+	margin-top: 2em;
+	margin-bottom: 0;
+	padding-bottom: 0;
+	border-bottom: 0.066em dotted ActiveCaption;
+	color: Background;
+	text-align: center;
+}
+h4 {
+	padding: 0.33em;
+	text-align: right;
+	border-radius: 0.33em;
+	margin-bottom: 0;
+	background-color: Highlight;
+	color: HighlightText;
+}
+code {
+	background-color: ActiveCaption;
+	color: CaptionText;
+	font-weight: bold;
+	display: inline-block;
+	padding: 0 0.44em 0 0.44em;
+	border-radius: 0.22em;
+}
+
+
+.hd-note {
+	background-color: InfoBackground;
+	color: InfoText;
+	border-radius: 0.123em;
+	border: solid 0.066em ThreeDLightShadow;
+	padding: 0.22em;
+}
+
+
+ul.hd-nav {
+	list-style-type: none;
+	text-align: center;
+	margin-top: 0;
+}
+li.hd-nav {
+	display: inline-block;
+	padding: 0.11em 0.66em 0.44em 0.66em;
+}
+li.hd-nav a {
+	text-decoration: none;
+	color: CaptionText;
+	display: inline-block;
+}
+li.hd-nav-sel {
+	font-weight: bold;
+	border-bottom-right-radius: 0.5em;
+	border-bottom-left-radius: 0.5em;
+	background-color: Highlight;
+}
+li.hd-nav-sel a {
+	color: HighlightText;
+}
+
+ul.hd-feed {
+	list-style-type: none;
+	margin-top: 2.22em;
+}
+ul.hd-feed > li {
+	margin-bottom: 1.23em;
+}
+ul.hd-feed > li > a {
+	text-decoration: none;
+}
+.hd-feed-title {
+	text-decoration: underline;
+	margin: 0;
+}
+.hd-feed-desc {
+	color: GrayText;
+}

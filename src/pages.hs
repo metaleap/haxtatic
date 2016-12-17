@@ -1,10 +1,10 @@
 module Pages where
 
-import Data.List
+import qualified Html
+import qualified Posts
+import qualified Util
 
-import Html
-import Posts
-import Util
+import qualified Data.List
 
 data Ctx = Ctx { fname :: Util.FName, titles :: [String], body :: String, now :: Int, pageVars :: Util.KeyVals, daters :: [(String,[String]->String)], allExts :: [X], allPosts :: [Posts.Post], allXTemplaters :: [Tmpl] }
 data Tmpl = Tmpl { tmplTag :: String, tmplApply :: String -> String -> Ctx -> [String] }
@@ -47,16 +47,17 @@ newPageContext now daters allexts allposts alltemplaters fname rawsrc = let
     in page
 
 
-processMarkupDumb fn bn pbn title rawsrc alltemplaters daters =
-    let blines = lines $ repl rawsrc ; perline l = map repl (processMarkupLn ptmp l)
-        ptmp = Ctx fn [title] (unlines blines) 0 [] daters [] [] alltemplaters
-        repl s = Util.replacein s [("{{B:Name:}}",bn),("{{P:BaseName}}",pbn)]
-        in postProcessMarkup ptmp $ unlines $ concat (map perline blines)
+processMarkupDumbly4Feeds fn bn pbn title rawsrc alltemplaters daters =
+    let blines = lines $ repl rawsrc ; perline l = map repl (processMarkupLn ctxtmp l)
+        ctxtmp = Ctx fn [title] (unlines blines) 0 [] daters [] [] alltemplaters
+        repl s = Util.replacein (if ispvar then "<!--\n"++s++"\n-->" else s) [("{{B:Name:}}",bn),("{{P:BaseName}}",pbn)] where
+            ispvar = (Data.List.isPrefixOf "{{P:Var:" s) && (Data.List.isSuffixOf "}}" s)
+        in postProcessMarkup ctxtmp $ unlines $ concat (map perline blines)
 
 
 postProcessMarkup page src =
     Util.replacein src ([
-            ("{{P:Title}}", head $ titles page),
+            ("{P{Title}}", head $ titles page),
             ("{{P:FileName}}", pfname),
             ("{{P:PostDesc}}", if post>=0 then (Posts.text ((allPosts page)!!post)) else ""),
             ("{{P:BaseName}}", if lfn>2 then _join $ take (lfn-2) (tail pfn) else head pfn),
@@ -91,15 +92,15 @@ toSitemap domain pagefns blognames exclnames =
                     dorest = blogpfns rest
                     blogmatches = filter (\pfn -> (bname==(Util.fnName pfn)) && (isincluded pfn)) pagefns
                 in if (length blogmatches)==0 then dorest else
-                    ((take3 (head blogmatches))++[bname,"html"]):dorest
+                    ((Util.take3 (head blogmatches))++[bname,"html"]):dorest
             isincluded pfn = not $ Util.isin (Util.fnName pfn) exclnames
             perpfn pfn =
                 Util.replacein tmplSitemapUrl [
-                    ("&DATE;", Util.join "-" $ take3 pfn),
+                    ("&DATE;", Util.join "-" $ Util.take3 pfn),
                     ("&FILENAME;", _join pfn3),
                     ("&PRIORITY;", priority pfn3)
-                ] where pfn3 = drop3 pfn
+                ] where pfn3 = Util.drop3 pfn
             priority [] = "0.0" ; priority ["index",_] = "1.0" ; priority ["default",_] = "0.9"
-            priority [n,_] = let b = bidx n in if b<0 then "0.8" else take3 (show (0.8-((fromIntegral b)/10.0)))
-            priority (lh:lt) = let b = bidx lh in take3 (show ((1.0/(fromIntegral (length lt)))-((fromIntegral b)/10.0)))
+            priority [n,_] = let b = bidx n in if b<0 then "0.8" else Util.take3 (show (0.8-((fromIntegral b)/10.0)))
+            priority (lh:lt) = let b = bidx lh in Util.take3 (show ((1.0/(fromIntegral (length lt)))-((fromIntegral b)/10.0)))
             bidx n = 1+(Util.indexof n blognames)

@@ -1,10 +1,9 @@
 module Posts where
 
-import Blogs
-import Data.Char
-import Data.List.Utils
+import qualified Blogs
+import qualified Util
 
-import Util
+import qualified Data.Char
 
 data Post = Post { fn :: Util.FName, subcat :: String, title :: String, link :: String, pic :: String, text :: String, cat :: String, origraw :: String } deriving (Read)
 
@@ -42,7 +41,7 @@ toAtom domain feedname posts bbn = (atomfilename, rawxml) where
             ("&TITLE;", if pblog then repl $ Blogs.title blog else feedname),
             ("&PAGENAME;", if pblog then p0fnn else map Data.Char.toLower feedname),
             ("&ATOMFILE;", Util.replacein atomfilename [(" ","%20")]),
-            ("&DATE;", Util.join "-" $ take3 p0fn),
+            ("&DATE;", Util.join "-" $ Util.take3 p0fn),
             ("&DOMAIN;", domain),
             ("&ENTRIES;", concat entries)
         ] where
@@ -52,7 +51,7 @@ toAtom domain feedname posts bbn = (atomfilename, rawxml) where
                     Util.replacein tmplAtomEntry [
                         ("&POSTTITLE;", repl $ Posts.title p),
                         ("&POSTURL;", if pblog then (link p) else ("&PAGENAME;.html#"++(Util.join "_" pfn))),
-                        ("&POSTDATE;", Util.join "-" $ take3 pfn),
+                        ("&POSTDATE;", Util.join "-" $ Util.take3 pfn),
                         ("&POSTDESC;", repl $ if pblog then text p else subcat p),
                         ("&POSTAUTHOR;", if pblog then "&DOMAIN;" else subcat p),
                         ("&POST;", repl $ if pblog then origraw p else text p)

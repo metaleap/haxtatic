@@ -1,7 +1,7 @@
 module XImage where
 
-import Html
-import Pages
+import qualified Html
+import qualified Pages
 
 
 type Args = (String,String)

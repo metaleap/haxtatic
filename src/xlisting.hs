@@ -1,11 +1,11 @@
 module XListing where
 
-import Data.List
+import qualified Html
+import qualified Pages
+import qualified Posts
+import qualified Util
 
-import Html
-import Pages
-import Posts
-import Util
+import qualified Data.List
 
 
 data Args = Args { cats :: [String], years :: (String,String), subcats :: [String], subcatsonly :: Bool, groups :: Grouping, linkers :: Util.KeyVals, blogdf :: String } deriving (Read)
@@ -24,32 +24,31 @@ picSrc cfg ppic =
 
 buildLi_Full cfg args post datecat = let
     csscat = cssCat cfg ; cssdesc = cssDesc cfg ; csstitle = cssTitle cfg
-    pid = Util.join "_" $ Posts.fn post; pcat = cat post ; ptitle = title post ; ptext = text post
+    pid = Util.join "_" $ Posts.fn post; pcat = Posts.cat post ; ptitle = Posts.title post ; ptext = Posts.text post
     psubcat = if null datecat then Posts.subcat post else datecat
-    nocats = (not (Util.is csscat)) || ((null psubcat) && ((null pcat) || subcatonly)) ; subcatonly = subcatsonly args
+    nocats = (null csscat) || ((null psubcat) && ((null pcat) || subcatonly)) ; subcatonly = subcatsonly args
     linkhref = Util.keyValApp (linkers args) pcat (Posts.link post) ("#"++pid)
-    ppic = if null (pic post) then autoicon else pic post ; picsrc = picSrc cfg ppic
+    ppic = if null (Posts.pic post) then autoicon else Posts.pic post ; picsrc = picSrc cfg ppic
     autoicon = firstimg firstimginner where
         firstimginner = let
-            l = filter Util.is $ map (Html.tagInner2 "img") $ lines (origraw post)
+            l = filter Util.is $ map (Html.tagInner2 "img") $ lines (Posts.origraw post)
             in if null l then "" else Util.trimSpace (head l)
         firstimg ('s':'r':'c':'=':'\"':src) = take (max 0 (Util.indexof '\"' src)) src
         firstimg _ = ""
     in Html.T "li" [("name",pid),("id",pid)] [
-        Html.T (if null linkhref then "" else "a") [("href",linkhref)] [
-                Html.T (if nocats then "" else "div") [("",(if subcatonly then "" else ""++pcat++": ")++psubcat),("class",csscat)] [],
-                Html.T "h3" [("",ptitle),("class",csstitle)] $ if null ppic then [] else [Html.T "img" [("src", if null picsrc then autoicon else picsrc),("class", if null autoicon then "" else "ml-feed-autoicon"),("title",ptitle)] []],
-                Html.T "div" [("",ptext),("class",cssdesc)] []
-            ]
+        Html.T (if null linkhref then "" else "a") [("href",linkhref)] $
+                (if nocats then [] else [ Html.T (if nocats then "" else "div") [("",(if subcatonly then "" else ""++pcat++": ")++psubcat),("class",csscat)] [] ]) ++
+                [ Html.T "h3" [("",ptitle),("class",csstitle)] $ if null ppic then [] else [Html.T "img" [("src", if null picsrc then autoicon else picsrc),("class", if null autoicon then "" else "ml-feed-autoicon"),("title",ptitle)] []],
+                Html.T "div" [("",ptext),("class",cssdesc)] [] ]
         ]
 
 buildLi_Lean cfg args post datecat =
-    Html.T "li" [] [
-            Html.T "span" [("", if null datecat then Posts.subcat post else datecat)] [],
-            Html.T "a" [("",title post), ("href",linkhref)] []
-        ] where
-        linkhref = Util.keyValApp (linkers args) (cat post) (Posts.link post) ("#"++pid)
-        pid = Util.join "_" $ Posts.fn post
+    Html.T "li" [] $
+        (if (null $ cssCat cfg) then [] else [Html.T "span" [("", if null datecat then Posts.subcat post else datecat)] []])++
+        [ Html.T "a" [("", Posts.title post), ("href",linkhref)] [] ]
+        where
+            linkhref = Util.keyValApp (linkers args) (Posts.cat post) (Posts.link post) ("#"++pid)
+            pid = Util.join "_" $ Posts.fn post
 
 
 ext tagname cfg = Pages.X [ Pages.Tmpl tagname apply ] where
@@ -66,8 +65,9 @@ ext tagname cfg = Pages.X [ Pages.Tmpl tagname apply ] where
                     [Html.out grouptag [("", formatdate section)] [], Html.emit $ tagUl items]
 
         ispostvisible yearmin yearmax month day post =
-            let pcat = cat post ; psubcat = Posts.subcat post ; pyear = Util.fnYear pfn ; pmonth = Util.fnMonth pfn ; pday = Util.fnDay pfn ; pfn = Posts.fn post in
-                (allcats || elem pcat pcats)
+            let pcat = Posts.cat post ; psubcat = Posts.subcat post ; pfn = Posts.fn post
+                pyear = Util.fnYear pfn ; pmonth = Util.fnMonth pfn ; pday = Util.fnDay pfn
+                in (allcats || elem pcat pcats)
                     && (allsubcats || elem psubcat psubcats)
                         && pyear >= yearmin && pyear <= yearmax
                             && ((null month) || pmonth==month)

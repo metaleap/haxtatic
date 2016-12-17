@@ -1,9 +1,10 @@
 module XLinks where
 
-import Data.Char
-import Html
-import Pages
-import Util
+import qualified Html
+import qualified Pages
+import qualified Util
+
+import qualified Data.Char
 
 data Cfg = Cfg { lis :: Util.KeyVals, linkid :: String, css :: String, cssSel :: String } deriving (Read)
 

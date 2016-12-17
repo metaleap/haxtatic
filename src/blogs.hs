@@ -1,6 +1,6 @@
 module Blogs where
 
-import Util
+import qualified Util
 
 
 data Blog = Blog { name :: String, title :: String, nameAsCat :: Bool, desc :: String, atom :: String, df :: String } deriving (Read)

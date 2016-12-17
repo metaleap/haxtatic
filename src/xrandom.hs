@@ -1,8 +1,8 @@
 module XRandom where
 
-import Html
-import Pages
-import Util
+import qualified Html
+import qualified Pages
+import qualified Util
 
 
 type Item = ((String,String),String)
