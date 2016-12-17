@@ -37,5 +37,5 @@ indexHtml dircur sitename dirsite dirpages pathpage pathtmpl pathfinal =
             \    <li>I was generated at <code>"++(x pathfinal)++"</code> by</li>\n\
             \    <li>..applying the <code>"++(x pathtmpl)++"</code> template (ready for your tinkering)</li>\n\
             \    <li>..to my &apos;<i>content source page</i>&apos; stored at <code>"++(x pathpage)++"</code> (dito)</li>\n\
-            \    <li>..which in turn {{P:Var:demo_hax}} pre-created for you just-beforehand (but only because <code>"++(x dirpages)++[System.FilePath.pathSeparator]++"</code> was entirely devoid of files: otherwise it won&apos;t meddle in there as a rule).</li>\n\
+            \    <li>..which in turn {{P:Var:demo_hax}} pre-created for you just-beforehand (but only because <code>"++(x dirpages)++[System.FilePath.pathSeparator]++"</code> was totally devoid of any files: otherwise it won&apos;t meddle in there as a rule).</li>\n\
             \</ul>"

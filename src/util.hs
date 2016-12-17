@@ -4,6 +4,7 @@ import qualified Control.Monad
 import qualified Data.Char
 import qualified Data.List
 import qualified Data.List.Utils
+import qualified Data.Time.Clock
 import qualified System.Directory
 import qualified System.FilePath
 import System.FilePath ( (</>) )
@@ -52,6 +53,8 @@ drop3 = drop 3 ; take3 = take 3
 join = Data.List.intercalate
 trimChar ch = Data.List.dropWhile ((==) ch)
 trimSpace = Data.List.dropWhile Data.Char.isSpace
+since = swapargs Data.Time.Clock.diffUTCTime
+via fn = ((>>) fn) . return
 
 
 -- the Phil standard library..
@@ -69,9 +72,9 @@ quickSort prop less greater = sorted where
 
 -- copy all files & folders within srcdir into dstdir
 copyDirTree srcdir dstdir =
-    System.Directory.createDirectoryIfMissing True dstdir >>
-        System.Directory.getDirectoryContents srcdir >>=
-            copyAll srcdir dstdir True
+    System.Directory.createDirectoryIfMissing True dstdir
+    >> System.Directory.getDirectoryContents srcdir
+        >>= copyAll srcdir dstdir True
 
 
 -- copy all files & folders (named in fsnames) within srcdir into dstdir
@@ -84,7 +87,7 @@ copyAll srcdir dstdir dofolders fsnames =
 
 getAllFiles rootdir curdir = let curpath = rootdir </> curdir in do
     names <- System.Directory.getDirectoryContents curpath
-    let properNames = filter (`notElem` [".", ".."]) names
+    let properNames = filter (`notElem` [".", "..", ".DS_Store", ".git", ".svn", ".build", ".gitignore"]) names
     paths <- Control.Monad.forM properNames $ \name -> do
         let path = curpath </> name
         isDirectory <- System.Directory.doesDirectoryExist path

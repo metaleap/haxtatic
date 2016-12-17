@@ -19,13 +19,13 @@ import System.FilePath ( (</>) )
 import qualified System.IO
 
 
-helpmsg = "\n=== HAXTATIC ===\nNo project directory path given.\n  For existing project: specify its directory.\n\
+helpmsg = "\n\n\n==== HAXTATIC ====\nNo project directory path given.\n  For existing project: specify its directory.\n\
     \  For a new project structure: specify its intended directory."
 
 
 main = do
     -- grab some definitely-needed inputs right now or fail right here
-    nowtime <- Data.Time.Clock.getCurrentTime
+    starttime <- Data.Time.Clock.getCurrentTime
     cmdargs <- System.Environment.getArgs
     let numargs = length cmdargs in if numargs < 1 then putStrLn helpmsg else
         let dirsite = head cmdargs ; path = (</>) dirsite
@@ -42,7 +42,7 @@ main = do
                 let fp = dir</>fn ; l = 1+(length dirsite) in
                     putStr ("\t>> "++(drop l fp)++"  [ ") >> System.IO.hFlush System.IO.stdout >> writeFile fp c >> putStrLn "OK ]"
         in do
-            putStrLn "\n==== HAXTATIC ====\n\n1. Reading essential project files or (re)creating them.."
+            putStrLn "\n\n\n==== HAXTATIC ====\n\n1. Reading essential project files or (re)creating them.."
             System.Directory.createDirectoryIfMissing True dirsite
             dircur <- System.Directory.getCurrentDirectory
             filestream_config <- readorcreate (MainDefaults.haxConf sitename) "haxtatic.config"
@@ -135,8 +135,8 @@ main = do
 
                 -- given file-name info and raw page source, create a Pages.Ctx "ready for applyTemplate"
                 pagefromsrc = Pages.newPageContext nowint daters cfgexts
-                nowint = floor $ toRational $ Data.Time.Clock.utctDayTime nowtime
-                nowstrs = Util.splitBy '-' $ take 10 (show nowtime)
+                nowint = floor $ toRational $ Data.Time.Clock.utctDayTime starttime
+                nowstrs = Util.splitBy '-' $ take 10 (show starttime)
 
                 -- given list of Pages.Ctx (plus generating one more on-the-fly for the blog-index page),
                 -- apply template and generate final output page file for each
@@ -164,24 +164,25 @@ main = do
                 clearpvars allpages outraw =
                     let pvarnames = Data.List.nub $ concat $ map (map (\(k,_) -> k)) $ map Pages.pageVars allpages
                     in (Util.replacein outraw (map (\k -> (k,"")) pvarnames))
-                putstrln ln s = do
-                    putStrLn ln
-                    return s
 
                 in -- now let's go!
-                    Control.Monad.mapM (System.Directory.createDirectoryIfMissing False) [dirout, dirpages, dirposts, dirstatic]
+                    Control.Monad.mapM (System.Directory.createDirectoryIfMissing False)
+                            [dirout, dirpages, dirposts, dirstatic]
                     >> putStrLn ("2. Copying what's inside '"++dirstatic++"'\n   over into '"++dirout++"'..")
                     >> System.Directory.getDirectoryContents dirstatic
-                    >>= Util.copyAll dirstatic dirout (not skipstaticfolders)
+                        >>= Util.copyAll dirstatic dirout (not skipstaticfolders)
                     >> putStrLn ("3. Scanning '"++dirpages++"'..")
                     >> Util.getAllFiles dirpages ""
-                    >>= createDefaultPageIfEmpty
-                    >>= filterPageFileNames
-                    >>= mapPageFileNames
-                    >>= createSitemapXml
-                    >>= putstrln ("4. Loading from '"++dirposts++"'..")
-                    >>= loadAllPosts
-                    >>= putstrln ("5. Loading from '"++dirpages++"'..") -- \n   and generating in '"++dirout++"'..")
-                    >>= Control.Monad.mapM per_pagesrcfile
-                    >>= putstrln ("6. Generating outputs in '"++dirout++"':")
-                    >>= genpages
+                        >>= createDefaultPageIfEmpty
+                        >>= filterPageFileNames
+                        >>= mapPageFileNames
+                        >>= createSitemapXml
+                        >>= Util.via (putStrLn $ "4. Loading from '"++dirposts++"'..")
+                        >>= loadAllPosts
+                        >>= Util.via (putStrLn $ "5. Loading from '"++dirpages++"'..")
+                        >>= Control.Monad.mapM per_pagesrcfile
+                        >>= Util.via (putStrLn $ "6. Generating outputs in '"++dirout++"':")
+                        >>= genpages
+                        >>  Data.Time.Clock.getCurrentTime
+                            >>= \now -> let timetaken = show $ Util.since starttime now in
+                                    putStrLn $ "\n\nThis all took "++timetaken++" --- bye now!\n\n\n"
