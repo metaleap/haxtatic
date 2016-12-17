@@ -2,7 +2,7 @@
 	<!--
 		Generated on 2016/12/17 from docs/haxdox/pages/tags.t.html
 	-->
-    <title>T tags - HaXtatic Docs</title>
+    <title>T-tags - HaXtatic Docs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="haxtatic.css" rel="stylesheet" />
 </head><body>
@@ -15,7 +15,7 @@
 <a href="tags.html" id="hd_nav_tags">Tags</a></li><li class="hd-nav">
 <a href="x.html" id="hd_nav_x">X:Tags</a></li>
 	</ul>
-<h1>T tags</h1>
+<h1>T-tags</h1>
 <p><code>{T{...}}</code> tags directly include named text values that you defined once in your <a href="#"><i>haxtatic.config</i></a> and then reuse wherever needed.</p>
 <h2 id="Definition in <i>haxtatic.config</i>">Definition in <i>haxtatic.config</i></h2>
 <p>A single line beginning with with <code>T:<i>yourtextname</i>:</code> followed by any text value in <a href="#"><i>haxtatic.config</i></a> defines a named text.</p>
@@ -26,12 +26,15 @@
 <p>Just use <code>{T{<i>yourtextname</i>}}</code> anywhere you author your content to include your named text value right in-place during site generation &mdash; content source pages, templates, posts, even your <a href="#"><i>haxtatic.config</i></a> itself will work.</p>
 <p>Undefined text-value names will not be replaced and so remain in the output.</p>
 <p class="hd-note">
-	Here's how the <code>&lt;body&gt;</code> of this site's <a href="#">theme.tmpl.html</a> (and thus that of every single output page)begins:
+	Here's how the <code>&lt;body&gt;</code> of this site's <a href="#">theme.tmpl.html</a> (and thus that of every single output page) begins:
 	<br/><br/><code>&lt;h4&gt;{T<!---->{SiteTitle}}&lt;/h4&gt;</code><br/><br/>
 </p>
 <h2 id="See also">See also</h2>
 <p>
-	For slightly more advanced version of this functionality, check out the {X{Snippets}}
+	To define named text values on a per-page basis (reuse within a single page but unknown outside it), use <a href="#">custom P-tags</a>
+</p>
+<p>
+	For a slightly more versatile equivalent of this functionality, check out the <a href="#">{X{Snippets}}</a> X-tag, which let's you pass variable substitutions to your named-text inclusions.
 </p>
 
 </body></html>

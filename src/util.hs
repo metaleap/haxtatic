@@ -32,36 +32,33 @@ keyValApp ((k,v):kvt) key def app
 
 
 -- readability-sugar helpers
-iif True dis _ = dis ; iif False _ dat = dat
-is [] = False ; is _ = True
-isin _ [] = False
-isin v (lh:lt) = (v == lh) || isin v lt
+is v = (not . null) v
 count p [] = 0
 count p (lh:lt) = (b2i $ p lh)+(count p lt) where b2i True = 1 ; b2i False = 0
-indexif p [] = minBound::Int
-indexif p (lh:lt) = if (p lh) then 0 else 1+(indexif p lt)
-indexof v = (indexif . (==)) v
+indexOf v = (indexIf . (==)) v
+indexIf p [] = minBound::Int
+indexIf p (lh:lt) = if (p lh) then 0 else 1+(indexIf p lt)
 within minval maxval val = val>=minval && val<=maxval
-whilein l i p next def
+whileIn l i p next def
     | (i<0) || (i>=(length l)) = def
-    | (p v) = whilein l (next i) p next def
+    | (p v) = whileIn l (next i) p next def
     | otherwise = v
     where v = l!!i
-swapargs fn x y = fn y x
+swapArgs fn x y = fn y x
 readInt s = read s :: Int
 drop3 = drop 3 ; take3 = take 3
 join = Data.List.intercalate
 trimChar ch = Data.List.dropWhile ((==) ch)
 trimSpace = Data.List.dropWhile Data.Char.isSpace
-since = swapargs Data.Time.Clock.diffUTCTime
+since = swapArgs Data.Time.Clock.diffUTCTime
 via fn = ((>>) fn) . return
 
 
 -- the Phil standard library..
-replacein str [] = str
-replacein str ((old,new):rest) =
-    Data.List.Utils.replace old new (replacein str rest)
-swapout old new = map (\item -> if (item==old) then new else item)
+replaceIn str [] = str
+replaceIn str ((old,new):rest) =
+    Data.List.Utils.replace old new (replaceIn str rest)
+swapOut old new = map (\item -> if (item==old) then new else item)
 splitBy delim = foldr per_elem [[]] where
     per_elem el elems@(first:rest) | (el==delim) = []:elems | otherwise = (el:first):rest
 quickSort prop less greater = sorted where
@@ -85,12 +82,14 @@ copyAll srcdir dstdir dofolders fsnames =
             (if isfile then (System.Directory.copyFile srcpath dstpath) else if dofolders then (copyDirTree  srcpath dstpath) else return ())
                 where srcpath = srcdir </> fsname ; dstpath = dstdir </> fsname
 
-getAllFiles rootdir curdir = let curpath = rootdir </> curdir in do
-    names <- System.Directory.getDirectoryContents curpath
-    let properNames = filter (`notElem` [".", "..", ".DS_Store", ".git", ".svn", ".build", ".gitignore"]) names
-    paths <- Control.Monad.forM properNames $ \name -> do
-        let path = curpath </> name
-        isDirectory <- System.Directory.doesDirectoryExist path
-        let relpath = curdir </> name in
-            if isDirectory then getAllFiles rootdir relpath else return [relpath]
-    return (concat $ Util.quickSort (length) (<) (>=) paths) -- why sort: want top-level files first. hacky but works for the very cases where it makes a difference
+getAllFiles rootdir curdir =
+    let curpath = rootdir </> curdir ; validnames = filter $ not . (Data.List.isPrefixOf ".")
+        pername name =
+            System.Directory.doesDirectoryExist (curpath </> name)
+            >>= walkortalk (curdir </> name) where
+                walkortalk relpath isdir = (if isdir then (getAllFiles rootdir) else (return . l1)) relpath ; l1 v = [v]
+    in
+        System.Directory.getDirectoryContents curpath
+        >>= (swapArgs Control.Monad.forM pername) . validnames
+        >>= (return . concat . (Util.quickSort length (<) (>=)))
+        -- why sort: want top-level files first. hacky but works for the very cases where it makes a difference

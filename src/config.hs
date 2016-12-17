@@ -57,7 +57,7 @@ _daters cfglines =
 daters cfglines monthname =
     map makedater (_daters cfglines) where
         makedater (name,dateformat) = (name,dater) where
-            dater = \(year:month:day:_) -> Util.replacein dateformat [
+            dater = \(year:month:day:_) -> Util.replaceIn dateformat [
                 ("mth", Util.take3 $ monthname month),
                 ("month", monthname month),
                 ("M", _trim0 month),

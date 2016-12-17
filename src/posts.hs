@@ -37,10 +37,10 @@ loadPosts fname rawsrc =
 
 toAtom domain feedname posts bbn = (atomfilename, rawxml) where
     atomfilename = if pblog then (Blogs.atom blog) else feedname++".atom"
-    rawxml = if (pblog && (null atomfilename)) then "" else Util.replacein tmplAtom [
+    rawxml = if (pblog && (null atomfilename)) then "" else Util.replaceIn tmplAtom [
             ("&TITLE;", if pblog then repl $ Blogs.title blog else feedname),
             ("&PAGENAME;", if pblog then p0fnn else map Data.Char.toLower feedname),
-            ("&ATOMFILE;", Util.replacein atomfilename [(" ","%20")]),
+            ("&ATOMFILE;", Util.replaceIn atomfilename [(" ","%20")]),
             ("&DATE;", Util.join "-" $ Util.take3 p0fn),
             ("&DOMAIN;", domain),
             ("&ENTRIES;", concat entries)
@@ -48,7 +48,7 @@ toAtom domain feedname posts bbn = (atomfilename, rawxml) where
             entries = map perpost posts
             perpost p =
                 let pfn = fn p in
-                    Util.replacein tmplAtomEntry [
+                    Util.replaceIn tmplAtomEntry [
                         ("&POSTTITLE;", repl $ Posts.title p),
                         ("&POSTURL;", if pblog then (link p) else ("&PAGENAME;.html#"++(Util.join "_" pfn))),
                         ("&POSTDATE;", Util.join "-" $ Util.take3 pfn),
@@ -56,5 +56,5 @@ toAtom domain feedname posts bbn = (atomfilename, rawxml) where
                         ("&POSTAUTHOR;", if pblog then "&DOMAIN;" else subcat p),
                         ("&POST;", repl $ if pblog then origraw p else text p)
                     ]
-    blog = bbn p0fnn ; repl s = Util.replacein s [("\"","&quot;"),("'","&apos;"),(">","&gt;"),("<","&lt;"),("&","&amp;"),("<link","<hax_link"),("<script","<!--hax_script"),("<input","<hax_input"),("</link","</hax_link"),("</script>","</hax_script-->"),("</input","</hax_input"),(" style=\""," hax_style=\"")]
+    blog = bbn p0fnn ; repl s = Util.replaceIn s [("\"","&quot;"),("'","&apos;"),(">","&gt;"),("<","&lt;"),("&","&amp;"),("<link","<hax_link"),("<script","<!--hax_script"),("<input","<hax_input"),("</link","</hax_link"),("</script>","</hax_script-->"),("</input","</hax_input"),(" style=\""," hax_style=\"")]
     pblog = (length p0fn) > 4 ; p0fn = fn $ head posts ; p0fnn = Util.fnName p0fn

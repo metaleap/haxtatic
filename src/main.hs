@@ -29,13 +29,13 @@ main = do
     cmdargs <- System.Environment.getArgs
     let numargs = length cmdargs in if numargs < 1 then putStrLn helpmsg else
         let dirsite = head cmdargs ; path = (</>) dirsite
-            sitename = (last $ Util.splitBy '/' $ Util.swapout '\\' '/' dirsite)
+            sitename = (last $ Util.splitBy System.FilePath.pathSeparator dirsite)
             pagesnositemap = splitarg 2 ; pagesskip = splitarg 3 ; pagesonly = splitarg 4
             skipstaticfolders = numargs>1 && ("True"==(cmdargs!!1))
             splitarg i = if numargs > i then (Util.splitBy ',' $ cmdargs!!i) else []
-            ispageskip name = Util.isin name pagesskip
-            ispageonly name = Util.isin name pagesonly
-            ispageused name = not (ispageskip name) && (null pagesonly || Util.isin name pagesonly)
+            ispageskip name = elem name pagesskip
+            ispageonly name = elem name pagesonly
+            ispageused name = not (ispageskip name) && (null pagesonly || elem name pagesonly)
             readorcreate defsrc fn = let fp = path fn in System.Directory.doesFileExist fp >>=
                 \isfile -> if isfile then readFile fp else writefilein dirsite fn defsrc >> return defsrc
             writefilein dir fn c =
@@ -55,7 +55,7 @@ main = do
                 dirposts = path "posts"
                 dirstatic = path "static"
                 txts = Config.txts cfgtmp where cfgtmp = lines filestream_config
-                cfglines = lines $ Util.replacein filestream_config txts
+                cfglines = lines $ Util.replaceIn filestream_config txts
                 cfgexts = Config.exts cfglines blognamesall ; blognamesall = map Blogs.name blogs
                 blogs = Config.blogs cfglines ; blognames = filter ispageused $ blognamesall
                 daters = Config.daters cfglines monthname ; monthname m = monthnames!!(Util.readInt m)
@@ -108,7 +108,7 @@ main = do
                                     (pname, ptitle, plink) = (fn, h1, Util.join "." (Util.drop3 fn))
                                     psubcat = (Util.keyVal daters (Blogs.df blog) (snd $ head daters)) fn
                                     in return $ [Posts.Post pname psubcat ptitle plink "" ptext pcat (Pages.processMarkupDumbly4Feeds pname (Blogs.name blog) (fn!!4) ptitle raw alltemplaters daters)]
-                            isblogpage (_,pfn) = Util.isin (Util.fnName pfn) blognames
+                            isblogpage (_,pfn) = elem (Util.fnName pfn) blognames
                         alltemplaters = concat $ map Pages.xTemplaters cfgexts
                         mergePosts allfileposts = blogposts >>= (return . concat . (++)allfileposts)
                         toAtoms allposts = map percat cats where
@@ -145,7 +145,7 @@ main = do
                         allpages = if ((length bpages) < 1) then pages else (blogindexpages++pages)
                         per_page page =
                             applyTemplate page >>= return . (clearpvars allpages) >>= writefile2outdir (outfilename page)
-                        bpages = filter isblog pages where isblog page = (Util.isin (Util.fnName $ Pages.fname page) blognames)
+                        bpages = filter isblog pages where isblog page = (elem (Util.fnName $ Pages.fname page) blognames)
                         outfilename page = Util.join "." $ Util.drop3 $ Pages.fname page
                         blogindexpages = map blogindexpage blognames
                         blogindexpage bname =
@@ -160,10 +160,10 @@ main = do
                     return $ Pages.postProcessMarkup page $ unlines $ map per_line (lines (applyprep replbod "")) where
                         replbod = Data.List.Utils.replace "{{P:Body}}" (Pages.body page) filestream_tmplmain
                         per_line ln = concat $ Pages.processMarkupLn page ln
-                applyprep s = Blogs.tmplMarkupSrc blogs $ Util.replacein s txts
+                applyprep s = Blogs.tmplMarkupSrc blogs $ Util.replaceIn s txts
                 clearpvars allpages outraw =
                     let pvarnames = Data.List.nub $ concat $ map (map (\(k,_) -> k)) $ map Pages.pageVars allpages
-                    in (Util.replacein outraw (map (\k -> (k,"")) pvarnames))
+                    in (Util.replaceIn outraw (map (\k -> (k,"")) pvarnames))
 
                 in -- now let's go!
                     Control.Monad.mapM (System.Directory.createDirectoryIfMissing False)

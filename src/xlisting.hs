@@ -33,7 +33,7 @@ buildLi_Full cfg args post datecat = let
         firstimginner = let
             l = filter Util.is $ map (Html.tagInner2 "img") $ lines (Posts.origraw post)
             in if null l then "" else Util.trimSpace (head l)
-        firstimg ('s':'r':'c':'=':'\"':src) = take (max 0 (Util.indexof '\"' src)) src
+        firstimg ('s':'r':'c':'=':'\"':src) = take (max 0 (Util.indexOf '\"' src)) src
         firstimg _ = ""
     in Html.T "li" [("name",pid),("id",pid)] [
         Html.T (if null linkhref then "" else "a") [("href",linkhref)] $
