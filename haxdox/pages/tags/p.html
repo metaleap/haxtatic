@@ -1,6 +1,10 @@
-<h1><i>P</i>-tags</h1>
+<h1>P-tags</h1>
 <p><code>{P{...}}</code> tags include values specific to the current page, both custom and predefined.</p>
 <h2>{P{<i>Title</i>}} &mdash; page title</h2>
 <p>
-	Useful for your template's <code>&lt;title&gt;</code> HTML tag.
+	Includes in its place the current page's <code>&lt;h1&gt;</code> HTML tag's entire inner markup (the first one found within a single line, that is), if any (otherwise empty). Useful for use in your template's <code>&lt;title&gt;</code> HTML tag.
+</p>
+<p class="hd-note">
+	Example: here's how the <code>&lt;head&gt;</code> of this site's {T{ThemeHtmlLink}} (and thus that of every single output page) begins:
+	<br/><br/><code>&lt;title&gt;{T{!P}}Title}} | {T{!T}}SiteTitle}}&lt;/title&gt;</code><br/><br/>
 </p>

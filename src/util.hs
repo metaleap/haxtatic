@@ -34,7 +34,8 @@ keyValApp ((k,v):kvt) key def app
 -- readability-sugar helpers
 is v = (not . null) v
 count p [] = 0
-count p (lh:lt) = (b2i $ p lh)+(count p lt) where b2i True = 1 ; b2i False = 0
+count p (lh:lt) = if (p lh) then 1+count' else count' where
+    count' = count p lt
 indexOf v = (indexIf . (==)) v
 indexIf p [] = minBound::Int
 indexIf p (lh:lt) = if (p lh) then 0 else 1+(indexIf p lt)
@@ -58,7 +59,7 @@ via fn = ((>>) fn) . return
 replaceIn str [] = str
 replaceIn str ((old,new):rest) =
     Data.List.Utils.replace old new (replaceIn str rest)
-swapOut old new = map (\item -> if (item==old) then new else item)
+substitute old new = map (\item -> if (item==old) then new else item)
 splitBy delim = foldr per_elem [[]] where
     per_elem el elems@(first:rest) | (el==delim) = []:elems | otherwise = (el:first):rest
 quickSort prop less greater = sorted where

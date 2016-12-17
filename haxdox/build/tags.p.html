@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en"><head>
+    <title>P-tags | HaXtatic Docs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="haxtatic.css" rel="stylesheet" />
 	<!--
 		Generated on 2016/12/17 from docs/haxdox/pages/tags.p.html
 	-->
-    <title><i>P</i>-tags - HaXtatic Docs</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="haxtatic.css" rel="stylesheet" />
 </head><body>
     <h4>HaXtatic Docs</h4>
 
@@ -15,11 +15,23 @@
 <a href="tags.html" id="hd_nav_tags">Tags</a></li><li class="hd-nav">
 <a href="x.html" id="hd_nav_x">X:Tags</a></li>
 	</ul>
-<h1><i>P</i>-tags</h1>
+	<div class="hd-toc">
+		<input type="checkbox" checked="checked" id="chk_showtoc"/>
+		<label for="chk_showtoc">On this page:</label>
+		<ul>
+<li>
+<a href="#Title</i>}} &mdash; page title">{P{<i>Title</i>}} &mdash; page title">Title</i>}} &mdash; page title">{P{<i>Title</i>}} &mdash; page title</a></li>
+		</ul>
+	</div>
+<h1>P-tags</h1>
 <p><code>{P{...}}</code> tags include values specific to the current page, both custom and predefined.</p>
 <h2 id="{P{<i>Title</i>}} &mdash; page title">{P{<i>Title</i>}} &mdash; page title</h2>
 <p>
-	Useful for your template's <code>&lt;title&gt;</code> HTML tag.
+	Includes in its place the current page's <code>&lt;h1&gt;</code> HTML tag's entire inner markup (the first one found within a single line, that is), if any (otherwise empty). Useful for use in your template's <code>&lt;title&gt;</code> HTML tag.
+</p>
+<p class="hd-note">
+	Example: here's how the <code>&lt;head&gt;</code> of this site's <a href="#">theme.tmpl.html</a> (and thus that of every single output page) begins:
+	<br/><br/><code>&lt;title&gt;{P<!---->{Title}} | {T<!---->{SiteTitle}}&lt;/title&gt;</code><br/><br/>
 </p>
 
 </body></html>

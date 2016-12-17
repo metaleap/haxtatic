@@ -6,6 +6,9 @@ body {
 h1 {
 	color: ThreeDShadow;
 }
+p:nth-of-type(1) {
+	margin-right: 8.22em;
+}
 h3 {
 	color: ThreeDDarkShadow;
 }
@@ -38,7 +41,7 @@ code {
 .hd-note {
 	background-color: InfoBackground;
 	color: InfoText;
-	border-radius: 0.123em;
+	border-radius: 0.22em;
 	border: solid 0.066em ThreeDLightShadow;
 	padding: 0.22em;
 }
@@ -46,8 +49,9 @@ code {
 
 ul.hd-nav {
 	list-style-type: none;
-	text-align: center;
+	text-align: left;
 	margin-top: 0;
+	white-space: nowrap;
 }
 li.hd-nav {
 	display: inline-block;
@@ -57,15 +61,46 @@ li.hd-nav a {
 	text-decoration: none;
 	color: CaptionText;
 	display: inline-block;
+	font-weight: bold;
 }
 li.hd-nav-sel {
-	font-weight: bold;
 	border-bottom-right-radius: 0.5em;
 	border-bottom-left-radius: 0.5em;
 	background-color: Highlight;
 }
 li.hd-nav-sel a {
 	color: HighlightText;
+}
+
+.hd-toc {
+	background-color: InfoBackground;
+	overflow: hidden;
+	width: 7.77em;
+	right: 0.5em;
+
+	position: fixed;
+	top: 6.66em;
+
+	position: absolute;
+	top: 6.88em;
+}
+.hd-toc ul {
+	xxxxborder-top: 0.11em solid ThreeDLightShadow;
+	display: none;
+	margin: 0;
+	padding: 0.33em 0 0.33em 1.11em;
+}
+.hd-toc input, .hd-toc label {
+	display: none;
+}
+.hd-toc input#chk_showtoc:checked ~ ul {
+	display: inline-block;
+}
+.hd-toc ul li {
+	margin: 0;
+}
+.hd-toc ul li a {
+	color: InfoText;
 }
 
 ul.hd-feed {

@@ -13,6 +13,7 @@ ext tagname cfg = Pages.X [ Pages.Tmpl tagname apply ] where
             pre = prerepl $ p cfg ; html = prerepl $ c cfg ; post = prerepl $ ps cfg
             iter = filter noskip fromto
             indices n = (n,n-numfrom+1-numskips) where numskips = (Util.count ((>) n) skips)
+            noskip n = notElem n skips ; skips = (skip args)
             per_elem (num,i) = Util.replaceIn html $ replvars++[
                 ("{{_v}}", if usealt then (alts!!(i-1)) else (show num)),
                 ("{{_nr}}", show num),("{{_i}}", show i)
@@ -20,7 +21,6 @@ ext tagname cfg = Pages.X [ Pages.Tmpl tagname apply ] where
             prerepl s = Util.replaceIn s $ [("{{_c}}",show $ length iter)] ++ (repl $ v cfg) ++ replvars
             usealt = lalt > 0 ; alts = alt args ; lalt = length alts
             args = read ("Args { "++argstr++" }") :: Args
-            noskip n = notElem n skips ; skips = (skip args)
             replvars = rva++(concat replnv)++rva where rva = (repl $ vars args)
             repl v = map (\(k,v) -> ("{{"++k++"}}",v)) v
             replnv = map nv2r (nvars args) where

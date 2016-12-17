@@ -1,15 +1,22 @@
 <!DOCTYPE html><html lang="en"><head>
+    <title>{P{Title}} | {T{SiteTitle}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="haxtatic.css" rel="stylesheet" />
 	<!--
 		Generated on {{P:Date}} from docs/haxdox/pages/{{P:FileName}}
 	-->
-    <title>{P{Title}} - {T{SiteTitle}}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="haxtatic.css" rel="stylesheet" />
 </head><body>
     <h4>{T{SiteTitle}}</h4>
 
 	<ul class="hd-nav">
 {{X:TopNav}}
 	</ul>
+	<div class="hd-toc">
+		<input type="checkbox" checked="checked" id="chk_showtoc"/>
+		<label for="chk_showtoc">On this page:</label>
+		<ul>
+{{X:JumpTo}}
+		</ul>
+	</div>
 {{P:Body}}
 </body></html>
