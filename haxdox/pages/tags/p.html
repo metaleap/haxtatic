@@ -1,10 +1,12 @@
-<h1>P-tags</h1>
-<p><code>{P{...}}</code> tags include values specific to the current page, both custom and predefined.</p>
-<h2>{P{<i>Title</i>}} &mdash; page title</h2>
-<p>
-	Includes in its place the current page's <code>&lt;h1&gt;</code> HTML tag's entire inner markup (the first one found within a single line, that is), if any (otherwise empty). Useful for use in your template's <code>&lt;title&gt;</code> HTML tag.
-</p>
-<p class="hd-note">
-	Example: here's how the <code>&lt;head&gt;</code> of this site's {T{ThemeHtmlLink}} (and thus that of every single output page) begins:
-	<br/><br/><code>&lt;title&gt;{T{!P}}Title}} | {T{!T}}SiteTitle}}&lt;/title&gt;</code><br/><br/>
-</p>
+<h1>P-tags: page values (date, title, excerpt, etc..)</h1>
+<p><code>{P{...}}</code> tags include (built-in and custom) values specific to the current page.</p>
+<h2>Predefineds</h2>
+<ul>
+	<li><code>{T{!P}}Title}}</code> &rarr; current page's first single-line <code>&lt;h1&gt;</code>'s entire inner markup<br/>&mdash; eg. for this page: <span class="hd-note">{P{Title}}</span></li>
+	<li><code>{T{!P}}Body}}</code> &rarr; current page's entire (mostly already processed) markup source (only usable in {T{ThemeHtmlLink}})</li>
+	<li><code>{T{!P}}FileName}}</code> &rarr; the current page's output file name<br/>&mdash; eg. for this page: <span class="hd-note">{P{FileName}}</span></li>
+	<li><code>{T{!P}}OrigPath}}</code> &rarr; the current page's (relative local) source path<br/>&mdash; eg. for this page: <span class="hd-note">{P{OrigPath}}</span></li>
+	<li><code>{T{!P}}BaseName}}</code> &rarr; the current page's name minus file extension and section prefix:<br/>&mdash; eg. for this page named <i>{P{FileName}}</i>: <span class="hd-note">{P{BaseName}}</span></li>
+	<li><code>{T{!P}}Excerpt}}</code> &rarr; current page's first single-line <code>&lt;p&gt;</code>'s entire inner text<br/>&mdash; eg. for this page: <span class="hd-note">{P{Excerpt}}</span></li>
+	<li><code>{T{!P}}Date}}</code> and <code>{T{!P}}Date<i>MyFormat</i>}}</code> &rarr; current {T{PDate}} <br/>&mdash; eg. for this page: <span class="hd-note">{P{Date}}</span></li>
+</ul>

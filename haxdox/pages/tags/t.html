@@ -1,8 +1,13 @@
-<h1>T-tags</h1>
+<h1>T-tags: named plain snippets</h1>
 <p><code>{T{...}}</code> tags directly include named text values that you defined once in your {T{HaxConfLink}} and then reuse wherever needed.</p>
-<h2>Definition in {T{HaxConf}}</h2>
+<h2>{T{Briefly}}</h2>
+<ul>
+	<li>Single-line definitions in {T{HaxConfLink}}:<br/><code>T:AuthBlurb: About the author: &lt;a&gt;Phil&lt;/a&gt; is a serial amateur dabbling in narcissism on usenet</code></li>
+	<li>Usage anywhere: <code>{T{AuthBlurb}}</code></li>
+</ul>
+<h2>Definition in {T{HaxConfi}}</h2>
 <p>A single line beginning with with <code>T:<i>yourtextname</i>:</code> followed by any text value in {T{HaxConfLink}} defines a named text.</p>
-<p class="hd-note">Example: this very site in its {T{HaxConfLink}} contains this line:<br/><br/><code>T:SiteTitle: {T{SiteTitle}}</code><br/><br/>(the white-space isn't strictly required) &mdash; indeed you'll find this named text value included in the browser/tab title of every page within this site.</p>
+<p class="hd-note">Example: this very site in its {T{HaxConfLink}} contains this line:<br/><code>T:SiteTitle: {T{SiteTitle}}</code><br/>(the white-space isn't strictly required) &mdash; indeed you'll find this named text value included in the browser/tab title of every page within this site.</p>
 <p>Names can contain any characters except colons.</p>
 <p>Values can contain any characters but will be stripped of all leading and trailing white-space.</p>
 <h2>Embed in any markup</h2>
@@ -10,7 +15,7 @@
 <p>Undefined text-value names will not be replaced and so remain in the output.</p>
 <p class="hd-note">
 	Here's how the <code>&lt;body&gt;</code> of this site's {T{ThemeHtmlLink}} (and thus that of every single output page) begins:
-	<br/><br/><code>&lt;h4&gt;{T{!T}}SiteTitle}}&lt;/h4&gt;</code><br/><br/>
+	<br/><code>&lt;h4&gt;{T{!T}}SiteTitle}}&lt;/h4&gt;</code><br/>
 </p>
 <h2>See also</h2>
 <ul>

@@ -18,10 +18,10 @@ themeHtml = "<!DOCTYPE html><html lang=\"en\"><head>\n\
     \    </style><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n\
     \</head><body>\n\
     \    <h3>{T{SiteTitle}}</h3>\n\
-    \    <div><!-- begins content generated from {{P:FileName}}: -->\n\n\n\
-    \{{P:Body}}\n\n\
+    \    <div><!-- begins {P{FileName}} content generated from {P{OrigPath}} -->\n\n\n\
+    \{P{Body}}\n\n\
     \    </div><!-- end of generated content -->\n\
-    \    <hr/><small>Generated with <a href=\"http://github.com/HaXtatic\">{{P:Var:demo_hax}}</a> on {{P:Date}}</small>\n\
+    \    <hr/><small>Generated with <a href=\"http://github.com/HaXtatic\">{{P:Var:demo_hax}}</a> on {P{Date}}</small>\n\
     \</body></html>"
 
 blogHtml = "<h1>{{B:Title:}}</h1>\n<p>{{B:Desc:}}</p>"

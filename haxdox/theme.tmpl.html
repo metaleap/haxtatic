@@ -2,9 +2,9 @@
     <title>{P{Title}} | {T{SiteTitle}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="haxtatic.css" rel="stylesheet" />
-	<!--
-		Generated on {{P:Date}} from docs/haxdox/pages/{{P:FileName}}
-	-->
+	<!--	{P{FileName}}
+			generated on {P{Date}}
+			from {P{OrigPath}}	-->
 </head><body>
     <h4>{T{SiteTitle}}</h4>
 
@@ -18,5 +18,11 @@
 {{X:JumpTo}}
 		</ul>
 	</div>
-{{P:Body}}
+
+
+<!-- begins content source page -->
+{P{Body}}
+<!-- end of content source page -->
+
+
 </body></html>

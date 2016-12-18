@@ -29,6 +29,9 @@ keyValApp ((k,v):kvt) key def app
     | key==k = v++app
     | null kvt = def
     | otherwise = keyValApp kvt key def app
+mergeKeyVals kvdefaults kvoverwrites =
+    Data.List.nub $ (map overwrite kvdefaults)++kvoverwrites where
+        overwrite (k,v) = (k, keyVal kvoverwrites k v)
 
 
 -- readability-sugar helpers

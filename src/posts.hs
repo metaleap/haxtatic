@@ -1,6 +1,7 @@
 module Posts where
 
 import qualified Blogs
+import qualified Html
 import qualified Util
 
 import qualified Data.Char
@@ -56,5 +57,9 @@ toAtom domain feedname posts bbn = (atomfilename, rawxml) where
                         ("&POSTAUTHOR;", if pblog then "&DOMAIN;" else subcat p),
                         ("&POST;", repl $ if pblog then origraw p else text p)
                     ]
-    blog = bbn p0fnn ; repl s = Util.replaceIn s [("\"","&quot;"),("'","&apos;"),(">","&gt;"),("<","&lt;"),("&","&amp;"),("<link","<hax_link"),("<script","<!--hax_script"),("<input","<hax_input"),("</link","</hax_link"),("</script>","</hax_script-->"),("</input","</hax_input"),(" style=\""," hax_style=\"")]
+    blog = bbn p0fnn ; repl s = Util.replaceIn s (Html.escapes ++ [
+            ("<link","<hax_link"),("<script","<!--hax_script"),("<input","<hax_input"),
+            ("</link","</hax_link"),("</script>","</hax_script-->"),("</input","</hax_input"),
+            (" style=\""," hax_style=\"")
+        ])
     pblog = (length p0fn) > 4 ; p0fn = fn $ head posts ; p0fnn = Util.fnName p0fn

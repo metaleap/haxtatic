@@ -107,7 +107,7 @@ main = do
                                     pcat = (if Blogs.nameAsCat blog then Blogs.name else Blogs.title) blog
                                     (pname, ptitle, plink) = (fn, h1, Util.join "." (Util.drop3 fn))
                                     psubcat = (Util.keyVal daters (Blogs.df blog) (snd $ head daters)) fn
-                                    in return $ [Posts.Post pname psubcat ptitle plink "" ptext pcat (Pages.processMarkupDumbly4Feeds pname (Blogs.name blog) (fn!!4) ptitle raw alltemplaters daters)]
+                                    in return $ [Posts.Post pname psubcat ptitle plink "" ptext pcat (Pages.processMarkupDumbly4Feeds pname (Blogs.name blog) (fn!!4) ptitle raw fullpath alltemplaters daters)]
                             isblogpage (_,pfn) = elem (Util.fnName pfn) blognames
                         alltemplaters = concat $ map Pages.xTemplaters cfgexts
                         mergePosts allfileposts = blogposts >>= (return . concat . (++)allfileposts)
@@ -131,7 +131,7 @@ main = do
                 -- read a page file and create a Pages.Ctx from its raw source
                 per_pagesrcfile ((fullpath,pfn),allposts,alltemplaters) =
                     readFile (fullpath) >>= \rawsrc ->
-                        return $ pagefromsrc allposts alltemplaters pfn (applyprep rawsrc "")
+                        return $ pagefromsrc allposts alltemplaters pfn (applyprep rawsrc "") fullpath
 
                 -- given file-name info and raw page source, create a Pages.Ctx "ready for applyTemplate"
                 pagefromsrc = Pages.newPageContext nowint daters cfgexts
@@ -149,7 +149,7 @@ main = do
                         outfilename page = Util.join "." $ Util.drop3 $ Pages.fname page
                         blogindexpages = map blogindexpage blognames
                         blogindexpage bname =
-                            pagefromsrc allposts alltemplaters [year,month,day,bname,"html"] (applyprep filestream_tmplblog bname) where
+                            pagefromsrc allposts alltemplaters [year,month,day,bname,"html"] (applyprep filestream_tmplblog bname) (path "|blogs.tmpl.html:haxtatic.config|") where
                                 year = Util.fnYear bpfn ; month = Util.fnMonth bpfn ; day = Util.fnDay bpfn
                                 (allposts,alltemplaters) = (Pages.allPosts fstpage , Pages.allXTemplaters fstpage)
                                 fstpage = head pages ; bph = head bps ; bps = (filter (\bp -> bname == (Util.fnName $ Pages.fname bp)) bpages)
@@ -158,7 +158,7 @@ main = do
                 -- given a Pages.Ctx (and list of all Pages.Ctx for blog posts), render final output-page content
                 applyTemplate page =
                     return $ Pages.postProcessMarkup page $ unlines $ map per_line (lines (applyprep replbod "")) where
-                        replbod = Data.List.Utils.replace "{{P:Body}}" (Pages.body page) filestream_tmplmain
+                        replbod = Data.List.Utils.replace "{P{Body}}" (Pages.body page) filestream_tmplmain
                         per_line ln = concat $ Pages.processMarkupLn page ln
                 applyprep s = Blogs.tmplMarkupSrc blogs $ Util.replaceIn s txts
                 clearpvars allpages outraw =

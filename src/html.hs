@@ -6,6 +6,9 @@ import qualified Util
 data Tag = T { name :: String, attr :: Util.KeyVals, sub :: [Tag] } deriving (Eq, Read)
 
 
+escapes = [("\"","&quot;"),("'","&apos;"),(">","&gt;"),("<","&lt;"),("&","&amp;")]
+
+
 emit tag = if notag then inner else open++atts++inner++close where
     open = "<"++tname
     atts = concat $ map emitatt $ tatts where

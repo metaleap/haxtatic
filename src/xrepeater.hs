@@ -18,14 +18,15 @@ ext tagname cfg = Pages.X [ Pages.Tmpl tagname apply ] where
                 ("{{_v}}", if usealt then (alts!!(i-1)) else (show num)),
                 ("{{_nr}}", show num),("{{_i}}", show i)
                 ]
-            prerepl s = Util.replaceIn s $ [("{{_c}}",show $ length iter)] ++ (repl $ v cfg) ++ replvars
+            prerepl s = Util.replaceIn s $ [("{{_c}}",show $ length iter)] ++ replvars
             usealt = lalt > 0 ; alts = alt args ; lalt = length alts
             args = read ("Args { "++argstr++" }") :: Args
-            replvars = rva++(concat replnv)++rva where rva = (repl $ vars args)
-            repl v = map (\(k,v) -> ("{{"++k++"}}",v)) v
+            allvars = Util.mergeKeyVals (v cfg) (vars args)
+            replvars = repl++(concat replnv)++repl
+            repl = map (\(k,v) -> ("{{"++k++"}}",v)) allvars
             replnv = map nv2r (nvars args) where
                 nv2r (n,vs) = map (pern n vs) fromto
                 pern n vs i = ("{{"++n++(show i)++"}}",val) where
-                    val = if i>(length vs) then (Util.keyVal (vars args) key key) else (Util.whileIn vs (i-1) null ((+) (-1)) ("{{"++key++"}}"))
+                    val = if i>(length vs) then (Util.keyVal allvars key key) else (Util.whileIn vs (i-1) null ((+) (-1)) ("{{"++key++"}}"))
                     key = "_"++n++"0"
             (numfrom,numuntil) = if usealt then (1,lalt) else (nums args) ; fromto = [numfrom..numuntil]

@@ -2,9 +2,12 @@ body {
 	background-color: Menu;
 	color: MenuText;
 	font-family: sans-serif;
+	line-height: 1.6em;
+	font-size: 0.95em;
 }
 h1 {
 	color: ThreeDShadow;
+	margin-right: 4em;
 }
 p:nth-of-type(1) {
 	margin-right: 8.22em;
@@ -27,14 +30,16 @@ h4 {
 	margin-bottom: 0;
 	background-color: Highlight;
 	color: HighlightText;
+	line-height: 1em;
 }
 code {
 	background-color: ActiveCaption;
 	color: CaptionText;
 	font-weight: bold;
 	display: inline-block;
-	padding: 0 0.44em 0 0.44em;
+	padding: 0 0.22em 0 2.22em;
 	border-radius: 0.22em;
+	text-indent: -2em;
 }
 
 
@@ -43,7 +48,10 @@ code {
 	color: InfoText;
 	border-radius: 0.22em;
 	border: solid 0.066em ThreeDLightShadow;
-	padding: 0.22em;
+	padding: 0.1em 0.2em;
+}
+span.hd-note {
+	font-style: italic;
 }
 
 

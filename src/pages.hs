@@ -6,7 +6,7 @@ import qualified Util
 
 import qualified Data.List
 
-data Ctx = Ctx { fname :: Util.FName, titles :: [String], body :: String, now :: Int, pageVars :: Util.KeyVals, daters :: [(String,[String]->String)], allExts :: [X], allPosts :: [Posts.Post], allXTemplaters :: [Tmpl] }
+data Ctx = Ctx { fname :: Util.FName, titles :: [String], body :: String, origpath :: String, now :: Int, pageVars :: Util.KeyVals, daters :: [(String,[String]->String)], allExts :: [X], allPosts :: [Posts.Post], allXTemplaters :: [Tmpl] }
 data Tmpl = Tmpl { tmplTag :: String, tmplApply :: String -> String -> Ctx -> [String] }
 data X = X { xTemplaters :: [Tmpl] }
 
@@ -28,8 +28,8 @@ tmplSitemapUrl = "<url>\n\
 
 
 
-newPageContext now daters allexts allposts alltemplaters fname rawsrc = let
-    page = Ctx fname titles bodydone now vars daters allexts allposts alltemplaters
+newPageContext now daters allexts allposts alltemplaters fname rawsrc origpath = let
+    page = Ctx fname titles bodydone origpath now vars daters allexts allposts alltemplaters
     bodydone = postProcessMarkup page (unlines bodytmp)
     (titles,bodytmp,vars) = foldr accum ([],[],[]) $ map perline $ lines rawsrc
     accum (tlines,blines,vlines) (tline,bline,vline) = (tlines++tline , blines++bline,vlines++vline)
@@ -49,29 +49,30 @@ ispvar s = ends s && begins s where
     begins = Data.List.isPrefixOf "{{P:Var:" ; ends = Data.List.isSuffixOf "}}"
 
 
-processMarkupDumbly4Feeds fn bn pbn title rawsrc alltemplaters daters =
+processMarkupDumbly4Feeds fn bn pbn title rawsrc origpath alltemplaters daters =
     let blines = lines $ repl rawsrc ; perline l = map repl (processMarkupLn ctxtmp l)
-        ctxtmp = Ctx fn [title] (unlines blines) 0 [] daters [] [] alltemplaters
-        repl s = Util.replaceIn (if (ispvar s) then "<!--\n"++s++"\n-->" else s) [("{{B:Name:}}",bn),("{{P:BaseName}}",pbn)]
+        ctxtmp = Ctx fn [title] (unlines blines) origpath 0 [] daters [] [] alltemplaters
+        repl s = Util.replaceIn (if (ispvar s) then "<!--\n"++s++"\n-->" else s) [("{{B:Name:}}",bn),("{P{BaseName}}",pbn)]
         in postProcessMarkup ctxtmp $ unlines $ concat (map perline blines)
 
 
 postProcessMarkup page src =
     Util.replaceIn src ([
             ("{P{Title}}", head $ titles page),
-            ("{{P:FileName}}", pfname),
-            ("{{P:PostDesc}}", if post>=0 then (Posts.text ((allPosts page)!!post)) else ""),
-            ("{{P:BaseName}}", if lfn>2 then _join $ take (lfn-2) (tail pfn) else head pfn),
+            ("{P{OrigPath}}", origpath page),
+            ("{P{FileName}}", pfname),
+            ("{P{BaseName}}", if lfn>2 then _join $ take (lfn-2) (tail pfn) else head pfn),
+            ("{P{Excerpt}}", if post>=0 then (Posts.text ((allPosts page)!!post)) else ""),
             ("{{B:Name:}}", if lfn>2 then head pfn else "")
         ] ++ dateformatters ++ (pageVars page)) where
             lfn = length pfn
             pfn = Util.drop3 (fname page) ; pfname = _join pfn ; post = Util.indexIf (((==) pfname) . Posts.link) (allPosts page)
             dateformatters = map formatter (daters page) where
-                formatter (name,func) = ("{{P:Date"++name++"}}", func $ fname page)
+                formatter (name,func) = ("{P{Date"++name++"}}", func $ fname page)
 
 
 processMarkupLn page lin = concat $ map checkh2 (doline lin) where
-    checkh2 ln = if null h2 then [ln] else [Html.out "h2" [("", h2),("id",h2)] []] where
+    checkh2 ln = if null h2 then [ln] else [Html.out "h2" [("", h2),("id",h2innerToId h2)] []] where
         h2 = Html.tagInner "h2" ln
     doline ln = let ll = length ln in
         if not $ ("{{X:"==take 4 ln) && ("}}"==drop (ll-2) ln) then [ln] else let
@@ -81,6 +82,9 @@ processMarkupLn page lin = concat $ map checkh2 (doline lin) where
                 if tagname/=ttag then [] else tmplApply tmpl tagname tagargs page
             in concat $ map apply $ allXTemplaters page
 
+
+h2innerToId h2 =
+    Util.replaceIn h2 Html.escapes
 
 
 toSitemap domain pagefns blognames exclnames =
