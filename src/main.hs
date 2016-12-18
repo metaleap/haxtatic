@@ -149,7 +149,7 @@ main = do
                         outfilename page = Util.join "." $ Util.drop3 $ Pages.fname page
                         blogindexpages = map blogindexpage blognames
                         blogindexpage bname =
-                            pagefromsrc allposts alltemplaters [year,month,day,bname,"html"] (applyprep filestream_tmplblog bname) (path "|blogs.tmpl.html:haxtatic.config|") where
+                            pagefromsrc allposts alltemplaters [year,month,day,bname,"html"] (applyprep filestream_tmplblog bname) (path "blogs.tmpl.html") where
                                 year = Util.fnYear bpfn ; month = Util.fnMonth bpfn ; day = Util.fnDay bpfn
                                 (allposts,alltemplaters) = (Pages.allPosts fstpage , Pages.allXTemplaters fstpage)
                                 fstpage = head pages ; bph = head bps ; bps = (filter (\bp -> bname == (Util.fnName $ Pages.fname bp)) bpages)
@@ -163,7 +163,8 @@ main = do
                 applyprep s = Blogs.tmplMarkupSrc blogs $ Util.replaceIn s txts
                 clearpvars allpages outraw =
                     let pvarnames = Data.List.nub $ concat $ map (map (\(k,_) -> k)) $ map Pages.pageVars allpages
-                    in (Util.replaceIn outraw (map (\k -> (k,"")) pvarnames))
+                    in Util.replaceIn outraw $ (map (\k -> (k,"")) pvarnames) ++
+                            [("{\\P","{P"),("{\\T","{T"),("{\\X","{X"),("{\\B","{B")]
 
                 in -- now let's go!
                     Control.Monad.mapM (System.Directory.createDirectoryIfMissing False)
@@ -177,6 +178,7 @@ main = do
                         >>= filterPageFileNames
                         >>= mapPageFileNames
                         >>= createSitemapXml
+                        --  for later: from here on out can take real time
                         >>= Util.via (putStrLn $ "4. Loading from '"++dirposts++"'..")
                         >>= loadAllPosts
                         >>= Util.via (putStrLn $ "5. Loading from '"++dirpages++"'..")

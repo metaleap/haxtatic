@@ -21,21 +21,26 @@ themeHtml = "<!DOCTYPE html><html lang=\"en\"><head>\n\
     \    <div><!-- begins {P{FileName}} content generated from {P{OrigPath}} -->\n\n\n\
     \{P{Body}}\n\n\
     \    </div><!-- end of generated content -->\n\
-    \    <hr/><small>Generated with <a href=\"http://github.com/HaXtatic\">{{P:Var:demo_hax}}</a> on {P{Date}}</small>\n\
+    \    <hr/><small>Generated with <a href=\"http://github.com/HaXtatic\">{P{%demo_hax}}</a> on {P{Date}}</small>\n\
     \</body></html>"
 
-blogHtml = "<h1>{{B:Title:}}</h1>\n<p>{{B:Desc:}}</p>"
+blogHtml = "<h1>{B{Title:_}}</h1>\n\
+    \<p>{B{Desc:_}}</p>\n\
+    \<p>\n\
+    \For a neat overview listing of all your <code>{B{Name:_}}.*.html</code> (and/or <code>{B{Name:_}}/*.html</code>)\n\
+    \articles within your <code>pages</code> folder on here, check out the <code>{X{Listings}}</code> tag type in the HaXtatic docs.\n\
+    \</p>"
 
 indexHtml dircur sitename dirsite dirpages pathpage pathtmpl pathfinal =
-    let l = 1+(length dirsite) ; x s = "{{P:Var:demo_dirpath}}<b>"++(drop (l) s)++"</b>" in
+    let l = 1+(length dirsite) ; x s = "{P{%demo_dirpath}}<b>"++(drop (l) s)++"</b>" in
         "<h1>Greetings..</h1>\n\
-            \{{P:Var:demo_hax:<b>HaXtatic</b>}}\n\
-            \{{P:Var:demo_dirpath:"++dirsite++[System.FilePath.pathSeparator]++"}}\n\
+            \{P{%demo_hax:<b>HaXtatic</b>}}\n\
+            \{P{%demo_dirpath:"++dirsite++[System.FilePath.pathSeparator]++"}}\n\
             \<p>Looks like for now I&apos;m the home page of your static site <code>"++sitename++"</code>! How did this come about?</p>\n\
-            \<p>When you ran {{P:Var:demo_hax}} from <code>"++dircur++"</code>, specifying project-directory <code><b>{{P:Var:demo_dirpath}}</b></code>:</p>\n\
+            \<p>When you ran {P{%demo_hax}} from <code>"++dircur++"</code>, specifying project-directory <code><b>{P{%demo_dirpath}}</b></code>:</p>\n\
             \<ul>\n\
             \    <li>I was generated at <code>"++(x pathfinal)++"</code> by</li>\n\
             \    <li>..applying the <code>"++(x pathtmpl)++"</code> template (ready for your tinkering)</li>\n\
             \    <li>..to my &apos;<i>content source page</i>&apos; stored at <code>"++(x pathpage)++"</code> (dito)</li>\n\
-            \    <li>..which in turn {{P:Var:demo_hax}} pre-created for you just-beforehand (but only because <code>"++(x dirpages)++[System.FilePath.pathSeparator]++"</code> was totally devoid of any files: otherwise it won&apos;t meddle in there as a rule).</li>\n\
+            \    <li>..which in turn {P{%demo_hax}} pre-created for you just-beforehand (but only because <code>"++(x dirpages)++[System.FilePath.pathSeparator]++"</code> was totally devoid of any files: otherwise it won&apos;t meddle in there as a rule).</li>\n\
             \</ul>"

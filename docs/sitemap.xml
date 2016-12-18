@@ -14,7 +14,15 @@
         <priority>0.3</priority>
     </url><url>
         <loc>http://haxdox/tags.p.html</loc>
-        <lastmod>2016-12-18</lastmod>
+        <lastmod>2016-12-17</lastmod>
+        <priority>0.3</priority>
+    </url><url>
+        <loc>http://haxdox/tags.b.html</loc>
+        <lastmod>2016-12-16</lastmod>
+        <priority>0.3</priority>
+    </url><url>
+        <loc>http://haxdox/tags.x.html</loc>
+        <lastmod>2016-12-15</lastmod>
         <priority>0.3</priority>
     </url><url>
         <loc>http://haxdox/basics.html</loc>

@@ -1,8 +1,8 @@
-<h1>T-tags: named plain snippets</h1>
-<p><code>{T{...}}</code> tags directly include named text values that you defined once in your {T{HaxConfLink}} and then reuse wherever needed.</p>
+<h1>T-tags: named plain text/markup snippets</h1>
+<p><code>{T{..}}</code> tags directly include named text values that you defined once in your {T{HaxConfLink}} and then reuse wherever needed.</p>
 <h2>{T{Briefly}}</h2>
 <ul>
-	<li>Single-line definitions in {T{HaxConfLink}}:<br/><code>T:AuthBlurb: About the author: &lt;a&gt;Phil&lt;/a&gt; is a serial amateur dabbling in narcissism on usenet</code></li>
+	<li>Single-line definitions in {T{HaxConfLink}}:<br/><code>T:AuthBlurb: The author is a serial amateur dabbling in role-playing on XingedIn.</code></li>
 	<li>Usage anywhere: <code>{T{AuthBlurb}}</code></li>
 </ul>
 <h2>Definition in {T{HaxConfi}}</h2>
@@ -15,10 +15,10 @@
 <p>Undefined text-value names will not be replaced and so remain in the output.</p>
 <p class="hd-note">
 	Here's how the <code>&lt;body&gt;</code> of this site's {T{ThemeHtmlLink}} (and thus that of every single output page) begins:
-	<br/><code>&lt;h4&gt;{T{!T}}SiteTitle}}&lt;/h4&gt;</code><br/>
+	<br/><code>&lt;h4&gt;{\T{SiteTitle}}&lt;/h4&gt;</code><br/>
 </p>
 <h2>See also</h2>
 <ul>
-	<li>A more versatile equivalent of this functionality is offered by the <a href="#">{X{Snippets}}</a> X-tag, which let's you pass variable substitutions with all your named-text inclusions.</li>
-	<li>To define named text values on a <i>per-page</i> basis (reuse within a single page but unknown outside it), use <a href="#">custom P-tags</a></li>
+	<li>A more versatile equivalent of this functionality is offered by the {T{HaxXSnippets}} X-tag, which let's you pass variable substitutions with all your named-text inclusions.</li>
+	<li>To define named text values on a <i>per-page</i> basis (reuse within a single page but unknown outside it), use custom {T{HaxPTag}}s.</li>
 </ul>

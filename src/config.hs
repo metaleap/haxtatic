@@ -3,10 +3,10 @@ module Config where
 import qualified Blogs
 import qualified Util
 
---import XConsts
 import XImage
 import XLinks
 import XListing
+import XMarkup
 import XPageToc
 import XRandom
 import XRepeater
@@ -28,14 +28,14 @@ blogs cfglines =
 exts cfglines blognames =
     [] ++ (concat $ map perline cfglines) where
         perline "" = [] ; perline ln = persplit $ _split ln
-        --persplit ("X":"Consts":name:rest) = [XConsts.ext name (read (wl rest) :: XConsts.Cfg)]
-        persplit ("X":"Snippets":name:rest) = [XSnippets.ext name (read (wl rest) :: XSnippets.Cfg)]
-        persplit ("X":"Links":name:rest) = [XLinks.ext name (read (wc rest) :: XLinks.Cfg) blognames]
         persplit ("X":"Image":name:rest) = [XImage.ext name (read (wc rest) :: XImage.Cfg)]
-        persplit ("X":"PageToc":name:rest) = [XPageToc.ext name (read (wc rest) :: XPageToc.Cfg)]
+        persplit ("X":"Links":name:rest) = [XLinks.ext name (read (wc rest) :: XLinks.Cfg) blognames]
         persplit ("X":"Listing":name:rest) = [XListing.ext name (read (wc rest) :: XListing.Cfg)]
+        persplit ("X":"Markup":name:rest) = [XMarkup.ext name $ Util.trimSpace $ _join rest]
+        persplit ("X":"PageToc":name:rest) = [XPageToc.ext name (read (wc rest) :: XPageToc.Cfg)]
         persplit ("X":"Random":name:rest) = [XRandom.ext name (read (wc rest) :: XRandom.Cfg)]
         persplit ("X":"Repeater":name:rest) = [XRepeater.ext name (read (wc rest) :: XRepeater.Cfg)]
+        persplit ("X":"Snippets":name:rest) = [XSnippets.ext name (read (wl rest) :: XSnippets.Cfg)]
         persplit _ = []
         wl = wrap "[" "]" ; wc = wrap "Cfg {" "}"
         wrap pre post splits = pre++(_join splits)++post

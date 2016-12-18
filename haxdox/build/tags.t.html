@@ -1,13 +1,12 @@
 <!DOCTYPE html><html lang="en"><head>
-    <title>T-tags: named plain snippets | HaXtatic Docs</title>
+    <title>T-tags: named plain text/markup snippets | HaXtatic Docs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="haxtatic.css" rel="stylesheet" />
 	<!--	tags.t.html
 			generated on 2016/12/18
-			from ..\haxdox\pages\tags\t.html	-->
+			from ..\haxdox\pages\tags\2016.12.18.t.html	-->
 </head><body>
     <h4>HaXtatic Docs</h4>
-
 	<ul class="hd-nav">
 <li class="hd-nav">
 <a href="index.html" id="hd_nav_index">Overview</a></li><li class="hd-nav">
@@ -29,11 +28,11 @@
 
 
 <!-- begins content source page -->
-<h1>T-tags: named plain snippets</h1>
-<p><code>{T{...}}</code> tags directly include named text values that you defined once in your <a href="#">haxtatic.config</a> and then reuse wherever needed.</p>
+<h1>T-tags: named plain text/markup snippets</h1>
+<p><code>{T{..}}</code> tags directly include named text values that you defined once in your <a href="#">haxtatic.config</a> and then reuse wherever needed.</p>
 <h2 id="In a nutshell">In a nutshell</h2>
 <ul>
-	<li>Single-line definitions in <a href="#">haxtatic.config</a>:<br/><code>T:AuthBlurb: About the author: &lt;a&gt;Phil&lt;/a&gt; is a serial amateur dabbling in narcissism on usenet</code></li>
+	<li>Single-line definitions in <a href="#">haxtatic.config</a>:<br/><code>T:AuthBlurb: The author is a serial amateur dabbling in role-playing on XingedIn.</code></li>
 	<li>Usage anywhere: <code>{T{AuthBlurb}}</code></li>
 </ul>
 <h2 id="Definition in &lt;i&gt;haxtatic.config&lt;/i&gt;">Definition in <i>haxtatic.config</i></h2>
@@ -46,12 +45,12 @@
 <p>Undefined text-value names will not be replaced and so remain in the output.</p>
 <p class="hd-note">
 	Here's how the <code>&lt;body&gt;</code> of this site's <a href="#">theme.tmpl.html</a> (and thus that of every single output page) begins:
-	<br/><code>&lt;h4&gt;{T<!---->{SiteTitle}}&lt;/h4&gt;</code><br/>
+	<br/><code>&lt;h4&gt;{T{SiteTitle}}&lt;/h4&gt;</code><br/>
 </p>
 <h2 id="See also">See also</h2>
 <ul>
 	<li>A more versatile equivalent of this functionality is offered by the <a href="#">{X{Snippets}}</a> X-tag, which let's you pass variable substitutions with all your named-text inclusions.</li>
-	<li>To define named text values on a <i>per-page</i> basis (reuse within a single page but unknown outside it), use <a href="#">custom P-tags</a></li>
+	<li>To define named text values on a <i>per-page</i> basis (reuse within a single page but unknown outside it), use custom <a href="tags.p.html#Custom">custom P-tag</a>s.</li>
 </ul>
 
 <!-- end of content source page -->
