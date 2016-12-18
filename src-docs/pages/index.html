@@ -6,17 +6,17 @@
 	<li>Step aside into obscurity, Macromedia Dreamweaver and Microsoft FrontPage: it's the mid-2010s at last and we're all command-line jocks now.</li>
 </ul>
 <p>
-	Hacked-together for hacking fine things together the (mostly imagined) "old-school way" &mdash; and probably really only possibly compelling (for users other than me, compared to other such tools) in case you wish to command some awfully-intricate-templating powers and know to code up at least simple pieces of <a href="http://haskell.org">Haskell</a> in a pinch: because I have written it from the ground up with easy-speedy, "done-and-done" future extensibility chiefly in mind.
+	Hacked-together for hacking fine sites together the (mostly imagined) "old-school way" &mdash; and probably more compelling (for users other than me, compared to other such tools) only in case you wish to command some awfully-intricate-templating powers and know to code up at least simple short pieces of <a href="http://haskell.org">Haskell</a> (such as <a href="https://github.com/metaleap/HaXtatic/blob/master/src/xmarkup.hs">this 2-liner</a> or <a href="https://github.com/metaleap/HaXtatic/blob/master/src/xsnippets.hs">this 5-liner</a>) in a pinch: because I wrote it from the ground up with easy-speedy, "done-and-done" future extensibility chiefly in mind.
 </p>
-<p>To be fair though: it <i>does</i> actually accomplish quite a lot without ever needing to touch its codebase &mdash; alas you'll have to run-from-source (or compile from scratch) no less.</p>
+<p>To be fair though: it <i>does</i> actually accomplish quite a lot without you ever needing to touch its codebase &mdash; alas you'll have to run-from-source (or compile from scratch) no less.</p>
 <h2>Quick start</h2>
 <ol>
 	<li>Fetch from <a href="http://github.com/metaleap/HaXtatic">Github</a></li>
 	<li>
 		Run with <a href="https://www.haskell.org/downloads#stack">Haskell Stack</a> (with <a href="https://hackage.haskell.org/package/MissingH">MissingH</a> already present)
 		<ul>
-			<li>first via: <code><span>~/haxtatic/src$ </span>stack runghc ./main.hs</code> to see a note on how to <i>really</i> run this.</li>
-			<li>(unless of course you prefer to another way of building-running Haskell programs)</li>
+			<li>first via: <code><span>~/haxtatic/src$ </span>stack runghc ./main.hs</code>* to see a note on how to <i>really</i> run this.</li>
+			<li>(* unless of course you prefer another way of building-running Haskell programs)</li>
 			<li>now run: <code><span>~/haxtatic/src$ </span>stack runghc ./main.hs <i>~/where/ever/</i>mydemosite.foo/</code></li>
 		</ul>
 	</li>
