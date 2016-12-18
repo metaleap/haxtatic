@@ -40,7 +40,7 @@ code {
 	border-radius: 0.22em;
 	text-indent: -2em;
 }
-code i {
+code i, code span {
 	font-weight: normal;
 }
 
