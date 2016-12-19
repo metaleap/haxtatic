@@ -58,6 +58,41 @@ since = swapArgs Data.Time.Clock.diffUTCTime
 via fn = ((>>) fn) . return
 
 
+
+indexOfSub _ [] = minBound::Int
+indexOfSub sub str@(char:rest)
+    | all (uncurry (==)) (zip sub str)
+        = 0
+    | otherwise
+        = 1+(indexOfSub sub rest)
+
+lastIndexOfSub rev sub str
+    | idx<0 = -1
+    | otherwise = (length str)-(length sub)-idx
+    where idx = indexOfSub (rev sub) (rev str)
+
+
+splitUp [] _ _ = []
+splitUp _ "" _ = []
+splitUp _ _ "" = []
+splitUp begins end str =
+    (lst pre "") ++ (lst match beg) ++
+        --  only recurse if we have a good reason:
+        (if nomatch && splitat==0 then (lst rest "") else (splitUp begins end rest))
+    where
+        pre = if nomatch then take splitat str else take bpos str
+        match = if nomatch then "" else drop (bpos+blen) $ take epos str
+        rest = if nomatch then drop splitat str else drop eposlen str
+        beg = if nomatch then "" else take blen $ drop bpos $ take epos str
+        nomatch = epos<0 || bpos<0
+        splitat = if nomatch && epos>=0 then eposlen else 0
+        epos = indexOfSub end str
+        bpos = if epos<0 then -1 else let bstr = reverse $ take epos str in
+            maximum $ map (\b -> lastIndexOfSub id b bstr) begins
+        eposlen = epos+(length end) ; blen = length (begins!!0)
+        lst s b = if null s then [] else [(s,b)]
+
+
 -- the Phil standard library..
 replaceIn str [] = str
 replaceIn str ((old,new):rest) =

@@ -7,7 +7,8 @@ import Pages
 --	out into markup such as `<code>foo</code>` or `<blockquote>bar</blockquote>`
 --	with one-off single-line definitions in `haxtatic.config` such as:
 --  `X:Markup:C:code` and `X:Markup:BQ:blockquote` etc.
-
+--	Not useful or advisable for 'all markup everywhere' (no attributes for once),
+--  just convenient for those certain elements of verbose repetetive clutter.
 ext tname fulltag = Pages.X [ Pages.Tmpl tname apply ] where
     apply _ argstr _ = [ "<"++fulltag++">"++argstr++"</"++fulltag++">" ]
     --	could also do instead:

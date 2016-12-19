@@ -165,7 +165,8 @@ main = do
                     let pvarnames = Data.List.nub $ concat $ map (map (\(k,_) -> k)) $ map Pages.pageVars allpages
                     in Util.replaceIn outraw $ (map (\k -> (k,"")) pvarnames) ++
                             [("{\\P","{P"),("{\\T","{T"),("{\\X","{X"),("{\\B","{B")]
-
+                test str =
+                    print (str++"~~~~~~~~~~~~>", Util.splitUp (map reverse ["{Y{","{X{","{Z{","{A{"]) "}}" str)
                 in -- now let's go!
                     Control.Monad.mapM (System.Directory.createDirectoryIfMissing False)
                             [dirout, dirpages, dirposts, dirstatic]
@@ -185,6 +186,21 @@ main = do
                         >>= Control.Monad.mapM per_pagesrcfile
                         >>= Util.via (putStrLn $ "6. Generating outputs in '"++dirout++"':")
                         >>= genpages
+--                        >> putStrLn "\n" >> test "foo}}year bl{Y{shoo"
+--                        >> putStrLn "\n" >> test "moo}}year bl{A{shoo}} and such"
+--                        >> putStrLn "\n" >> test "foo"
+--                        >> putStrLn "\n" >> test "}}"
+--                        >> putStrLn "\n" >> test "{Y{"
+--                        >> putStrLn "\n" >> test "{Z{}}"
+--                        >> putStrLn "\n" >> test "foo}}"
+--                        >> putStrLn "\n" >> test "{Y{wotsit"
+--                        >> putStrLn "\n" >> test "f{Y{wotsit"
+--                        >> putStrLn "\n" >> test "foo {Z{wotsit}} bar {Y{moohaha}} and so {X{oon}} yknow"
+--                        >> putStrLn "\n" >> test "NE {Y{outbegin {Y{inner}} outend}} ST"
+--                        >> putStrLn "\n" >> test "    {Z{foo\nbar}}\t"
+--                        >> putStrLn "\n" >> test "{X{moo}}"
+--                        >> putStrLn "\n" >> test "{Y{{Z{foo}}}}"
+--                        >> putStrLn "\n" >> test "{X{Album: bla=[], nv=[\"look {{at}\\} dis\"]}}"
                         >>  Data.Time.Clock.getCurrentTime
                             >>= \now -> let timetaken = show $ Util.since starttime now in
                                     putStrLn $ "\n\nThis all took "++timetaken++" --- bye now!\n\n\n"

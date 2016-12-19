@@ -8,42 +8,57 @@
 </head><body>
     <h4>HaXtatic Docs</h4>
 	<ul class="hd-nav">
-<li class="hd-nav">
-<a href="index.html" id="hd_nav_index">Overview</a></li><li class="hd-nav">
-<a href="basics.html" id="hd_nav_basics">Basics</a></li><li class="hd-nav hd-nav-sel">
-<a href="tags.html" id="hd_nav_tags">Tags</a></li><li class="hd-nav">
-<a href="x.html" id="hd_nav_x">X built-ins</a></li>
+<li class="hd-nav"><a href="index.html" id="hd_nav_index">Overview</a></li><li class="hd-nav"><a href="basics.html" id="hd_nav_basics">Basics</a></li><li class="hd-nav hd-nav-sel"><a href="tags.html" id="hd_nav_tags">Tags</a></li><li class="hd-nav"><a href="x.html" id="hd_nav_x">X built-ins</a></li>
 	</ul>
 	<div class="hd-toc">
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
 		<label for="chk_showtoc">On this page:</label>
 		<ul>
-<li>
-<a href="#Built-in">Built-in</a></li><li>
-<a href="#Custom">Custom</a></li>
+<li><a href="#Built-in">Built-in</a></li><li><a href="#Custom">Custom</a></li>
 		</ul>
 	</div>
 
 
 <!-- begins content source page -->
 <h1>P-tags: per-page values (date, title, custom..)</h1>
-<p><code>{P{..}}</code> tags include (built-in and custom) values specific to the current page.</p>
+<p><code>{P{..}}
+</code> tags include (built-in and custom) values specific to the current page.</p>
 <h2 id="Built-in">Built-in</h2>
+
 <ul>
-	<li><code>{P{Title}}</code> &rarr; current page's first single-line <code>&lt;h1&gt;</code>'s entire inner markup<br/>&mdash; eg. for this page: <span class="hd-note">P-tags: per-page values (date, title, custom..)</span></li>
-	<li><code>{P{Body}}</code> &rarr; current page's entire (mostly already processed) markup source (only usable in <a href="#">theme.tmpl.html</a>)</li>
-	<li><code>{P{FileName}}</code> &rarr; the current page's output file name<br/>&mdash; eg. for this page: <span class="hd-note">tags.p.html</span></li>
-	<li><code>{P{OrigPath}}</code> &rarr; the current page's (relative local) source path<br/>&mdash; eg. for this page: <span class="hd-note">..\src-docs\pages\tags\2016.12.17.p.html</span></li>
-	<li><code>{P{BaseName}}</code> &rarr; the current page's name minus file extension and section prefix:<br/>&mdash; eg. for this page named <i>tags.p.html</i>: <span class="hd-note">p</span></li>
-	<li><code>{P{Date}}</code> and <code>{P{Date<i>MyFormat</i>}}</code> &rarr; current <a href='#'>'page date'</a> <br/>&mdash; eg. for this page: <span class="hd-note">2016/12/17</span></li>
-	<li><code>{P{PostText}}</code> &rarr; current <a href="#">blok-post page</a>'s first single-line <code>&lt;p&gt;</code>'s entire inner text<br/>&mdash; eg. for this page: <span class="hd-note">         {P{..}}        tags include (built-in and custom) values specific to the current page.    </span></li>
+	<li><code>{P{Title}}
+</code> &rarr; current page's first single-line <code>&lt;h1&gt;</code>'s entire inner markup<br/>&mdash; eg. for this page: <span class="hd-note">P-tags: per-page values (date, title, custom..)
+</span></li>
+	<li><code>{P{Body}}
+</code> &rarr; current page's entire (mostly already processed) markup source (only usable in <a href="#">theme.tmpl.html</a>)</li>
+	<li><code>{P{FileName}}
+</code> &rarr; the current page's output file name<br/>&mdash; eg. for this page: <span class="hd-note">tags.p.html
+</span></li>
+	<li><code>{P{OrigPath}}
+</code> &rarr; the current page's (relative local) source path<br/>&mdash; eg. for this page: <span class="hd-note">..\src-docs\pages\tags\2016.12.17.p.html
+</span></li>
+	<li><code>{P{BaseName}}
+</code> &rarr; the current page's name minus file extension and section prefix:<br/>&mdash; eg. for this page named <i>tags.p.html
+</i>: <span class="hd-note">p
+</span></li>
+	<li><code>{P{Date}}
+</code> and <code>{P{Date<i>MyFormat</i>}}
+</code> &rarr; current <a href='#'>'page date'</a> <br/>&mdash; eg. for this page: <span class="hd-note">2016/12/17
+</span></li>
+	<li><code>{P{PostText}}
+</code> &rarr; current <a href="#">blok-post page</a>'s first single-line <code>&lt;p&gt;</code>'s entire inner text<br/>&mdash; eg. for this page: <span class="hd-note">         {P{..}}        tags include (built-in and custom) values specific to the current page.    
+</span></li>
 </ul>
 <h2 id="Custom">Custom</h2>
+
 <p>
-	Define those like <code>{P{%<i>name</i>:<i>value</i>}}</code> in a page; then while that page is being processed, this <code><i>value</i></code> will (stripped of leading / trailing white-space) replace all encounters of <code>{P{%<i>name</i>}}</code> <i>anywhere</i> in the output (whether from page, <a href="#">theme.tmpl.html</a> or <a href="#">blog.tmpl.html</a> sources), including occurrences produced by <a href="tags.t.html">T-tag</a>s or originating from other settings in <a href="#">haxtatic.config</a>.
+	Define those like <code>{P{%<i>name</i>:<i>value</i>}}
+</code> in a page; then while that page is being processed, this <code><i>value</i></code> will (stripped of leading / trailing white-space) replace all encounters of <code>{P{%<i>name</i>}}
+</code> <i>anywhere</i> in the output (whether from page, <a href="#">theme.tmpl.html</a> or <a href="#">blog.tmpl.html</a> sources), including occurrences produced by <a href="tags.t.html">T-tag</a>s or originating from other settings in <a href="#">haxtatic.config</a>.
 </p>
 <p>
-	Any characters are acceptable for the <i>name</i> in between <code>{P{%</code> and <code>&nbsp;:</code>, as well as the <i>value</i> in between <code>&nbsp;:</code> and <code>&nbsp;}}</code>.
+	Any characters are acceptable for the <i>name</i> in between <code>{P{%</code> and <code>&nbsp;:</code>, as well as the <i>value</i> in between <code>&nbsp;:</code> and <code>&nbsp;}}
+</code>.
 </p>
 
 <!-- end of content source page -->

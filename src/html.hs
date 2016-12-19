@@ -14,7 +14,7 @@ emit tag = if notag then inner else open++atts++inner++close where
     atts = concat $ map emitatt $ tatts where
         emitatt (n,v) = if (n=="" || v=="") then "" else (" "++n++"=\""++v++"\"")
     inner = (if notag then "" else if noinner then "/>\n" else ">"++(if not $ null tinner then "" else "\n"))++(concat $ map emit tchildren)++tinner
-    close = if noinner then "" else ("</"++tname++">")
+    close = if noinner then "" else ("</"++tname++">\n")
 
     notag = null tname
     tname = name tag

@@ -35,13 +35,17 @@ newPageContext now daters allexts allposts alltemplaters fname rawsrc origpath =
     accum (tlines,blines,vlines) (tline,bline,vline) = (tlines++tline , blines++bline,vlines++vline)
     perline ln = (tline , bline, vline) where
         bline = if null vline then processMarkupLn page ln else []
-        tline = concat $ map istitle bline
+        tline = concat $ map (istitle . Util.trimSpace) bline
         vline = let splits = Util.splitBy ':' (drop 4 $ take ((length ln)-2) ln)
                     vname = head splits ; vval = Util.trimSpace $ Util.join ":" (tail splits)
                     in if ispvar ln && (length splits)>=2 && Util.is vname && Util.is vval
                         then [("{P{%"++vname++"}}",vval)] else []
+        --  another abomination that really shouldn't exist:
+        istitle "" = []
         istitle bln = let h1 = Html.tagInner "h1" bln ; h2 = Html.tagInner "h2" bln ; h2_ = Html.tagInner3 "h2" bln in
-            if Util.is h2 then [h2] else if Util.is h1 then [h1] else if Util.is h2_ then [drop (1+(max 0 $ Util.indexOf '>' h2_)) h2_] else []
+            if Util.is h2 then [h2] else if Util.is h1 then [h1] else
+                if Util.is h2_ then [drop (1+(max 0 $ Util.indexOf '>' h2_)) h2_] else
+                    let endpos = Util.indexOfSub "</h2>" bln in if endpos<5 then [] else [drop (1+(Util.indexOf '>' bln)) $ take endpos bln]
     in page
 
 
@@ -73,16 +77,19 @@ postProcessMarkup page src =
                 formatter (name,func) = ("{P{Date"++name++"}}", func $ fname page)
 
 
-processMarkupLn page lin = concat $ map checkh2 (doline lin) where
-    checkh2 ln = if null h2 then [ln] else [Html.out "h2" [("", h2),("id",h2innerToId h2)] []] where
+processMarkupLn page lin = concat $ map checkh2' (doline lin) where
+    doline ln = lines $ unlines $ map per_token $ Util.splitUp (map reverse ["{X{"]) "}}" ln
+    per_token (s,i) = if null i then s else
+        concat $ xapply s -- ugliest of hacks! by now it'd really be time for a rewrite..
+    checkh2 ln = if null h2 then ln else Html.out "h2" [("", h2),("id",h2innerToId h2)] [] where
         h2 = Html.tagInner "h2" ln
-    doline ln = let foo = Util.trimSpace ln ; ll = length foo in
-        if not $ (Data.List.isSuffixOf "}}" foo) && (Data.List.isPrefixOf "{X{" foo) then [ln] else let
-            tagfull = Util.splitBy ':' $ take (ll-5) $ drop 3 foo
-            tagname = head tagfull ; tagargs = Util.join ":" $ tail tagfull
-            apply = \tmpl -> let ttag = head (Util.splitBy ':' $ tmplTag tmpl) in
-                if tagname/=ttag then [] else tmplApply tmpl tagname tagargs page
-            in concat $ map apply $ allXTemplaters page
+    checkh2' ln = [checkh2 ln]
+    xapply ln = let
+        tagfull = Util.splitBy ':' ln
+        tagname = head tagfull ; tagargs = Util.join ":" $ tail tagfull
+        apply = \tmpl -> let ttag = head (Util.splitBy ':' $ tmplTag tmpl) in
+            if tagname/=ttag then [] else tmplApply tmpl tagname tagargs page
+        in concat $ map apply $ allXTemplaters page
 
 
 h2innerToId h2 =

@@ -8,48 +8,50 @@
 </head><body>
     <h4>HaXtatic Docs</h4>
 	<ul class="hd-nav">
-<li class="hd-nav">
-<a href="index.html" id="hd_nav_index">Overview</a></li><li class="hd-nav">
-<a href="basics.html" id="hd_nav_basics">Basics</a></li><li class="hd-nav hd-nav-sel">
-<a href="tags.html" id="hd_nav_tags">Tags</a></li><li class="hd-nav">
-<a href="x.html" id="hd_nav_x">X built-ins</a></li>
+<li class="hd-nav"><a href="index.html" id="hd_nav_index">Overview</a></li><li class="hd-nav"><a href="basics.html" id="hd_nav_basics">Basics</a></li><li class="hd-nav hd-nav-sel"><a href="tags.html" id="hd_nav_tags">Tags</a></li><li class="hd-nav"><a href="x.html" id="hd_nav_x">X built-ins</a></li>
 	</ul>
 	<div class="hd-toc">
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
 		<label for="chk_showtoc">On this page:</label>
 		<ul>
-<li>
-<a href="#In a nutshell">In a nutshell</a></li><li>
-<a href="#Definition in &lt;i&gt;haxtatic.config&lt;/i&gt;">Definition in <i>haxtatic.config</i></a></li><li>
-<a href="#Embed in any markup">Embed in any markup</a></li><li>
-<a href="#See also">See also</a></li>
+<li><a href="#In a nutshell">In a nutshell</a></li><li><a href="#Definition in &lt;i&gt;haxtatic.config&lt;/i&gt;">Definition in <i>haxtatic.config</i></a></li><li><a href="#Embed in any markup">Embed in any markup</a></li><li><a href="#See also">See also</a></li>
 		</ul>
 	</div>
 
 
 <!-- begins content source page -->
 <h1>T-tags: named plain text/markup snippets</h1>
-<p><code>{T{..}}</code> tags directly include named text values that you defined once in your <a href="#">haxtatic.config</a> and then reuse wherever needed.</p>
+<p><code>{T{..}}
+</code> tags directly include named text values that you defined once in your <a href="#">haxtatic.config</a> and then reuse wherever needed.</p>
 <h2 id="In a nutshell">In a nutshell</h2>
+
 <ul>
 	<li>Single-line definitions in <a href="#">haxtatic.config</a>:<br/><code>T:AuthBlurb: The author is a serial amateur dabbling in role-playing on XingedIn.</code></li>
-	<li>Usage anywhere: <code>{T{AuthBlurb}}</code></li>
+	<li>Usage anywhere: <code>{T{AuthBlurb}}
+</code></li>
 </ul>
 <h2 id="Definition in &lt;i&gt;haxtatic.config&lt;/i&gt;">Definition in <i>haxtatic.config</i></h2>
+
 <p>A single line beginning with with <code>T:<i>yourtextname</i>:</code> followed by any text value in <a href="#">haxtatic.config</a> defines a named text.</p>
 <p class="hd-note">Example: this very site in its <a href="#">haxtatic.config</a> contains this line:<br/><code>T:SiteTitle: HaXtatic Docs</code><br/>(the white-space isn't strictly required) &mdash; indeed you'll find this named text value included in the browser/tab title of every page within this site.</p>
 <p>Names can contain any characters except colons.</p>
 <p>Values can contain any characters but will be stripped of all leading and trailing white-space.</p>
 <h2 id="Embed in any markup">Embed in any markup</h2>
-<p>Just use <code>{T{<i>yourtextname</i>}}</code> anywhere you author your content to include your named text value right in-place during site generation &mdash; content source pages, templates, posts, even your <a href="#">haxtatic.config</a> itself will work.</p>
+
+<p>Just use <code>{T{<i>yourtextname</i>}}
+</code> anywhere you author your content to include your named text value right in-place during site generation &mdash; content source pages, templates, posts, even your <a href="#">haxtatic.config</a> itself will work.</p>
 <p>Undefined text-value names will not be replaced and so remain in the output.</p>
 <p class="hd-note">
 	Here's how the <code>&lt;body&gt;</code> of this site's <a href="#">theme.tmpl.html</a> (and thus that of every single output page) begins:
-	<br/><code>&lt;h4&gt;{T{SiteTitle}}&lt;/h4&gt;</code><br/>
+	<br/><code>&lt;h4&gt;{T{SiteTitle}}
+&lt;/h4&gt;</code><br/>
 </p>
 <h2 id="See also">See also</h2>
+
 <ul>
-	<li>A more versatile equivalent of this functionality is offered by the <a href="#">{X{Snippets}}</a> X-tag, which let's you pass variable substitutions with all your named-text inclusions.</li>
+	<li>A more versatile equivalent of this functionality is offered by the <a href="#">
+
+</a> X-tag, which let's you pass variable substitutions with all your named-text inclusions.</li>
 	<li>To define named text values on a <i>per-page</i> basis (reuse within a single page but unknown outside it), use custom <a href="tags.p.html#Custom">custom P-tag</a>s.</li>
 </ul>
 
