@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wall #-}
 module XRandom where
 
 import qualified Html
@@ -6,9 +7,15 @@ import qualified Util
 
 
 type Item = ((String,String),String)
-data Cfg = Cfg { cssLink :: String, items :: [Item] } deriving (Read)
+data Cfg = Cfg {
+        cssLink :: String,
+        items :: [Item]
+    } deriving (Read)
 
 
+rand::
+    Pages.Ctx->
+    Int
 rand page =
     (abs $ nowint * year+(l fn)-lb) * (abs$day+month-nowint) * (lt+lb*nowint) * (nowint+(l$fn!!3)+(l$fn!!4)) where
         nowint = Pages.now page ; l = length ; fn = Pages.fname page
@@ -16,6 +23,9 @@ rand page =
         lt = l (Pages.titles page) ; lb = l (Pages.body page)
 
 
+ext::
+    String-> Cfg->
+    Pages.X
 ext tagname cfg =
     Pages.X [ Pages.Tmpl tagname apply, Pages.Tmpl tlink apply ] where
         tlink = tagname++"-Link"

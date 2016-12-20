@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wall #-}
 module XPageToc where
 
 import qualified Html
@@ -5,9 +6,17 @@ import qualified Pages
 import qualified Util
 
 
-data Cfg = Cfg { outerTag :: String, emptyIf :: Int, emptyMarkup :: String, linkAtts :: Util.KeyVals } deriving (Read)
+data Cfg = Cfg {
+        outerTag :: String,
+        emptyIf :: Int,
+        emptyMarkup :: String,
+        linkAtts :: Util.KeyVals
+    } deriving (Read)
 
 
+ext::
+    String-> Cfg->
+    Pages.X
 ext tagname cfg = Pages.X [ Pages.Tmpl tagname apply ] where
     apply _ _ page = if (length headings)<=(emptyIf cfg) then [emptyMarkup cfg] else map per_heading headings where
         headings = tail $ Pages.titles page

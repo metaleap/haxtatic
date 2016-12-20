@@ -1,4 +1,6 @@
+{-# OPTIONS_GHC -Wall #-}
 module Main where
+
 
 import qualified Blogs
 import qualified Config
@@ -19,10 +21,12 @@ import System.FilePath ( (</>) )
 import qualified System.IO
 
 
+helpmsg:: String
 helpmsg = "\n\n\n==== HAXTATIC ====\nNo project directory path given.\n  For existing project: specify its directory.\n\
     \  For a new project structure: specify its intended directory."
 
 
+main:: IO ()
 main = do
     -- grab some definitely-needed inputs right now or fail right here
     starttime <- Data.Time.Clock.getCurrentTime
@@ -34,7 +38,6 @@ main = do
             skipstaticfolders = numargs>1 && ("True"==(cmdargs!!1))
             splitarg i = if numargs > i then (Util.splitBy ',' $ cmdargs!!i) else []
             ispageskip name = elem name pagesskip
-            ispageonly name = elem name pagesonly
             ispageused name = not (ispageskip name) && (null pagesonly || elem name pagesonly)
             readorcreate defsrc fn = let fp = path fn in System.Directory.doesFileExist fp >>=
                 \isfile -> if isfile then readFile fp else writefilein dirsite fn defsrc >> return defsrc
@@ -123,7 +126,7 @@ main = do
                                         else writefile2outdir afn txt where (afn,txt) = a
                                     sortedposts = sortposts allposts
                                     in do
-                                        Control.Monad.mapM peratom atoms
+                                        _ <- Control.Monad.mapM peratom atoms
                                         return $ map (\(fullpath,pfn) -> ((fullpath, pfn), sortedposts, alltemplaters)) pagepaths
 
                 blogbyname bn = head $ filter (\b -> (Blogs.name b) == bn) blogs

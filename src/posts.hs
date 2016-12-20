@@ -1,4 +1,6 @@
+{-# OPTIONS_GHC -Wall #-}
 module Posts where
+
 
 import qualified Blogs
 import qualified Html
@@ -6,10 +8,22 @@ import qualified Util
 
 import qualified Data.Char
 
-data Post = Post { fn :: Util.FName, subcat :: String, title :: String, link :: String, pic :: String, text :: String, cat :: String, origraw :: String } deriving (Read)
+
+
+data Post = Post {
+        fn :: Util.FName,
+        subcat :: String,
+        title :: String,
+        link :: String,
+        pic :: String,
+        text :: String,
+        cat :: String,
+        origraw :: String
+    } deriving (Read)
 
 
 
+tmplAtom :: String
 tmplAtom = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
     \<feed xmlns=\"http://www.w3.org/2005/Atom\">\n\
     \    <link rel=\"self\" type=\"application/rss+xml\" href=\"http://&DOMAIN;/&ATOMFILE;\" />\n\
@@ -20,6 +34,7 @@ tmplAtom = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
     \    &ENTRIES;\n\
     \</feed>"
 
+tmplAtomEntry :: String
 tmplAtomEntry = "<entry>\n\
     \        <title type=\"html\">&POSTTITLE;</title><summary type=\"html\">&POSTDESC;</summary>\n\
     \        <link href=\"&POSTURL;\"/><author><name>&POSTAUTHOR;</name><email>info@&DOMAIN;</email></author>\n\
@@ -30,12 +45,17 @@ tmplAtomEntry = "<entry>\n\
 
 
 
-
+loadPosts::
+    String-> String->
+    [Post]
 loadPosts fname rawsrc =
     map perline $ filter Util.is $ lines rawsrc where
         perline ln = (read ("Post {"++ln++", cat=\""++fname++"\", origraw=\"\"}") :: Post)
 
 
+toAtom::
+    String-> String-> [Post]-> (String->Blogs.Blog)->
+    (String,String)
 toAtom domain feedname posts bbn = (atomfilename, rawxml) where
     atomfilename = if pblog then (Blogs.atom blog) else feedname++".atom"
     rawxml = if (pblog && (null atomfilename)) then "" else Util.replaceIn tmplAtom [

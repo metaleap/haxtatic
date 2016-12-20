@@ -1,4 +1,6 @@
+{-# OPTIONS_GHC -Wall #-}
 module Util where
+
 
 import qualified Control.Monad
 import qualified Data.Char
@@ -6,15 +8,28 @@ import qualified Data.List
 import qualified Data.List.Utils
 import qualified Data.Time.Clock
 import qualified System.Directory
-import qualified System.FilePath
 import System.FilePath ( (</>) )
 
 
+
 type FName = [String]
-fnYear (y:_) = y
-fnMonth (_:m:_) = m
-fnDay (_:_:d:_) = d
-fnName (_:_:_:n:_) = n
+
+fnYear ::
+    FName->
+    String
+fnYear (y:_) = y ; fnYear _ = ""
+fnMonth ::
+    FName->
+    String
+fnMonth (_:m:_) = m ; fnMonth _ = ""
+fnDay ::
+    FName->
+    String
+fnDay (_:_:d:_) = d ; fnDay _ = ""
+fnName ::
+    FName->
+    String
+fnName (_:_:_:n:_) = n ; fnName _ = ""
 
 
 
@@ -34,13 +49,14 @@ mergeKeyVals kvdefaults kvoverwrites =
         overwrite (k,v) = (k, keyVal kvoverwrites k v)
 
 
+
 -- readability-sugar helpers
 is v = (not . null) v
-count p [] = 0
+count _ [] = 0
 count p (lh:lt) = if (p lh) then 1+count' else count' where
     count' = count p lt
 indexOf v = (indexIf . (==)) v
-indexIf p [] = minBound::Int
+indexIf _ [] = minBound::Int
 indexIf p (lh:lt) = if (p lh) then 0 else 1+(indexIf p lt)
 within minval maxval val = val>=minval && val<=maxval
 whileIn l i p next def
@@ -49,18 +65,26 @@ whileIn l i p next def
     | otherwise = v
     where v = l!!i
 swapArgs fn x y = fn y x
-readInt s = read s :: Int
+via fn = ((>>) fn) . return
 drop3 = drop 3 ; take3 = take 3
 join = Data.List.intercalate
 trimChar ch = Data.List.dropWhile ((==) ch)
+
+readInt::
+    String->
+    Int
+readInt s = read s :: Int
+
+trimSpace :: String->String
 trimSpace = Data.List.dropWhile Data.Char.isSpace
+
+since :: Data.Time.Clock.UTCTime->Data.Time.Clock.UTCTime->Data.Time.Clock.NominalDiffTime
 since = swapArgs Data.Time.Clock.diffUTCTime
-via fn = ((>>) fn) . return
 
 
 
 indexOfSub _ [] = minBound::Int
-indexOfSub sub str@(char:rest)
+indexOfSub sub str@(_:rest)
     | all (uncurry (==)) (zip sub str)
         = 0
     | otherwise
@@ -72,6 +96,9 @@ lastIndexOfSub rev sub str
     where idx = indexOfSub (rev sub) (rev str)
 
 
+splitUp::
+    [String]-> String-> String->
+    [(String,String)]
 splitUp [] _ _ = []
 splitUp _ "" _ = []
 splitUp _ _ "" = []
@@ -99,7 +126,10 @@ replaceIn str ((old,new):rest) =
     Data.List.Utils.replace old new (replaceIn str rest)
 substitute old new = map (\item -> if (item==old) then new else item)
 splitBy delim = foldr per_elem [[]] where
-    per_elem el elems@(first:rest) | (el==delim) = []:elems | otherwise = (el:first):rest
+    per_elem _ [] = []
+    per_elem el elems@(first:rest)
+        | (el==delim) = []:elems
+        | otherwise = (el:first):rest
 quickSort prop less greater = sorted where
     sorted [] = []
     sorted (el:rest) = (sorted $ cmp less) ++ [el] ++ (sorted $ cmp greater) where
@@ -107,13 +137,20 @@ quickSort prop less greater = sorted where
 
 
 -- copy all files & folders within srcdir into dstdir
+copyDirTree::
+    FilePath-> FilePath->
+    IO ()
 copyDirTree srcdir dstdir =
     System.Directory.createDirectoryIfMissing True dstdir
     >> System.Directory.getDirectoryContents srcdir
         >>= copyAll srcdir dstdir True
 
 
+
 -- copy all files & folders (named in fsnames) within srcdir into dstdir
+copyAll::
+    FilePath-> FilePath-> Bool-> [FilePath]->
+    IO ()
 copyAll srcdir dstdir dofolders fsnames =
     mapM_ per_fsname fsnames where
         per_fsname "." = return () ; per_fsname ".." = return ()
@@ -121,6 +158,11 @@ copyAll srcdir dstdir dofolders fsnames =
             (if isfile then (System.Directory.copyFile srcpath dstpath) else if dofolders then (copyDirTree  srcpath dstpath) else return ())
                 where srcpath = srcdir </> fsname ; dstpath = dstdir </> fsname
 
+
+
+getAllFiles::
+    FilePath-> FilePath->
+    IO [FilePath]
 getAllFiles rootdir curdir =
     let curpath = rootdir </> curdir ; validnames = filter $ not . (Data.List.isPrefixOf ".")
         pername name =

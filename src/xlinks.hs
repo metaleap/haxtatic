@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wall #-}
 module XLinks where
 
 import qualified Html
@@ -6,8 +7,17 @@ import qualified Util
 
 import qualified Data.Char
 
-data Cfg = Cfg { lis :: Util.KeyVals, linkid :: String, css :: String, cssSel :: String } deriving (Read)
+data Cfg = Cfg {
+        lis :: Util.KeyVals,
+        linkid :: String,
+        css :: String,
+        cssSel :: String
+    } deriving (Read)
 
+
+ext::
+    String-> Cfg-> [String]->
+    Pages.X
 ext tagname cfg bnames = Pages.X [ Pages.Tmpl tagname apply ] where
     apply _ _ page = map per_link (lis cfg) where
         per_link li =

@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wall #-}
 module XListing where
 
 import qualified Html
@@ -8,20 +9,48 @@ import qualified Util
 import qualified Data.List
 
 
-data Args = Args { cats :: [String], years :: (String,String), subcats :: [String], subcatsonly :: Bool, groups :: Grouping, linkers :: Util.KeyVals, blogdf :: String } deriving (Read)
-data Grouping = NoGrouping | ByYear | ByMonth | ByDay deriving (Read, Eq)
+
+data Args = Args {
+        cats :: [String],
+        years :: (String,String),
+        subcats :: [String],
+        subcatsonly :: Bool,
+        groups :: Grouping,
+        linkers :: Util.KeyVals,
+        blogdf :: String }
+    deriving (Read)
+
+data Grouping =
+        NoGrouping |
+        ByYear |
+        ByMonth |
+        ByDay
+    deriving (Read, Eq)
+
 data Cfg = Cfg {
-        lean :: Bool, cssCat :: String, cssTitle :: String, cssDesc :: String, cssUl :: String,
-        groupTag :: String, imgPaths :: Util.KeyVals
+        lean :: Bool,
+        cssCat :: String,
+        cssTitle :: String,
+        cssDesc :: String,
+        cssUl :: String,
+        groupTag :: String,
+        imgPaths :: Util.KeyVals
     } deriving (Read)
 
 
+
+picSrc::
+    Cfg-> String->
+    String
 picSrc cfg ppic =
     let (pph:ppt) = Util.splitBy '>' ppic in
         if ppt==[] then pph else let imgpathprefix = Util.keyVal (imgPaths cfg) pph "" in
             if null imgpathprefix then pph else imgpathprefix ++ head ppt
 
 
+buildLi_Full::
+    Cfg-> Args-> Posts.Post-> String->
+    Html.Tag
 buildLi_Full cfg args post datecat = let
     csscat = cssCat cfg ; cssdesc = cssDesc cfg ; csstitle = cssTitle cfg
     pid = Util.join "_" $ Posts.fn post; pcat = Posts.cat post ; ptitle = Posts.title post ; ptext = Posts.text post
@@ -42,6 +71,9 @@ buildLi_Full cfg args post datecat = let
                 Html.T "div" [("",ptext),("class",cssdesc)] [] ]
         ]
 
+buildLi_Lean::
+    Cfg-> Args-> Posts.Post-> String->
+    Html.Tag
 buildLi_Lean cfg args post datecat =
     Html.T "li" [] $
         (if (null $ cssCat cfg) then [] else [Html.T "span" [("", if null datecat then Posts.subcat post else datecat)] []])++
@@ -51,6 +83,9 @@ buildLi_Lean cfg args post datecat =
             pid = Util.join "_" $ Posts.fn post
 
 
+ext::
+    String-> Cfg->
+    Pages.X
 ext tagname cfg = Pages.X [ Pages.Tmpl tagname apply ] where
     apply _ argstr page = fulloutput where
         fulloutput = if nogroups then [Html.emit $ tagUl itemsall] else concat $ map persection sections
@@ -59,6 +94,7 @@ ext tagname cfg = Pages.X [ Pages.Tmpl tagname apply ] where
         groupby ByYear x = (take 1 $ Posts.fn x)
         groupby ByMonth x = (take 2 $ Posts.fn x)
         groupby ByDay x = (take 3 $ Posts.fn x)
+        groupby NoGrouping _ = [] -- by `nogroups` this shouldn't ever be reached
         persection section =
             let items = itemsfor section in
                 if items==[] then [] else
@@ -84,9 +120,10 @@ ext tagname cfg = Pages.X [ Pages.Tmpl tagname apply ] where
             map doitem $ filter (ispostvisible year year month "") $ Pages.allPosts page
         itemsfor (year:_) =
             map doitem $ filter (ispostvisible (max year ymin) (min year ymax) "" "") $ Pages.allPosts page
+        itemsfor [] = [] -- for -Wall
         formatdate pfn
             | (length pfn)==1 = head pfn
-            | (length pfn)==2 = let daters = Pages.daters page in (Util.keyVal daters "_MonthYear" (snd $ head daters)) (pfn++[""])
+            | (length pfn)==2 = let pdaters = Pages.daters page in (Util.keyVal pdaters "_MonthYear" (snd $ head pdaters)) (pfn++[""])
             | otherwise = (Util.keyVal daters dateformat (snd $ head daters)) pfn where daters = Pages.daters page
         dateformat = blogdf args
         doitem post = let datecat = (if null dateformat then "" else formatdate (Posts.fn post)) in
