@@ -1,11 +1,28 @@
+{-# OPTIONS_GHC -Wall #-}
 module XRepeater where
 
 import qualified Pages
 import qualified Util
 
-data Args = Args { nums :: (Int,Int), alt :: [String], skip :: [Int], vars :: Util.KeyVals, nvars :: [(String,[String])] } deriving (Read, Show)
-data Cfg = Cfg { v :: Util.KeyVals, p :: String, c :: String, ps :: String } deriving (Read)
+data Args = Args {
+        nums :: (Int,Int),
+        alt :: [String],
+        skip :: [Int],
+        vars :: Util.KeyVals,
+        nvars :: [(String,[String])]
+    } deriving (Read, Show)
 
+data Cfg = Cfg {
+        v :: Util.KeyVals,
+        p :: String,
+        c :: String,
+        ps :: String
+    } deriving (Read)
+
+
+ext::
+    String-> Cfg->
+    Pages.X
 ext tagname cfg = Pages.X [ Pages.Tmpl tagname apply ] where
     apply _ argstr _ =
         [pre] ++ (map per_elem $ map indices iter) ++ [post]
@@ -23,7 +40,7 @@ ext tagname cfg = Pages.X [ Pages.Tmpl tagname apply ] where
             args = read ("Args { "++argstr++" }") :: Args
             allvars = Util.mergeKeyVals (v cfg) (vars args)
             replvars = repl++(concat replnv)++repl
-            repl = map (\(k,v) -> ("{%"++k++"}",v)) allvars
+            repl = map (\(key,val) -> ("{%"++key++"}",val)) allvars
             replnv = map nv2r (nvars args) where
                 nv2r (n,vs) = map (pern n vs) fromto
                 pern n vs i = ("{%"++n++(show i)++"}",val) where

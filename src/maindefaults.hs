@@ -1,12 +1,18 @@
+{-# OPTIONS_GHC -Wall #-}
 module MainDefaults where
+
 
 import qualified Data.Char
 
 import qualified System.FilePath
 
 
+haxConf::
+    String->
+    String
 haxConf sitename = "T:SiteTitle: "++(map Data.Char.toUpper sitename)++"-Site"
 
+themeHtml:: String
 themeHtml = "<!DOCTYPE html><html lang=\"en\"><head>\n\
     \    <title>{P{Title}} - {T{SiteTitle}}</title><style type=\"text/css\">\n\
     \        h3 { text-align: center; color: CaptionText; background: ActiveCaption; padding: 0.66em; letter-spacing: 0.33em; font-size: 1.44em; border-radius: 1em; border: 0.123em dotted Background; }\n\
@@ -24,6 +30,7 @@ themeHtml = "<!DOCTYPE html><html lang=\"en\"><head>\n\
     \    <hr/><small>Generated with <a href=\"http://github.com/HaXtatic\">{P{%demo_hax}}</a> on {P{Date}}</small>\n\
     \</body></html>"
 
+blogHtml:: String
 blogHtml = "<h1>{B{Title:_}}</h1>\n\
     \<p>{B{Desc:_}}</p>\n\
     \<p>\n\
@@ -31,6 +38,9 @@ blogHtml = "<h1>{B{Title:_}}</h1>\n\
     \articles within your <code>pages</code> folder on here, check out the <code>{X{Listings}}</code> tag type in the HaXtatic docs.\n\
     \</p>"
 
+indexHtml::
+    String-> String-> String-> String-> String-> String-> String->
+    String
 indexHtml dircur sitename dirsite dirpages pathpage pathtmpl pathfinal =
     let l = 1+(length dirsite) ; x s = "{P{%demo_dirpath}}<b>"++(drop (l) s)++"</b>" in
         "<h1>Greetings..</h1>\n\

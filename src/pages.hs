@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wall #-}
 module Pages where
 
 import qualified Html
@@ -6,19 +7,41 @@ import qualified Util
 
 import qualified Data.List
 
-data Ctx = Ctx { fname :: Util.FName, titles :: [String], body :: String, origpath :: String, now :: Int, pageVars :: Util.KeyVals, daters :: [(String,[String]->String)], allExts :: [X], allPosts :: [Posts.Post], allXTemplaters :: [Tmpl] }
-data Tmpl = Tmpl { tmplTag :: String, tmplApply :: String -> String -> Ctx -> [String] }
-data X = X { xTemplaters :: [Tmpl] }
+data Ctx = Ctx {
+        fname :: Util.FName,
+        titles :: [String],
+        body :: String,
+        origpath :: String,
+        now :: Int,
+        pageVars :: Util.KeyVals,
+        daters :: [( String , [String]->String )],
+        allExts :: [X],
+        allPosts :: [Posts.Post],
+        allXTemplaters :: [Tmpl]
+    }
+
+data Tmpl = Tmpl {
+        tmplTag :: String,
+        tmplApply :: String->String->Ctx->[String]
+    }
+
+data X = X {
+        xTemplaters :: [Tmpl]
+    }
 
 
+
+_join :: [String]->String
 _join = Util.join "."
 
 
+tmplSitemap :: String
 tmplSitemap = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\
     \<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">\n\
     \    &URLS;\n\
     \</urlset>"
 
+tmplSitemapUrl :: String
 tmplSitemapUrl = "<url>\n\
     \        <loc>http://&DOMAIN;/&FILENAME;</loc>\n\
     \        <lastmod>&DATE;</lastmod>\n\
@@ -28,10 +51,13 @@ tmplSitemapUrl = "<url>\n\
 
 
 
-newPageContext now daters allexts allposts alltemplaters fname rawsrc origpath = let
-    page = Ctx fname titles bodydone origpath now vars daters allexts allposts alltemplaters
+newPageContext::
+    Int-> [(String , [String]->String)]-> [X]-> [Posts.Post]-> [Tmpl]-> Util.FName-> String-> String->
+    Ctx
+newPageContext nowint alldaters allexts allposts alltemplaters fn rawsrc opath = let
+    page = Ctx fn ptitles bodydone opath nowint vars alldaters allexts allposts alltemplaters
     bodydone = postProcessMarkup page (unlines bodytmp)
-    (titles,bodytmp,vars) = foldr accum ([],[],[]) $ map perline $ lines rawsrc
+    (ptitles,bodytmp,vars) = foldr accum ([],[],[]) $ map perline $ lines rawsrc
     accum (tlines,blines,vlines) (tline,bline,vline) = (tlines++tline , blines++bline,vlines++vline)
     perline ln = (tline , bline, vline) where
         bline = if null vline then processMarkupLn page ln else []
@@ -49,17 +75,26 @@ newPageContext now daters allexts allposts alltemplaters fname rawsrc origpath =
     in page
 
 
+ispvar::
+    String->
+    Bool
 ispvar s = ends s && begins s where
     begins = Data.List.isPrefixOf "{P{%" ; ends = Data.List.isSuffixOf "}}"
 
 
-processMarkupDumbly4Feeds fn bn pbn title rawsrc origpath alltemplaters daters =
+processMarkupDumbly4Feeds::
+    [String]-> String-> String-> String-> String-> String-> [Tmpl]-> [(String , [String]->String)]->
+    String
+processMarkupDumbly4Feeds fn bn pbn title rawsrc opath alltemplaters alldaters =
     let blines = lines $ repl rawsrc ; perline l = map repl (processMarkupLn ctxtmp l)
-        ctxtmp = Ctx fn [title] (unlines blines) origpath 0 [] daters [] [] alltemplaters
+        ctxtmp = Ctx fn [title] (unlines blines) opath 0 [] alldaters [] [] alltemplaters
         repl s = Util.replaceIn (if (ispvar s) then "<!--\n"++s++"\n-->" else s) [("{P{BaseName}}",pbn),("{B{Name:_}}",bn),("{B{Title:_}}", "{B{Title:"++(Util.fnName fn)++"}}"),("{B{Desc:_}}", "{B{Desc:"++(Util.fnName fn)++"}}")]
         in postProcessMarkup ctxtmp $ unlines $ concat (map perline blines)
 
 
+postProcessMarkup::
+    Ctx-> String->
+    String
 postProcessMarkup page src =
     Util.replaceIn src ([
             ("{P{Title}}", head $ titles page),
@@ -77,6 +112,9 @@ postProcessMarkup page src =
                 formatter (name,func) = ("{P{Date"++name++"}}", func $ fname page)
 
 
+processMarkupLn::
+    Ctx-> String->
+    [String]
 processMarkupLn page lin = concat $ map checkh2' (doline lin) where
     doline ln = lines $ unlines $ map per_token $ Util.splitUp (map reverse ["{X{"]) "}}" ln
     per_token (s,i) = if null i then s else
@@ -92,10 +130,17 @@ processMarkupLn page lin = concat $ map checkh2' (doline lin) where
         in concat $ map apply $ allXTemplaters page
 
 
+h2innerToId::
+    String->
+    String
 h2innerToId h2 =
     Util.replaceIn h2 Html.escapes
 
 
+
+toSitemap::
+    String-> [Util.FName]-> [String]-> [String]->
+    String
 toSitemap domain pagefns blognames exclnames =
     Util.replaceIn tmplSitemap [
             ("&DOMAIN;", domain),
@@ -115,6 +160,6 @@ toSitemap domain pagefns blognames exclnames =
                     ("&PRIORITY;", priority pfn3)
                 ] where pfn3 = Util.drop3 pfn
             priority [] = "0.0" ; priority ["index",_] = "1.0" ; priority ["default",_] = "0.9"
-            priority [n,_] = let b = bidx n in if b<0 then "0.8" else Util.take3 (show (0.8-((fromIntegral b)/10.0)))
-            priority (lh:lt) = let b = bidx lh in Util.take3 (show ((1.0/(fromIntegral (length lt)))-((fromIntegral b)/10.0)))
+            priority [n,_] = let b = bidx n in if b<0 then "0.8" else Util.take3 (show ( (0.8-((fromIntegral b)/10.0)) :: Double ))
+            priority (lh:lt) = let b = bidx lh in Util.take3 (show ( ((1.0/(fromIntegral (length lt)))-((fromIntegral b)/10.0)) :: Double ))
             bidx n = 1+(Util.indexOf n blognames)

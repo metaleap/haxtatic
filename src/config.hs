@@ -1,6 +1,9 @@
+{-# OPTIONS_GHC -Wall #-}
 module Config where
 
+
 import qualified Blogs
+import qualified Pages
 import qualified Util
 
 import XImage
@@ -13,11 +16,19 @@ import XRepeater
 import XSnippets
 
 
+_split :: String->[String]
 _split = Util.splitBy ':'
+
+_join :: [String]->String
 _join = Util.join ":"
+
+_trim0 :: String->String
 _trim0 = Util.trimChar '0'
 
 
+blogs::
+    [String]->
+    [Blogs.Blog]
 blogs cfglines =
     [] ++ (concat $ map perline cfglines) where
         perline "" = [] ; perline ln = persplit $ _split ln
@@ -25,6 +36,9 @@ blogs cfglines =
         persplit _ = []
 
 
+exts::
+    [String]-> [String]->
+    [Pages.X]
 exts cfglines blognames =
     [] ++ (concat $ map perline cfglines) where
         perline "" = [] ; perline ln = persplit $ _split ln
@@ -41,6 +55,9 @@ exts cfglines blognames =
         wrap pre post splits = pre++(_join splits)++post
 
 
+txts::
+    [String]->
+    Util.KeyVals
 txts cfglines =
     [] ++ (concat $ map perline cfglines) where
         perline "" = [] ; perline ln = persplit $ _split ln
@@ -48,12 +65,18 @@ txts cfglines =
         persplit _ = []
 
 
+_daters::
+    [String]->
+    Util.KeyVals
 _daters cfglines =
     [("","YYYY/MM/DD"),("_MonthYear","month YYYY"),("_Year","YYYY")] ++ (concat $ map perline cfglines) where
         perline "" = [] ; perline ln = persplit $ _split ln
         persplit ("D":name:rest) = [(name, Util.trimSpace $ _join rest)]
         persplit _ = []
 
+daters::
+    [String]-> (String->String)->
+    [(String, ([String]->String))]
 daters cfglines monthname =
     map makedater (_daters cfglines) where
         makedater (name,dateformat) = (name,dater) where

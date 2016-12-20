@@ -1,11 +1,24 @@
+{-# OPTIONS_GHC -Wall #-}
 module Blogs where
+
 
 import qualified Util
 
 
-data Blog = Blog { name :: String, title :: String, nameAsCat :: Bool, desc :: String, atom :: String, df :: String } deriving (Read)
+data Blog = Blog {
+        name :: String,
+        title :: String,
+        nameAsCat :: Bool,
+        desc :: String,
+        atom :: String,
+        df :: String
+    } deriving (Read)
 
 
+
+tmplMarkupSrc::
+    [Blog]-> String-> String->
+    String
 tmplMarkupSrc blogs src curbname =
     Util.replaceIn src (concat (map perblog blogs)) where
         perblog b = dis++cur where

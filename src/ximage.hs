@@ -1,12 +1,23 @@
+{-# OPTIONS_GHC -Wall #-}
 module XImage where
+
 
 import qualified Html
 import qualified Pages
 
 
 type Args = (String,String)
-data Cfg = Cfg { link :: Bool, linkCss :: String, imgCss :: String, imgSrcPath :: String } deriving (Read)
+data Cfg = Cfg {
+        link :: Bool,
+        linkCss :: String,
+        imgCss :: String,
+        imgSrcPath :: String
+    } deriving (Read)
 
+
+ext::
+    String-> Cfg->
+    Pages.X
 ext tagname cfg = Pages.X [ Pages.Tmpl tagname apply ] where
     apply _ argstr _ = [ Html.emit $ if (link cfg) then lnk else img ] where
         img = Html.T "img" [("src",url),("title",title),("class",imgCss cfg)] []
