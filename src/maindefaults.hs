@@ -14,6 +14,7 @@ haxConf sitename = "T:SiteTitle: "++(map Data.Char.toUpper sitename)++"-Site"
 
 themeHtml:: String
 themeHtml = "<!DOCTYPE html><html lang=\"en\"><head>\n\
+    \    <meta content=\"text/html;charset=utf-8\" http-equiv=\"Content-Type\" />\n\
     \    <title>{P{Title}} - {T{SiteTitle}}</title><style type=\"text/css\">\n\
     \        h3 { text-align: center; color: CaptionText; background: ActiveCaption; padding: 0.66em; letter-spacing: 0.33em; font-size: 1.44em; border-radius: 1em; border: 0.123em dotted Background; }\n\
     \        small { display: block; background-color: InfoBackground; color: InfoText; text-align: right; font-style: italic; padding: 0.3em; margin: 0.3em; }\n\

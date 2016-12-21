@@ -61,9 +61,9 @@ newPageContext nowint alldaters allexts allposts alltemplaters fn rawsrc opath =
     accum (tlines,blines,vlines) (tline,bline,vline) = (tlines++tline , blines++bline,vlines++vline)
     perline ln = (tline , bline, vline) where
         bline = if null vline then processMarkupLn page ln else []
-        tline = concat $ map (istitle . Util.trimSpace) bline
+        tline = concat $ map (istitle . Util.trimStart) bline
         vline = let splits = Util.splitBy ':' (drop 4 $ take ((length ln)-2) ln)
-                    vname = head splits ; vval = Util.trimSpace $ Util.join ":" (tail splits)
+                    vname = head splits ; vval = Util.trimStart $ Util.join ":" (tail splits)
                     in if ispvar ln && (length splits)>=2 && Util.is vname && Util.is vval
                         then [("{P{%"++vname++"}}",vval)] else []
         --  another abomination that really shouldn't exist:

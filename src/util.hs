@@ -36,14 +36,14 @@ fnName (_:_:_:n:_) = n ; fnName _ = ""
 type KeyVals = [(String,String)]
 keyVal [] _ def = def
 keyVal ((k,v):kvt) key def
-    | key==k = v
-    | null kvt = def
-    | otherwise = keyVal kvt key def
+    |(key==k) = v
+    |(null kvt) = def
+    |(otherwise) = keyVal kvt key def
 keyValApp [] _ def _ = def
 keyValApp ((k,v):kvt) key def app
-    | key==k = v++app
-    | null kvt = def
-    | otherwise = keyValApp kvt key def app
+    |(key==k) = v++app
+    |(null kvt) = def
+    |(otherwise) = keyValApp kvt key def app
 mergeKeyVals kvdefaults kvoverwrites =
     Data.List.nub $ (map overwrite kvdefaults)++kvoverwrites where
         overwrite (k,v) = (k, keyVal kvoverwrites k v)
@@ -60,39 +60,44 @@ indexIf _ [] = minBound::Int
 indexIf p (lh:lt) = if (p lh) then 0 else 1+(indexIf p lt)
 within minval maxval val = val>=minval && val<=maxval
 whileIn l i p next def
-    | (i<0) || (i>=(length l)) = def
-    | (p v) = whileIn l (next i) p next def
-    | otherwise = v
+    |(i<0 || i>=(length l)) = def
+    |(p v) = whileIn l (next i) p next def
+    |(otherwise) = v
     where v = l!!i
-swapArgs fn x y = fn y x
 via fn = ((>>) fn) . return
 drop3 = drop 3 ; take3 = take 3
 join = Data.List.intercalate
-trimChar ch = Data.List.dropWhile ((==) ch)
+dropWhile el = Data.List.dropWhile ((==) el)
 
 readInt::
     String->
     Int
 readInt s = read s :: Int
 
-trimSpace :: String->String
-trimSpace = Data.List.dropWhile Data.Char.isSpace
+trim :: String->String
+trim = trimEnd . trimStart
+
+trimEnd :: String->String
+trimEnd = Data.List.takeWhile $ not . Data.Char.isSpace
+
+trimStart :: String->String
+trimStart = Data.List.dropWhile Data.Char.isSpace
 
 since :: Data.Time.Clock.UTCTime->Data.Time.Clock.UTCTime->Data.Time.Clock.NominalDiffTime
-since = swapArgs Data.Time.Clock.diffUTCTime
+since = flip Data.Time.Clock.diffUTCTime
 
 
 
 indexOfSub _ [] = minBound::Int
 indexOfSub sub str@(_:rest)
-    | all (uncurry (==)) (zip sub str)
+    |all (uncurry (==)) $ zip sub str
         = 0
-    | otherwise
+    |otherwise
         = 1+(indexOfSub sub rest)
 
 lastIndexOfSub rev sub str
-    | idx<0 = -1
-    | otherwise = (length str)-(length sub)-idx
+    |(idx<0) = -1
+    |(otherwise) = (length str)-(length sub)-idx
     where idx = indexOfSub (rev sub) (rev str)
 
 
@@ -128,8 +133,8 @@ substitute old new = map (\item -> if (item==old) then new else item)
 splitBy delim = foldr per_elem [[]] where
     per_elem _ [] = []
     per_elem el elems@(first:rest)
-        | (el==delim) = []:elems
-        | otherwise = (el:first):rest
+        |(el==delim) = []:elems
+        |(otherwise) = (el:first):rest
 quickSort prop less greater = sorted where
     sorted [] = []
     sorted (el:rest) = (sorted $ cmp less) ++ [el] ++ (sorted $ cmp greater) where
@@ -171,6 +176,6 @@ getAllFiles rootdir curdir =
                 walkortalk relpath isdir = (if isdir then (getAllFiles rootdir) else (return . l1)) relpath ; l1 v = [v]
     in
         System.Directory.getDirectoryContents curpath
-        >>= (swapArgs Control.Monad.forM pername) . validnames
+        >>= (flip Control.Monad.forM pername) . validnames
         >>= (return . concat . (Util.quickSort length (<) (>=)))
         -- why sort: want top-level files first. hacky but works for the very cases where it makes a difference

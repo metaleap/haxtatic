@@ -23,7 +23,7 @@ _join :: [String]->String
 _join = Util.join ":"
 
 _trim0 :: String->String
-_trim0 = Util.trimChar '0'
+_trim0 = Util.dropWhile '0'
 
 
 blogs::
@@ -45,7 +45,7 @@ exts cfglines blognames =
         persplit ("X":"Image":name:rest) = [XImage.ext name (read (wc rest) :: XImage.Cfg)]
         persplit ("X":"Links":name:rest) = [XLinks.ext name (read (wc rest) :: XLinks.Cfg) blognames]
         persplit ("X":"Listing":name:rest) = [XListing.ext name (read (wc rest) :: XListing.Cfg)]
-        persplit ("X":"Markup":name:rest) = [XMarkup.ext name $ Util.trimSpace $ _join rest]
+        persplit ("X":"Markup":name:rest) = [XMarkup.ext name $ Util.trimStart $ _join rest]
         persplit ("X":"PageToc":name:rest) = [XPageToc.ext name (read (wc rest) :: XPageToc.Cfg)]
         persplit ("X":"Random":name:rest) = [XRandom.ext name (read (wc rest) :: XRandom.Cfg)]
         persplit ("X":"Repeater":name:rest) = [XRepeater.ext name (read (wc rest) :: XRepeater.Cfg)]
@@ -61,7 +61,7 @@ txts::
 txts cfglines =
     [] ++ (concat $ map perline cfglines) where
         perline "" = [] ; perline ln = persplit $ _split ln
-        persplit ("T":name:rest) = [("{T{"++name++"}}", Util.trimSpace $ _join rest)]
+        persplit ("T":name:rest) = [("{T{"++name++"}}", Util.trimStart $ _join rest)]
         persplit _ = []
 
 
@@ -71,7 +71,7 @@ _daters::
 _daters cfglines =
     [("","YYYY/MM/DD"),("_MonthYear","month YYYY"),("_Year","YYYY")] ++ (concat $ map perline cfglines) where
         perline "" = [] ; perline ln = persplit $ _split ln
-        persplit ("D":name:rest) = [(name, Util.trimSpace $ _join rest)]
+        persplit ("D":name:rest) = [(name, Util.trimStart $ _join rest)]
         persplit _ = []
 
 daters::
