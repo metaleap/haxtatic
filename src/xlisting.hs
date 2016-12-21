@@ -61,7 +61,7 @@ buildLi_Full cfg args post datecat = let
     autoicon = firstimg firstimginner where
         firstimginner = let
             l = filter Util.is $ map (Html.tagInner2 "img") $ lines (Posts.origraw post)
-            in if null l then "" else Util.trimSpace (head l)
+            in if null l then "" else Util.trimStart (head l)
         firstimg ('s':'r':'c':'=':'\"':src) = take (max 0 (Util.indexOf '\"' src)) src
         firstimg _ = ""
     in Html.T "li" [("name",pid),("id",pid)] [

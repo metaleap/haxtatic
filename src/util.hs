@@ -67,15 +67,21 @@ whileIn l i p next def
 via fn = ((>>) fn) . return
 drop3 = drop 3 ; take3 = take 3
 join = Data.List.intercalate
-trimChar ch = Data.List.dropWhile ((==) ch)
+dropWhile el = Data.List.dropWhile ((==) el)
 
 readInt::
     String->
     Int
 readInt s = read s :: Int
 
-trimSpace :: String->String
-trimSpace = Data.List.dropWhile Data.Char.isSpace
+trim :: String->String
+trim = trimEnd . trimStart
+
+trimEnd :: String->String
+trimEnd = Data.List.takeWhile $ not . Data.Char.isSpace
+
+trimStart :: String->String
+trimStart = Data.List.dropWhile Data.Char.isSpace
 
 since :: Data.Time.Clock.UTCTime->Data.Time.Clock.UTCTime->Data.Time.Clock.NominalDiffTime
 since = flip Data.Time.Clock.diffUTCTime
