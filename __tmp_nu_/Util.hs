@@ -1,5 +1,11 @@
 {-# OPTIONS_GHC -Wall #-}
+{-# LANGUAGE NegativeLiterals #-}
+
 module Util where
+
+
+
+($>) = flip ($)
 
 
 (#)::
