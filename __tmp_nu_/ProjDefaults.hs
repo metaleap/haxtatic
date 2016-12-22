@@ -1,9 +1,9 @@
 {-# OPTIONS_GHC -Wall #-}
-{-# LANGUAGE NegativeLiterals #-}
 
 module ProjDefaults where
 
 import qualified Files
+import Util ( (>~) )
 
 import qualified Data.Char
 
@@ -11,7 +11,7 @@ import qualified Data.Char
 
 --  the basic default input files
 data CoreFiles = CoreFiles {
-    project :: Files.File,
+    projectDefault :: Files.File,
     projectOverwrites :: Files.File,
     htmlTemplateMain :: Files.File,
     htmlTemplateBlok :: Files.File
@@ -33,8 +33,9 @@ loadOrCreate ctx projname projfilename custfilename =
 
 
 
+
 _proj name =
-    "::T::\n:SiteTitle: "++(map Data.Char.toUpper name)++"-Site\n"
+    "T::SiteTitle: "++(name >~ Data.Char.toUpper)++"-Site\n"
 
 
 _tmplblok =

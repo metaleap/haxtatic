@@ -1,7 +1,6 @@
 #!/usr/bin/env stack
 {- stack --install-ghc runghc -}
 {-# OPTIONS_GHC -Wall #-}
-{-# LANGUAGE NegativeLiterals #-}
 
 module Main where
 
@@ -9,7 +8,7 @@ import qualified Files
 import qualified Proj
 import qualified ProjDefaults
 import qualified Util
-import Util ( (#) , (°), ($>) )
+import Util ( (#) , (~>) )
 
 import qualified Data.Time.Clock
 import qualified System.Directory
@@ -27,7 +26,7 @@ main =
     >> putStrLn "\n\n\n==== HAXTATIC ====\n"
     >> System.IO.hFlush System.IO.stdout
     >> System.Environment.getArgs >>= \ cmdargs
-    -> if 0 == (°)cmdargs
+    -> if 0 == cmdargs~>length
         then putStrLn "No project-directory path supplied.\n\
             \  For existing project: specify path to its current directory.\n\
             \  For a new project: specify path to its intended directory.\n    (I'll create it if missing and its parent isn't.)\n\n"
@@ -43,10 +42,13 @@ main =
 
 process ctxmain projfilename custfilename =
     let ensurefilename = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
-        dirpath = ctxmain$>Files.dirPath
+        dirpath = ctxmain~>Files.dirPath
         projname = System.FilePath.takeBaseName dirpath
     in System.Directory.createDirectoryIfMissing False dirpath
     >> putStrLn "1. Reading essential project files [or (re)creating them..]"
     >> ProjDefaults.loadOrCreate ctxmain projname (ensurefilename projfilename) (ensurefilename custfilename)
-    >>= Proj.loadCtx ctxmain projname >>= \ ctxproj
-    -> print (Proj.tVal ctxproj "test" "ouf")
+    >>= return . Proj.loadCtx ctxmain projname >>= \ ctxproj
+    -> putStrLn ((ctxproj~>Proj.setup~>Proj.tVal) "SiteTitle" "NAY: SiteTitle")
+    >> putStrLn ((ctxproj~>Proj.setup~>Proj.tVal) "Mul2" "NAY: Mul2")
+    >> putStrLn ((ctxproj~>Proj.setup~>Proj.tVal) "MooHaha" "NAY: MooHaha")
+    >> putStrLn ((ctxproj~>Proj.setup~>Proj.tVal) "Multi1" "NAY: Multi1")

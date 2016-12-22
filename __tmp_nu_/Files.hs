@@ -3,7 +3,7 @@
 
 module Files where
 
-import Util ( ($>) )
+import Util ( (~>) )
 
 import qualified Data.Time.Clock
 import qualified System.Directory
@@ -17,7 +17,7 @@ data File = NoFile | File {
     path :: FilePath,
     content :: String,
     modTime :: Data.Time.Clock.UTCTime
-}
+} deriving (Eq)
 
 
 data Ctx = Ctx {
@@ -28,7 +28,7 @@ data Ctx = Ctx {
 
 readOrCreate ctx relpath defaultcontent =
     if null relpath then return NoFile else
-    let filepath = System.FilePath.combine (ctx$>dirPath) relpath
+    let filepath = System.FilePath.combine (ctx~>dirPath) relpath
     in System.Directory.doesFileExist filepath
     >>= \ isfile -> if isfile
         then
@@ -37,7 +37,7 @@ readOrCreate ctx relpath defaultcontent =
             -> return (File filepath filecontent modtime)
         else
             writeTo filepath relpath defaultcontent
-            >> return (File filepath defaultcontent (ctx$>nowTime))
+            >> return (File filepath defaultcontent (ctx~>nowTime))
 
 
 writeTo filepath relpath filecontent =
