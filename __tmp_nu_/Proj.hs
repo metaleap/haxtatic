@@ -23,7 +23,8 @@ data Ctx = Ctx {
 data Setup = Setup {
     srcRaw :: [String],
     srcPre :: [String],
-    tVal :: String->String->String
+    tTags :: String->String,
+    bTags :: String->String
 }
 
 
@@ -39,16 +40,28 @@ loadCtx mainctx projname defaultfiles =
 
 
 loadCoreFiles ctx =
-    Setup { srcRaw=srclinespost, srcPre=srclinesprep, tVal=(tvalue postlinessplits True) }
+    let setuppost = Setup { srcRaw=srclinespost, srcPre=srclinesprep,
+                            tTags=tvalpost,
+                            bTags= Bloks.bTagResolver "" blokspost }
+    in setuppost
     where
-        tvalue linessplits canparsestr key defval =
-            Data.Map.Strict.findWithDefault defval key (tsection linessplits canparsestr)
+        setuppre = Setup { srcRaw=[], srcPre=[],
+                            tTags=tvalpre,
+                            bTags= Bloks.bTagResolver "" blokspre }
 
-        srclinespost = Util.repeatUntilNoChange (processSrc (tvalue preplinessplits False)) srclinesprep
+        blokspre = Bloks.parseDefs preplinessplits
+        blokspost = Bloks.parseDefs postlinessplits
+
+        tvalpre = tvalue (tsection preplinessplits False)
+        tvalpost = tvalue (tsection postlinessplits True)
+        tvalue hashmap key =
+            Data.Map.Strict.findWithDefault ("{!T{"++key++"}!}") key hashmap
+
         srclinesprep = _srclines_expandml ctx
+        srclinespost = processSrcFully setuppre (srclinesprep~>unlines) ~> lines
         tsection linessplits canparsestr = Data.Map.Strict.fromList$
             linessplits ~> map tpersplit
-                ~> (filter$ not.null.fst)
+                ~> (filter $not.null.fst)
             where
                 tpersplit ("T":"":tname:tvalsplits) =
                     ( tname~>Util.trim , tvalsplits ~> (Util.join ":") ~> Util.trim ~> srcparsestr )
@@ -56,20 +69,27 @@ loadCoreFiles ctx =
                     ( "" , "" )
                 srcparsestr str
                     | canparsestr && Util.startsWith str "\"" && Util.endsWith str "\""
-                        = case (Text.Read.readMaybe$ str) :: Maybe String of
+                        = case (Text.Read.readMaybe str) :: Maybe String of
                             Nothing -> str ; Just parsed -> parsed
                     | otherwise
                         = str
-        preplinessplits = srclinesprep>~ (Util.splitBy ':')
-        postlinessplits = srclinespost>~ (Util.splitBy ':')
+        preplinessplits = srclinesprep>~ _splitc
+        postlinessplits = srclinespost>~ _splitc
+        _splitc = Util.splitBy ':'
 
 
-processSrc tval srclines =
-    let src = unlines srclines
-    in (Util.splitUp ["{T{", "{B{"] "}}" src) ~> map perchunk ~> concat ~> lines
+processSrcFully =
+    Util.repeatedly . processSrcJustOnce
+
+processSrcJustOnce ctxSetup src =
+    ((Util.splitUp ["{T{","{B{"] "}}" src)>~perchunk) ~> concat
     where
-        perchunk (str , "{T{") = tval str ("{T?{"++str++"}?}")
-        perchunk (str , _) = str
+        perchunk (str , "{B{") =
+            (ctxSetup~>bTags) str
+        perchunk (str , "{T{") =
+            (ctxSetup~>tTags) str
+        perchunk (str , _) =
+            str
 
 
 _srclines_expandml ctx =
