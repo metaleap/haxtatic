@@ -12,7 +12,7 @@ import qualified Data.List
 
 (~>) = flip ($)
 
-(>~) = flip ((map))
+(>~) = flip map
 infix 8 >~
 
 
