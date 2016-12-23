@@ -12,7 +12,7 @@ import qualified Data.List
 
 (~>) = flip ($)
 
-(>~) = flip map
+(>~) = flip ((map))
 infix 8 >~
 
 
@@ -37,6 +37,8 @@ infix 9 #
 dropLast 0 l = l
 dropLast 1 l = init l
 dropLast n l = l~>take (l~>length - n)
+
+indexed l = zip [0 .. (l~>length - 1)] l
 
 endsWith :: (Eq t)=> [t]->[t]->Bool
 endsWith = flip Data.List.isSuffixOf
@@ -82,7 +84,7 @@ atOr list index defval = if list~>length > index then list#index else defval
 
 indexOfSub _ [] = minBound::Int
 indexOfSub sub str@(_:rest)
-    |(zip sub str) ~> (all $ (==)~>uncurry)
+    |(zip sub str) ~> (all$ (==)~>uncurry)
         = 0
     |otherwise
         = 1+(indexOfSub sub rest)
@@ -113,17 +115,17 @@ splitUp beginners end str =
         --  only recurse if we have a good reason:
         (if nomatch && splitat==0 then (tolist rest "") else (splitUp beginners end rest))
     where
-        pre = str ~> (take $ if nomatch then splitat else begpos)
-        match = if nomatch then "" else str ~> (take endpos) ~> (drop $ begpos+beg0len)
-        rest = str ~> (drop $ if nomatch then splitat else endposl)
+        pre = str ~> (take$ if nomatch then splitat else begpos)
+        match = if nomatch then "" else str ~> (take endpos) ~> (drop$ begpos+beg0len)
+        rest = str ~> (drop$ if nomatch then splitat else endposl)
         beginner = if nomatch then "" else str ~> (take endpos) ~> (drop begpos) ~> take beg0len
         nomatch = endpos<0 || begpos<0
         splitat = if nomatch && endpos>=0 then endposl else 0
         endpos = indexOfSub end str
         begpos = if endpos<0 then -1 else
             let bstr = str ~> (take endpos) ~> reverse
-            in maximum $ beginners >~ \eachbeg
-                -> lastIndexOfSub id eachbeg bstr
+            in maximum$ beginners>~ \each
+                -> lastIndexOfSub id each bstr
         endposl = endpos+(end~>length)
         beg0len = (beginners#0)~>length
         tolist val beg = if null val then [] else [(val,beg)]

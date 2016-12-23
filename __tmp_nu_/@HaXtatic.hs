@@ -36,7 +36,7 @@ main =
             in process ctxmain (Util.atOr cmdargs 1 "default.haxproj") (Util.atOr cmdargs 2 "")
             >> Data.Time.Clock.getCurrentTime >>= \ endtime
             -> let timetaken = Data.Time.Clock.diffUTCTime endtime starttime
-            in putStrLn $ "\n\nWell it's been "++(show timetaken)++":\n\n==== Bye now! ====\n\n\n"
+            in putStrLn$ "\n\nWell it's been "++(show timetaken)++":\n\n==== Bye now! ====\n\n\n"
 
 
 
@@ -48,7 +48,12 @@ process ctxmain projfilename custfilename =
     >> putStrLn "1. Reading essential project files [or (re)creating them..]"
     >> ProjDefaults.loadOrCreate ctxmain projname (ensurefilename projfilename) (ensurefilename custfilename)
     >>= return . Proj.loadCtx ctxmain projname >>= \ ctxproj
+
     -> putStrLn ((ctxproj~>Proj.setup~>Proj.tVal) "SiteTitle" "NAY: SiteTitle")
     >> putStrLn ((ctxproj~>Proj.setup~>Proj.tVal) "Mul2" "NAY: Mul2")
     >> putStrLn ((ctxproj~>Proj.setup~>Proj.tVal) "MooHaha" "NAY: MooHaha")
-    >> putStrLn ((ctxproj~>Proj.setup~>Proj.tVal) "Multi1" "NAY: Multi1")
+    >> putStrLn ((ctxproj~>Proj.setup~>Proj.tVal) "_Hx_MlRepl_0" "NAY: _Hx_MlRepl_0")
+    >> putStrLn ((ctxproj~>Proj.setup~>Proj.tVal) "_Hx_MlRepl_1" "NAY: _Hx_MlRepl_1")
+    >> putStrLn ((ctxproj~>Proj.setup~>Proj.tVal) "_Hx_MlRepl_2" "NAY: _Hx_MlRepl_2")
+    >> putStrLn ((ctxproj~>Proj.setup~>Proj.tVal) "_Hx_MlRepl_3" "NAY: _Hx_MlRepl_3")
+    >> putStrLn ((ctxproj~>Proj.setup~>Proj.tVal) "_Hx_MlRepl_4" "NAY: _Hx_MlRepl_4")

@@ -2,7 +2,7 @@
 rem to run from haxtatic folder
 rem all the `.\` is of course superfluous but nvm
 
-rem del /F /Q /S .\src-docs\build\*
+rem del /F /Q /S .\dox-demo\build\*
 del /F /Q /S .\docs\*
-stack .\@HaXtatic.hs .\src-docs default.haxproj overwrites.haxproj
-xcopy .\src-docs\build\* .\docs\ /S /I /Q /Y
+stack .\@HaXtatic.hs .\dox-demo dox-demo.haxproj overwrites.haxproj
+xcopy .\dox-demo\build\* .\docs\ /S /I /Q /Y
