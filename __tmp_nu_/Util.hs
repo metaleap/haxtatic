@@ -16,6 +16,11 @@ import qualified Data.List
 infix 8 >~
 
 
+repeatUntilNoChange fn arg =
+    let result = fn arg
+    in if result==arg then result else repeatUntilNoChange fn result
+
+
 (#)::
     [t] -> Int -> t
 --  alias for: `!!` ..for these most common cases, no need to `fold`
@@ -107,13 +112,20 @@ splitBy delim = foldr peritem [[]] where
 splitUp::
     [String]-> String-> String->
     [(String,String)]
-splitUp [] _ _ = []
-splitUp _ "" _ = []
-splitUp _ _ "" = []
-splitUp beginners end str =
+splitUp beginners end str = let
+    in _splitup beginners end ((beginners#0)~>length) lastidx str where
+        lastidx' = lastIndexOfSub id
+        lastidx bstr = maximum$ beginners>~ \each-> lastidx' each bstr
+
+
+_splitup _ _ _ _ "" = []
+_splitup _ "" _ _ s = [("",s)]
+_splitup [] _ _ _ s = [("",s)]
+_splitup _ _ 0 _ s = [("",s)]
+_splitup beginners end beg0len lastidx str =
     (tolist pre "") ++ (tolist match beginner) ++
         --  only recurse if we have a good reason:
-        (if nomatch && splitat==0 then (tolist rest "") else (splitUp beginners end rest))
+        (if nomatch && splitat==0 then (tolist rest "") else (_splitup beginners end beg0len lastidx rest))
     where
         pre = str ~> (take$ if nomatch then splitat else begpos)
         match = if nomatch then "" else str ~> (take endpos) ~> (drop$ begpos+beg0len)
@@ -123,9 +135,6 @@ splitUp beginners end str =
         splitat = if nomatch && endpos>=0 then endposl else 0
         endpos = indexOfSub end str
         begpos = if endpos<0 then -1 else
-            let bstr = str ~> (take endpos) ~> reverse
-            in maximum$ beginners>~ \each
-                -> lastIndexOfSub id each bstr
+            lastidx$ str ~> (take endpos) ~> reverse
         endposl = endpos+(end~>length)
-        beg0len = (beginners#0)~>length
         tolist val beg = if null val then [] else [(val,beg)]
