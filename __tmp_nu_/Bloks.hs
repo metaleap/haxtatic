@@ -5,6 +5,7 @@ module Bloks where
 import qualified Util
 import Util ( (~>) , (>~) )
 
+import qualified Data.List
 import qualified Data.Map.Strict
 import qualified Text.Read
 
@@ -38,23 +39,18 @@ parseDefs linessplits =
 bTagResolver curbname bloks str =
     bvalue (Util.splitBy ':' str) bloks
     where
-        bvalue ("title":bname:[]) hashmap =
-            bvalhelper "title" bname title hashmap
-        bvalue ("desc":bname:[]) hashmap =
-            bvalhelper "desc" bname desc hashmap
-        bvalue ("atomFile":bname:[]) hashmap =
-            bvalhelper "atomFile" bname atomFile hashmap
-        bvalue ("dater":bname:[]) hashmap =
-            bvalhelper "dater" bname dater hashmap
-        bvalue splits _ = -- reconstruct for later accesses
-            let ifname = if "name"/=(Util.atOr splits 0 "") then
-                            "" else Util.atOr splits 1 curbname
-            in if null ifname then
-                "{B{"++(_joinc splits)++"}}" else ifname
-        bvalhelper fname bname field hashmap =
-            let name = if null bname then curbname else bname
-                blok = Data.Map.Strict.findWithDefault NoBlok name hashmap
-            in if blok==NoBlok then "{B{"++(_joinc [fname,name])++"}}" else field blok
+        bvalue splits hashmap =
+            let fields = [("title",title),("desc",desc),("atomFile",atomFile),("dater",dater)]
+                fname = Util.atOr splits 0 ""
+                bname = Util.atOr splits 1 curbname
+                blok = if null bname then NoBlok else Data.Map.Strict.findWithDefault NoBlok bname hashmap
+                restore = "{B{"++(_joinc splits)++"}}"
+            in if fname=="name" && (not.null) bname
+                then bname else if blok==NoBlok || null fname
+                    then restore else
+                        case Data.List.lookup fname fields of
+                            Just fieldval -> fieldval blok
+                            Nothing -> restore
 
 
 toParseString projline =
