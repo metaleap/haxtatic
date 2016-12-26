@@ -38,10 +38,12 @@ repeatedly fn arg =
 infix 9 #
 
 
+dropLast 0 = id
+dropLast 1 = init
+dropLast n = ((#n) . reverse . Data.List.inits)
+-- dropLast n l = l~>take (l~>length - n)
 
-dropLast 0 l = l
-dropLast 1 l = init l
-dropLast n l = l~>take (l~>length - n)
+takeLast n = ((#n) . reverse . Data.List.tails)
 
 indexed l = zip [0 .. (l~>length - 1)] l
 
@@ -64,6 +66,10 @@ trimEnd = Data.List.dropWhileEnd Data.Char.isSpace
 
 trimStart :: String->String
 trimStart = Data.List.dropWhile Data.Char.isSpace
+
+sub start len = (take len) . (drop start)
+
+truncate start end = (drop start) . (dropLast end)
 
 
 atOr::
@@ -122,19 +128,19 @@ splitBy delim =
 splitUp::
     [String]-> String-> String->
     [(String,String)]
-splitUp beginners end str =
-    _splitup beginners end ((beginners#0)~>length) lastidx str where
+splitUp beginners =
+    _splitup (length$ atOr beginners 0 "") lastidx beginners where
         lastidx' = lastIndexOfSub id
-        lastidx bstr = maximum$ beginners>~ \each-> lastidx' each bstr
+        lastidx bstr = (beginners>~ \each-> lastidx' each bstr) ~> maximum
 
 
 _splitup _ _ _ _ "" = []
-_splitup _ "" _ _ s = [("",s)]
-_splitup [] _ _ _ s = [("",s)]
-_splitup _ _ 0 _ s = [("",s)]
-_splitup beginners end beg0len lastidx str =
+_splitup 0 _ _ _ s = [("",s)]
+_splitup _ _ [] _ s = [("",s)]
+_splitup _ _ _ "" s = [("",s)]
+_splitup beg0len lastidx beginners end str =
     (tolist pre "") ++ (tolist match beginner) ++ --  only recurse if we have a good reason:
-        (if nomatch && splitat==0 then (tolist rest "") else (_splitup beginners end beg0len lastidx rest))
+        (if nomatch && splitat==0 then (tolist rest "") else (_splitup beg0len lastidx beginners end rest))
     where
     pre = str ~> (take$ if nomatch then splitat else begpos)
     match = if nomatch then "" else str ~> (take endpos) ~> (drop $begpos+beg0len)

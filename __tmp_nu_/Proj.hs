@@ -116,6 +116,6 @@ _srclines_expandml ctx =
         --  occurrence rewritten into {T{key}}
         perchunk (i , (str , "{'{")) =
             let tkey = "_Hx_MlRepl_"++(show i) in
-            ( "{T{"++tkey++"}}" , (tkey , "\"" ++(show str ~> Util.dropLast 1 ~> drop 1)++ "\""))
+            ( "{T{"++tkey++"}}" , (tkey , "\"" ++(show str ~> (Util.truncate 1 1))++ "\""))
         perchunk (_ , (str , _)) =
             (str , ("" , ""))
