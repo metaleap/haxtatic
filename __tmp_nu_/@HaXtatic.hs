@@ -8,7 +8,7 @@ import qualified Files
 import qualified Proj
 import qualified ProjDefaults
 import qualified Util
-import Util ( (#) , (~>) )
+import Util ( (#) , (~>) , (~.) )
 
 import qualified Data.Time.Clock
 import qualified System.Directory
@@ -26,7 +26,7 @@ main =
     >> putStrLn "\n\n\n==== HAXTATIC ====\n"
     >> System.IO.hFlush System.IO.stdout
     >> System.Environment.getArgs >>= \ cmdargs
-    -> if 0 == cmdargs~>length
+    -> if null cmdargs
         then putStrLn "No project-directory path supplied.\n\
             \  For existing project: specify path to its current directory.\n\
             \  For a new project: specify path to its intended directory.\n    (I'll create it if missing and its parent isn't.)\n\n"
@@ -47,7 +47,7 @@ process ctxmain projfilename custfilename =
     in System.Directory.createDirectoryIfMissing False dirpath
     >> putStrLn "1. Reading essential project files [or (re)creating them..]"
     >> ProjDefaults.loadOrCreate ctxmain projname (ensurefilename projfilename) (ensurefilename custfilename)
-    >>= return . Proj.loadCtx ctxmain projname >>= \ ctxproj
+    >>= Proj.loadCtx ctxmain projname ~. return >>= \ ctxproj
 
     -> putStrLn ((ctxproj~>Proj.setup~>Proj.tTags) "SiteTitle")
     --  >> putStrLn ((ctxproj~>Proj.setup~>Proj.tTags) "Mul2")

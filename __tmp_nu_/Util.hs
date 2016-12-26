@@ -34,7 +34,7 @@ repeatedly fn arg =
 (#) (_:_:_:_:_:_:_:x:_) 7 = x
 (#) (_:_:_:_:_:_:_:_:x:_) 8 = x
 (#) (_:_:_:_:_:_:_:_:_:x:_) 9 = x
-(#) l i = l!!i
+(#) list@(_:_) i = (#) (drop i list) 0 where
 infix 9 #
 
 
@@ -71,6 +71,10 @@ atOr::
     t
 --  value in `list` at `index`, or `defval`
 atOr [] _ defval = defval
+atOr (x:_) 0 _ = x
+atOr (_:x:_) 1 _ = x
+atOr (_:_:x:_) 2 _ = x
+atOr (_:_:_:x:_) 3 _ = x
 atOr (_:[]) 1 defval = defval
 atOr (_:[]) 2 defval = defval
 atOr (_:[]) 3 defval = defval
@@ -86,7 +90,9 @@ atOr (_:_:_:[]) 5 defval = defval
 atOr (_:_:_:_:[]) 4 defval = defval
 atOr (_:_:_:_:[]) 5 defval = defval
 atOr (_:_:_:_:_:[]) 5 defval = defval
-atOr list index defval = if list~>length > index then list#index else defval
+atOr list index defval
+    |(list~>length > index && index > -1) = list#index
+    |(otherwise) = defval
 
 
 

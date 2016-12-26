@@ -64,7 +64,7 @@ loadCoreFiles ctx =
                 ~> (filter $not.null.fst)
             where
                 tpersplit ("T":"":tname:tvalsplits) =
-                    ( tname~>Util.trim , tvalsplits ~> (Util.join ":") ~> Util.trim ~> srcparsestr )
+                    ( tname~>Util.trim , tvalsplits ~> _joinc ~> Util.trim ~> srcparsestr )
                 tpersplit _ =
                     ( "" , "" )
                 srcparsestr str
@@ -76,6 +76,7 @@ loadCoreFiles ctx =
         preplinessplits = srclinesprep>~ _splitc
         postlinessplits = srclinespost>~ _splitc
         _splitc = Util.splitBy ':'
+        _joinc = Util.join ":"
 
 
 processSrcFully =
