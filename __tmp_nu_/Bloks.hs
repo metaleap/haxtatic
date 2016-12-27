@@ -3,7 +3,7 @@
 module Bloks where
 
 import qualified Util
-import Util ( (#) , (~>) , (>~) )
+import Util ( (#) , (~>) , (>~) , (~|) )
 
 import qualified Data.List
 import qualified Data.Map.Strict
@@ -25,7 +25,7 @@ _joinc = Util.join ":"
 
 parseDefs linessplits =
     Data.Map.Strict.fromList$
-    (linessplits >~ persplit) ~> filter (/=noblok) where
+    linessplits>~persplit ~|(/=noblok) where
         persplit ("B":"":bname:bvalsplits) =
             let parsestr = bvalsplits ~> _joinc ~> Util.trim ~> toParseStr
                 parsed = (Text.Read.readMaybe parsestr) :: Maybe Blok
@@ -47,7 +47,7 @@ bTagResolver curbname hashmap str =
                 Data.Map.Strict.findWithDefault NoBlok bname hashmap
         restore = "{B{"++(_joinc splits)++"}}"
     in if null splits then restore else
-        if fname=="name" && (not.null) bname
+        if fname=="name" && Util.is bname
             then bname else if blok==NoBlok || null fname
                 then restore else
                     case Data.List.lookup fname fields of

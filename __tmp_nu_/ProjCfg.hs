@@ -4,7 +4,7 @@ module ProjCfg where
 
 import qualified ProjDefaults
 import qualified Util
-import Util ( (~>) , (>~) )
+import Util ( (~>) , (>~) , (~|) , (|~) )
 
 import qualified Data.Map.Strict
 import qualified Data.Maybe
@@ -35,13 +35,14 @@ parseDefs linessplits =
                         Data.Map.Strict.findWithDefault Nothing ("process:"++name) configs
         procdef dirname = Processing { dirs = [dirname], skip = [], force = [] }
         procsane defname proc = Processing {
-                dirs = Util.fallback (filter (not.null) (proc~>dirs)) [defname],
-                skip = sanitize skip,
-                force = sanitize force
+                dirs = Util.fallback (proc~>dirs ~| Util.is) [defname],
+                skip = sane skip,
+                force = sane force
             } where
-                sanitize field = let tmp = filter (not.null) (proc~>field) in if elem "*" tmp then ["*"] else tmp
+                sane field = let tmp = proc~>field ~| Util.is in
+                    if elem "*" tmp then ["*"] else tmp
         configs = Data.Map.Strict.fromList$
-            linessplits ~> map persplit where
+            linessplits>~persplit where
             persplit ("C":"":"process":name:procstr) =
                 ( "process:"++name , (Text.Read.readMaybe$ "Processing {"++(Util.join ":" procstr)++"}") :: Maybe Processing)
             persplit _ =

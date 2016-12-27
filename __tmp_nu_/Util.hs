@@ -15,8 +15,16 @@ import qualified Data.List
 (>~) = flip map
 infix 8 >~
 
+(|~) = filter
+
+(~|) = flip filter
+infix 7 ~|
+
 
 fallback val defval = if null val then defval else val
+
+
+is = not.null
 
 
 repeatedly fn arg =
@@ -102,10 +110,10 @@ atOr list index defval
 
 
 lengthGEq 0 = const True
-lengthGEq n = not . null . drop (n - 1)
+lengthGEq n = is . drop (n - 1)
 
-lengthGt 0 = not . null
-lengthGt n = not . null . drop n
+lengthGt 0 = is
+lengthGt n = is . drop n
 
 
 fuseElems is2fuse fusion (this:next:more) =

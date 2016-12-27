@@ -3,7 +3,7 @@
 module ProjTxts where
 
 import qualified Util
-import Util ( (~>) , (>~) , (~.) )
+import Util ( (~>) , (>~) , (~.) , (~|) )
 
 import qualified Data.Map.Strict
 import qualified Text.Read
@@ -13,11 +13,10 @@ import qualified Text.Read
 parseDefs linessplits canparsestr =
     \key -> Data.Map.Strict.findWithDefault ("{!T{"++key++"}!}") key ttags where
         ttags = Data.Map.Strict.fromList$
-            linessplits ~> map persplit
-                ~> (filter $not.null.fst)
-            where
+            linessplits>~persplit ~|fst~.Util.is where
                 persplit ("T":"":tname:tvalsplits) =
-                    ( tname~>Util.trim , tvalsplits ~> (Util.join ":") ~> Util.trim ~> srcparsestr )
+                    ( tname~>Util.trim ,
+                        srcparsestr$ tvalsplits~>(Util.join ":")~>Util.trim )
                 persplit _ =
                     ( "" , "" )
                 srcparsestr str
