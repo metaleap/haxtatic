@@ -8,7 +8,6 @@ import Util ( (>~) )
 import qualified Data.Char
 
 
-
 --  the basic default input files
 data CoreFiles = CoreFiles {
     projectDefault :: Files.File,
@@ -32,6 +31,10 @@ loadOrCreate ctx projname projfilename custfilename =
     -> return (CoreFiles projfile custfile tmplmainfile tmplblokfile)
 
 
+
+processingDir_Static = "static"
+processingDir_Pages = "pages"
+processingDir_Posts = "posts"
 
 
 _proj name =

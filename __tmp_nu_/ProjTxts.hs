@@ -13,12 +13,12 @@ import qualified Text.Read
 parseDefs linessplits canparsestr =
     \key -> Data.Map.Strict.findWithDefault ("{!T{"++key++"}!}") key ttags where
         ttags = Data.Map.Strict.fromList$
-            linessplits ~> map tpersplit
+            linessplits ~> map persplit
                 ~> (filter $not.null.fst)
             where
-                tpersplit ("T":"":tname:tvalsplits) =
+                persplit ("T":"":tname:tvalsplits) =
                     ( tname~>Util.trim , tvalsplits ~> (Util.join ":") ~> Util.trim ~> srcparsestr )
-                tpersplit _ =
+                persplit _ =
                     ( "" , "" )
                 srcparsestr str
                     | canparsestr && Util.startsWith str "\"" && Util.endsWith str "\""

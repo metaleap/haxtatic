@@ -25,17 +25,17 @@ _joinc = Util.join ":"
 
 parseDefs linessplits =
     Data.Map.Strict.fromList$
-    (linessplits >~ bpersplit) ~> filter (/=noblok) where
-        noblok = ("",NoBlok)
-        bpersplit ("B":"":bname:bvalsplits) =
+    (linessplits >~ persplit) ~> filter (/=noblok) where
+        persplit ("B":"":bname:bvalsplits) =
             let parsestr = bvalsplits ~> _joinc ~> Util.trim ~> toParseStr
                 parsed = (Text.Read.readMaybe parsestr) :: Maybe Blok
                 errblok = Blok { title="{!syntax issue near `B::"++bname++":`, couldn't parse `"++parsestr++"`!}",
                                     desc="{!Syntax issue in your .haxproj file defining Blok named '"++bname++"'. Thusly couldn't parse Blok settings (incl. title/desc)!}",
                                     atomFile="", inSitemap=False, dater="" }
             in (bname , Data.Maybe.fromMaybe errblok parsed)
-        bpersplit _ =
+        persplit _ =
             noblok
+        noblok = ("",NoBlok)
 
 
 bTagResolver curbname hashmap str =
@@ -43,7 +43,8 @@ bTagResolver curbname hashmap str =
         fields = [("title",title),("desc",desc),("atomFile",atomFile),("dater",dater)]
         fname = splits#0
         bname = Util.atOr splits 1 curbname
-        blok = if null bname then NoBlok else Data.Map.Strict.findWithDefault NoBlok bname hashmap
+        blok = if null bname then NoBlok else
+                Data.Map.Strict.findWithDefault NoBlok bname hashmap
         restore = "{B{"++(_joinc splits)++"}}"
     in if null splits then restore else
         if fname=="name" && (not.null) bname

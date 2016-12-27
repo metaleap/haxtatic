@@ -54,3 +54,5 @@ process ctxmain projfilename custfilename =
     >> putStrLn (ctxproj~>Proj.setup~>Proj.srcPre~>unlines)
     >> putStrLn ("=======================================")
     >> putStrLn (ctxproj~>Proj.setup~>Proj.srcRaw~>unlines)
+    >> putStrLn ("=======================================")
+    >> print (ctxproj~>Proj.setup~>Proj.cfg)

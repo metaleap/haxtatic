@@ -16,6 +16,9 @@ import qualified Data.List
 infix 8 >~
 
 
+fallback val defval = if null val then defval else val
+
+
 repeatedly fn arg =
     let result = fn arg
     in if result==arg then result else repeatedly fn result
@@ -64,7 +67,7 @@ trimEnd = Data.List.dropWhileEnd Data.Char.isSpace
 
 trimStart = Data.List.dropWhile Data.Char.isSpace
 
-sub start len = (take len) . (drop start)
+subAt start len = (take len) . (drop start)
 
 truncate start end = (drop start) . (dropLast end)
 
@@ -103,6 +106,17 @@ lengthGEq n = not . null . drop (n - 1)
 
 lengthGt 0 = not . null
 lengthGt n = not . null . drop n
+
+
+fuseElems _ _ [] = []
+fuseElems _ _ (x:[]) = (x:[])
+fuseElems is2fuse fusion (this:next:more) =
+    (fused:rest) where
+        nofuse = not$ is2fuse this next
+        fused = if nofuse then this else fusion this next
+        rest = fuseElems is2fuse fusion$
+                if nofuse then (next:more) else more
+
 
 indexOfSub _ [] = minBound::Int
 indexOfSub sub str@(_:rest)

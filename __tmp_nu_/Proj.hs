@@ -4,13 +4,13 @@ module Proj where
 
 import qualified Bloks
 import qualified Files
+import qualified ProjCfg
 import qualified ProjDefaults
 import qualified ProjTxts
 import qualified Util
-import Util ( (~>) , (>~) , (~.) )
+import Util ( (~>) , (>~) )
 
 import qualified Data.Map.Strict
-import qualified Text.Read
 
 
 
@@ -24,6 +24,8 @@ data Ctx = Ctx {
 data Setup = Setup {
     srcRaw :: [String],
     srcPre :: [String],
+    bloks :: Data.Map.Strict.Map String Bloks.Blok,
+    cfg :: ProjCfg.Cfg,
     tTags :: String->String,
     bTags :: String->String
 }
@@ -41,26 +43,33 @@ loadCtx mainctx projname defaultfiles =
 
 
 loadCoreFiles ctx =
-    let setuppost = Setup { srcRaw=srclinespost, srcPre=srclinesprep,
-                            tTags=tvalpost,
-                            bTags= Bloks.bTagResolver "" blokspost }
+    let setuppost = Setup { srcRaw = srclinespost, srcPre = srclinesprep,
+                            bloks = blokspost,
+                            cfg = cfgpost,
+                            tTags = ttagspost,
+                            bTags =  Bloks.bTagResolver "" blokspost }
     in setuppost
     where
-        setuppre = Setup { srcRaw=[], srcPre=[],
-                            tTags=tvalpre,
-                            bTags= Bloks.bTagResolver "" blokspre }
+        setupprep = Setup { srcRaw = [], srcPre = [],
+                            bloks = bloksprep,
+                            cfg = cfgprep,
+                            tTags = ttagsprep,
+                            bTags =  Bloks.bTagResolver "" bloksprep }
 
-        blokspre = Bloks.parseDefs preplinessplits
+        bloksprep = Bloks.parseDefs preplinessplits
         blokspost = Bloks.parseDefs postlinessplits
 
-        tvalpre = ProjTxts.parseDefs preplinessplits False
-        tvalpost = ProjTxts.parseDefs postlinessplits True
+        cfgprep = ProjCfg.parseDefs preplinessplits
+        cfgpost = ProjCfg.parseDefs postlinessplits
 
-        srclinesprep = ProjTxts.srcLinesExpandMl$ _rawsrc ctx
-        srclinespost = processSrcFully setuppre (srclinesprep~>unlines) ~> lines
+        ttagsprep = ProjTxts.parseDefs preplinessplits False
+        ttagspost = ProjTxts.parseDefs postlinessplits True
+
         preplinessplits = srclinesprep>~ _splitc
         postlinessplits = srclinespost>~ _splitc
         _splitc = Util.splitBy ':'
+        srclinesprep = ProjTxts.srcLinesExpandMl$ _rawsrc ctx
+        srclinespost = processSrcFully setupprep (srclinesprep~>unlines) ~> lines
 
 
 
