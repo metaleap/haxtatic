@@ -50,15 +50,7 @@ process ctxmain projfilename custfilename =
     >>= Proj.loadCtx ctxmain projname ~. return >>= \ ctxproj
 
     -> putStrLn ((ctxproj~>Proj.setup~>Proj.tTags) "SiteTitle")
-    --  >> putStrLn ((ctxproj~>Proj.setup~>Proj.tTags) "Mul2")
-    --  >> putStrLn ((ctxproj~>Proj.setup~>Proj.tTags) "MooHaha")
-    --  >> putStrLn ((ctxproj~>Proj.setup~>Proj.tTags) "_Hx_MlRepl_0")
-    --  >> putStrLn ((ctxproj~>Proj.setup~>Proj.tTags) "_Hx_MlRepl_1")
-    --  >> putStrLn ((ctxproj~>Proj.setup~>Proj.tTags) "_Hx_MlRepl_2")
-    --  >> putStrLn ((ctxproj~>Proj.setup~>Proj.tTags) "_Hx_MlRepl_3")
-    --  >> putStrLn ((ctxproj~>Proj.setup~>Proj.tTags) "_Hx_MlRepl_4")
     >> putStrLn ("=======================================")
     >> putStrLn (ctxproj~>Proj.setup~>Proj.srcPre~>unlines)
     >> putStrLn ("=======================================")
     >> putStrLn (ctxproj~>Proj.setup~>Proj.srcRaw~>unlines)
-    --  >> print (ctxproj~>Proj.setup~>Proj.bloks)

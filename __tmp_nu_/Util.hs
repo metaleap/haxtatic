@@ -24,17 +24,17 @@ repeatedly fn arg =
 (#)::
     [t] -> Int -> t
 --  alias for: `!!` ..for these most common cases, no need to `fold`
-(#) (x:_) 0 = x
-(#) (_:x:_) 1 = x
-(#) (_:_:x:_) 2 = x
-(#) (_:_:_:x:_) 3 = x
-(#) (_:_:_:_:x:_) 4 = x
-(#) (_:_:_:_:_:x:_) 5 = x
-(#) (_:_:_:_:_:_:x:_) 6 = x
-(#) (_:_:_:_:_:_:_:x:_) 7 = x
-(#) (_:_:_:_:_:_:_:_:x:_) 8 = x
-(#) (_:_:_:_:_:_:_:_:_:x:_) 9 = x
-(#) list@(_:_) i = (#) (drop i list) 0 where
+(x:_) # 0 = x
+(_:x:_) # 1 = x
+(_:_:x:_) # 2 = x
+(_:_:_:x:_) # 3 = x
+(_:_:_:_:x:_) # 4 = x
+(_:_:_:_:_:x:_) # 5 = x
+(_:_:_:_:_:_:x:_) # 6 = x
+(_:_:_:_:_:_:_:x:_) # 7 = x
+(_:_:_:_:_:_:_:_:x:_) # 8 = x
+(_:_:_:_:_:_:_:_:_:x:_) # 9 = x
+list@(_:_) # i = (drop i list) # 0 where
 infix 9 #
 
 
@@ -45,7 +45,7 @@ dropLast n = ((#n) . reverse . Data.List.inits)
 
 takeLast n = ((#n) . reverse . Data.List.tails)
 
-indexed l = zip [0 .. (l~>length - 1)] l
+indexed l = zip [0 .. ] l
 
 contains :: (Eq t)=> [t]->[t]->Bool
 contains = flip Data.List.isInfixOf
@@ -97,10 +97,15 @@ atOr (_:_:_:_:[]) 4 defval = defval
 atOr (_:_:_:_:[]) 5 defval = defval
 atOr (_:_:_:_:_:[]) 5 defval = defval
 atOr list index defval
-    |(list~>length > index && index > -1) = list#index
+    |(index > -1 && lengthGt index list) = list#index
     |(otherwise) = defval
 
 
+lengthGEq 0 = const True
+lengthGEq n = not . null . drop (n - 1)
+
+lengthGt 0 = not . null
+lengthGt n = not . null . drop n
 
 indexOfSub _ [] = minBound::Int
 indexOfSub sub str@(_:rest)
