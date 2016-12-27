@@ -15,6 +15,7 @@ data Blok = NoBlok | Blok {
     title :: String,
     desc :: String,
     atomFile :: String,
+    inSitemap :: Bool,
     dater :: String
 } deriving (Eq, Read, Show)
 
@@ -27,11 +28,11 @@ parseDefs linessplits =
     (linessplits >~ bpersplit) ~> filter (/=noblok) where
         noblok = ("",NoBlok)
         bpersplit ("B":"":bname:bvalsplits) =
-            let parsestr = bvalsplits ~> _joinc ~> Util.trim ~> toParseString
+            let parsestr = bvalsplits ~> _joinc ~> Util.trim ~> toParseStr
                 parsed = (Text.Read.readMaybe parsestr) :: Maybe Blok
                 errblok = Blok { title="{!syntax issue near `B::"++bname++":`, couldn't parse `"++parsestr++"`!}",
                                     desc="{!Syntax issue in your .haxproj file defining Blok named '"++bname++"'. Thusly couldn't parse Blok settings (incl. title/desc)!}",
-                                    atomFile="", dater="" }
+                                    atomFile="", inSitemap=False, dater="" }
             in (bname , Data.Maybe.fromMaybe errblok parsed)
         bpersplit _ =
             noblok
@@ -53,13 +54,17 @@ bTagResolver curbname hashmap str =
                         Nothing -> restore
 
 
-toParseString projline =
+toParseStr projline =
     let
-        pl = projline ~> (checkfield "title") ~> (checkfield "desc") ~> (checkfield "atomFile") ~> (checkfield "dater")
+        pl = projline ~> (checkfield "title" "") ~> (checkfield "desc" "") ~>
+                (checkfield "atomFile" "") ~> (checkfield "inSitemap" True) ~> (checkfield "dater" "")
     in
         "Blok {"++pl++"}" where
-            checkfield field prjln =
+            checkfield field defval prjln =
                 let haswith = (Util.contains prjln) . (field++)
-                in if any haswith (["=\"", " = \"", "= \"", " =\"", "\t=\t\"", "=\t\"", "\t=\""]++
-                                    ["={", " = {", "= {", " ={", "\t=\t{", "=\t{", "\t={"]) then
-                                        prjln else prjln++", "++field++"=\"\""
+                in if any haswith$
+                    ["=\"", " = \"", "= \"", " =\"", "\t=\t\"", "=\t\"", "\t=\""]++
+                    ["={", " = {", "= {", " ={", "\t=\t{", "=\t{", "\t={"]++
+                    ["=True","=False"]
+                    then prjln -- there was a hint field is already in def-string
+                    else prjln++", "++field++"="++(show defval) -- user skipped field, append

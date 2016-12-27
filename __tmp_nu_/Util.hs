@@ -58,13 +58,10 @@ startsWith = flip Data.List.isPrefixOf
 
 join = Data.List.intercalate
 
-trim :: String->String
 trim = trimEnd . trimStart
 
-trimEnd :: String->String
 trimEnd = Data.List.dropWhileEnd Data.Char.isSpace
 
-trimStart :: String->String
 trimStart = Data.List.dropWhile Data.Char.isSpace
 
 sub start len = (take len) . (drop start)
@@ -130,9 +127,6 @@ splitBy delim =
 
 
 
-splitUp::
-    [String]-> String-> String->
-    [(String,String)]
 splitUp beginners =
     _splitup (length$ atOr beginners 0 "") lastidx beginners where
         lastidx' = lastIndexOfSub id

@@ -1,5 +1,4 @@
 {-# OPTIONS_GHC -Wall #-}
-{-# LANGUAGE NegativeLiterals #-}
 
 module Files where
 
