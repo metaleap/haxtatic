@@ -32,7 +32,7 @@ parseDefs linessplits =
         procpages = procfind ProjDefaults.processingDir_Pages
         procposts = procfind ProjDefaults.processingDir_Posts
         procfind name = procsane name $ Data.Maybe.fromMaybe (procdef name) $
-                        Data.Maybe.fromMaybe Nothing (lookup ("process:"++name) configs)
+                        Data.Map.Strict.findWithDefault Nothing ("process:"++name) configs
         procdef dirname = Processing { dirs = [dirname], skip = [], force = [] }
         procsane defname proc = Processing {
                 dirs = Util.fallback (filter (not.null) (proc~>dirs)) [defname],
@@ -40,7 +40,8 @@ parseDefs linessplits =
                 force = sanitize force
             } where
                 sanitize field = let tmp = filter (not.null) (proc~>field) in if elem "*" tmp then ["*"] else tmp
-        configs = linessplits ~> map persplit where
+        configs = Data.Map.Strict.fromList$
+            linessplits ~> map persplit where
             persplit ("C":"":"process":name:procstr) =
                 ( "process:"++name , (Text.Read.readMaybe$ "Processing {"++(Util.join ":" procstr)++"}") :: Maybe Processing)
             persplit _ =

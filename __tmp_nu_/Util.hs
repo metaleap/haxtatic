@@ -108,14 +108,13 @@ lengthGt 0 = not . null
 lengthGt n = not . null . drop n
 
 
-fuseElems _ _ [] = []
-fuseElems _ _ (x:[]) = (x:[])
 fuseElems is2fuse fusion (this:next:more) =
     (fused:rest) where
         nofuse = not$ is2fuse this next
         fused = if nofuse then this else fusion this next
         rest = fuseElems is2fuse fusion$
                 if nofuse then (next:more) else more
+fuseElems _ _ l = l
 
 
 indexOfSub _ [] = minBound::Int
