@@ -30,7 +30,7 @@ fallback val defval = if null val then defval else val
 
 is = not.null
 
-isBut notval = (not.null.(butNot notval ""))
+isnt notval = is.(butNot notval "")
 
 
 repeatedly fn arg =

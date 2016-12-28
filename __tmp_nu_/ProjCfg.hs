@@ -12,7 +12,6 @@ import qualified Text.Read
 
 
 data Cfg = Cfg {
-    outDirs :: [String],
     processStatic :: Processing,
     processPages :: Processing,
     processPosts :: Processing
@@ -27,7 +26,7 @@ data Processing = Processing {
 
 
 parseDefs linessplits =
-    Cfg { outDirs = outdirs, processStatic=procstatic, processPages=procpages, processPosts=procposts }
+    Cfg { processStatic=procstatic, processPages=procpages, processPosts=procposts }
     where
         procstatic = procfind ProjDefaults.processingDir_Static
         procpages = procfind ProjDefaults.processingDir_Pages
@@ -42,10 +41,6 @@ parseDefs linessplits =
             } where
                 sane fvals = let tmp = proc~>fvals >~Util.trim ~|Util.is in
                     if elem "*" tmp then ["*"] else tmp
-        outdirs = if null tmp then [ProjDefaults.dir_Out] else take 2 $tmp~>last where
-            tmp = linessplits>~persplit ~|Util.is
-            persplit ("C":"":"out":"dirs":outdirs) = outdirs >~Util.trim ~|(Util.isBut ".")
-            persplit _ = []
         configs = Data.Map.Strict.fromList$
             linessplits>~persplit ~|Util.is.fst where
             persplit ("C":"":"process":name:procstr) =

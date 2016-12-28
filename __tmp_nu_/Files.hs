@@ -2,6 +2,7 @@
 
 module Files where
 
+import qualified Util
 import Util ( (~>) )
 
 import qualified Data.Time.Clock
@@ -37,6 +38,14 @@ readOrCreate ctx relpath defaultcontent =
         else
             writeTo filepath relpath defaultcontent
             >> return (File filepath defaultcontent (ctx~>nowTime))
+
+
+rewrite file newmodtime newcontent =
+    File {
+        path = file~>path,
+        content = Util.fallback newcontent $content file,
+        modTime = max newmodtime $modTime file
+    }
 
 
 writeTo filepath relpath filecontent =

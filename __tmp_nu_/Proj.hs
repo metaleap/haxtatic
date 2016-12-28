@@ -17,13 +17,13 @@ import qualified Data.Map.Strict
 --  project context
 data Ctx = Ctx {
         name :: String,
-        coreFiles :: ProjDefaults.CoreFiles,
-        setup :: Setup
+        setup :: Setup,
+        coreFiles :: ProjDefaults.CoreFiles
     }
 
 data Setup = Setup {
-    srcRaw :: [String],
-    srcPre :: [String],
+    --  srcRaw :: [String],
+    --  srcPre :: [String],
     bloks :: Data.Map.Strict.Map String Bloks.Blok,
     cfg :: ProjCfg.Cfg,
     tTags :: String->String,
@@ -32,25 +32,31 @@ data Setup = Setup {
 
 
 
+
 loadCtx mainctx projname defaultfiles =
-    let ctx = Ctx {
+    let loadedsetup = _loadSetup ctx
+        ctx = Ctx {
             name = projname,
-            coreFiles = defaultfiles,
-            setup = loadCoreFiles ctx
+            setup = loadedsetup,
+            coreFiles = _loadCoreFiles loadedsetup defaultfiles
         }
     in ctx
 
 
+_loadCoreFiles setup deffiles =
+    ProjDefaults.rewriteTemplates deffiles tmplrewriter where
+        tmplrewriter = processSrcFully setup
 
-loadCoreFiles ctx =
-    let setuppost = Setup { srcRaw = srclinespost, srcPre = srclinesprep,
+
+_loadSetup ctx =
+    let setuppost = Setup { -- srcRaw = srclinespost, srcPre = srclinesprep,
                             bloks = blokspost,
                             cfg = cfgpost,
                             tTags = ttagspost,
                             bTags =  Bloks.bTagResolver "" blokspost }
     in setuppost
     where
-        setupprep = Setup { srcRaw = [], srcPre = [],
+        setupprep = Setup { -- srcRaw = [], srcPre = [],
                             bloks = bloksprep,
                             cfg = cfgprep,
                             tTags = ttagsprep,

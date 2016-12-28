@@ -3,7 +3,7 @@
 module ProjDefaults where
 
 import qualified Files
-import Util ( (>~) )
+import Util ( (>~) , (~>) )
 
 import qualified Data.Char
 
@@ -30,6 +30,15 @@ loadOrCreate ctx projname projfilename custfilename =
     >>= \ tmplblokfile
     -> return (CoreFiles projfile custfile tmplmainfile tmplblokfile)
 
+
+rewriteTemplates corefiles tmplrewriter =
+    let newmodtime = max (corefiles~>projectDefault~>Files.modTime) (corefiles~>projectOverwrites~>Files.modTime)
+    in CoreFiles {
+        projectDefault = Files.rewrite (corefiles~>projectDefault) newmodtime "",
+        projectOverwrites = Files.rewrite (corefiles~>projectOverwrites) newmodtime "",
+        htmlTemplateMain = Files.rewrite (corefiles~>htmlTemplateMain) newmodtime (tmplrewriter$ corefiles~>htmlTemplateMain~>Files.content),
+        htmlTemplateBlok = Files.rewrite (corefiles~>htmlTemplateBlok) newmodtime (tmplrewriter$ corefiles~>htmlTemplateBlok~>Files.content)
+    }
 
 
 dir_Out = "build"
