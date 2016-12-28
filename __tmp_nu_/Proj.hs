@@ -8,7 +8,7 @@ import qualified ProjCfg
 import qualified ProjDefaults
 import qualified ProjTxts
 import qualified Util
-import Util ( (~>) , (>~) )
+import Util ( (~>) , (>~) , (#) )
 
 import qualified Data.Map.Strict
 import qualified System.FilePath
@@ -20,6 +20,7 @@ data Ctx = Ctx {
         projName :: String,
         setupName :: String,
         dirPath :: FilePath,
+        outDirPaths :: (String,String),
         setup :: Setup,
         coreFiles :: ProjDefaults.CoreFiles
     }
@@ -38,14 +39,22 @@ data Setup = Setup {
 
 loadCtx mainctx projname defaultfiles =
     let loadedsetup = _loadSetup ctx
+        dirpath = mainctx~>Files.dirPath
+        dirsubpath = System.FilePath.combine dirpath
+        setupname = ProjDefaults.setupName $defaultfiles~>ProjDefaults.projectDefault~>Files.path
         ctx = Ctx {
             projName = projname,
-            setupName = ProjDefaults.setupName $defaultfiles~>ProjDefaults.projectDefault~>Files.path,
-            dirPath = mainctx~>Files.dirPath,
+            setupName = setupname,
+            dirPath = dirpath,
+            outDirPaths = ( dirsubpath $setupname++"-build", dirsubpath $setupname++"-deploy" ),
             setup = loadedsetup,
             coreFiles = _loadCoreFiles loadedsetup defaultfiles
         }
-    in ctx
+        defpagesdirpath = dirsubpath$ (loadedsetup~>cfg~>ProjCfg.processPages~>ProjCfg.dirs)#0
+    in
+        Files.filesInDir defpagesdirpath >>= print
+        >> print ( defpagesdirpath )
+        >> return ctx
 
 
 _loadCoreFiles setup deffiles =

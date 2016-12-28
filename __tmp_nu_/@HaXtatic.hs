@@ -47,12 +47,12 @@ process ctxmain projfilename custfilename =
     in System.Directory.createDirectoryIfMissing False dirpath
     >> putStrLn "1. Reading essential project files [or (re)creating them..]"
     >> ProjDefaults.loadOrCreate ctxmain projname (ensurefilename projfilename) (ensurefilename custfilename)
-    >>= Proj.loadCtx ctxmain projname ~. return >>= \ ctxproj
+    >>= Proj.loadCtx ctxmain projname >>= \ ctxproj
 
     -> putStrLn ((ctxproj~>Proj.setup~>Proj.tTags) "SiteTitle")
     >> print (ctxproj~>Proj.setup~>Proj.cfg)
-    >> putStrLn (ctxproj~>Proj.setupName)
-    >> putStrLn ("=================")
-    >> putStrLn (ctxproj~>Proj.coreFiles~>ProjDefaults.htmlTemplateMain~>Files.content)
-    >> putStrLn ("=================")
-    >> putStrLn (ctxproj~>Proj.coreFiles~>ProjDefaults.htmlTemplateBlok~>Files.content)
+    --  >> print (ctxproj~>Proj.outDirPaths)
+    --  >> putStrLn ("=================")
+    --  >> putStrLn (ctxproj~>Proj.coreFiles~>ProjDefaults.htmlTemplateMain~>Files.content)
+    --  >> putStrLn ("=================")
+    --  >> putStrLn (ctxproj~>Proj.coreFiles~>ProjDefaults.htmlTemplateBlok~>Files.content)
