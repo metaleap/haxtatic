@@ -4,6 +4,7 @@
 
 module Main where
 
+import qualified Build
 import qualified Files
 import qualified Proj
 import qualified ProjDefaults
@@ -44,13 +45,17 @@ process ctxmain projfilename custfilename =
     let ensurefilename = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
         dirpath = ctxmain~>Files.dirPath
         projname = System.FilePath.takeBaseName dirpath
-    in System.Directory.createDirectoryIfMissing False dirpath
-    >> putStrLn "1. Reading essential project files [or (re)creating them..]"
+
+    in putStrLn "1. Reading essential project files [or (re)creating them..]"
+    >> System.Directory.createDirectoryIfMissing False dirpath
     >> ProjDefaults.loadOrCreate ctxmain projname (ensurefilename projfilename) (ensurefilename custfilename)
     >>= Proj.loadCtx ctxmain projname >>= \ ctxproj
 
-    -> putStrLn ((ctxproj~>Proj.setup~>Proj.tTags) "SiteTitle")
-    >> print (ctxproj~>Proj.setup~>Proj.cfg)
+    -> putStrLn "2. Scanning input files and folders.."
+    >> Build.plan ctxproj >>= \ buildplan
+
+    -> print (buildplan~>Build.fileCopies)
+    >> print (buildplan~>Build.fileGens)
     --  >> print (ctxproj~>Proj.outDirPaths)
     --  >> putStrLn ("=================")
     --  >> putStrLn (ctxproj~>Proj.coreFiles~>ProjDefaults.htmlTemplateMain~>Files.content)

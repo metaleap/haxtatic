@@ -51,11 +51,11 @@ loadCtx mainctx projname defaultfiles =
             setup = loadedsetup,
             coreFiles = _loadCoreFiles loadedsetup defaultfiles
         }
-        defpagesdirname = (loadedsetup~>cfg~>ProjCfg.processPages~>ProjCfg.dirs)#0
-        defpagesdirpath = dirsubpath defpagesdirname
+        --  defpagesdirname = (loadedsetup~>cfg~>ProjCfg.processPages~>ProjCfg.dirs)#0
+        --  defpagesdirpath = dirsubpath defpagesdirname
     in
-        Files.writeTo True (defpagesdirpath </> "index.html") (defpagesdirname </> "index.html") "def index html"
-        >> return ctx
+        --  Files.writeTo True (defpagesdirpath </> "index.html") (defpagesdirname </> "index.html") "def index html"
+        return ctx
 
 
 _loadCoreFiles setup deffiles =
