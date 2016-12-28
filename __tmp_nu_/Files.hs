@@ -26,24 +26,26 @@ data Ctx = Ctx {
 }
 
 
-readOrCreate ctx relpath defaultcontent =
+readOrCreate ctx relpath relpath2 defaultcontent =
     if null relpath then return NoFile else
     let filepath = System.FilePath.combine (ctx~>dirPath) relpath
+        filepath2 = System.FilePath.combine (ctx~>dirPath) relpath2
     in System.Directory.doesFileExist filepath
     >>= \ isfile -> if isfile
         then
             System.Directory.getModificationTime filepath >>= \ modtime
             -> readFile filepath >>= \ filecontent
             -> return (File filepath filecontent modtime)
-        else
-            writeTo filepath relpath defaultcontent
-            >> return (File filepath defaultcontent (ctx~>nowTime))
+        else if Util.is relpath2 then
+            readOrCreate ctx relpath2 "" defaultcontent else
+                writeTo filepath relpath defaultcontent
+                >> return (File filepath defaultcontent (ctx~>nowTime))
 
 
 rewrite file newmodtime newcontent =
     File {
         path = file~>path,
-        content = Util.fallback newcontent $content file,
+        content = newcontent, -- Util.fallback newcontent $content file,
         modTime = max newmodtime $modTime file
     }
 

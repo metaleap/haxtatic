@@ -28,9 +28,9 @@ data Processing = Processing {
 parseDefs linessplits =
     Cfg { processStatic=procstatic, processPages=procpages, processPosts=procposts }
     where
-        procstatic = procfind ProjDefaults.processingDir_Static
-        procpages = procfind ProjDefaults.processingDir_Pages
-        procposts = procfind ProjDefaults.processingDir_Posts
+        procstatic = procfind ProjDefaults.dir_Static
+        procpages = procfind ProjDefaults.dir_Pages
+        procposts = procfind ProjDefaults.dir_Posts
         procfind name = procsane name $ Data.Maybe.fromMaybe (procdef name) $
                         Data.Map.Strict.findWithDefault Nothing ("process:"++name) configs
         procdef dirname = Processing { dirs = [dirname], skip = [], force = [] }

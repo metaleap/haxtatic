@@ -51,6 +51,7 @@ process ctxmain projfilename custfilename =
 
     -> putStrLn ((ctxproj~>Proj.setup~>Proj.tTags) "SiteTitle")
     >> print (ctxproj~>Proj.setup~>Proj.cfg)
+    >> putStrLn (ctxproj~>Proj.setupName)
     >> putStrLn ("=================")
     >> putStrLn (ctxproj~>Proj.coreFiles~>ProjDefaults.htmlTemplateMain~>Files.content)
     >> putStrLn ("=================")

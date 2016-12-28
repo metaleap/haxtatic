@@ -6,6 +6,7 @@ import qualified Files
 import Util ( (>~) , (~>) )
 
 import qualified Data.Char
+import qualified System.FilePath
 
 
 --  the basic default input files
@@ -20,31 +21,38 @@ data CoreFiles = CoreFiles {
 
 loadOrCreate ctx projname projfilename custfilename =
     let projfilecontent = _proj projname
-    in Files.readOrCreate ctx custfilename ""
+        setupname = setupName projfilename
+    in Files.readOrCreate ctx custfilename "" ""
     >>= \ custfile
-    -> Files.readOrCreate ctx projfilename projfilecontent
+    -> Files.readOrCreate ctx projfilename "" projfilecontent
     >>= \ projfile
-    -> Files.readOrCreate ctx "default-main.haxtmpl.html" _tmplmain
+    -> Files.readOrCreate ctx (setupname++"-main.haxtmpl.html") "default-main.haxtmpl.html" _tmplmain
     >>= \ tmplmainfile
-    -> Files.readOrCreate ctx "default-blok.haxtmpl.html" _tmplblok
+    -> Files.readOrCreate ctx (setupname++"-blok.haxtmpl.html") "default-blok.haxtmpl.html" _tmplblok
     >>= \ tmplblokfile
     -> return (CoreFiles projfile custfile tmplmainfile tmplblokfile)
 
 
 rewriteTemplates corefiles tmplrewriter =
-    let newmodtime = max (corefiles~>projectDefault~>Files.modTime) (corefiles~>projectOverwrites~>Files.modTime)
+    let newmodtime = corefiles~>projectDefault~>Files.modTime~>max$
+                        corefiles~>projectOverwrites~>Files.modTime
+        rewrite rw file = Files.rewrite file newmodtime$
+                            rw $file~>Files.content
     in CoreFiles {
-        projectDefault = Files.rewrite (corefiles~>projectDefault) newmodtime "",
-        projectOverwrites = Files.rewrite (corefiles~>projectOverwrites) newmodtime "",
-        htmlTemplateMain = Files.rewrite (corefiles~>htmlTemplateMain) newmodtime (tmplrewriter$ corefiles~>htmlTemplateMain~>Files.content),
-        htmlTemplateBlok = Files.rewrite (corefiles~>htmlTemplateBlok) newmodtime (tmplrewriter$ corefiles~>htmlTemplateBlok~>Files.content)
+        projectDefault = rewrite id $corefiles~>projectDefault,
+        projectOverwrites = rewrite id $corefiles~>projectOverwrites,
+        htmlTemplateMain = rewrite tmplrewriter $corefiles~>htmlTemplateMain,
+        htmlTemplateBlok = rewrite tmplrewriter $corefiles~>htmlTemplateBlok
     }
 
 
+setupName = System.FilePath.takeBaseName
+
+
 dir_Out = "build"
-processingDir_Static = "static"
-processingDir_Pages = "pages"
-processingDir_Posts = "posts"
+dir_Static = "static"
+dir_Pages = "pages"
+dir_Posts = "posts"
 
 
 _proj name =

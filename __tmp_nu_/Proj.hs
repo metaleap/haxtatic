@@ -11,12 +11,15 @@ import qualified Util
 import Util ( (~>) , (>~) )
 
 import qualified Data.Map.Strict
+import qualified System.FilePath
 
 
 
 --  project context
 data Ctx = Ctx {
-        name :: String,
+        projName :: String,
+        setupName :: String,
+        dirPath :: FilePath,
         setup :: Setup,
         coreFiles :: ProjDefaults.CoreFiles
     }
@@ -36,7 +39,9 @@ data Setup = Setup {
 loadCtx mainctx projname defaultfiles =
     let loadedsetup = _loadSetup ctx
         ctx = Ctx {
-            name = projname,
+            projName = projname,
+            setupName = ProjDefaults.setupName $defaultfiles~>ProjDefaults.projectDefault~>Files.path,
+            dirPath = mainctx~>Files.dirPath,
             setup = loadedsetup,
             coreFiles = _loadCoreFiles loadedsetup defaultfiles
         }
