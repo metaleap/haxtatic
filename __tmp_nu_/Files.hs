@@ -50,7 +50,7 @@ readOrCreate ctx relpath relpath2 defaultcontent =
             then readOrCreate ctx relpath2 "" defaultcontent
             else
                 System.Directory.createDirectoryIfMissing True (System.FilePath.takeDirectory filepath)
-                >> writeTo filepath relpath defaultcontent
+                >> writeTo False filepath relpath defaultcontent
                 >> return (File filepath defaultcontent (ctx~>nowTime))
 
 
@@ -62,9 +62,21 @@ rewrite file newmodtime newcontent =
     }
 
 
-writeTo filepath relpath filecontent =
-    putStr ("   >> "++relpath++"  [ ")
-    >> System.IO.hFlush System.IO.stdout
-    >> writeFile filepath filecontent
-    >> putStrLn "OK ]"
-    >> System.IO.hFlush System.IO.stdout
+
+writeTo onlyifnofilesindir filepath relpath filecontent =
+    let
+        dirfiles = if onlyifnofilesindir
+                    then filesInDir (System.FilePath.takeDirectory filepath)
+                    else return []
+    in
+        dirfiles >>= \names
+        -> if onlyifnofilesindir && Util.is names
+            then System.IO.hFlush System.IO.stdout
+            else
+                System.IO.hFlush System.IO.stdout
+                >> putStr ("   >> "++relpath++"  [ ")
+                >> System.IO.hFlush System.IO.stdout
+                >> writeFile filepath filecontent
+                >> System.IO.hFlush System.IO.stdout
+                >> putStrLn "OK ]"
+                >> System.IO.hFlush System.IO.stdout

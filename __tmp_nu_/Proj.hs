@@ -12,6 +12,7 @@ import Util ( (~>) , (>~) , (#) )
 
 import qualified Data.Map.Strict
 import qualified System.FilePath
+import System.FilePath ( (</>) )
 
 
 
@@ -50,10 +51,10 @@ loadCtx mainctx projname defaultfiles =
             setup = loadedsetup,
             coreFiles = _loadCoreFiles loadedsetup defaultfiles
         }
-        defpagesdirpath = dirsubpath$ (loadedsetup~>cfg~>ProjCfg.processPages~>ProjCfg.dirs)#0
+        defpagesdirname = (loadedsetup~>cfg~>ProjCfg.processPages~>ProjCfg.dirs)#0
+        defpagesdirpath = dirsubpath defpagesdirname
     in
-        Files.filesInDir defpagesdirpath >>= print
-        >> print ( defpagesdirpath )
+        Files.writeTo True (defpagesdirpath </> "index.html") (defpagesdirname </> "index.html") "def index html"
         >> return ctx
 
 
