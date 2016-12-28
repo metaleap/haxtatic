@@ -32,6 +32,7 @@ loadOrCreate ctx projname projfilename custfilename =
 
 
 
+dir_Out = "build"
 processingDir_Static = "static"
 processingDir_Pages = "pages"
 processingDir_Posts = "posts"

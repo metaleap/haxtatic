@@ -16,15 +16,21 @@ import qualified Data.List
 infix 8 >~
 
 (|~) = filter
+infix 7 |~
 
 (~|) = flip filter
 infix 7 ~|
+
+
+butNot notval defval val |(val==notval) = defval |otherwise = val
 
 
 fallback val defval = if null val then defval else val
 
 
 is = not.null
+
+isBut notval = (not.null.(butNot notval ""))
 
 
 repeatedly fn arg =
@@ -54,6 +60,7 @@ dropLast 1 = init
 dropLast n = ((#n) . reverse . Data.List.inits)
 -- dropLast n l = l~>take (l~>length - n)
 
+-- takeLast 1 = last
 takeLast n = ((#n) . reverse . Data.List.tails)
 
 indexed l = zip [0 .. ] l

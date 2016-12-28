@@ -50,9 +50,4 @@ process ctxmain projfilename custfilename =
     >>= Proj.loadCtx ctxmain projname ~. return >>= \ ctxproj
 
     -> putStrLn ((ctxproj~>Proj.setup~>Proj.tTags) "SiteTitle")
-    >> putStrLn ("=======================================")
-    >> putStrLn (ctxproj~>Proj.setup~>Proj.srcPre~>unlines)
-    >> putStrLn ("=======================================")
-    >> putStrLn (ctxproj~>Proj.setup~>Proj.srcRaw~>unlines)
-    >> putStrLn ("=======================================")
     >> print (ctxproj~>Proj.setup~>Proj.cfg)
