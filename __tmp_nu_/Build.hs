@@ -5,27 +5,56 @@ module Build where
 import qualified Files
 import qualified Proj
 import qualified ProjCfg
-import Util ( (~>) , (>~) , (#) )
+import Util ( (~.) , (~>) , (>~) , (#) )
 
+import qualified Control.Monad
+import System.Directory
+import System.FilePath ( (</>) )
 
 
 data Plan = Plan {
-    fileCopies :: [OutFile],
-    fileGens :: [OutFile]
+    inFilePosts :: [FileInfo],
+    outFileGens :: [FileInfo],
+    outFileCopies :: [FileInfo]
 } deriving (Show)
 
-data OutFile = OutFile {
-    dstPath :: String,
-    srcPath :: String
+data FileInfo = FileInfo {
+    srcFile :: Files.File,
+    outPaths :: (String , String)
 } deriving (Show)
 
 
 
 plan ctxproj =
-    let cfg = ctxproj~>Proj.setup~>Proj.cfg
-    in
-    (Files.listAllFiles (ctxproj~>Proj.dirPath) (cfg~>ProjCfg.processStatic~>ProjCfg.dirs)) >>= print
-    --(Files.listAllFiles (ctxproj~>Proj.dirPath) (cfg~>ProjCfg.processStatic~>ProjCfg.dirs)) >>= print
-    >> return Plan { fileCopies = statics , fileGens = pages } where
-        statics = []
-        pages = []
+    let tofileinfo = fileInfo ctxproj
+        cfg = ctxproj~>Proj.setup~>Proj.cfg
+        listallfiles = Files.listAllFiles $ctxproj~>Proj.dirPath
+    in listallfiles (cfg~>ProjCfg.processPages~>ProjCfg.dirs) >>= \allpagesfiles
+    -> listallfiles (cfg~>ProjCfg.processStatic~>ProjCfg.dirs) >>= \allstaticfiles
+    -> listallfiles (cfg~>ProjCfg.processPosts~>ProjCfg.dirs) >>= \allpostsfiles
+    -> let
+        allstatics = allstaticfiles >~ tofileinfo
+        allpages = allpagesfiles >~ tofileinfo
+        allposts = allpostsfiles >~ tofileinfo
+    in filterFiles allstatics >>= \newstatics
+    -> filterFiles allpages >>= \newpages
+    -> return Plan { inFilePosts = allposts , outFileGens = newpages , outFileCopies = newstatics }
+
+
+
+fileInfo ctxproj (relpath,file) =
+    let outdirpaths = ctxproj~>Proj.outDirPaths
+        fileinfo = FileInfo {
+                        srcFile = file,
+                        outPaths = ( (fst outdirpaths)</>relpath , (snd outdirpaths)</>relpath )
+                    }
+    in fileinfo
+
+
+filterFiles fileinfos =
+    Control.Monad.filterM shouldbuildfile fileinfos where
+    shouldbuildfile fileinfo =
+        fileinfo~>(outPaths~.fst) ~> System.Directory.doesFileExist >>= \ isfile
+        -> if not isfile
+            then return True
+            else return False

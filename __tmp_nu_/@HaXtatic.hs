@@ -54,9 +54,8 @@ process ctxmain projfilename custfilename =
     -> putStrLn "2. Scanning input files and folders.."
     >> Build.plan ctxproj >>= \ buildplan
 
-    -> print (buildplan~>Build.fileCopies)
-    >> print (buildplan~>Build.fileGens)
-    --  >> print (ctxproj~>Proj.outDirPaths)
+    -> print buildplan
+    >> print (ctxproj~>Proj.outDirPaths)
     --  >> putStrLn ("=================")
     --  >> putStrLn (ctxproj~>Proj.coreFiles~>ProjDefaults.htmlTemplateMain~>Files.content)
     --  >> putStrLn ("=================")

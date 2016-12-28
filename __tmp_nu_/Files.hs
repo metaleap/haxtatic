@@ -20,7 +20,7 @@ data File = NoFile | File {
     path :: FilePath,
     content :: String,
     modTime :: Data.Time.Clock.UTCTime
-} deriving (Eq)
+} deriving (Eq, Show)
 
 
 data Ctx = Ctx {
@@ -44,9 +44,13 @@ filesInDir dir =
 
 
 listAllFiles rootdirpath reldirs =
-    let allfilepaths = concat<$> (Control.Monad.mapM perdir dirpaths)
+    let allfiles = concat<$> (Control.Monad.mapM perdir dirpaths)
         dirpaths = reldirs >~ (System.FilePath.combine rootdirpath)
-        perdir :: FilePath -> IO [FilePath]
+        perfile :: FilePath -> IO (FilePath , Data.Time.Clock.UTCTime)
+        perfile filepath =
+            System.Directory.getModificationTime filepath >>= \ modtime
+            -> return (filepath , modtime)
+        perdir :: FilePath -> IO [(FilePath , Data.Time.Clock.UTCTime)]
         perdir dirpath =
             let isfile = isfskind System.Directory.doesFileExist
                 isdir = isfskind System.Directory.doesDirectoryExist
@@ -59,16 +63,18 @@ listAllFiles rootdirpath reldirs =
                         files = Control.Monad.filterM isfile oknames
                         dirs = Control.Monad.filterM isdir oknames
                 in (joinpath<$> files) >>= \filepaths
+                -> (Control.Monad.mapM perfile filepaths) >>= \filetuples
                 -> (joinpath<$> dirs) >>= \subdirpaths
                 -> (Control.Monad.mapM perdir subdirpaths) >>= \recursed
-                -> return (concat [concat recursed,filepaths])
-    in allfilepaths >>= \fullpaths
-    -> let totuple fullpath = (fullpath,relpath) where
-            relpath = Util.atOr filtered 0 fullpath
-            filtered = filter Util.is (dirpaths>~persrcdir)
-            persrcdir rd = if not (Util.startsWith fullpath rd)
-                then "" else drop (1+rd~>length) fullpath
-        in return (fullpaths>~totuple)
+                -> return (concat [filetuples, concat recursed])
+    in allfiles >>= \allfiletuples
+    -> let tuple2tuple (fullpath , modtime) =
+            (relpath , File { path = fullpath, content = "", modTime = modtime }) where
+                relpath = Util.atOr filtered 0 fullpath
+                filtered = filter Util.is (dirpaths>~persrcdir)
+                persrcdir rd = if not (Util.startsWith fullpath rd)
+                    then "" else drop (1+rd~>length) fullpath
+        in return (allfiletuples>~tuple2tuple)
 
 
 
@@ -85,8 +91,7 @@ readOrCreate ctx relpath relpath2 defaultcontent =
         else if Util.is relpath2
             then readOrCreate ctx relpath2 "" defaultcontent
             else
-                System.Directory.createDirectoryIfMissing True (System.FilePath.takeDirectory filepath)
-                >> writeTo False filepath relpath defaultcontent
+                writeTo filepath relpath defaultcontent
                 >> return (File filepath defaultcontent (ctx~>nowTime))
 
 
@@ -100,20 +105,12 @@ rewrite file newmodtime newcontent =
 
 
 
-writeTo onlyifnofilesindir filepath relpath filecontent =
-    let
-        dirfiles = if onlyifnofilesindir
-                    then filesInDir (System.FilePath.takeDirectory filepath)
-                    else return []
-    in
-        dirfiles >>= \names
-        -> if onlyifnofilesindir && Util.is names
-            then System.IO.hFlush System.IO.stdout
-            else
-                System.IO.hFlush System.IO.stdout
-                >> putStr ("   >> "++relpath++"  [ ")
-                >> System.IO.hFlush System.IO.stdout
-                >> writeFile filepath filecontent
-                >> System.IO.hFlush System.IO.stdout
-                >> putStrLn "OK ]"
-                >> System.IO.hFlush System.IO.stdout
+writeTo filepath relpath filecontent =
+    System.IO.hFlush System.IO.stdout
+    >> System.Directory.createDirectoryIfMissing True (System.FilePath.takeDirectory filepath)
+    >> putStr ("   >> "++relpath++"  [ ")
+    >> System.IO.hFlush System.IO.stdout
+    >> writeFile filepath filecontent
+    >> System.IO.hFlush System.IO.stdout
+    >> putStrLn "OK ]"
+    >> System.IO.hFlush System.IO.stdout
