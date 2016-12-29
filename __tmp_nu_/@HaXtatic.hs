@@ -42,25 +42,39 @@ main =
 
 
 process ctxmain projfilename custfilename =
-    let ensurefilename = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
+    let filename = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
         dirpath = ctxmain~>Files.dirPath
         projname = System.FilePath.takeBaseName dirpath
 
     in putStrLn "1. Reading essential project files [or (re)creating them..]"
+    >> System.IO.hFlush System.IO.stdout
     >> System.Directory.createDirectoryIfMissing False dirpath
-    >> ProjDefaults.loadOrCreate ctxmain projname (ensurefilename projfilename) (ensurefilename custfilename)
+    >> ProjDefaults.loadOrCreate ctxmain projname (filename projfilename) (filename custfilename)
     >>= Proj.loadCtx ctxmain projname >>= \ ctxproj
 
     -> putStrLn "2. Scanning input files and folders.."
+    >> System.IO.hFlush System.IO.stdout
     >> Build.plan ctxproj >>= \ buildplan
-    -> putStrLn ("\t\tStatic files: will copy "++(show$ buildplan~>Build.outFileStatic~>length)++" (skipping "++(show$ buildplan~>Build.numSkippedStatic)++")")
-    >> putStrLn ("\t\tContent pages: will (re)generate "++(show$ buildplan~>Build.outFilePages~>length)++" (skipping "++(show$ buildplan~>Build.numSkippedPages)++")")
-    >> putStrLn ("\t\tAtom XML files: will (re)generate "++(show$ buildplan~>Build.outFileAtoms~>length)++" (skipping "++(show$ buildplan~>Build.numSkippedAtoms)++")")
+    -> putStrLn ("\t\tStatic files: will copy "++(show$ buildplan~>Build.outFilesStatic~>length)++" (skipping "++(show$ buildplan~>Build.numSkippedStatic)++")")
+    >> putStrLn ("\t\tContent pages: will (re)generate "++(show$ buildplan~>Build.outFilesPage~>length)++" (skipping "++(show$ buildplan~>Build.numSkippedPages)++")")
+    >> putStrLn ("\t\tAtom XML files: will (re)generate "++(show$ buildplan~>Build.outFilesAtom~>length)++" (skipping "++(show$ buildplan~>Build.numSkippedAtoms)++")")
     >> print buildplan
+
+    >> putStrLn ("3. Copying "++(show$ buildplan~>Build.outFilesStatic~>length)++"/"++(show$ buildplan~>Build.outFilesStatic~>length + buildplan~>Build.numSkippedStatic)++" static files..")
+    >> System.IO.hFlush System.IO.stdout
+    >> Build.copyStaticFiles buildplan
+
+    >> processCopyDeploy ctxproj buildplan
 
     >> putStrLn (ctxproj~>Proj.dirPathBuild)
     >> putStrLn (ctxproj~>Proj.dirPathDeploy)
-    --  >> putStrLn ("=================")
-    --  >> putStrLn (ctxproj~>Proj.coreFiles~>ProjDefaults.htmlTemplateMain~>Files.content)
-    --  >> putStrLn ("=================")
-    --  >> putStrLn (ctxproj~>Proj.coreFiles~>ProjDefaults.htmlTemplateBlok~>Files.content)
+
+
+
+processCopyDeploy ctxproj buildplan =
+    if null (ctxproj~>Proj.dirPathDeploy)
+        then
+            return ()
+        else
+            putStrLn ("4. Copying all "++(show$ buildplan~>Build.numOutFilesTotal)++" output files written to `"++(ctxproj~>Proj.dirPathDeploy)++"` ..")
+            >> Build.copyAllOutputsToDeploy buildplan

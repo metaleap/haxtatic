@@ -10,14 +10,16 @@ import qualified ProjDefaults
 import Util ( (~>) , (>~) )
 
 import qualified Control.Monad
-import System.Directory
+import qualified System.Directory
+import qualified System.FilePath
 import System.FilePath ( (</>) )
 
 
 data Plan = Plan {
-    outFileAtoms :: [FileInfo],
-    outFilePages :: [FileInfo],
-    outFileStatic :: [FileInfo],
+    outFilesAtom :: [FileInfo],
+    outFilesPage :: [FileInfo],
+    outFilesStatic :: [FileInfo],
+    numOutFilesTotal :: Int,
     numSkippedStatic :: Int,
     numSkippedPages :: Int,
     numSkippedAtoms :: Int
@@ -25,9 +27,32 @@ data Plan = Plan {
 
 data FileInfo = FileInfo {
     relPath :: FilePath,
-    outPath :: FilePath,
+    outPathBuild :: FilePath,
+    outPathDeploy :: FilePath,
     srcFile :: Files.File
 } deriving (Show)
+
+
+
+copyAllOutputsToDeploy buildplan =
+    let forall = Control.Monad.mapM perfile
+        perfile file =
+            let srcfilepath = file~>outPathBuild
+            in System.Directory.doesFileExist srcfilepath >>= \isfile
+            -> if isfile
+                then Files.copyTo srcfilepath [file~>outPathDeploy]
+                else putStrLn ("[!]\tWeirdly missing: "++srcfilepath)
+    in forall (buildplan~>outFilesStatic)
+    >> forall (buildplan~>outFilesPage)
+    >> forall (buildplan~>outFilesAtom)
+    >> return ()
+
+
+
+copyStaticFiles buildplan =
+    Control.Monad.mapM perfile (buildplan~>outFilesStatic) where
+        perfile file =
+            Files.copyTo (file~>srcFile~>Files.path) [file~>outPathBuild]
 
 
 
@@ -50,16 +75,17 @@ plan ctxproj =
         allpages = (allpagesfiles++dynpages) >~ (tofileinfo "")
         allatoms = (allpostsfiles++dynatoms) >~ (tofileinfo ".atom")
         (dynpages , dynatoms) = Bloks.buildPlan (modtimeproj,modtimetmplblok) allpagesfiles $projsetup~>Proj.bloks
-    in filterFiles allstatics cfgprocstatic >>= \newstatics
-    -> filterFiles allpages cfgprocpages >>= \newpages
-    -> filterFiles allatoms cfgprocposts >>= \newatoms
+    in _filterOutFiles allstatics cfgprocstatic >>= \outstatics
+    -> _filterOutFiles allpages cfgprocpages >>= \outpages
+    -> _filterOutFiles allatoms cfgprocposts >>= \outatoms
     -> return Plan {
-                outFileAtoms = allatoms,
-                outFilePages = newpages,
-                outFileStatic = newstatics,
-                numSkippedStatic = allstatics~>length - newstatics~>length,
-                numSkippedPages = allpages~>length - newpages~>length,
-                numSkippedAtoms = allatoms~>length - newatoms~>length
+                outFilesAtom = outatoms,
+                outFilesPage = outpages,
+                outFilesStatic = outstatics,
+                numOutFilesTotal = outstatics~>length + outpages~>length + outatoms~>length,
+                numSkippedStatic = allstatics~>length - outstatics~>length,
+                numSkippedPages = allpages~>length - outpages~>length,
+                numSkippedAtoms = allatoms~>length - outatoms~>length
             }
 
 
@@ -68,18 +94,20 @@ fileInfo ctxproj addext (relpath,file) =
     let relpathext = Files.ensureFileExt relpath addext
         fileinfo = FileInfo {
                         relPath = relpathext,
-                        outPath = ctxproj~>Proj.dirPathBuild </> relpathext,
+                        outPathBuild = ctxproj~>Proj.dirPathBuild </> relpathext,
+                        outPathDeploy = let dd = ctxproj~>Proj.dirPathDeploy
+                                        in if null dd then "" else dd </> relpathext,
                         srcFile = file
                     }
     in fileinfo
 
 
-filterFiles fileinfos cfgproc =
+_filterOutFiles fileinfos cfgproc =
     let
         skipall = ["*"]== cfgproc~>ProjCfg.skip
         forceall = ["*"]== cfgproc~>ProjCfg.force
         shouldbuildfile fileinfo =
-            let outfilepath = fileinfo~>outPath
+            let outfilepath = fileinfo~>outPathBuild
                 matchesany = Files.simpleFileNameMatchAny $fileinfo~>relPath
                 skipthis = (not skipall) && (matchesany $cfgproc~>ProjCfg.skip)
                 forcethis = (not forceall) && (matchesany $cfgproc~>ProjCfg.force)

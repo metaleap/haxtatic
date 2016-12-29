@@ -8,6 +8,7 @@ import Util ( (~>) , (>~) , (~|) )
 
 import qualified Data.Map.Strict
 import qualified Data.Maybe
+import qualified System.FilePath
 import qualified Text.Read
 
 
@@ -31,8 +32,8 @@ parseDefs linessplits =
     Cfg {   dirNameBuild = dirbuild, dirNameDeploy = dirdeploy,
             processStatic = procstatic, processPages = procpages, processPosts = procposts }
     where
-        dirbuild = (Data.Map.Strict.findWithDefault ProjDefaults.dir_Out "dir_build" cfgmisc) ~> Util.trim
-        dirdeploy = (Data.Map.Strict.findWithDefault "" "dir_deploy" cfgmisc) ~> Util.trim
+        dirbuild = (Data.Map.Strict.findWithDefault ProjDefaults.dir_Out "dir_build" cfgmisc) ~> dirnameonly
+        dirdeploy = (Data.Map.Strict.findWithDefault "" "dir_deploy" cfgmisc) ~> dirnameonly
         procstatic = procfind ProjDefaults.dir_Static
         procpages = procfind ProjDefaults.dir_Pages
         procposts = procfind ProjDefaults.dir_Posts
@@ -40,7 +41,7 @@ parseDefs linessplits =
                         Data.Map.Strict.findWithDefault Nothing ("process:"++name) cfgprocs
         procdef dirname = Processing { dirs = [dirname], skip = [], force = [] }
         procsane defname proc = Processing {
-                dirs = Util.fallback (proc~>dirs >~Util.trim ~|Util.is) [defname],
+                dirs = Util.fallback (proc~>dirs >~dirnameonly ~|Util.is) [defname],
                 skip = if saneneither then [] else saneskip,
                 force = if saneneither then [] else saneforce
             } where
@@ -48,6 +49,7 @@ parseDefs linessplits =
                 saneskip = sanitize skip ; saneforce = sanitize force
                 sanitize fvals = let tmp = proc~>fvals >~Util.trim ~|Util.is in
                     if elem "*" tmp then ["*"] else tmp
+        dirnameonly = System.FilePath.takeFileName . Util.trim
         cfgprocs = Data.Map.Strict.fromList$
             linessplits>~perprocsplit ~|Util.is.fst where
             perprocsplit ("C":"":"process":name:procstr) =

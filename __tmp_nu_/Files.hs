@@ -33,6 +33,15 @@ _isfsnameok = not . (Data.List.isPrefixOf ".")
 
 
 
+copyTo _ [] = return ()
+copyTo srcfilepath ("":dstmore) = copyTo srcfilepath dstmore
+copyTo srcfilepath (dstpath:dstmore) =
+    System.Directory.createDirectoryIfMissing True (System.FilePath.takeDirectory dstpath)
+    >> System.Directory.copyFile srcfilepath dstpath
+    >> copyTo srcfilepath dstmore
+
+
+
 ensureFileExt filepath "" = filepath
 ensureFileExt "" ext = ext
 ensureFileExt filepath ext =
