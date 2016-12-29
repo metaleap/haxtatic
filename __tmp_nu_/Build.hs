@@ -24,9 +24,9 @@ data Plan = Plan {
 } deriving (Show)
 
 data FileInfo = FileInfo {
-    srcFile :: Files.File,
-    relPath :: String,
-    outPaths :: (String , String)
+    relPath :: FilePath,
+    outPath :: FilePath,
+    srcFile :: Files.File
 } deriving (Show)
 
 
@@ -49,7 +49,7 @@ plan ctxproj =
         allstatics = allstaticfiles >~ (tofileinfo "")
         allpages = (allpagesfiles++dynpages) >~ (tofileinfo "")
         allatoms = (allpostsfiles++dynatoms) >~ (tofileinfo ".atom")
-        (dynpages , dynatoms) = Bloks.buildPlan allpagesfiles $projsetup~>Proj.bloks
+        (dynpages , dynatoms) = Bloks.buildPlan (modtimeproj,modtimetmplblok) allpagesfiles $projsetup~>Proj.bloks
     in filterFiles allstatics cfgprocstatic >>= \newstatics
     -> filterFiles allpages cfgprocpages >>= \newpages
     -> filterFiles allatoms cfgprocposts >>= \newatoms
@@ -68,9 +68,9 @@ fileInfo ctxproj addext (relpath,file) =
     let outdirpaths = ctxproj~>Proj.outDirPaths
         relpathext = Files.ensureFileExt relpath addext
         fileinfo = FileInfo {
-                        srcFile = file,
                         relPath = relpathext,
-                        outPaths = ( (fst outdirpaths)</>relpathext , (snd outdirpaths)</>relpathext )
+                        outPath = (fst outdirpaths)</>relpathext,
+                        srcFile = file
                     }
     in fileinfo
 
@@ -80,7 +80,7 @@ filterFiles fileinfos cfgproc =
         skipall = ["*"]== cfgproc~>ProjCfg.skip
         forceall = ["*"]== cfgproc~>ProjCfg.force
         shouldbuildfile fileinfo =
-            let outfilepath = fileinfo~>(outPaths~.fst)
+            let outfilepath = fileinfo~>outPath
                 matchesany = Files.simpleFileNameMatchAny $fileinfo~>relPath
                 skipthis = (not skipall) && (matchesany $cfgproc~>ProjCfg.skip)
                 forcethis = (not forceall) && (matchesany $cfgproc~>ProjCfg.force)

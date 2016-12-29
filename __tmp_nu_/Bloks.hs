@@ -16,8 +16,8 @@ import qualified Text.Read
 data Blok = NoBlok | Blok {
     title :: String,
     desc :: String,
-    atomFile :: String,
-    blokPageFile :: String,
+    atomFile :: FilePath,
+    blokIndexPageFile :: FilePath,
     inSitemap :: Bool,
     dater :: String
 } deriving (Eq, Read, Show)
@@ -26,9 +26,37 @@ data Blok = NoBlok | Blok {
 _joinc = Util.join ":"
 
 
+
+allBlokPageFiles allpagesfiles bname =
+    let blokpagematches = allpagesfiles ~|(\(relpath , _) -> isblokpage relpath)
+        isblokpage = isRelPathBlokPage bname
+        cmpblogpages (_,file1) (_,file2) =
+            compare (Files.modTime file2) (Files.modTime file1)
+    in Data.List.sortBy cmpblogpages blokpagematches
+
+
+
+buildPlan (modtimeproj,modtimetmplblok) allpagesfiles bloks =
+    (dynpages , dynatoms) where
+        dynatoms = mapandfilter (tofileinfo atomFile modtimeproj)
+        dynpages = mapandfilter (tofileinfo blokIndexPageFile modtimetmplblok)
+        mapandfilter fn = isblokpagefile |~ (Data.Map.Strict.elems$ Data.Map.Strict.mapWithKey fn bloks)
+        isblokpagefile (relpath,file) = Util.is relpath && file /= Files.NoFile
+        tofileinfo bfield modtime bname blok =
+            let virtpath = if isblokpagefile bpage then blok~>bfield else ""
+                bpage@(_,bpagefile) = Util.atOr (allBlokPageFiles allpagesfiles bname) 0 ("" , Files.NoFile)
+            in (Files.pathSepSlashToSystem virtpath , if null virtpath then Files.NoFile else Files.File {
+                        Files.path = "|:B:|"++bname,
+                        Files.content = "",
+                        Files.modTime = max (Files.modTime bpagefile) modtime
+                    })
+
+
+
 bTagResolver curbname hashmap str =
     let splits = Util.splitBy ':' str
-        fields = [("title",title),("desc",desc),("atomFile",atomFile),("blokPageFile",blokPageFile),("dater",dater)]
+        fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
+                    ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dater",dater)  ]
         fname = splits#0
         bname = Util.atOr splits 1 curbname
         blok = if null bname then NoBlok else
@@ -41,36 +69,6 @@ bTagResolver curbname hashmap str =
                     case Data.List.lookup fname fields of
                         Just fieldval -> fieldval blok
                         Nothing -> restore
-
-
-
-allBlokPageFiles allpagesfiles bname =
-    let cmpblogpages (_,file1) (_,file2) =
-            compare (Files.modTime file2) (Files.modTime file1)
-        blokpagematches = allpagesfiles ~|(\(relpath , _) -> isblokpage relpath)
-        isblokpage = isRelPathBlokPage bname
-    in Data.List.sortBy cmpblogpages blokpagematches
-
-
-
-buildPlan ::
-    [(String , Files.File)]->
-    Data.Map.Strict.Map String Blok->
-    ( [(String , Files.File)] , [(String , Files.File)] )
-buildPlan [] _ = ([] , [])
-buildPlan allpagesfiles bloks =
-    (dynpages , dynatoms) where
-        dynatoms = mapandfilter toatominfo
-        dynpages = mapandfilter toatominfo
-        mapandfilter fn = empties |~ (Data.Map.Strict.elems$ Data.Map.Strict.mapWithKey fn bloks)
-        empties (relpath,file) = Util.is relpath && file /= Files.NoFile
-        allblokpagefiles = allBlokPageFiles allpagesfiles
-        latest bname =
-            Util.atOr (allblokpagefiles bname) 0 ("" , Files.NoFile)
-        toatominfo bname blok =
-            let virtpath = if null bpagerelpath then "" else blok~>atomFile
-                (bpagerelpath , bpagefile) = latest bname -- bpagerelpath is pages-dir-rel: foo\basics\intro.html
-            in (virtpath , if null virtpath then Files.NoFile else bpagefile)
 
 
 
@@ -88,7 +86,7 @@ parseDefs linessplits =
                 parsed = (Text.Read.readMaybe parsestr) :: Maybe Blok
                 errblok = Blok { title="{!syntax issue near `B::"++bname++":`, couldn't parse `"++parsestr++"`!}",
                                     desc="{!Syntax issue in your .haxproj file defining Blok named '"++bname++"'. Thusly couldn't parse Blok settings (incl. title/desc)!}",
-                                    atomFile="", blokPageFile="", inSitemap=False, dater="" }
+                                    atomFile="", blokIndexPageFile="", inSitemap=False, dater="" }
             in (bname , Data.Maybe.fromMaybe errblok parsed)
         persplit _ =
             noblok
@@ -99,7 +97,8 @@ parseDefs linessplits =
 toParseStr bname projline =
     let
         pl = projline ~> (checkfield "title" "") ~> (checkfield "desc" "") ~>
-                (checkfield "atomFile" "") ~> (checkfield "blokPageFile" (bname++".html")) ~> (checkfield "inSitemap" True) ~> (checkfield "dater" "")
+                (checkfield "atomFile" "") ~> (checkfield "blokIndexPageFile" (bname++".html")) ~>
+                    (checkfield "inSitemap" True) ~> (checkfield "dater" "")
     in
         "Blok {"++pl++"}" where
             checkfield field defval prjln =

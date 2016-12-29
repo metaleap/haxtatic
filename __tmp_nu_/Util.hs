@@ -84,6 +84,8 @@ trimStart = Data.List.dropWhile Data.Char.isSpace
 
 subAt start len = (take len) . (drop start)
 
+substitute old new = map (\item -> if (item==old) then new else item)
+
 truncate start end = (drop start) . (dropLast end)
 
 

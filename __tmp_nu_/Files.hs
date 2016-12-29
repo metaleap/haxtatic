@@ -14,7 +14,6 @@ import System.FilePath ( (</>) )
 import qualified System.IO
 
 
-
 --  general project input file
 data File = NoFile | File {
     path :: FilePath,
@@ -83,6 +82,17 @@ listAllFiles rootdirpath reldirs permodtime =
                 persrcdir rd = if not (Util.startsWith fullpath rd)
                     then "" else drop (1+rd~>length) fullpath
         in return (allfiletuples>~tuple2tuple)
+
+
+
+pathSepSlashToSystem
+    |(System.FilePath.pathSeparator=='/') = id
+    |(otherwise) = Util.substitute '/' System.FilePath.pathSeparator
+
+pathSepSystemToSlash =
+    --  could do the same as above reversed, BUT:
+    --  this way also handles data from windows users being used on posix
+    Util.substitute '\\' '/'
 
 
 

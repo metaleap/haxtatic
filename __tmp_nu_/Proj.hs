@@ -21,7 +21,7 @@ data Ctx = Ctx {
         projName :: String,
         setupName :: String,
         dirPath :: FilePath,
-        outDirPaths :: (String,String),
+        outDirPaths :: (FilePath,FilePath),
         setup :: Setup,
         coreFiles :: ProjDefaults.CoreFiles
     }

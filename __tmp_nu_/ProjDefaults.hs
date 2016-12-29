@@ -43,7 +43,7 @@ rewriteTemplates corefiles tmplrewriter =
     in CoreFiles {
         projectDefault = rewrite cfgmodtime id $corefiles~>projectDefault,
         projectOverwrites = rewrite cfgmodtime id $corefiles~>projectOverwrites,
-        htmlTemplateMain = rewrite cfgmodtime tmplrewriter $corefiles~>htmlTemplateMain,
+        htmlTemplateMain = rewrite tmplmodtime tmplrewriter $corefiles~>htmlTemplateMain,
         htmlTemplateBlok = rewrite tmplmodtime tmplrewriter $corefiles~>htmlTemplateBlok
     }
 

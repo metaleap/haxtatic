@@ -40,8 +40,8 @@ parseDefs linessplits =
                 force = if saneneither then [] else saneforce
             } where
                 saneneither = saneskip==saneforce
-                saneskip = sane skip ; saneforce = sane force
-                sane fvals = let tmp = proc~>fvals >~Util.trim ~|Util.is in
+                saneskip = sanitize skip ; saneforce = sanitize force
+                sanitize fvals = let tmp = proc~>fvals >~Util.trim ~|Util.is in
                     if elem "*" tmp then ["*"] else tmp
         configs = Data.Map.Strict.fromList$
             linessplits>~persplit ~|Util.is.fst where
