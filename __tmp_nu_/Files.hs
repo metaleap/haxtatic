@@ -43,13 +43,13 @@ filesInDir dir =
 
 
 
-listAllFiles rootdirpath reldirs =
+listAllFiles rootdirpath reldirs permodtime =
     let allfiles = concat<$> (Control.Monad.mapM perdir dirpaths)
         dirpaths = reldirs >~ (System.FilePath.combine rootdirpath)
         perfile :: FilePath -> IO (FilePath , Data.Time.Clock.UTCTime)
         perfile filepath =
             System.Directory.getModificationTime filepath >>= \ modtime
-            -> return (filepath , modtime)
+            -> return (filepath , permodtime modtime)
         perdir :: FilePath -> IO [(FilePath , Data.Time.Clock.UTCTime)]
         perdir dirpath =
             let isfile = isfskind System.Directory.doesFileExist
@@ -102,6 +102,28 @@ rewrite file newmodtime newcontent =
         content = newcontent, -- Util.fallback newcontent $content file,
         modTime = max newmodtime $modTime file
     }
+
+
+
+simpleFileNameMatch =
+    simpleFilePathMatch . System.FilePath.takeFileName
+
+simpleFileNameMatchAny =
+    simpleFilePathMatchAny . System.FilePath.takeFileName
+
+simpleFilePathMatch _ "*" = True
+simpleFilePathMatch relpath dumbpattern =
+    let testcontains = patternstarts && patternends
+        teststarts = (not testcontains) && patternends
+        testends = (not testcontains) && patternstarts
+        patternstarts = Util.startsWith dumbpattern "*"
+        patternends = Util.endsWith dumbpattern "*"
+    in (testcontains && Util.contains relpath (Util.truncate 1 1 dumbpattern))
+    || (teststarts && Util.startsWith relpath (Util.truncate 0 1 dumbpattern))
+    || (testends && Util.endsWith relpath (Util.truncate 1 0 dumbpattern))
+
+simpleFilePathMatchAny relpath dumbpatterns =
+    any id $ dumbpatterns >~ (simpleFilePathMatch relpath)
 
 
 

@@ -34,9 +34,9 @@ loadOrCreate ctx projname projfilename custfilename =
 
 
 rewriteTemplates corefiles tmplrewriter =
-    let newmodtime = corefiles~>projectDefault~>Files.modTime~>max$
+    let cfgmodtime = corefiles~>projectDefault~>Files.modTime~>max$
                         corefiles~>projectOverwrites~>Files.modTime
-        rewrite rw file = Files.rewrite file newmodtime$
+        rewrite rw file = Files.rewrite file cfgmodtime$
                             rw $file~>Files.content
     in CoreFiles {
         projectDefault = rewrite id $corefiles~>projectDefault,
