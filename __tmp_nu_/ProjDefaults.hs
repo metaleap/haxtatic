@@ -36,13 +36,15 @@ loadOrCreate ctx projname projfilename custfilename =
 rewriteTemplates corefiles tmplrewriter =
     let cfgmodtime = corefiles~>projectDefault~>Files.modTime~>max$
                         corefiles~>projectOverwrites~>Files.modTime
-        rewrite rw file = Files.rewrite file cfgmodtime$
+        tmplmodtime = cfgmodtime~>max$
+                        corefiles~>htmlTemplateMain~>Files.modTime
+        rewrite modtime rw file = Files.rewrite file modtime$
                             rw $file~>Files.content
     in CoreFiles {
-        projectDefault = rewrite id $corefiles~>projectDefault,
-        projectOverwrites = rewrite id $corefiles~>projectOverwrites,
-        htmlTemplateMain = rewrite tmplrewriter $corefiles~>htmlTemplateMain,
-        htmlTemplateBlok = rewrite tmplrewriter $corefiles~>htmlTemplateBlok
+        projectDefault = rewrite cfgmodtime id $corefiles~>projectDefault,
+        projectOverwrites = rewrite cfgmodtime id $corefiles~>projectOverwrites,
+        htmlTemplateMain = rewrite cfgmodtime tmplrewriter $corefiles~>htmlTemplateMain,
+        htmlTemplateBlok = rewrite tmplmodtime tmplrewriter $corefiles~>htmlTemplateBlok
     }
 
 

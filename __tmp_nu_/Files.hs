@@ -34,6 +34,14 @@ _isfsnameok = not . (Data.List.isPrefixOf ".")
 
 
 
+ensureFileExt filepath "" = filepath
+ensureFileExt "" ext = ext
+ensureFileExt filepath ext =
+    let curext = System.FilePath.takeExtension filepath
+    in if curext==ext then filepath else filepath++ext
+
+
+
 filesInDir dir =
     System.Directory.doesDirectoryExist dir >>= \isdir
     -> if not isdir then return [] else

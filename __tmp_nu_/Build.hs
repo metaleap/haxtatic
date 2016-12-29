@@ -2,6 +2,7 @@
 
 module Build where
 
+import qualified Bloks
 import qualified Files
 import qualified Proj
 import qualified ProjCfg
@@ -14,11 +15,12 @@ import System.FilePath ( (</>) )
 
 
 data Plan = Plan {
-    inFilePosts :: [FileInfo],
-    outFileGens :: [FileInfo],
-    outFileCopies :: [FileInfo],
+    outFileAtoms :: [FileInfo],
+    outFilePages :: [FileInfo],
+    outFileStatic :: [FileInfo],
     numSkippedStatic :: Int,
-    numSkippedPages :: Int
+    numSkippedPages :: Int,
+    numSkippedAtoms :: Int
 } deriving (Show)
 
 data FileInfo = FileInfo {
@@ -30,39 +32,45 @@ data FileInfo = FileInfo {
 
 
 plan ctxproj =
-    let cfg = ctxproj~>Proj.setup~>Proj.cfg
+    let projsetup = ctxproj~>Proj.setup
+        cfg = projsetup~>Proj.cfg
         cfgprocstatic = cfg~>ProjCfg.processStatic
         cfgprocpages = cfg~>ProjCfg.processPages
+        cfgprocposts = cfg~>ProjCfg.processPosts
         listallfiles = Files.listAllFiles $ctxproj~>Proj.dirPath
         modtimeproj = ctxproj~>Proj.coreFiles~>ProjDefaults.projectDefault~>Files.modTime
         modtimetmplmain = ctxproj~>Proj.coreFiles~>ProjDefaults.htmlTemplateMain~>Files.modTime
         modtimetmplblok = ctxproj~>Proj.coreFiles~>ProjDefaults.htmlTemplateBlok~>Files.modTime
     in listallfiles (cfgprocpages~>ProjCfg.dirs) (max modtimetmplmain) >>= \allpagesfiles
     -> listallfiles (cfgprocstatic~>ProjCfg.dirs) id >>= \allstaticfiles
-    -> listallfiles (cfg~>ProjCfg.processPosts~>ProjCfg.dirs) (max modtimeproj) >>= \allpostsfiles
+    -> listallfiles (cfgprocposts~>ProjCfg.dirs) (max modtimeproj) >>= \allpostsfiles
     -> let
         tofileinfo = fileInfo ctxproj
-        allstatics = allstaticfiles >~ tofileinfo
-        allpages = allpagesfiles >~ tofileinfo
-        allposts = allpostsfiles >~ tofileinfo
+        allstatics = allstaticfiles >~ (tofileinfo "")
+        allpages = (allpagesfiles++dynpages) >~ (tofileinfo "")
+        allatoms = (allpostsfiles++dynatoms) >~ (tofileinfo ".atom")
+        (dynpages , dynatoms) = Bloks.buildPlan allpagesfiles $projsetup~>Proj.bloks
     in filterFiles allstatics cfgprocstatic >>= \newstatics
     -> filterFiles allpages cfgprocpages >>= \newpages
+    -> filterFiles allatoms cfgprocposts >>= \newatoms
     -> return Plan {
-                inFilePosts = allposts,
-                outFileGens = newpages,
-                outFileCopies = newstatics,
+                outFileAtoms = allatoms,
+                outFilePages = newpages,
+                outFileStatic = newstatics,
                 numSkippedStatic = allstatics~>length - newstatics~>length,
-                numSkippedPages = allpages~>length - newpages~>length
+                numSkippedPages = allpages~>length - newpages~>length,
+                numSkippedAtoms = allatoms~>length - newatoms~>length
             }
 
 
 
-fileInfo ctxproj (relpath,file) =
+fileInfo ctxproj addext (relpath,file) =
     let outdirpaths = ctxproj~>Proj.outDirPaths
+        relpathext = Files.ensureFileExt relpath addext
         fileinfo = FileInfo {
                         srcFile = file,
-                        relPath = relpath,
-                        outPaths = ( (fst outdirpaths)</>relpath , (snd outdirpaths)</>relpath )
+                        relPath = relpathext,
+                        outPaths = ( (fst outdirpaths)</>relpathext , (snd outdirpaths)</>relpathext )
                     }
     in fileinfo
 

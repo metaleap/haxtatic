@@ -53,8 +53,9 @@ process ctxmain projfilename custfilename =
 
     -> putStrLn "2. Scanning input files and folders.."
     >> Build.plan ctxproj >>= \ buildplan
-    -> putStrLn ("\t\tStatic files: will copy "++(show$ buildplan~>Build.outFileCopies~>length)++" (skipping "++(show$ buildplan~>Build.numSkippedStatic)++")")
-    >> putStrLn ("\t\tContent pages: will (re)generate "++(show$ buildplan~>Build.outFileGens~>length)++" (skipping "++(show$ buildplan~>Build.numSkippedPages)++")")
+    -> putStrLn ("\t\tStatic files: will copy "++(show$ buildplan~>Build.outFileStatic~>length)++" (skipping "++(show$ buildplan~>Build.numSkippedStatic)++")")
+    >> putStrLn ("\t\tContent pages: will (re)generate "++(show$ buildplan~>Build.outFilePages~>length)++" (skipping "++(show$ buildplan~>Build.numSkippedPages)++")")
+    >> putStrLn ("\t\tAtom XML files: will (re)generate "++(show$ buildplan~>Build.outFileAtoms~>length)++" (skipping "++(show$ buildplan~>Build.numSkippedAtoms)++")")
     >> print buildplan
 
     >> print (ctxproj~>Proj.outDirPaths)

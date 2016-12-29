@@ -36,9 +36,11 @@ parseDefs linessplits =
         procdef dirname = Processing { dirs = [dirname], skip = [], force = [] }
         procsane defname proc = Processing {
                 dirs = Util.fallback (proc~>dirs >~Util.trim ~|Util.is) [defname],
-                skip = sane skip,
-                force = sane force
+                skip = if saneneither then [] else saneskip,
+                force = if saneneither then [] else saneforce
             } where
+                saneneither = saneskip==saneforce
+                saneskip = sane skip ; saneforce = sane force
                 sane fvals = let tmp = proc~>fvals >~Util.trim ~|Util.is in
                     if elem "*" tmp then ["*"] else tmp
         configs = Data.Map.Strict.fromList$
