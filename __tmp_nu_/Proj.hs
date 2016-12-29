@@ -8,10 +8,9 @@ import qualified ProjCfg
 import qualified ProjDefaults
 import qualified ProjTxts
 import qualified Util
-import Util ( (~>) , (>~) , (#) )
+import Util ( (~>) , (>~) )
 
 import qualified Data.Map.Strict
-import qualified System.FilePath
 import System.FilePath ( (</>) )
 
 
@@ -21,7 +20,8 @@ data Ctx = Ctx {
         projName :: String,
         setupName :: String,
         dirPath :: FilePath,
-        outDirPaths :: (FilePath,FilePath),
+        dirPathBuild :: FilePath,
+        dirPathDeploy :: FilePath,
         setup :: Setup,
         coreFiles :: ProjDefaults.CoreFiles
     }
@@ -41,13 +41,15 @@ data Setup = Setup {
 loadCtx mainctx projname defaultfiles =
     let loadedsetup = _loadSetup ctx
         dirpath = mainctx~>Files.dirPath
-        dirsubpath = System.FilePath.combine dirpath
+        dirsubpath = (dirpath </>)
         setupname = ProjDefaults.setupName $defaultfiles~>ProjDefaults.projectDefault~>Files.path
         ctx = Ctx {
             projName = projname,
             setupName = setupname,
             dirPath = dirpath,
-            outDirPaths = ( dirsubpath $setupname++"-build", dirsubpath $setupname++"-deploy" ),
+            dirPathBuild = dirsubpath $setupname++"-"++loadedsetup~>cfg~>ProjCfg.dirNameBuild,
+            dirPathDeploy = let dd = loadedsetup~>cfg~>ProjCfg.dirNameDeploy
+                            in if null dd then "" else dirsubpath $setupname++"-"++dd,
             setup = loadedsetup,
             coreFiles = _loadCoreFiles loadedsetup defaultfiles
         }
@@ -58,9 +60,9 @@ loadCtx mainctx projname defaultfiles =
         return ctx
 
 
-_loadCoreFiles setup deffiles =
+_loadCoreFiles projsetup deffiles =
     ProjDefaults.rewriteTemplates deffiles tmplrewriter where
-        tmplrewriter = processSrcFully setup
+        tmplrewriter = processSrcFully projsetup
 
 
 _loadSetup ctx =

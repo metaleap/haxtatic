@@ -7,7 +7,7 @@ import qualified Files
 import qualified Proj
 import qualified ProjCfg
 import qualified ProjDefaults
-import Util ( (~.) , (~>) , (>~) , (#) )
+import Util ( (~>) , (>~) )
 
 import qualified Control.Monad
 import System.Directory
@@ -65,11 +65,10 @@ plan ctxproj =
 
 
 fileInfo ctxproj addext (relpath,file) =
-    let outdirpaths = ctxproj~>Proj.outDirPaths
-        relpathext = Files.ensureFileExt relpath addext
+    let relpathext = Files.ensureFileExt relpath addext
         fileinfo = FileInfo {
                         relPath = relpathext,
-                        outPath = (fst outdirpaths)</>relpathext,
+                        outPath = ctxproj~>Proj.dirPathBuild </> relpathext,
                         srcFile = file
                     }
     in fileinfo

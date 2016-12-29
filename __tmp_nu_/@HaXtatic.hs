@@ -9,7 +9,7 @@ import qualified Files
 import qualified Proj
 import qualified ProjDefaults
 import qualified Util
-import Util ( (#) , (~>) , (~.) )
+import Util ( (#) , (~>) )
 
 import qualified Data.Time.Clock
 import qualified System.Directory
@@ -58,7 +58,8 @@ process ctxmain projfilename custfilename =
     >> putStrLn ("\t\tAtom XML files: will (re)generate "++(show$ buildplan~>Build.outFileAtoms~>length)++" (skipping "++(show$ buildplan~>Build.numSkippedAtoms)++")")
     >> print buildplan
 
-    >> print (ctxproj~>Proj.outDirPaths)
+    >> putStrLn (ctxproj~>Proj.dirPathBuild)
+    >> putStrLn (ctxproj~>Proj.dirPathDeploy)
     --  >> putStrLn ("=================")
     --  >> putStrLn (ctxproj~>Proj.coreFiles~>ProjDefaults.htmlTemplateMain~>Files.content)
     --  >> putStrLn ("=================")

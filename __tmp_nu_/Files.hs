@@ -3,7 +3,7 @@
 module Files where
 
 import qualified Util
-import Util ( (~>) , (~.) , (~|) , (|~) , (>~) , (#) )
+import Util ( (~>) , (~.) , (~|) , (>~) )
 
 import qualified Control.Monad
 import qualified Data.List
@@ -99,7 +99,6 @@ pathSepSystemToSlash =
 readOrCreate ctx relpath relpath2 defaultcontent =
     if null relpath then return NoFile else
     let filepath = System.FilePath.combine (ctx~>dirPath) relpath
-        filepath2 = System.FilePath.combine (ctx~>dirPath) relpath2
     in System.Directory.doesFileExist filepath
     >>= \ isfile -> if isfile
         then

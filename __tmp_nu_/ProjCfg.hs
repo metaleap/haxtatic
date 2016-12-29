@@ -4,7 +4,7 @@ module ProjCfg where
 
 import qualified ProjDefaults
 import qualified Util
-import Util ( (~>) , (>~) , (~|) , (|~) , (~.) )
+import Util ( (~>) , (>~) , (~|) )
 
 import qualified Data.Map.Strict
 import qualified Data.Maybe
@@ -12,6 +12,8 @@ import qualified Text.Read
 
 
 data Cfg = Cfg {
+    dirNameBuild :: String,
+    dirNameDeploy :: String,
     processStatic :: Processing,
     processPages :: Processing,
     processPosts :: Processing
@@ -26,13 +28,16 @@ data Processing = Processing {
 
 
 parseDefs linessplits =
-    Cfg { processStatic=procstatic, processPages=procpages, processPosts=procposts }
+    Cfg {   dirNameBuild = dirbuild, dirNameDeploy = dirdeploy,
+            processStatic = procstatic, processPages = procpages, processPosts = procposts }
     where
+        dirbuild = (Data.Map.Strict.findWithDefault ProjDefaults.dir_Out "dir_build" cfgmisc) ~> Util.trim
+        dirdeploy = (Data.Map.Strict.findWithDefault "" "dir_deploy" cfgmisc) ~> Util.trim
         procstatic = procfind ProjDefaults.dir_Static
         procpages = procfind ProjDefaults.dir_Pages
         procposts = procfind ProjDefaults.dir_Posts
         procfind name = procsane name $ Data.Maybe.fromMaybe (procdef name) $
-                        Data.Map.Strict.findWithDefault Nothing ("process:"++name) configs
+                        Data.Map.Strict.findWithDefault Nothing ("process:"++name) cfgprocs
         procdef dirname = Processing { dirs = [dirname], skip = [], force = [] }
         procsane defname proc = Processing {
                 dirs = Util.fallback (proc~>dirs >~Util.trim ~|Util.is) [defname],
@@ -43,10 +48,14 @@ parseDefs linessplits =
                 saneskip = sanitize skip ; saneforce = sanitize force
                 sanitize fvals = let tmp = proc~>fvals >~Util.trim ~|Util.is in
                     if elem "*" tmp then ["*"] else tmp
-        configs = Data.Map.Strict.fromList$
-            linessplits>~persplit ~|Util.is.fst where
-            persplit ("C":"":"process":name:procstr) =
+        cfgprocs = Data.Map.Strict.fromList$
+            linessplits>~perprocsplit ~|Util.is.fst where
+            perprocsplit ("C":"":"process":name:procstr) =
                 ( "process:"++name ,
                     (Text.Read.readMaybe$ "Processing {"++(Util.join ":" procstr)++"}") :: Maybe Processing)
-            persplit _ =
+            perprocsplit _ =
                 ( "" , Nothing )
+        cfgmisc = Data.Map.Strict.fromList$
+            linessplits>~permiscsplit ~|Util.is.fst where
+            permiscsplit ("C":"":cfgname:cfgvals) = ( cfgname , Util.join ":" cfgvals )
+            permiscsplit _ = ( "" , "" )
