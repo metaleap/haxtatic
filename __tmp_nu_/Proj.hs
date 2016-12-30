@@ -8,7 +8,7 @@ import qualified ProjCfg
 import qualified ProjDefaults
 import qualified ProjTxts
 import qualified Util
-import Util ( (~>) , (>~) )
+import Util ( (~:) , (>~) )
 
 import qualified Data.Map.Strict
 import System.FilePath ( (</>) )
@@ -40,20 +40,20 @@ data Setup = Setup {
 
 loadCtx mainctx projname defaultfiles =
     let loadedsetup = _loadSetup ctx
-        dirpath = mainctx~>Files.dirPath
+        dirpath = mainctx~:Files.dirPath
         dirsubpath = (dirpath </>)
-        setupname = ProjDefaults.setupName $defaultfiles~>ProjDefaults.projectDefault~>Files.path
+        setupname = ProjDefaults.setupName $defaultfiles~:ProjDefaults.projectDefault~:Files.path
         ctx = Ctx {
             projName = projname,
             setupName = setupname,
             dirPath = dirpath,
-            dirPathBuild = dirsubpath $setupname++"-"++loadedsetup~>cfg~>ProjCfg.dirNameBuild,
-            dirPathDeploy = let dd = loadedsetup~>cfg~>ProjCfg.dirNameDeploy
+            dirPathBuild = dirsubpath $setupname++"-"++loadedsetup~:cfg~:ProjCfg.dirNameBuild,
+            dirPathDeploy = let dd = loadedsetup~:cfg~:ProjCfg.dirNameDeploy
                             in if null dd then "" else dirsubpath $setupname++"-"++dd,
             setup = loadedsetup,
             coreFiles = _loadCoreFiles loadedsetup defaultfiles
         }
-        --  defpagesdirname = (loadedsetup~>cfg~>ProjCfg.processPages~>ProjCfg.dirs)#0
+        --  defpagesdirname = (loadedsetup~:cfg~:ProjCfg.processPages~:ProjCfg.dirs)#0
         --  defpagesdirpath = dirsubpath defpagesdirname
     in
         --  Files.writeTo True (defpagesdirpath </> "index.html") (defpagesdirname </> "index.html") "def index html"
@@ -92,7 +92,7 @@ _loadSetup ctx =
         postlinessplits = srclinespost>~ _splitc
         _splitc = Util.splitBy ':'
         srclinesprep = ProjTxts.srcLinesExpandMl$ _rawsrc ctx
-        srclinespost = processSrcFully setupprep (srclinesprep~>unlines) ~> lines
+        srclinespost = processSrcFully setupprep (srclinesprep~:unlines) ~: lines
 
 
 
@@ -100,12 +100,12 @@ processSrcFully =
     Util.repeatedly . processSrcJustOnce
 
 processSrcJustOnce ctxSetup src =
-    ((Util.splitUp ["{T{","{B{"] "}}" src)>~perchunk) ~> concat
+    ((Util.splitUp ["{T{","{B{"] "}}" src)>~perchunk) ~: concat
     where
         perchunk (str , "{B{") =
-            (ctxSetup~>bTags) str
+            (ctxSetup~:bTags) str
         perchunk (str , "{T{") =
-            (ctxSetup~>tTags) str
+            (ctxSetup~:tTags) str
         perchunk (str , _) =
             str
 
@@ -113,6 +113,6 @@ processSrcJustOnce ctxSetup src =
 
 _rawsrc ctx =
     --  join primary project file with additionally-specified 'overwrites' one:
-    (ctx~>coreFiles~>ProjDefaults.projectDefault~>Files.content) ++
-        let prjoverwrites = (ctx~>coreFiles~>ProjDefaults.projectOverwrites) in
-            if prjoverwrites==Files.NoFile then "" else prjoverwrites~>Files.content
+    (ctx~:coreFiles~:ProjDefaults.projectDefault~:Files.content) ++
+        let prjoverwrites = (ctx~:coreFiles~:ProjDefaults.projectOverwrites) in
+            if prjoverwrites==Files.NoFile then "" else prjoverwrites~:Files.content

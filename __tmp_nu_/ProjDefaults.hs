@@ -3,7 +3,7 @@
 module ProjDefaults where
 
 import qualified Files
-import Util ( (>~) , (~>) )
+import Util ( (>~) , (~:) )
 
 import qualified Data.Char
 import qualified System.FilePath
@@ -26,25 +26,25 @@ loadOrCreate ctx projname projfilename custfilename =
     >>= \ custfile
     -> Files.readOrCreate ctx projfilename "" projfilecontent
     >>= \ projfile
-    -> Files.readOrCreate ctx (setupname++"-main.haxtmpl.html") "default-main.haxtmpl.html" _tmplmain
+    -> Files.readOrCreate ctx (setupname++"-main.haxtmpl.html") "default-main.haxtmpl.html" _tmpl_html_main
     >>= \ tmplmainfile
-    -> Files.readOrCreate ctx (setupname++"-blok.haxtmpl.html") "default-blok.haxtmpl.html" _tmplblok
+    -> Files.readOrCreate ctx (setupname++"-blok.haxtmpl.html") "default-blok.haxtmpl.html" _tmpl_html_blok
     >>= \ tmplblokfile
     -> return (CoreFiles projfile custfile tmplmainfile tmplblokfile)
 
 
 rewriteTemplates corefiles tmplrewriter =
-    let cfgmodtime = corefiles~>projectDefault~>Files.modTime~>max$
-                        corefiles~>projectOverwrites~>Files.modTime
-        tmplmodtime = cfgmodtime~>max$
-                        corefiles~>htmlTemplateMain~>Files.modTime
+    let cfgmodtime = corefiles~:projectDefault~:Files.modTime~:max$
+                        corefiles~:projectOverwrites~:Files.modTime
+        tmplmodtime = cfgmodtime~:max$
+                        corefiles~:htmlTemplateMain~:Files.modTime
         rewrite modtime rw file = Files.rewrite file modtime$
-                            rw $file~>Files.content
+                            rw $file~:Files.content
     in CoreFiles {
-        projectDefault = rewrite cfgmodtime id $corefiles~>projectDefault,
-        projectOverwrites = rewrite cfgmodtime id $corefiles~>projectOverwrites,
-        htmlTemplateMain = rewrite tmplmodtime tmplrewriter $corefiles~>htmlTemplateMain,
-        htmlTemplateBlok = rewrite tmplmodtime tmplrewriter $corefiles~>htmlTemplateBlok
+        projectDefault = rewrite cfgmodtime id $corefiles~:projectDefault,
+        projectOverwrites = rewrite cfgmodtime id $corefiles~:projectOverwrites,
+        htmlTemplateMain = rewrite tmplmodtime tmplrewriter $corefiles~:htmlTemplateMain,
+        htmlTemplateBlok = rewrite tmplmodtime tmplrewriter $corefiles~:htmlTemplateBlok
     }
 
 
@@ -61,7 +61,22 @@ _proj name =
     "T::SiteTitle: "++(name >~ Data.Char.toUpper)++"-Site\n"
 
 
-_tmplblok =
+_index_html dircur sitename dirproj dirpages pathpage pathtmpl pathfinal =
+    let l = 1+(length dirproj) ; x s = "{P{%demo_dirpath}}<b>"++(drop (l) s)++"</b>" in
+        "<h1>Greetings..</h1>\n\
+            \{P{%demo_hax:<b>HaXtatic</b>}}\n\
+            \{P{%demo_dirpath:"++dirproj++[System.FilePath.pathSeparator]++"}}\n\
+            \<p>Looks like for now I&apos;m the home page of your static site <code>"++sitename++"</code>! How did this come about?</p>\n\
+            \<p>When you ran {P{%demo_hax}} from <code>"++dircur++"</code>, specifying project-directory <code><b>{P{%demo_dirpath}}</b></code>:</p>\n\
+            \<ul>\n\
+            \    <li>I was generated at <code>"++(x pathfinal)++"</code> by</li>\n\
+            \    <li>..applying the <code>"++(x pathtmpl)++"</code> template (ready for your tinkering)</li>\n\
+            \    <li>..to my &apos;<i>content source page</i>&apos; stored at <code>"++(x pathpage)++"</code> (dito)</li>\n\
+            \    <li>..which in turn {P{%demo_hax}} pre-created for you just-beforehand (but only because <code>"++(x dirpages)++[System.FilePath.pathSeparator]++"</code> (and all your other specified content-page directories) was totally devoid of any files: otherwise it won&apos;t meddle in there as a rule).</li>\n\
+            \</ul>"
+
+
+_tmpl_html_blok =
     "<h1>{B{Title:_}}</h1>\n\
     \<p>{B{Desc:_}}</p>\n\
     \<p>\n\
@@ -70,7 +85,7 @@ _tmplblok =
     \</p>"
 
 
-_tmplmain =
+_tmpl_html_main =
     "<!DOCTYPE html><html lang=\"en\"><head>\n\
     \    <meta content=\"text/html;charset=utf-8\" http-equiv=\"Content-Type\" />\n\
     \    <title>{P{Title}} - {T{SiteTitle}}</title><style type=\"text/css\">\n\

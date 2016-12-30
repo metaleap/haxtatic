@@ -2,6 +2,7 @@
 
 module Util where
 
+import Control.Monad
 import Data.Char
 
 import qualified Data.List
@@ -10,7 +11,7 @@ import qualified Data.List
 
 (~.) = flip (.)
 
-(~>) = flip ($)
+(~:) = flip ($)
 
 (>~) = flip fmap
 infix 8 >~
@@ -20,6 +21,13 @@ infix 7 |~
 
 (~|) = flip filter
 infix 7 ~|
+
+(>>~) :: (Traversable t, Monad m) => t a -> (a -> m b) -> m (t b)
+(>>~) = Control.Monad.forM
+infix 8 >>~
+
+(>>|) :: Applicative m => [a] -> (a -> m Bool) -> m [a]
+(>>|) = flip Control.Monad.filterM
 
 
 butNot notval defval val |(val==notval) = defval |otherwise = val
@@ -58,7 +66,7 @@ infix 9 #
 dropLast 0 = id
 dropLast 1 = init
 dropLast n = ((#n) . reverse . Data.List.inits)
--- dropLast n l = l~>take (l~>length - n)
+-- dropLast n l = l~:take (l~:length - n)
 
 -- takeLast 1 = last
 takeLast n = ((#n) . reverse . Data.List.tails)
@@ -84,7 +92,8 @@ trimStart = Data.List.dropWhile Data.Char.isSpace
 
 subAt start len = (take len) . (drop start)
 
-substitute old new = map (\item -> if (item==old) then new else item)
+substitute old new = (>~ subst) where
+    subst item |(item==old) = new |(otherwise) = item
 
 truncate start end = (drop start) . (dropLast end)
 
@@ -136,7 +145,7 @@ fuseElems _ _ l = l
 
 indexOfSub _ [] = minBound::Int
 indexOfSub sub str@(_:rest)
-    |(zip sub str) ~> (all $(==)~>uncurry)
+    |(zip sub str) ~: (all $(==)~:uncurry)
         = 0
     |otherwise
         = 1+(indexOfSub sub rest)
@@ -144,7 +153,7 @@ indexOfSub sub str@(_:rest)
 lastIndexOfSub _ _ [] = minBound::Int
 lastIndexOfSub rev sub str
     |(idx<0) = minBound::Int
-    |(otherwise) = (str~>length)-(sub~>length)-idx
+    |(otherwise) = (str~:length)-(sub~:length)-idx
     where idx = indexOfSub (rev sub) (rev str)
 
 
@@ -160,7 +169,7 @@ splitBy delim =
 splitUp beginners =
     _splitup (length$ atOr beginners 0 "") lastidx beginners where
         lastidx' = lastIndexOfSub id
-        lastidx bstr = (beginners>~ \each-> lastidx' each bstr) ~> maximum
+        lastidx bstr = (beginners>~ \each-> lastidx' each bstr) ~: maximum
 
 
 _splitup _ _ _ _ "" = []
@@ -171,14 +180,14 @@ _splitup beg0len lastidx beginners end str =
     (tolist pre "") ++ (tolist match beginner) ++ --  only recurse if we have a good reason:
         (if nomatch && splitat==0 then (tolist rest "") else (_splitup beg0len lastidx beginners end rest))
     where
-    pre = str ~> (take$ if nomatch then splitat else begpos)
-    match = if nomatch then "" else str ~> (take endpos) ~> (drop $begpos+beg0len)
-    rest = str ~> (drop$ if nomatch then splitat else endposl)
-    beginner = if nomatch then "" else str ~> (take endpos) ~> (drop begpos) ~> take beg0len
+    pre = str ~: (take$ if nomatch then splitat else begpos)
+    match = if nomatch then "" else str ~: (take endpos) ~: (drop $begpos+beg0len)
+    rest = str ~: (drop$ if nomatch then splitat else endposl)
+    beginner = if nomatch then "" else str ~: (take endpos) ~: (drop begpos) ~: take beg0len
     nomatch = endpos<0 || begpos<0
     splitat = if nomatch && endpos>=0 then endposl else 0
     endpos = indexOfSub end str
     begpos = if endpos<0 then -1 else
-        lastidx$ str ~> (take endpos) ~> reverse
-    endposl = endpos+(end~>length)
+        lastidx$ str ~: (take endpos) ~: reverse
+    endposl = endpos+(end~:length)
     tolist val beg = if null val then [] else [(val,beg)]

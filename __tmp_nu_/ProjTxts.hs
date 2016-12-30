@@ -3,7 +3,7 @@
 module ProjTxts where
 
 import qualified Util
-import Util ( (~>) , (>~) , (~.) , (~|) )
+import Util ( (~:) , (>~) , (~.) , (~|) )
 
 import qualified Data.Map.Strict
 import qualified Text.Read
@@ -15,8 +15,8 @@ parseDefs linessplits canparsestr =
         ttags = Data.Map.Strict.fromList$
             linessplits>~persplit ~|fst~.Util.is where
                 persplit ("T":"":tname:tvalsplits) =
-                    ( tname~>Util.trim ,
-                        srcparsestr$ tvalsplits~>(Util.join ":")~>Util.trim )
+                    ( tname~:Util.trim ,
+                        srcparsestr$ tvalsplits~:(Util.join ":")~:Util.trim )
                 persplit _ =
                     ( "" , "" )
                 srcparsestr str
@@ -31,7 +31,7 @@ parseDefs linessplits canparsestr =
 srcLinesExpandMl rawsrc =
     --  original lines exposing {'{multi-line
     --  fragments}'} collapsed into single-line in-place {T{_Hx_MlRepl_n}} placeholders ..
-    ((mlchunked>~fst) ~> concat ~> lines) ++
+    ((mlchunked>~fst) ~: concat ~: lines) ++
         --  .. plus additional `T::_Hx_MlRepl_n:"original-but-\n-escaped-and-quoted"`
         --  lines appended, supplying the original extracted&replaced multi-line fragments
         (mlchunked>~ snd~.mlwriteln)
@@ -46,6 +46,6 @@ srcLinesExpandMl rawsrc =
         --  occurrence rewritten into {T{key}}
         perchunk (i , (str , "{'{")) =
             let tkey = "_Hx_MlRepl_"++(show i) in
-            ( "{T{"++tkey++"}}" , (tkey , "\"" ++(show str ~> (Util.truncate 1 1))++ "\""))
+            ( "{T{"++tkey++"}}" , (tkey , "\"" ++(show str ~: (Util.truncate 1 1))++ "\""))
         perchunk (_ , (str , _)) =
             (str , ("" , ""))

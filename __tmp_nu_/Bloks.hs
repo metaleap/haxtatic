@@ -4,7 +4,7 @@ module Bloks where
 
 import qualified Files
 import qualified Util
-import Util ( (#) , (~>) , (>~) , (~|) , (|~) , (~.) )
+import Util ( (#) , (~:) , (>~) , (~|) , (|~) , (~.) )
 
 import qualified Data.List
 import qualified Data.Map.Strict
@@ -28,8 +28,8 @@ _joinc = Util.join ":"
 
 
 allBlokPageFiles allpagesfiles bname =
-    let blokpagematches = allpagesfiles ~|(\(relpath , _) -> isblokpage relpath)
-        isblokpage = isRelPathBlokPage bname
+    let blokpagematches = allpagesfiles~|isblokpage
+        isblokpage (relpath,_) = isRelPathBlokPage bname relpath
         cmpblogpages (_,file1) (_,file2) =
             compare (Files.modTime file2) (Files.modTime file1)
     in Data.List.sortBy cmpblogpages blokpagematches
@@ -43,7 +43,7 @@ buildPlan (modtimeproj,modtimetmplblok) allpagesfiles bloks =
         mapandfilter fn = isblokpagefile |~ (Data.Map.Strict.elems$ Data.Map.Strict.mapWithKey fn bloks)
         isblokpagefile (relpath,file) = Util.is relpath && file /= Files.NoFile
         tofileinfo bfield modtime bname blok =
-            let virtpath = if isblokpagefile bpage then blok~>bfield else ""
+            let virtpath = if isblokpagefile bpage then blok~:bfield else ""
                 bpage@(_,bpagefile) = Util.atOr (allBlokPageFiles allpagesfiles bname) 0 ("" , Files.NoFile)
             in (Files.pathSepSlashToSystem virtpath , if null virtpath then Files.NoFile else Files.File {
                         Files.path = "|:B:|"++bname,
@@ -67,8 +67,8 @@ bTagResolver curbname hashmap str =
             then bname else if blok==NoBlok || null fname
                 then restore else
                     case Data.List.lookup fname fields of
-                        Just fieldval -> fieldval blok
-                        Nothing -> restore
+                        Just fieldval-> fieldval blok
+                        Nothing-> restore
 
 
 
@@ -82,7 +82,7 @@ parseDefs linessplits =
     Data.Map.Strict.fromList$
     linessplits>~persplit ~|(/=noblok) where
         persplit ("B":"":bname:bvalsplits) =
-            let parsestr = bvalsplits ~> _joinc ~> Util.trim ~> (toParseStr bname)
+            let parsestr = bvalsplits ~: _joinc ~: Util.trim ~: (toParseStr bname)
                 parsed = (Text.Read.readMaybe parsestr) :: Maybe Blok
                 errblok = Blok { title="{!syntax issue near `B::"++bname++":`, couldn't parse `"++parsestr++"`!}",
                                     desc="{!Syntax issue in your .haxproj file defining Blok named '"++bname++"'. Thusly couldn't parse Blok settings (incl. title/desc)!}",
@@ -96,9 +96,9 @@ parseDefs linessplits =
 
 toParseStr bname projline =
     let
-        pl = projline ~> (checkfield "title" "") ~> (checkfield "desc" "") ~>
-                (checkfield "atomFile" "") ~> (checkfield "blokIndexPageFile" (bname++".html")) ~>
-                    (checkfield "inSitemap" True) ~> (checkfield "dater" "")
+        pl = projline ~: (checkfield "title" "") ~: (checkfield "desc" "") ~:
+                (checkfield "atomFile" "") ~: (checkfield "blokIndexPageFile" (bname++".html")) ~:
+                    (checkfield "inSitemap" True) ~: (checkfield "dater" "")
     in
         "Blok {"++pl++"}" where
             checkfield field defval prjln =
