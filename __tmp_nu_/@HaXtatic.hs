@@ -58,12 +58,12 @@ process ctxmain projfilename custfilename =
     -> putStrLn "2. Scanning input files and folders.."
     >> System.IO.hFlush System.IO.stdout
     >> Build.plan ctxmain ctxproj >>= \ buildplan
-    -> putStrLn ("\t->\tStatic files: will copy "++(show$ buildplan~:Build.outFilesStatic~:length)++" (skipping "++(show$ buildplan~:Build.numSkippedStatic)++")")
-    >> putStrLn ("\t->\tContent pages: will (re)generate "++(show$ buildplan~:Build.outFilesPage~:length)++" (skipping "++(show$ buildplan~:Build.numSkippedPages)++")")
-    >> putStrLn ("\t->\tAtom XML files: will (re)generate "++(show$ buildplan~:Build.outFilesAtom~:length)++" (skipping "++(show$ buildplan~:Build.numSkippedAtoms)++")")
+    -> putStrLn ("\t->\tStatic files: will copy "++(show$ buildplan~:Build.outFilesStatic~:length)++", skipping "++(show$ buildplan~:Build.numSkippedStatic)++"")
+    >> putStrLn ("\t->\tContent pages: will (re)generate "++(show$ buildplan~:Build.outFilesPage~:length)++", skipping "++(show$ buildplan~:Build.numSkippedPages)++"")
+    >> putStrLn ("\t->\tAtom XML files: will (re)generate "++(show$ buildplan~:Build.outFilesAtom~:length)++", skipping "++(show$ buildplan~:Build.numSkippedAtoms)++"")
     --  >> print buildplan
 
-    >> putStrLn ("3. Copying "++(show$ buildplan~:Build.outFilesStatic~:length)++"/"++(show$ buildplan~:Build.outFilesStatic~:length + buildplan~:Build.numSkippedStatic)++" static files..")
+    >> putStrLn ("3. Copying "++(show$ buildplan~:Build.outFilesStatic~:length)++"/"++(show$ buildplan~:Build.outFilesStatic~:length + buildplan~:Build.numSkippedStatic)++" static files to:\n\t->\t`"++(ctxproj~:Proj.dirPathBuild)++"` ..")
     >> System.IO.hFlush System.IO.stdout
     >> Build.copyStaticFiles buildplan
 
@@ -77,6 +77,6 @@ processCopyDeploy ctxproj buildplan =
         then
             return ()
         else
-            putStrLn ("4. Copying all "++(show$ buildplan~:Build.numOutFilesTotal)++" output files written to `"++(ctxproj~:Proj.dirPathDeploy)++"` ..")
+            putStrLn ("4. Copying all "++(show$ buildplan~:Build.numOutFilesTotal)++" newly (over)written files also to:\n\t->\t`"++(ctxproj~:Proj.dirPathDeploy)++"`..")
             >> System.IO.hFlush System.IO.stdout
             >> Build.copyAllOutputsToDeploy buildplan

@@ -45,11 +45,9 @@ buildPlan (modtimeproj,modtimetmplblok) allpagesfiles bloks =
         tofileinfo bfield modtime bname blok =
             let virtpath = if isblokpagefile bpage then blok~:bfield else ""
                 bpage@(_,bpagefile) = Util.atOr (allBlokPageFiles allpagesfiles bname) 0 ("" , Files.NoFile)
-            in (Files.pathSepSlashToSystem virtpath , if null virtpath then Files.NoFile else Files.File {
-                        Files.path = "|:B:|"++bname,
-                        Files.content = "",
-                        Files.modTime = max (Files.modTime bpagefile) modtime
-                    })
+            in ( Files.pathSepSlashToSystem virtpath ,
+                    if null virtpath then Files.NoFile else
+                        Files.FileInfo ("|:B:|"++bname) (max (Files.modTime bpagefile) modtime) )
 
 
 

@@ -63,7 +63,8 @@ _createIndexHtmlIfNoContentPages ctxmain ctxproj numpagesrcfiles =
             dirpagesrel = (ctxproj~:Proj.setup~:Proj.cfg~:ProjCfg.processPages~:ProjCfg.dirs)#0
             dirbuild = ctxproj~:Proj.dirPathBuild
             htmltemplatemain = ctxproj~:Proj.coreFiles~:ProjDefaults.htmlTemplateMain
-        in ProjDefaults.writeDefaultIndexHtml
+        in putStrLn ("\t->\tNo content-source files whatsoever.. making one for you:")
+        >> ProjDefaults.writeDefaultIndexHtml
             ctxmain sitename dirpagesrel dirbuild htmltemplatemain
         >>= \ (outfile , outfilerel , pathfinal)
         -> return OutFileInfo {

@@ -38,12 +38,12 @@ data Setup = Setup {
 
 
 
-loadCtx mainctx projname defaultfiles =
-    let loadedsetup = _loadSetup ctx
-        dirpath = mainctx~:Files.dirPath
+loadCtx ctxmain projname defaultfiles =
+    let loadedsetup = _loadSetup ctxproj
+        dirpath = ctxmain~:Files.dirPath
         dirpathjoin = (dirpath </>)
         setupname = ProjDefaults.setupName $defaultfiles~:ProjDefaults.projectDefault~:Files.path
-        ctx = Ctx {
+        ctxproj = Ctx {
             projName = projname,
             setupName = setupname,
             dirPath = dirpath,
@@ -53,7 +53,7 @@ loadCtx mainctx projname defaultfiles =
             setup = loadedsetup,
             coreFiles = _loadCoreFiles loadedsetup defaultfiles
         }
-    in return ctx
+    in return ctxproj
 
 
 _loadCoreFiles projsetup deffiles =
@@ -61,7 +61,7 @@ _loadCoreFiles projsetup deffiles =
         tmplrewriter = processSrcFully projsetup
 
 
-_loadSetup ctx =
+_loadSetup ctxproj =
     let setuppost = Setup { -- srcRaw = srclinespost, srcPre = srclinesprep,
                             bloks = blokspost,
                             cfg = cfgpost,
@@ -85,7 +85,7 @@ _loadSetup ctx =
         preplinessplits = srclinesprep>~ _splitc
         postlinessplits = srclinespost>~ _splitc
         _splitc = Util.splitBy ':'
-        srclinesprep = ProjTxts.srcLinesExpandMl$ _rawsrc ctx
+        srclinesprep = ProjTxts.srcLinesExpandMl$ _rawsrc ctxproj
         srclinespost = processSrcFully setupprep (srclinesprep~:unlines) ~: lines
 
 
@@ -93,20 +93,20 @@ _loadSetup ctx =
 processSrcFully =
     Util.repeatedly . processSrcJustOnce
 
-processSrcJustOnce ctxSetup src =
+processSrcJustOnce ctxsetup src =
     ((Util.splitUp ["{T{","{B{"] "}}" src)>~perchunk) ~: concat
     where
         perchunk (str , "{B{") =
-            (ctxSetup~:bTags) str
+            (ctxsetup~:bTags) str
         perchunk (str , "{T{") =
-            (ctxSetup~:tTags) str
+            (ctxsetup~:tTags) str
         perchunk (str , _) =
             str
 
 
 
-_rawsrc ctx =
+_rawsrc ctxproj =
     --  join primary project file with additionally-specified 'overwrites' one:
-    (ctx~:coreFiles~:ProjDefaults.projectDefault~:Files.content) ++
-        let prjoverwrites = (ctx~:coreFiles~:ProjDefaults.projectOverwrites) in
+    (ctxproj~:coreFiles~:ProjDefaults.projectDefault~:Files.content) ++
+        let prjoverwrites = (ctxproj~:coreFiles~:ProjDefaults.projectOverwrites) in
             if prjoverwrites==Files.NoFile then "" else prjoverwrites~:Files.content

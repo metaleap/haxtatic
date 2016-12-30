@@ -14,11 +14,14 @@ import qualified System.IO
 
 
 --  general project input file
-data File = NoFile | File {
-    path :: FilePath,
-    content :: String,
-    modTime :: Data.Time.Clock.UTCTime
-} deriving (Eq, Show)
+data File
+    = NoFile
+    | FileInfo {    path :: FilePath,
+                    modTime :: Data.Time.Clock.UTCTime }
+    | FileFull {    path :: FilePath,
+                    modTime :: Data.Time.Clock.UTCTime,
+                    content :: String }
+    deriving (Eq, Show)
 
 
 data Ctx = Ctx {
@@ -84,7 +87,7 @@ listAllFiles rootdirpath reldirs permodtime =
     in allfiles >>= \allfiletuples
     -> let foreachfiletuple (srcfilepath , modtime) =
             ( Util.atOr relpaths 0 srcfilepath,
-                File { path = srcfilepath, content = "", modTime = modtime } )
+                FileInfo srcfilepath modtime )
             where
             relpaths = dirpaths>~foreachsrcdir ~|noNull
             foreachsrcdir reldirpath =
@@ -94,38 +97,38 @@ listAllFiles rootdirpath reldirs permodtime =
 
 
 
-pathSepSlashToSystem =
-    Util.substitute '/' System.FilePath.pathSeparator
+pathSepSlashToSystem = Util.substitute '/' System.FilePath.pathSeparator
 
-pathSepSystemToSlash =
-    --  no System.FilePath.pathSeparator: for data from windows users being used on posix
-    Util.substitute '\\' '/'
+pathSepSystemToSlash = Util.substitute '\\' '/'
+    --  no sys-sep: supports win data on posix
 
 
 
-readOrCreate ctx relpath relpath2 defaultcontent =
-    if null relpath then return NoFile else
-    let filepath = System.FilePath.combine (ctx~:dirPath) relpath
-    in System.Directory.doesFileExist filepath
-    >>= \ isfile -> if isfile
+readOrDefault _ _ "" _ _ =
+    return NoFile
+
+readOrDefault create ctxmain relpath relpath2 defaultcontent =
+    let filepath = System.FilePath.combine (ctxmain~:dirPath) relpath
+    in System.Directory.doesFileExist filepath >>= \ isfile
+    -> if isfile
         then
             System.Directory.getModificationTime filepath >>= \ modtime
             -> readFile filepath >>= \ filecontent
-            -> return (File filepath filecontent modtime)
-        else if relpath2~:noNull
-            then readOrCreate ctx relpath2 "" defaultcontent
-            else
-                writeTo filepath relpath defaultcontent
-                >> return (File filepath defaultcontent (ctx~:nowTime))
+            -> return$ FileFull filepath modtime filecontent
+        else if relpath2~:noNull && relpath2/=relpath
+                then
+                    --  putStrLn ("\t->\tNo `"++relpath++"`:\n\t\tusing `"++relpath2++"`")
+                    readOrDefault create ctxmain relpath2 "" defaultcontent
+                else
+                    let file = FileFull filepath (ctxmain~:nowTime) defaultcontent
+                    in if not create then return file else
+                        writeTo filepath relpath defaultcontent
+                        >> return file
 
 
 
-rewrite file newmodtime newcontent =
-    File {
-        path = file~:path,
-        content = newcontent, -- Util.ifNull newcontent $content file,
-        modTime = max newmodtime $modTime file
-    }
+fullFrom oldfile newmodtime newcontent =
+    FileFull (oldfile~:path) (max newmodtime $oldfile~:modTime) newcontent
 
 
 
@@ -154,7 +157,7 @@ simpleFilePathMatchAny relpath dumbpatterns =
 writeTo filepath showpath filecontent =
     System.IO.hFlush System.IO.stdout
     >> System.Directory.createDirectoryIfMissing True (System.FilePath.takeDirectory filepath)
-    >> putStr ("   >> "++showpath++"  [ ")
+    >> putStr ("\t>>\t"++showpath++"  [ ")
     >> System.IO.hFlush System.IO.stdout
     >> writeFile filepath filecontent
     >> System.IO.hFlush System.IO.stdout

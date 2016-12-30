@@ -20,16 +20,16 @@ data CoreFiles = CoreFiles {
 
 
 
-loadOrCreate ctx projname projfilename custfilename =
+loadOrCreate ctxmain projname projfilename custfilename =
     let projfilecontent = _proj projname
         setupname = setupName projfilename
-    in Files.readOrCreate ctx custfilename "" ""
+    in Files.readOrDefault True ctxmain custfilename "" ""
     >>= \ custfile
-    -> Files.readOrCreate ctx projfilename "" projfilecontent
+    -> Files.readOrDefault True ctxmain projfilename "default.haxproj" projfilecontent
     >>= \ projfile
-    -> Files.readOrCreate ctx (setupname++"-main.haxtmpl.html") "default-main.haxtmpl.html" _tmpl_html_main
+    -> Files.readOrDefault True ctxmain (setupname++"-main.haxtmpl.html") "default-main.haxtmpl.html" _tmpl_html_main
     >>= \ tmplmainfile
-    -> Files.readOrCreate ctx (setupname++"-blok.haxtmpl.html") "default-blok.haxtmpl.html" _tmpl_html_blok
+    -> Files.readOrDefault True ctxmain (setupname++"-blok.haxtmpl.html") "default-blok.haxtmpl.html" _tmpl_html_blok
     >>= \ tmplblokfile
     -> return (CoreFiles projfile custfile tmplmainfile tmplblokfile)
 
@@ -39,8 +39,8 @@ rewriteTemplates corefiles tmplrewriter =
                         corefiles~:projectOverwrites~:Files.modTime
         tmplmodtime = cfgmodtime~:max$
                         corefiles~:htmlTemplateMain~:Files.modTime
-        rewrite modtime rw file = Files.rewrite file modtime$
-                            rw $file~:Files.content
+        rewrite modtime rw file
+            = Files.fullFrom file modtime (rw $file~:Files.content)
     in CoreFiles {
         projectDefault = rewrite cfgmodtime id $corefiles~:projectDefault,
         projectOverwrites = rewrite cfgmodtime id $corefiles~:projectOverwrites,
@@ -61,8 +61,7 @@ writeDefaultIndexHtml ctxmain projname dirpagesrel dirbuild htmltemplatemain =
         pathfinal = dirbuild </> outfilename
         outfilecontent = _index_html
                             dircur projname dirproj dirpages outfilepath pathtmpl pathfinal
-        outfile = Files.File {  Files.path = outfilepath, Files.content = "",
-                                Files.modTime = ctxmain~:Files.nowTime }
+        outfile = Files.FileInfo outfilepath (ctxmain~:Files.nowTime)
     in
         Files.writeTo outfilepath outfilerel outfilecontent
         >> return (outfile , outfilerel , pathfinal)
