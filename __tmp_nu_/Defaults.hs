@@ -1,11 +1,14 @@
 {-# OPTIONS_GHC -Wall #-}
 
-module ProjDefaults where
+module Defaults where
 
 import qualified Files
 import Util ( (>~) , (~:) )
 
 import qualified Data.Char
+import qualified Data.Time.Clock
+import qualified Data.Time.Calendar
+import qualified Data.Time.Format
 import qualified System.FilePath
 import System.FilePath ( (</>) )
 
@@ -23,13 +26,13 @@ data CoreFiles = CoreFiles {
 loadOrCreate ctxmain projname projfilename custfilename =
     let projfilecontent = _proj projname
         setupname = setupName projfilename
-    in Files.readOrDefault True ctxmain custfilename "" ""
-    >>= \ custfile
-    -> Files.readOrDefault True ctxmain projfilename "default.haxproj" projfilecontent
+    in Files.readOrDefault True ctxmain projfilename fileName_Proj projfilecontent
     >>= \ projfile
-    -> Files.readOrDefault True ctxmain (setupname++"-main.haxtmpl.html") "default-main.haxtmpl.html" _tmpl_html_main
+    -> Files.readOrDefault True ctxmain custfilename "" ""
+    >>= \ custfile
+    -> Files.readOrDefault True ctxmain (setupname++"-main.haxtmpl.html") (fileName_Pref "-main.haxtmpl.html") _tmpl_html_main
     >>= \ tmplmainfile
-    -> Files.readOrDefault True ctxmain (setupname++"-blok.haxtmpl.html") "default-blok.haxtmpl.html" _tmpl_html_blok
+    -> Files.readOrDefault True ctxmain (setupname++"-blok.haxtmpl.html") (fileName_Pref "-blok.haxtmpl.html") _tmpl_html_blok
     >>= \ tmplblokfile
     -> return (CoreFiles projfile custfile tmplmainfile tmplblokfile)
 
@@ -51,14 +54,13 @@ rewriteTemplates corefiles tmplrewriter =
 
 writeDefaultIndexHtml ctxmain projname dirpagesrel dirbuild htmltemplatemain =
     let
-        outfilename = "index.html"
         dircur = ctxmain~:Files.curDir
         dirproj = ctxmain~:Files.dirPath
         dirpages = dirproj </> dirpagesrel
-        outfilepath = dirpages </> outfilename
-        outfilerel = dirpagesrel </> outfilename
+        outfilepath = dirpages </> fileName_IndexHtml
+        outfilerel = dirpagesrel </> fileName_IndexHtml
         pathtmpl = htmltemplatemain~:Files.path
-        pathfinal = dirbuild </> outfilename
+        pathfinal = dirbuild </> fileName_IndexHtml
         outfilecontent = _index_html
                             dircur projname dirproj dirpages outfilepath pathtmpl pathfinal
         outfile = Files.FileInfo outfilepath (ctxmain~:Files.nowTime)
@@ -70,6 +72,10 @@ writeDefaultIndexHtml ctxmain projname dirpagesrel dirbuild htmltemplatemain =
 setupName = System.FilePath.takeBaseName
 
 
+
+dateTimeFormat = Data.Time.Format.iso8601DateFormat Nothing
+dateTime0 = Data.Time.Clock.UTCTime {   Data.Time.Clock.utctDay = Data.Time.Calendar.ModifiedJulianDay { Data.Time.Calendar.toModifiedJulianDay = 0 },
+                                        Data.Time.Clock.utctDayTime = 0 }
 dir_Out = "build"
 dir_Deploy =""
 dir_Static = "static"
@@ -77,6 +83,9 @@ dir_Pages = "pages"
 dir_Posts = "posts"
 dir_PostAtoms = dir_PostAtoms_None
 dir_PostAtoms_None = ":"
+fileName_IndexHtml = "index.html"
+fileName_Proj = fileName_Pref ".haxproj"
+fileName_Pref = ("default"++)
 
 
 _proj name =

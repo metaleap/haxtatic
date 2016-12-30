@@ -3,14 +3,17 @@
 module Proj where
 
 import qualified Bloks
+import qualified Defaults
 import qualified Files
 import qualified ProjCfg
-import qualified ProjDefaults
 import qualified ProjTxts
 import qualified Util
 import Util ( (~:) , (>~) )
 
 import qualified Data.Map.Strict
+import qualified Data.Time
+import qualified Data.Time.Clock
+import qualified Data.Time.Format
 import System.FilePath ( (</>) )
 
 
@@ -23,7 +26,7 @@ data Ctx = Ctx {
         dirPathBuild :: FilePath,
         dirPathDeploy :: FilePath,
         setup :: Setup,
-        coreFiles :: ProjDefaults.CoreFiles
+        coreFiles :: Defaults.CoreFiles
     }
 
 data Setup = Setup {
@@ -37,12 +40,29 @@ data Setup = Setup {
 
 
 
+dtStr2Utc projcfg dtfname str =
+    (Data.Time.Format.parseTimeM
+        True Data.Time.defaultTimeLocale (ProjCfg.dtFormat projcfg dtfname) str)
+            :: Maybe Data.Time.Clock.UTCTime
+
+dtStr2UtcOr projcfg dtfname str defval =
+    case dtStr2Utc projcfg dtfname str of
+        Just parsed -> parsed
+        Nothing -> defval
+
+dtStr2UtcOr0 projcfg dtfname str =
+    dtStr2UtcOr projcfg dtfname str Defaults.dateTime0
+
+dtUtc2Str projcfg dtfname utctime =
+    Data.Time.Format.formatTime Data.Time.defaultTimeLocale (ProjCfg.dtFormat projcfg dtfname) utctime
+
+
 
 loadCtx ctxmain projname defaultfiles =
     let loadedsetup = _loadSetup ctxproj
         dirpath = ctxmain~:Files.dirPath
         dirpathjoin = (dirpath </>)
-        setupname = ProjDefaults.setupName $defaultfiles~:ProjDefaults.projectDefault~:Files.path
+        setupname = Defaults.setupName $defaultfiles~:Defaults.projectDefault~:Files.path
         ctxproj = Ctx {
             projName = projname,
             setupName = setupname,
@@ -57,7 +77,7 @@ loadCtx ctxmain projname defaultfiles =
 
 
 _loadCoreFiles projsetup deffiles =
-    ProjDefaults.rewriteTemplates deffiles tmplrewriter where
+    Defaults.rewriteTemplates deffiles tmplrewriter where
         tmplrewriter = processSrcFully projsetup
 
 
@@ -107,6 +127,6 @@ processSrcJustOnce ctxsetup src =
 
 _rawsrc ctxproj =
     --  join primary project file with additionally-specified 'overwrites' one:
-    (ctxproj~:coreFiles~:ProjDefaults.projectDefault~:Files.content) ++
-        let prjoverwrites = (ctxproj~:coreFiles~:ProjDefaults.projectOverwrites) in
+    (ctxproj~:coreFiles~:Defaults.projectDefault~:Files.content) ++
+        let prjoverwrites = (ctxproj~:coreFiles~:Defaults.projectOverwrites) in
             if prjoverwrites==Files.NoFile then "" else prjoverwrites~:Files.content

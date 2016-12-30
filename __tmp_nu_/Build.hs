@@ -3,15 +3,14 @@
 module Build where
 
 import qualified Bloks
+import qualified Defaults
 import qualified Files
 import qualified Proj
 import qualified ProjCfg
-import qualified ProjDefaults
 import qualified Util
-import Util ( (~:) , (>~) , (>>~) , (>>|) , (#) )
+import Util ( (~:) , (>~) , (>>~) , (>>|) , (#) , (~.) )
 
 import qualified System.Directory
-import qualified System.FilePath
 import System.FilePath ( (</>) )
 
 
@@ -29,6 +28,7 @@ data OutFileInfo = NoOutFile | OutFileInfo {
     relPath :: FilePath,
     outPathBuild :: FilePath,
     outPathDeploy :: FilePath,
+    customDate :: [String],
     srcFile :: Files.File
 } deriving (Eq, Show)
 
@@ -40,7 +40,7 @@ copyAllOutputsToDeploy buildplan =
             in System.Directory.doesFileExist srcfilepath >>= \isfile
             -> if isfile
                 then Files.copyTo srcfilepath [file~:outPathDeploy]
-                else putStrLn ("\t!>\tWeirdly missing: "++srcfilepath)
+                else putStrLn ("\t!?\tMissing: `"++srcfilepath++"`")
     in (buildplan~:outFilesStatic) >>~ perfile
     >> (buildplan~:outFilesPage) >>~ perfile
     >> (buildplan~:outFilesAtom) >>~ perfile
@@ -62,15 +62,16 @@ _createIndexHtmlIfNoContentPages ctxmain ctxproj numpagesrcfiles =
             sitename = ctxproj~:Proj.projName
             dirpagesrel = (ctxproj~:Proj.setup~:Proj.cfg~:ProjCfg.processPages~:ProjCfg.dirs)#0
             dirbuild = ctxproj~:Proj.dirPathBuild
-            htmltemplatemain = ctxproj~:Proj.coreFiles~:ProjDefaults.htmlTemplateMain
+            htmltemplatemain = ctxproj~:Proj.coreFiles~:Defaults.htmlTemplateMain
         in putStrLn ("\t->\tNo content-source files whatsoever.. making one for you:")
-        >> ProjDefaults.writeDefaultIndexHtml
+        >> Defaults.writeDefaultIndexHtml
             ctxmain sitename dirpagesrel dirbuild htmltemplatemain
         >>= \ (outfile , outfilerel , pathfinal)
         -> return OutFileInfo {
                         relPath = outfilerel,
                         outPathBuild = pathfinal,
                         outPathDeploy = Util.unlessNullOp (ctxproj~:Proj.dirPathDeploy) (</> outfilerel),
+                        customDate = [],
                         srcFile = outfile
                     }
 
@@ -83,28 +84,28 @@ plan ctxmain ctxproj =
         cfgprocpages = cfg~:ProjCfg.processPages
         cfgprocposts = cfg~:ProjCfg.processPosts
         listallfiles = Files.listAllFiles $ctxproj~:Proj.dirPath
-        modtimeproj = ctxproj~:Proj.coreFiles~:ProjDefaults.projectDefault~:Files.modTime
-        modtimetmplmain = ctxproj~:Proj.coreFiles~:ProjDefaults.htmlTemplateMain~:Files.modTime
-        modtimetmplblok = ctxproj~:Proj.coreFiles~:ProjDefaults.htmlTemplateBlok~:Files.modTime
+        modtimeproj = ctxproj~:Proj.coreFiles~:Defaults.projectDefault~:Files.modTime
+        modtimetmplmain = ctxproj~:Proj.coreFiles~:Defaults.htmlTemplateMain~:Files.modTime
+        modtimetmplblok = ctxproj~:Proj.coreFiles~:Defaults.htmlTemplateBlok~:Files.modTime
     in listallfiles (cfgprocstatic~:ProjCfg.dirs) id >>= \allstaticfiles
     -> listallfiles (cfgprocposts~:ProjCfg.dirs) (max modtimeproj) >>= \allpostsfiles
     -> listallfiles (cfgprocpages~:ProjCfg.dirs) (max modtimetmplmain) >>= \allpagesfiles
-    -> _createIndexHtmlIfNoContentPages ctxmain ctxproj (allpagesfiles~:length) >>= \ defaultindexpageinfo
+    -> _createIndexHtmlIfNoContentPages ctxmain ctxproj (allpagesfiles~:length) >>= \ defaultpage
     -> let
-        (dynpages , dynatoms) = Bloks.buildPlan (modtimeproj,modtimetmplblok) allpagesfiles $projsetup~:Proj.bloks
+        (dynpages,dynatoms) = Bloks.buildPlan (modtimeproj,modtimetmplblok) allpagesfiles $projsetup~:Proj.bloks
         outfileinfostd = _outFileInfo ctxproj id
-        outfileinfoatom fn = _outFileInfo ctxproj $ fn . (Files.ensureFileExt True ".atom")
-        outfileinfopost = outfileinfoatom fn where
-            fn = if (relpathpostatoms == ProjDefaults.dir_PostAtoms_None)
-                    then const "" else if (null relpathpostatoms)
-                        then id else (relpathpostatoms </>)
+        outfileinfoatom func = _outFileInfo ctxproj $(Files.ensureFileExt True ".atom")~.func
+        outfileinfopost = outfileinfoatom func where
+            func|(null relpathpostatoms)=                               id                      -- no custom dir for posts-derived atoms set up
+                |(relpathpostatoms==Defaults.dir_PostAtoms_None)=   const ""                -- dont generate atoms -> force "" to discard in _filterOutFiles
+                |(otherwise)=                                           (relpathpostatoms </>)  -- prepend user-specified rel dir to atom out-file name
             relpathpostatoms = cfg~:ProjCfg.relPathPostAtoms
         allatoms = (allpostsfiles>~outfileinfopost) ++ (dynatoms>~(outfileinfoatom id))
         allstatics = allstaticfiles >~ outfileinfostd
         allpagesalmost = (allpagesfiles++dynpages) >~ outfileinfostd
-        allpages = if defaultindexpageinfo==NoOutFile
+        allpages = if defaultpage==NoOutFile
                     then allpagesalmost else
-                        defaultindexpageinfo:allpagesalmost
+                        defaultpage:allpagesalmost
     in _filterOutFiles allstatics cfgprocstatic >>= \outstatics
     -> _filterOutFiles allpages cfgprocpages >>= \outpages
     -> _filterOutFiles allatoms cfgprocposts >>= \outatoms
@@ -129,6 +130,7 @@ _outFileInfo ctxproj relpather (relpath,file) =
             relPath = relpathnu,
             outPathBuild = ctxproj~:Proj.dirPathBuild </> relpathnu,
             outPathDeploy = Util.unlessNullOp (ctxproj~:Proj.dirPathDeploy) (</> relpathnu),
+            customDate = [],
             srcFile = file
         }
 

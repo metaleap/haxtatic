@@ -2,8 +2,8 @@
 
 module ProjCfg where
 
+import qualified Defaults
 import qualified Files
-import qualified ProjDefaults
 import qualified Util
 import Util ( (~:) , (>~) , (~|) , (~.) , noNull )
 
@@ -17,10 +17,11 @@ data Cfg = Cfg {
     dirNameBuild :: String,
     dirNameDeploy :: String,
     relPathPostAtoms :: String,
+    dtFormat :: String->String,
     processStatic :: Processing,
     processPages :: Processing,
     processPosts :: Processing
-} deriving (Read, Show)
+}
 
 data Processing = Processing {
     skip :: [String],
@@ -34,17 +35,20 @@ parseDefs linessplits =
     Cfg {   dirNameBuild = dirbuild, dirNameDeploy = dirdeploy, relPathPostAtoms = relpathpostatoms,
             processStatic = procstatic, processPages = procpages, processPosts = procposts }
     where
+        dtformat name = Data.Map.Strict.findWithDefault
+                        Defaults.dateTimeFormat ("dtformat:"++name) cfgdtformats
         dirbuild = dirnameonly$ Data.Map.Strict.findWithDefault
-                        ProjDefaults.dir_Out "dir_build" cfgmisc
+                        Defaults.dir_Out "dir_build" cfgmisc
         dirdeploy = dirnameonly$ Data.Map.Strict.findWithDefault
-                        ProjDefaults.dir_Deploy "dir_deploy" cfgmisc
+                        Defaults.dir_Deploy "dir_deploy" cfgmisc
         relpathpostatoms = Files.saneDirPath$ Data.Map.Strict.findWithDefault
-                        ProjDefaults.dir_PostAtoms "posts_atomrelpath" cfgmisc
-        procstatic = procfind ProjDefaults.dir_Static
-        procpages = procfind ProjDefaults.dir_Pages
-        procposts = procfind ProjDefaults.dir_Posts
-        procfind name = procsane name $ Data.Maybe.fromMaybe (procdef name) $
-                        Data.Map.Strict.findWithDefault Nothing ("process:"++name) cfgprocs
+                        Defaults.dir_PostAtoms "posts_atomrelpath" cfgmisc
+        procstatic = procfind Defaults.dir_Static
+        procpages = procfind Defaults.dir_Pages
+        procposts = procfind Defaults.dir_Posts
+        procfind name = procsane name (Data.Maybe.fromMaybe (procdef name) maybeParsed) where
+                            maybeParsed = (Text.Read.readMaybe procstr) :: Maybe Processing
+                            procstr = Data.Map.Strict.findWithDefault "" ("process:"++name) cfgprocs
         procdef dirname = Processing { dirs = [dirname], skip = [], force = [] }
         procsane defname proc = Processing {
                 dirs = Util.ifNull (proc~:dirs >~dirnameonly ~|noNull) [defname],
@@ -56,15 +60,14 @@ parseDefs linessplits =
                 sanitize fvals = let tmp = proc~:fvals >~Util.trim ~|noNull in
                     if elem "*" tmp then ["*"] else tmp
         dirnameonly = Util.trim ~. System.FilePath.takeFileName
-        cfgprocs = Data.Map.Strict.fromList$
-            linessplits>~perprocsplit ~|noNull.fst where
-            perprocsplit ("C":"":"process":name:procstr) =
-                ( "process:"++name ,
-                    Text.Read.readMaybe$ "Processing {"++(Util.join ":" procstr)++"}"
-                        :: Maybe Processing )
-            perprocsplit _ =
-                ( "" , Nothing )
-        cfgmisc = Data.Map.Strict.fromList$
-            linessplits>~permiscsplit ~|noNull.fst where
-            permiscsplit ("C":"":cfgname:cfgvals) = ( cfgname , Util.join ":" cfgvals )
-            permiscsplit _ = ( "" , "" )
+        cfgmisc = cfglines2hashmap "" id
+        cfgdtformats = cfglines2hashmap "dtformat" id
+        cfgprocs = cfglines2hashmap "process" perprocstr where
+            perprocstr procstr = "Processing {"++procstr++"}"
+        cfglines2hashmap goalprefix pervalue = Data.Map.Strict.fromList$
+            linessplits>~foreachline ~|noNull.fst where
+                foreachline ("C":"":prefix:next:rest)
+                    |(null goalprefix) = ( prefix , foreachval$ (next:rest) )
+                    |(prefix==goalprefix) = ( prefix++":"++next , foreachval$ rest )
+                foreachline _ = ( "" , "" )
+                foreachval = pervalue . (Util.join ":")
