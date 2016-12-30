@@ -71,9 +71,12 @@ setupName = System.FilePath.takeBaseName
 
 
 dir_Out = "build"
+dir_Deploy =""
 dir_Static = "static"
 dir_Pages = "pages"
 dir_Posts = "posts"
+dir_PostAtoms = dir_PostAtoms_None
+dir_PostAtoms_None = ":"
 
 
 _proj name =

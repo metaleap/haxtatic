@@ -96,13 +96,11 @@ endsWith = flip Data.List.isSuffixOf
 startsWith :: (Eq t)=> [t]->[t]->Bool
 startsWith = flip Data.List.isPrefixOf
 
+toLower = (>~ Data.Char.toLower)
+
+toUpper = (>~ Data.Char.toUpper)
+
 join = Data.List.intercalate
-
-trim = trimEnd . trimStart
-
-trimEnd = Data.List.dropWhileEnd Data.Char.isSpace
-
-trimStart = Data.List.dropWhile Data.Char.isSpace
 
 subAt start len = (take len) . (drop start)
 
@@ -110,6 +108,18 @@ substitute old new
     |(old==new) = id
     |(otherwise) = (>~ subst) where
         subst item |(item==old) = new |(otherwise) = item
+
+trim = trim'' Data.Char.isSpace
+trim' dropitems = trim'' (`elem` dropitems)
+trim'' fn = (trimStart'' fn) ~. (trimEnd'' fn)
+
+trimEnd = trimEnd'' Data.Char.isSpace
+trimEnd' dropitems = trimEnd'' (`elem` dropitems)
+trimEnd'' = Data.List.dropWhileEnd
+
+trimStart = trimStart'' Data.Char.isSpace
+trimStart' dropitems = trimStart'' (`elem` dropitems)
+trimStart'' = Data.List.dropWhile
 
 
 atOr::

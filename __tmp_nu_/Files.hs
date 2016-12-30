@@ -45,11 +45,13 @@ copyTo srcfilepath (dstpath:dstmore) =
 
 
 
-ensureFileExt filepath "" = filepath
-ensureFileExt "" ext = ext
-ensureFileExt filepath ext =
+ensureFileExt _ "" filepath = filepath
+ensureFileExt _ _ "" = ""
+ensureFileExt ignorecase ext filepath =
     let curext = System.FilePath.takeExtension filepath
-    in if curext==ext then filepath else filepath++ext
+        cmp = if ignorecase then Util.toLower else id
+    in if (cmp curext)==(cmp ext)
+        then filepath else filepath++ext
 
 
 
@@ -59,6 +61,11 @@ filesInDir dir =
         System.Directory.listDirectory dir >>= \names
         -> (names~|_isfsnameok) >>| isfile where
             isfile = (dir</>) ~. System.Directory.doesFileExist >>= return
+
+
+
+fullFrom oldfile newmodtime newcontent =
+    FileFull (oldfile~:path) (max newmodtime $oldfile~:modTime) newcontent
 
 
 
@@ -127,8 +134,9 @@ readOrDefault create ctxmain relpath relpath2 defaultcontent =
 
 
 
-fullFrom oldfile newmodtime newcontent =
-    FileFull (oldfile~:path) (max newmodtime $oldfile~:modTime) newcontent
+saneDirPath =
+    Util.trim ~. pathSepSlashToSystem ~.
+        (Util.trim' ('.' : System.FilePath.pathSeparators)) ~. Util.trim
 
 
 

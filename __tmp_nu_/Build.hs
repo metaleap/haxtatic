@@ -92,9 +92,16 @@ plan ctxmain ctxproj =
     -> _createIndexHtmlIfNoContentPages ctxmain ctxproj (allpagesfiles~:length) >>= \ defaultindexpageinfo
     -> let
         (dynpages , dynatoms) = Bloks.buildPlan (modtimeproj,modtimetmplblok) allpagesfiles $projsetup~:Proj.bloks
-        allstatics = allstaticfiles >~ (_outFileInfo ctxproj "")
-        allatoms = (allpostsfiles++dynatoms) >~ (_outFileInfo ctxproj ".atom")
-        allpagesalmost = (allpagesfiles++dynpages) >~ (_outFileInfo ctxproj "")
+        outfileinfostd = _outFileInfo ctxproj id
+        outfileinfoatom fn = _outFileInfo ctxproj $ fn . (Files.ensureFileExt True ".atom")
+        outfileinfopost = outfileinfoatom fn where
+            fn = if (relpathpostatoms == ProjDefaults.dir_PostAtoms_None)
+                    then const "" else if (null relpathpostatoms)
+                        then id else (relpathpostatoms </>)
+            relpathpostatoms = cfg~:ProjCfg.relPathPostAtoms
+        allatoms = (allpostsfiles>~outfileinfopost) ++ (dynatoms>~(outfileinfoatom id))
+        allstatics = allstaticfiles >~ outfileinfostd
+        allpagesalmost = (allpagesfiles++dynpages) >~ outfileinfostd
         allpages = if defaultindexpageinfo==NoOutFile
                     then allpagesalmost else
                         defaultindexpageinfo:allpagesalmost
@@ -114,15 +121,16 @@ plan ctxmain ctxproj =
 
 
 
-_outFileInfo ctxproj addext (relpath,file) =
-    let relpathext = Files.ensureFileExt relpath addext
-        fileinfo = OutFileInfo {
-                        relPath = relpathext,
-                        outPathBuild = ctxproj~:Proj.dirPathBuild </> relpathext,
-                        outPathDeploy = Util.unlessNullOp (ctxproj~:Proj.dirPathDeploy) (</> relpathext),
-                        srcFile = file
-                    }
-    in fileinfo
+_outFileInfo ctxproj relpather (relpath,file) =
+    let relpathnu = relpather relpath
+    in if null relpathnu
+        then NoOutFile
+        else OutFileInfo {
+            relPath = relpathnu,
+            outPathBuild = ctxproj~:Proj.dirPathBuild </> relpathnu,
+            outPathDeploy = Util.unlessNullOp (ctxproj~:Proj.dirPathDeploy) (</> relpathnu),
+            srcFile = file
+        }
 
 
 
@@ -130,6 +138,8 @@ _filterOutFiles fileinfos cfgproc =
     fileinfos >>| shouldbuildfile where
         skipall = ["*"]== cfgproc~:ProjCfg.skip
         forceall = ["*"]== cfgproc~:ProjCfg.force
+        shouldbuildfile NoOutFile =
+            return False
         shouldbuildfile fileinfo =
             let skipthis = (not skipall) && (matchesany $cfgproc~:ProjCfg.skip)
                 forcethis = (not forceall) && (matchesany $cfgproc~:ProjCfg.force)

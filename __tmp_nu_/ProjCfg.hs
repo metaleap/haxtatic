@@ -2,9 +2,10 @@
 
 module ProjCfg where
 
+import qualified Files
 import qualified ProjDefaults
 import qualified Util
-import Util ( (~:) , (>~) , (~|) , noNull )
+import Util ( (~:) , (>~) , (~|) , (~.) , noNull )
 
 import qualified Data.Map.Strict
 import qualified Data.Maybe
@@ -15,6 +16,7 @@ import qualified Text.Read
 data Cfg = Cfg {
     dirNameBuild :: String,
     dirNameDeploy :: String,
+    relPathPostAtoms :: String,
     processStatic :: Processing,
     processPages :: Processing,
     processPosts :: Processing
@@ -29,13 +31,15 @@ data Processing = Processing {
 
 
 parseDefs linessplits =
-    Cfg {   dirNameBuild = dirbuild, dirNameDeploy = dirdeploy,
+    Cfg {   dirNameBuild = dirbuild, dirNameDeploy = dirdeploy, relPathPostAtoms = relpathpostatoms,
             processStatic = procstatic, processPages = procpages, processPosts = procposts }
     where
         dirbuild = dirnameonly$ Data.Map.Strict.findWithDefault
                         ProjDefaults.dir_Out "dir_build" cfgmisc
         dirdeploy = dirnameonly$ Data.Map.Strict.findWithDefault
-                        "" "dir_deploy" cfgmisc
+                        ProjDefaults.dir_Deploy "dir_deploy" cfgmisc
+        relpathpostatoms = Files.saneDirPath$ Data.Map.Strict.findWithDefault
+                        ProjDefaults.dir_PostAtoms "posts_atomrelpath" cfgmisc
         procstatic = procfind ProjDefaults.dir_Static
         procpages = procfind ProjDefaults.dir_Pages
         procposts = procfind ProjDefaults.dir_Posts
@@ -51,7 +55,7 @@ parseDefs linessplits =
                 saneskip = sanitize skip ; saneforce = sanitize force
                 sanitize fvals = let tmp = proc~:fvals >~Util.trim ~|noNull in
                     if elem "*" tmp then ["*"] else tmp
-        dirnameonly = System.FilePath.takeFileName . Util.trim
+        dirnameonly = Util.trim ~. System.FilePath.takeFileName
         cfgprocs = Data.Map.Strict.fromList$
             linessplits>~perprocsplit ~|noNull.fst where
             perprocsplit ("C":"":"process":name:procstr) =
