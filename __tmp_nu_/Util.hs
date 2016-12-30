@@ -33,12 +33,15 @@ infix 8 >>~
 butNot notval defval val |(val==notval) = defval |otherwise = val
 
 
-fallback val defval = if null val then defval else val
+ifNull val defval = if null val then defval else val
 
+unlessNull testval goalval = if null testval then [] else goalval
 
-is = not.null
+unlessNullOp testval op = if null testval then [] else op testval
 
-isnt notval = is.(butNot notval "")
+noNull = not.null
+
+isnt notval = noNull.(butNot notval "")
 
 
 repeatedly fn arg =
@@ -63,15 +66,26 @@ list@(_:_) # i = (drop i list) # 0 where
 infix 9 #
 
 
+-- for uses such as `crop` without (directly) taking the `length`
 dropLast 0 = id
 dropLast 1 = init
 dropLast n = ((#n) . reverse . Data.List.inits)
 -- dropLast n l = l~:take (l~:length - n)
 
--- takeLast 1 = last
-takeLast n = ((#n) . reverse . Data.List.tails)
+
+takeLast 0 = const []
+takeLast 1 = (:[]).last
+takeLast n = (#n) . reverse . Data.List.tails
+
 
 indexed l = zip [0 .. ] l
+
+crop 0 0 = id
+crop 0 1 = init
+crop 0 end = dropLast end
+crop 1 0 = tail
+crop start 0 = drop start
+crop start end = (drop start) . (dropLast end)
 
 contains :: (Eq t)=> [t]->[t]->Bool
 contains = flip Data.List.isInfixOf
@@ -92,10 +106,10 @@ trimStart = Data.List.dropWhile Data.Char.isSpace
 
 subAt start len = (take len) . (drop start)
 
-substitute old new = (>~ subst) where
-    subst item |(item==old) = new |(otherwise) = item
-
-truncate start end = (drop start) . (dropLast end)
+substitute old new
+    |(old==new) = id
+    |(otherwise) = (>~ subst) where
+        subst item |(item==old) = new |(otherwise) = item
 
 
 atOr::
@@ -128,10 +142,10 @@ atOr list index defval
 
 
 lengthGEq 0 = const True
-lengthGEq n = is . drop (n - 1)
+lengthGEq n = noNull . drop (n - 1)
 
-lengthGt 0 = is
-lengthGt n = is . drop n
+lengthGt 0 = noNull
+lengthGt n = noNull . drop n
 
 
 fuseElems is2fuse fusion (this:next:more) =
@@ -190,4 +204,4 @@ _splitup beg0len lastidx beginners end str =
     begpos = if endpos<0 then -1 else
         lastidx$ str ~: (take endpos) ~: reverse
     endposl = endpos+(end~:length)
-    tolist val beg = if null val then [] else [(val,beg)]
+    tolist val beg = unlessNull val [(val,beg)]

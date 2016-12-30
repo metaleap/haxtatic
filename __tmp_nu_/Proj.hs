@@ -41,23 +41,19 @@ data Setup = Setup {
 loadCtx mainctx projname defaultfiles =
     let loadedsetup = _loadSetup ctx
         dirpath = mainctx~:Files.dirPath
-        dirsubpath = (dirpath </>)
+        dirpathjoin = (dirpath </>)
         setupname = ProjDefaults.setupName $defaultfiles~:ProjDefaults.projectDefault~:Files.path
         ctx = Ctx {
             projName = projname,
             setupName = setupname,
             dirPath = dirpath,
-            dirPathBuild = dirsubpath $setupname++"-"++loadedsetup~:cfg~:ProjCfg.dirNameBuild,
+            dirPathBuild = dirpathjoin $setupname++"-"++loadedsetup~:cfg~:ProjCfg.dirNameBuild,
             dirPathDeploy = let dd = loadedsetup~:cfg~:ProjCfg.dirNameDeploy
-                            in if null dd then "" else dirsubpath $setupname++"-"++dd,
+                            in if null dd then "" else dirpathjoin $setupname++"-"++dd,
             setup = loadedsetup,
             coreFiles = _loadCoreFiles loadedsetup defaultfiles
         }
-        --  defpagesdirname = (loadedsetup~:cfg~:ProjCfg.processPages~:ProjCfg.dirs)#0
-        --  defpagesdirpath = dirsubpath defpagesdirname
-    in
-        --  Files.writeTo True (defpagesdirpath </> "index.html") (defpagesdirname </> "index.html") "def index html"
-        return ctx
+    in return ctx
 
 
 _loadCoreFiles projsetup deffiles =
@@ -81,10 +77,8 @@ _loadSetup ctx =
 
         bloksprep = Bloks.parseDefs preplinessplits
         blokspost = Bloks.parseDefs postlinessplits
-
         cfgprep = ProjCfg.parseDefs preplinessplits
         cfgpost = ProjCfg.parseDefs postlinessplits
-
         ttagsprep = ProjTxts.parseDefs preplinessplits False
         ttagspost = ProjTxts.parseDefs postlinessplits True
 

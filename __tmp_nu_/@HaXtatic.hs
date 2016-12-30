@@ -27,13 +27,16 @@ main =
     >> putStrLn "\n\n\n==== HAXTATIC ====\n"
     >> System.IO.hFlush System.IO.stdout
     >> System.Environment.getArgs >>= \ cmdargs
+    -> System.Directory.getCurrentDirectory >>= \ curdir
     -> if null cmdargs
         then putStrLn "No project-directory path supplied.\n\
             \  For existing project: specify path to its current directory.\n\
             \  For a new project: specify path to its intended directory.\n    (I'll create it if missing and its parent isn't.)\n\n"
         else
             let dirpath = cmdargs#0
-                ctxmain = Files.Ctx { Files.dirPath = dirpath , Files.nowTime=starttime }
+                ctxmain = Files.Ctx {   Files.curDir = curdir,
+                                        Files.dirPath = dirpath,
+                                        Files.nowTime=starttime }
             in process ctxmain (Util.atOr cmdargs 1 "default.haxproj") (Util.atOr cmdargs 2 "")
             >> Data.Time.Clock.getCurrentTime >>= \ endtime
             -> let timetaken = Data.Time.Clock.diffUTCTime endtime starttime
@@ -54,7 +57,7 @@ process ctxmain projfilename custfilename =
 
     -> putStrLn "2. Scanning input files and folders.."
     >> System.IO.hFlush System.IO.stdout
-    >> Build.plan ctxproj >>= \ buildplan
+    >> Build.plan ctxmain ctxproj >>= \ buildplan
     -> putStrLn ("\t->\tStatic files: will copy "++(show$ buildplan~:Build.outFilesStatic~:length)++" (skipping "++(show$ buildplan~:Build.numSkippedStatic)++")")
     >> putStrLn ("\t->\tContent pages: will (re)generate "++(show$ buildplan~:Build.outFilesPage~:length)++" (skipping "++(show$ buildplan~:Build.numSkippedPages)++")")
     >> putStrLn ("\t->\tAtom XML files: will (re)generate "++(show$ buildplan~:Build.outFilesAtom~:length)++" (skipping "++(show$ buildplan~:Build.numSkippedAtoms)++")")

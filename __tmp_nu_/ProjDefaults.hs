@@ -7,6 +7,7 @@ import Util ( (>~) , (~:) )
 
 import qualified Data.Char
 import qualified System.FilePath
+import System.FilePath ( (</>) )
 
 
 --  the basic default input files
@@ -48,6 +49,25 @@ rewriteTemplates corefiles tmplrewriter =
     }
 
 
+writeDefaultIndexHtml ctxmain projname dirpagesrel dirbuild htmltemplatemain =
+    let
+        outfilename = "index.html"
+        dircur = ctxmain~:Files.curDir
+        dirproj = ctxmain~:Files.dirPath
+        dirpages = dirproj </> dirpagesrel
+        outfilepath = dirpages </> outfilename
+        outfilerel = dirpagesrel </> outfilename
+        pathtmpl = htmltemplatemain~:Files.path
+        pathfinal = dirbuild </> outfilename
+        outfilecontent = _index_html
+                            dircur projname dirproj dirpages outfilepath pathtmpl pathfinal
+        outfile = Files.File {  Files.path = outfilepath, Files.content = "",
+                                Files.modTime = ctxmain~:Files.nowTime }
+    in
+        Files.writeTo outfilepath outfilerel outfilecontent
+        >> return (outfile , outfilerel , pathfinal)
+
+
 setupName = System.FilePath.takeBaseName
 
 
@@ -62,7 +82,7 @@ _proj name =
 
 
 _index_html dircur sitename dirproj dirpages pathpage pathtmpl pathfinal =
-    let l = 1+(length dirproj) ; x s = "{P{%demo_dirpath}}<b>"++(drop (l) s)++"</b>" in
+    let l = 1+(length dirproj) ; x s = "{P{%demo_dirpath}}<b>"++(drop l s)++"</b>" in
         "<h1>Greetings..</h1>\n\
             \{P{%demo_hax:<b>HaXtatic</b>}}\n\
             \{P{%demo_dirpath:"++dirproj++[System.FilePath.pathSeparator]++"}}\n\
@@ -72,7 +92,7 @@ _index_html dircur sitename dirproj dirpages pathpage pathtmpl pathfinal =
             \    <li>I was generated at <code>"++(x pathfinal)++"</code> by</li>\n\
             \    <li>..applying the <code>"++(x pathtmpl)++"</code> template (ready for your tinkering)</li>\n\
             \    <li>..to my &apos;<i>content source page</i>&apos; stored at <code>"++(x pathpage)++"</code> (dito)</li>\n\
-            \    <li>..which in turn {P{%demo_hax}} pre-created for you just-beforehand (but only because <code>"++(x dirpages)++[System.FilePath.pathSeparator]++"</code> (and all your other specified content-page directories) was totally devoid of any files: otherwise it won&apos;t meddle in there as a rule).</li>\n\
+            \    <li>..which in turn {P{%demo_hax}} pre-created for you just-beforehand &mdash; <b>but <i>only</i></b> because <code>"++(x dirpages)++[System.FilePath.pathSeparator]++"</code> was totally devoid of any files: otherwise it won&apos;t ever write to your content source directories.</li>\n\
             \</ul>"
 
 

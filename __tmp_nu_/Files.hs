@@ -3,7 +3,7 @@
 module Files where
 
 import qualified Util
-import Util ( (~:) , (~.) , (~|) , (>~) , (>>~) , (>>|) )
+import Util ( noNull , (~:) , (~.) , (~|) , (>~) , (>>~) , (>>|) )
 
 import qualified Data.List
 import qualified Data.Time.Clock
@@ -22,6 +22,7 @@ data File = NoFile | File {
 
 
 data Ctx = Ctx {
+    curDir :: FilePath,
     dirPath :: FilePath,
     nowTime :: Data.Time.Clock.UTCTime
 }
@@ -59,45 +60,45 @@ filesInDir dir =
 
 
 listAllFiles rootdirpath reldirs permodtime =
-    let allfiles = concat<$> (dirpaths >>~ perdir)
+    let allfiles = concat<$> (dirpaths >>~ foreachdir)
         dirpaths = reldirs >~ (System.FilePath.combine rootdirpath)
-        perfile :: FilePath -> IO (FilePath , Data.Time.Clock.UTCTime)
-        perfile filepath =
+        foreachfile :: FilePath -> IO (FilePath , Data.Time.Clock.UTCTime)
+        foreachfile filepath =
             System.Directory.getModificationTime filepath >>= \ modtime
             -> return (filepath , permodtime modtime)
-        perdir :: FilePath -> IO [(FilePath , Data.Time.Clock.UTCTime)]
-        perdir dirpath =
+        foreachdir :: FilePath -> IO [(FilePath , Data.Time.Clock.UTCTime)]
+        foreachdir dirpath =
             let fstest test = (dirpath</>) ~. test >>= return
                 joinpath n = n >>= return . (dirpath</>)
             in System.Directory.doesDirectoryExist dirpath >>= \direxists
             -> if not direxists then return [] else
                 System.Directory.listDirectory dirpath >>= \names
-                -> let  oknames = names~|_isfsnameok
-                        files = oknames >>| (fstest System.Directory.doesFileExist)
-                        dirs = oknames >>| (fstest System.Directory.doesDirectoryExist)
+                -> let  oknames = names ~| _isfsnameok
+                        files = oknames >>| fstest System.Directory.doesFileExist
+                        dirs = oknames >>| fstest System.Directory.doesDirectoryExist
                 in (joinpath<$> files) >>= \filepaths
-                -> (filepaths >>~ perfile) >>= \filetuples
+                -> (filepaths >>~ foreachfile) >>= \filetuples
                 -> (joinpath<$> dirs) >>= \subdirpaths
-                -> (subdirpaths >>~ perdir) >>= \recursed
+                -> (subdirpaths >>~ foreachdir) >>= \recursed
                 -> return (concat [filetuples, concat recursed])
     in allfiles >>= \allfiletuples
-    -> let tuple2tuple (fullpath , modtime) =
-            (relpath , File { path = fullpath, content = "", modTime = modtime }) where
-                relpath = Util.atOr filtered 0 fullpath
-                filtered = filter Util.is (dirpaths>~persrcdir)
-                persrcdir rd = if not (Util.startsWith fullpath rd)
-                    then "" else drop (1+rd~:length) fullpath
-        in return (allfiletuples>~tuple2tuple)
+    -> let foreachfiletuple (srcfilepath , modtime) =
+            ( Util.atOr relpaths 0 srcfilepath,
+                File { path = srcfilepath, content = "", modTime = modtime } )
+            where
+            relpaths = dirpaths>~foreachsrcdir ~|noNull
+            foreachsrcdir reldirpath =
+                if Util.startsWith srcfilepath reldirpath then
+                    drop (1+reldirpath~:length) srcfilepath else ""
+        in return$ allfiletuples>~foreachfiletuple
 
 
 
-pathSepSlashToSystem
-    |(System.FilePath.pathSeparator=='/') = id
-    |(otherwise) = Util.substitute '/' System.FilePath.pathSeparator
+pathSepSlashToSystem =
+    Util.substitute '/' System.FilePath.pathSeparator
 
 pathSepSystemToSlash =
-    --  could do the same as above reversed, BUT:
-    --  this way also handles data from windows users being used on posix
+    --  no System.FilePath.pathSeparator: for data from windows users being used on posix
     Util.substitute '\\' '/'
 
 
@@ -111,7 +112,7 @@ readOrCreate ctx relpath relpath2 defaultcontent =
             System.Directory.getModificationTime filepath >>= \ modtime
             -> readFile filepath >>= \ filecontent
             -> return (File filepath filecontent modtime)
-        else if Util.is relpath2
+        else if relpath2~:noNull
             then readOrCreate ctx relpath2 "" defaultcontent
             else
                 writeTo filepath relpath defaultcontent
@@ -122,7 +123,7 @@ readOrCreate ctx relpath relpath2 defaultcontent =
 rewrite file newmodtime newcontent =
     File {
         path = file~:path,
-        content = newcontent, -- Util.fallback newcontent $content file,
+        content = newcontent, -- Util.ifNull newcontent $content file,
         modTime = max newmodtime $modTime file
     }
 
@@ -141,19 +142,19 @@ simpleFilePathMatch relpath dumbpattern =
         testends = (not testcontains) && patternstarts
         patternstarts = Util.startsWith dumbpattern "*"
         patternends = Util.endsWith dumbpattern "*"
-    in (testcontains && Util.contains relpath (Util.truncate 1 1 dumbpattern))
-    || (teststarts && Util.startsWith relpath (Util.truncate 0 1 dumbpattern))
-    || (testends && Util.endsWith relpath (Util.truncate 1 0 dumbpattern))
+    in (testcontains && Util.contains relpath (Util.crop 1 1 dumbpattern))
+    || (teststarts && Util.startsWith relpath (Util.crop 0 1 dumbpattern))
+    || (testends && Util.endsWith relpath (Util.crop 1 0 dumbpattern))
 
 simpleFilePathMatchAny relpath dumbpatterns =
-    any id $ dumbpatterns >~ (simpleFilePathMatch relpath)
+    or$ dumbpatterns >~ (simpleFilePathMatch relpath)
 
 
 
-writeTo filepath relpath filecontent =
+writeTo filepath showpath filecontent =
     System.IO.hFlush System.IO.stdout
     >> System.Directory.createDirectoryIfMissing True (System.FilePath.takeDirectory filepath)
-    >> putStr ("   >> "++relpath++"  [ ")
+    >> putStr ("   >> "++showpath++"  [ ")
     >> System.IO.hFlush System.IO.stdout
     >> writeFile filepath filecontent
     >> System.IO.hFlush System.IO.stdout

@@ -4,7 +4,7 @@ module Bloks where
 
 import qualified Files
 import qualified Util
-import Util ( (#) , (~:) , (>~) , (~|) , (|~) , (~.) )
+import Util ( noNull , (#) , (~:) , (>~) , (~|) , (|~) , (~.) )
 
 import qualified Data.List
 import qualified Data.Map.Strict
@@ -41,7 +41,7 @@ buildPlan (modtimeproj,modtimetmplblok) allpagesfiles bloks =
         dynatoms = mapandfilter (tofileinfo atomFile modtimeproj)
         dynpages = mapandfilter (tofileinfo blokIndexPageFile modtimetmplblok)
         mapandfilter fn = isblokpagefile |~ (Data.Map.Strict.elems$ Data.Map.Strict.mapWithKey fn bloks)
-        isblokpagefile (relpath,file) = Util.is relpath && file /= Files.NoFile
+        isblokpagefile (relpath,file) = relpath~:noNull && file /= Files.NoFile
         tofileinfo bfield modtime bname blok =
             let virtpath = if isblokpagefile bpage then blok~:bfield else ""
                 bpage@(_,bpagefile) = Util.atOr (allBlokPageFiles allpagesfiles bname) 0 ("" , Files.NoFile)
@@ -63,7 +63,7 @@ bTagResolver curbname hashmap str =
                 Data.Map.Strict.findWithDefault NoBlok bname hashmap
         restore = "{B{"++(_joinc splits)++"}}"
     in if null splits then restore else
-        if fname=="name" && Util.is bname
+        if fname=="name" && bname~:noNull
             then bname else if blok==NoBlok || null fname
                 then restore else
                     case Data.List.lookup fname fields of

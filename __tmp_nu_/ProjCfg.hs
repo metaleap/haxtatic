@@ -4,7 +4,7 @@ module ProjCfg where
 
 import qualified ProjDefaults
 import qualified Util
-import Util ( (~:) , (>~) , (~|) )
+import Util ( (~:) , (>~) , (~|) , noNull )
 
 import qualified Data.Map.Strict
 import qualified Data.Maybe
@@ -43,17 +43,17 @@ parseDefs linessplits =
                         Data.Map.Strict.findWithDefault Nothing ("process:"++name) cfgprocs
         procdef dirname = Processing { dirs = [dirname], skip = [], force = [] }
         procsane defname proc = Processing {
-                dirs = Util.fallback (proc~:dirs >~dirnameonly ~|Util.is) [defname],
+                dirs = Util.ifNull (proc~:dirs >~dirnameonly ~|noNull) [defname],
                 skip = if saneneither then [] else saneskip,
                 force = if saneneither then [] else saneforce
             } where
                 saneneither = saneskip==saneforce
                 saneskip = sanitize skip ; saneforce = sanitize force
-                sanitize fvals = let tmp = proc~:fvals >~Util.trim ~|Util.is in
+                sanitize fvals = let tmp = proc~:fvals >~Util.trim ~|noNull in
                     if elem "*" tmp then ["*"] else tmp
         dirnameonly = System.FilePath.takeFileName . Util.trim
         cfgprocs = Data.Map.Strict.fromList$
-            linessplits>~perprocsplit ~|Util.is.fst where
+            linessplits>~perprocsplit ~|noNull.fst where
             perprocsplit ("C":"":"process":name:procstr) =
                 ( "process:"++name ,
                     Text.Read.readMaybe$ "Processing {"++(Util.join ":" procstr)++"}"
@@ -61,6 +61,6 @@ parseDefs linessplits =
             perprocsplit _ =
                 ( "" , Nothing )
         cfgmisc = Data.Map.Strict.fromList$
-            linessplits>~permiscsplit ~|Util.is.fst where
+            linessplits>~permiscsplit ~|noNull.fst where
             permiscsplit ("C":"":cfgname:cfgvals) = ( cfgname , Util.join ":" cfgvals )
             permiscsplit _ = ( "" , "" )
