@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wall #-}
-
 module Bloks where
 
+import qualified Defaults
 import qualified Files
 import qualified Util
 import Util ( noNull , (#) , (~:) , (>~) , (~|) , (|~) , (~.) )
@@ -47,7 +47,7 @@ buildPlan (modtimeproj,modtimetmplblok) allpagesfiles bloks =
                 bpage@(_,bpagefile) = Util.atOr (allBlokPageFiles allpagesfiles bname) 0 ("" , Files.NoFile)
             in ( Files.pathSepSlashToSystem virtpath ,
                     if null virtpath then Files.NoFile else
-                        Files.FileInfo ("|:B:|"++bname) (max (Files.modTime bpagefile) modtime) )
+                        Files.FileInfo (Defaults.blokIndexTmpPathPrefix++bname) (max (Files.modTime bpagefile) modtime) )
 
 
 

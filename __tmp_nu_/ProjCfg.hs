@@ -67,7 +67,7 @@ parseDefs linessplits =
         cfglines2hashmap goalprefix onvalue = Data.Map.Strict.fromList$
             linessplits>~foreachline ~|noNull.fst where
                 foreachline ("C":"":prefix:next:rest)
-                    |(null goalprefix) = ( prefix , foreachval$ (next:rest) )
-                    |(prefix==goalprefix) = ( prefix++":"++next , foreachval$ rest )
+                    |(null goalprefix) = ( prefix , foreachvalue$ (next:rest) )
+                    |(prefix==goalprefix) = ( prefix++":"++next , foreachvalue$ rest )
                 foreachline _ = ( "" , "" )
-                foreachval = (Util.join ":") ~. Util.trim ~. onvalue
+                foreachvalue = (Util.join ":") ~. Util.trim ~. onvalue

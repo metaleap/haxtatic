@@ -45,6 +45,19 @@ copyTo srcfilepath (dstpath:dstmore) =
 
 
 
+customDateFromFileName dateparser (filepath , srcfile) =
+    let
+        (filedir , filename) = System.FilePath.splitFileName filepath
+        (datepart , fnrest) = System.FilePath.splitExtensions filename
+        datemaybe = dateparser datepart
+    in case datemaybe of
+        Just customdate->
+            ( (saneDirPath filedir) </> (Util.trimStart' ['.'] fnrest) , customdate )
+        Nothing->
+            ( filepath , srcfile~:modTime )
+
+
+
 ensureFileExt _ "" filepath = filepath
 ensureFileExt _ _ "" = ""
 ensureFileExt ignorecase ext filepath =
@@ -128,8 +141,9 @@ readOrDefault create ctxmain relpath relpath2 defaultcontent =
                     readOrDefault create ctxmain relpath2 "" defaultcontent
                 else
                     let file = FileFull filepath (ctxmain~:nowTime) defaultcontent
+                        loadcontent = return defaultcontent
                     in if not create then return file else
-                        writeTo filepath relpath defaultcontent
+                        writeTo filepath relpath loadcontent
                         >> return file
 
 
@@ -162,12 +176,15 @@ simpleFilePathMatchAny relpath dumbpatterns =
 
 
 
-writeTo filepath showpath filecontent =
-    System.IO.hFlush System.IO.stdout
-    >> System.Directory.createDirectoryIfMissing True (System.FilePath.takeDirectory filepath)
-    >> putStr ("\t>>\t"++showpath++"  [ ")
+_fileoutputbeginmsg = ("\t>>\t"++).(++"  [ ")
+
+writeTo filepath showpath loadcontent =
+    let _fileoutputdonemsg = "OK ]"
+    in System.Directory.createDirectoryIfMissing True (System.FilePath.takeDirectory filepath)
+    >> if null showpath then return () else
+        putStr (_fileoutputbeginmsg showpath)
     >> System.IO.hFlush System.IO.stdout
-    >> writeFile filepath filecontent
-    >> System.IO.hFlush System.IO.stdout
-    >> putStrLn "OK ]"
+    >> loadcontent >>= \filecontent
+    -> writeFile filepath filecontent
+    >> putStrLn _fileoutputdonemsg
     >> System.IO.hFlush System.IO.stdout

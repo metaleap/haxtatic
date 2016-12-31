@@ -7,8 +7,8 @@ module Main where
 import qualified Build
 import qualified Defaults
 import qualified Files
+import qualified Pages
 import qualified Proj
-import qualified ProjCfg
 import qualified Util
 import Util ( (#) , (~:) )
 
@@ -31,9 +31,8 @@ processAll ::
 
 main =
     Data.Time.Clock.getCurrentTime >>= \ starttime
-    -> System.IO.hFlush System.IO.stdout -- only because SublimeText2 build output is wonky with shell scripts
+    -> System.IO.hFlush System.IO.stdout -- only because SublimeText2 build-output console is wonky with shell scripts
     >> putStrLn "\n\n\n==== HAXTATIC ====\n"
-    >> System.IO.hFlush System.IO.stdout
     >> System.Environment.getArgs >>= \ cmdargs
     -> System.Directory.getCurrentDirectory >>= \ curdir
     -> if null cmdargs
@@ -49,7 +48,7 @@ main =
             >> Data.Time.Clock.getCurrentTime >>= \ endtime
             -> let timetaken = Data.Time.Clock.diffUTCTime endtime starttime
             in putStrLn ("\n\nWell it's been "++(show timetaken)++":\n\n==== Bye now! ====\n\n\n")
-            >> System.IO.hFlush System.IO.stdout
+            >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
 
 
 
@@ -58,22 +57,28 @@ processAll ctxmain projfilename custfilename =
         dirpath = ctxmain~:Files.dirPath
         projname = System.FilePath.takeBaseName dirpath
 
-    in putStrLn "\n1/4\tReading essential project files [or (re)creating them..]"
-    >> System.IO.hFlush System.IO.stdout
+    in putStrLn "\n1/5\tReading essential project files [or (re)creating them..]"
     >> System.Directory.createDirectoryIfMissing False dirpath
     >> Defaults.loadOrCreate ctxmain projname (filename projfilename) (filename custfilename)
     >>= Proj.loadCtx ctxmain projname >>= \ ctxproj
 
-    -> putStrLn "\n2/4\tScanning input files and folders.."
-    >> System.IO.hFlush System.IO.stdout
+    -> putStrLn "\n2/5\tScanning input files and folders.."
     >> Build.plan ctxmain ctxproj >>= \ buildplan
-    -> putStrLn ("\t->\tStatic files: will copy "++(show$ buildplan~:Build.outFilesStatic~:length)++", skipping "++(show$ buildplan~:Build.numSkippedStatic)++"")
-    >> putStrLn ("\t->\tContent pages: will (re)generate from "++(show$ buildplan~:Build.outFilesPage~:length)++", skipping "++(show$ buildplan~:Build.numSkippedPages)++"")
-    >> putStrLn ("\t->\tAtom XML files: will (re)generate from "++(show$ buildplan~:Build.outFilesAtom~:length)++", skipping "++(show$ buildplan~:Build.numSkippedAtoms)++"")
+    -> let
+        numgenpages = buildplan~:Build.outPages~:length
+        numskippages = buildplan~:Build.numSkippedPages
+        numcopyfiles = buildplan~:Build.outStatics~:length
+        numskipfiles = buildplan~:Build.numSkippedStatic
+        dirbuild = ctxproj~:Proj.dirPathBuild
+    in putStrLn ("\t->\tStatic files: will copy "++(show numcopyfiles)++", skipping "++(show numskipfiles)++"")
+    >> putStrLn ("\t->\tContent pages: will (re)generate from "++(show numgenpages)++", skipping "++(show numskippages)++"")
+    >> putStrLn ("\t->\tAtom XML files: will (re)generate from "++(show$ buildplan~:Build.outAtoms~:length)++", skipping "++(show$ buildplan~:Build.numSkippedAtoms)++"")
 
-    >> putStrLn ("\n3/4\tCopying "++(show$ buildplan~:Build.outFilesStatic~:length)++"/"++(show$ buildplan~:Build.outFilesStatic~:length + buildplan~:Build.numSkippedStatic)++" static file/s to:\n\t->\t`"++(ctxproj~:Proj.dirPathBuild)++"` ..")
-    >> System.IO.hFlush System.IO.stdout
+    >> putStrLn ("\n3/5\tCopying "++(show numcopyfiles)++"/"++(show$ numcopyfiles+numskipfiles)++" static file(s) to:\n\t->\t`"++dirbuild++"` ..")
     >> Build.copyStaticFiles buildplan
+
+    >> putStrLn ("\n4/5\tGenerating "++(show numgenpages)++"/"++(show$ numgenpages+numskippages)++" page(s) in:\n\t->\t`"++dirbuild++"` ..")
+    >> Pages.buildAll ctxproj buildplan
 
     >> let  dtstr = (Proj.dtUtc2Str (ctxproj~:Proj.setup~:Proj.cfg) "foo" (ctxmain~:Files.nowTime))
             dtutc = Proj.dtStr2UtcOr0 (ctxproj~:Proj.setup~:Proj.cfg) "foo" dtstr
@@ -82,6 +87,5 @@ processAll ctxmain projfilename custfilename =
 
     >> if null (ctxproj~:Proj.dirPathDeploy)
         then return () else
-            putStrLn ("\n4/4\tCopying "++(show$ buildplan~:Build.numOutFilesTotal)++" newly (over)written file/s also to:\n\t->\t`"++(ctxproj~:Proj.dirPathDeploy)++"` ..")
-            >> System.IO.hFlush System.IO.stdout
+            putStrLn ("\n5/5\tCopying "++(show$ buildplan~:Build.numOutFilesTotal)++" newly (over)written file(s) also to:\n\t->\t`"++(ctxproj~:Proj.dirPathDeploy)++"` ..")
             >> Build.copyAllOutputsToDeploy buildplan

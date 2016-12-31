@@ -61,7 +61,7 @@ writeDefaultIndexHtml ctxmain projname dirpagesrel dirbuild htmltemplatemain =
         outfilerel = dirpagesrel </> fileName_IndexHtml
         pathtmpl = htmltemplatemain~:Files.path
         pathfinal = dirbuild </> fileName_IndexHtml
-        outfilecontent = _index_html
+        outfilecontent = return$ _index_html
                             dircur projname dirproj dirpages outfilepath pathtmpl pathfinal
         outfile = Files.FileInfo outfilepath (ctxmain~:Files.nowTime)
     in
@@ -73,6 +73,7 @@ setupName = System.FilePath.takeBaseName
 
 
 
+blokIndexTmpPathPrefix = "|:B:|"
 dateTimeFormat = Data.Time.Format.iso8601DateFormat Nothing
 dateTime0 = Data.Time.Clock.UTCTime {   Data.Time.Clock.utctDay = Data.Time.Calendar.ModifiedJulianDay { Data.Time.Calendar.toModifiedJulianDay = 0 },
                                         Data.Time.Clock.utctDayTime = 0 }
