@@ -8,6 +8,7 @@ import qualified Build
 import qualified Defaults
 import qualified Files
 import qualified Proj
+import qualified ProjCfg
 import qualified Util
 import Util ( (#) , (~:) )
 
@@ -68,11 +69,15 @@ processAll ctxmain projfilename custfilename =
     -> putStrLn ("\t->\tStatic files: will copy "++(show$ buildplan~:Build.outFilesStatic~:length)++", skipping "++(show$ buildplan~:Build.numSkippedStatic)++"")
     >> putStrLn ("\t->\tContent pages: will (re)generate from "++(show$ buildplan~:Build.outFilesPage~:length)++", skipping "++(show$ buildplan~:Build.numSkippedPages)++"")
     >> putStrLn ("\t->\tAtom XML files: will (re)generate from "++(show$ buildplan~:Build.outFilesAtom~:length)++", skipping "++(show$ buildplan~:Build.numSkippedAtoms)++"")
-    --  >> print buildplan
 
     >> putStrLn ("\n3/4\tCopying "++(show$ buildplan~:Build.outFilesStatic~:length)++"/"++(show$ buildplan~:Build.outFilesStatic~:length + buildplan~:Build.numSkippedStatic)++" static file/s to:\n\t->\t`"++(ctxproj~:Proj.dirPathBuild)++"` ..")
     >> System.IO.hFlush System.IO.stdout
     >> Build.copyStaticFiles buildplan
+
+    >> let  dtstr = (Proj.dtUtc2Str (ctxproj~:Proj.setup~:Proj.cfg) "foo" (ctxmain~:Files.nowTime))
+            dtutc = Proj.dtStr2UtcOr0 (ctxproj~:Proj.setup~:Proj.cfg) "foo" dtstr
+    in print dtstr
+    >> print dtutc
 
     >> if null (ctxproj~:Proj.dirPathDeploy)
         then return () else

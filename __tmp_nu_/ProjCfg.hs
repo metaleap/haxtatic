@@ -27,12 +27,13 @@ data Processing = Processing {
     skip :: [String],
     force :: [String],
     dirs :: [String]
-} deriving (Read, Show)
+} deriving (Read)
 
 
 
 parseDefs linessplits =
-    Cfg {   dirNameBuild = dirbuild, dirNameDeploy = dirdeploy, relPathPostAtoms = relpathpostatoms,
+    Cfg {   dirNameBuild = dirbuild, dirNameDeploy = dirdeploy,
+            relPathPostAtoms = relpathpostatoms, dtFormat = dtformat,
             processStatic = procstatic, processPages = procpages, processPosts = procposts }
     where
         dtformat name = Data.Map.Strict.findWithDefault
@@ -59,7 +60,7 @@ parseDefs linessplits =
                 saneskip = sanitize skip ; saneforce = sanitize force
                 sanitize fvals = let tmp = proc~:fvals >~Util.trim ~|noNull in
                     if elem "*" tmp then ["*"] else tmp
-        dirnameonly = Util.trim ~. System.FilePath.takeFileName
+        dirnameonly = System.FilePath.takeFileName
         cfgmisc = cfglines2hashmap "" id
         cfgdtformats = cfglines2hashmap "dtformat" id
         cfgprocs = cfglines2hashmap "process" perprocstr where
@@ -70,4 +71,4 @@ parseDefs linessplits =
                     |(null goalprefix) = ( prefix , foreachval$ (next:rest) )
                     |(prefix==goalprefix) = ( prefix++":"++next , foreachval$ rest )
                 foreachline _ = ( "" , "" )
-                foreachval = pervalue . (Util.join ":")
+                foreachval = (Util.join ":") ~. Util.trim ~. pervalue

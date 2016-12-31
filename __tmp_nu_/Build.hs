@@ -22,7 +22,7 @@ data Plan = Plan {
     numSkippedStatic :: Int,
     numSkippedPages :: Int,
     numSkippedAtoms :: Int
-} deriving (Show)
+}
 
 data OutFileInfo = NoOutFile | OutFileInfo {
     relPath :: FilePath,
@@ -30,7 +30,7 @@ data OutFileInfo = NoOutFile | OutFileInfo {
     outPathDeploy :: FilePath,
     customDate :: [String],
     srcFile :: Files.File
-} deriving (Eq, Show)
+} deriving (Eq)
 
 
 
@@ -96,9 +96,9 @@ plan ctxmain ctxproj =
         outfileinfostd = _outFileInfo ctxproj id
         outfileinfoatom func = _outFileInfo ctxproj $(Files.ensureFileExt True ".atom")~.func
         outfileinfopost = outfileinfoatom func where
-            func|(null relpathpostatoms)=                               id                      -- no custom dir for posts-derived atoms set up
-                |(relpathpostatoms==Defaults.dir_PostAtoms_None)=   const ""                -- dont generate atoms -> force "" to discard in _filterOutFiles
-                |(otherwise)=                                           (relpathpostatoms </>)  -- prepend user-specified rel dir to atom out-file name
+            func|(null relpathpostatoms)= id                                -- no custom dir for posts-derived atoms set up
+                |(relpathpostatoms==Defaults.dir_PostAtoms_None)= const ""  -- dont generate atoms -> force "" to discard in _filterOutFiles
+                |(otherwise)= (relpathpostatoms </>)                        -- prepend user-specified rel dir to atom out-file name
             relpathpostatoms = cfg~:ProjCfg.relPathPostAtoms
         allatoms = (allpostsfiles>~outfileinfopost) ++ (dynatoms>~(outfileinfoatom id))
         allstatics = allstaticfiles >~ outfileinfostd

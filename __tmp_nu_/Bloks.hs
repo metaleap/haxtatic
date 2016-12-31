@@ -20,7 +20,7 @@ data Blok = NoBlok | Blok {
     blokIndexPageFile :: FilePath,
     inSitemap :: Bool,
     dater :: String
-} deriving (Eq, Read, Show)
+} deriving (Eq, Read)
 
 
 _joinc = Util.join ":"

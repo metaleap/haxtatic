@@ -21,7 +21,7 @@ data File
     | FileFull {    path :: FilePath,
                     modTime :: Data.Time.Clock.UTCTime,
                     content :: String }
-    deriving (Eq, Show)
+    deriving (Eq)
 
 
 data Ctx = Ctx {
