@@ -48,7 +48,8 @@ main =
             in processAll ctxmain (Util.atOr cmdargs 1 Defaults.fileName_Proj) (Util.atOr cmdargs 2 "")
             >> Data.Time.Clock.getCurrentTime >>= \ endtime
             -> let timetaken = Data.Time.Clock.diffUTCTime endtime starttime
-            in putStrLn $"\n\nWell it's been "++(show timetaken)++":\n\n==== Bye now! ====\n\n\n"
+            in putStrLn ("\n\nWell it's been "++(show timetaken)++":\n\n==== Bye now! ====\n\n\n")
+            >> System.IO.hFlush System.IO.stdout
 
 
 

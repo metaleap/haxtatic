@@ -5,11 +5,13 @@ module Build where
 import qualified Bloks
 import qualified Defaults
 import qualified Files
+import qualified Pages
 import qualified Proj
 import qualified ProjCfg
 import qualified Util
 import Util ( (~:) , (>~) , (>>~) , (>>|) , (#) , (~.) )
 
+import qualified Data.Time.Clock
 import qualified System.Directory
 import System.FilePath ( (</>) )
 
@@ -28,7 +30,7 @@ data OutFileInfo = NoOutFile | OutFileInfo {
     relPath :: FilePath,
     outPathBuild :: FilePath,
     outPathDeploy :: FilePath,
-    customDate :: [String],
+    contentDate :: Data.Time.Clock.UTCTime,
     srcFile :: Files.File
 } deriving (Eq)
 
@@ -71,7 +73,7 @@ _createIndexHtmlIfNoContentPages ctxmain ctxproj numpagesrcfiles =
                         relPath = outfilerel,
                         outPathBuild = pathfinal,
                         outPathDeploy = Util.unlessNullOp (ctxproj~:Proj.dirPathDeploy) (</> outfilerel),
-                        customDate = [],
+                        contentDate = outfile~:Files.modTime,
                         srcFile = outfile
                     }
 
@@ -89,23 +91,26 @@ plan ctxmain ctxproj =
         modtimetmplblok = ctxproj~:Proj.coreFiles~:Defaults.htmlTemplateBlok~:Files.modTime
     in listallfiles (cfgprocstatic~:ProjCfg.dirs) id >>= \allstaticfiles
     -> listallfiles (cfgprocposts~:ProjCfg.dirs) (max modtimeproj) >>= \allpostsfiles
-    -> listallfiles (cfgprocpages~:ProjCfg.dirs) (max modtimetmplmain) >>= \allpagesfiles
-    -> _createIndexHtmlIfNoContentPages ctxmain ctxproj (allpagesfiles~:length) >>= \ defaultpage
+    -> listallfiles (cfgprocpages~:ProjCfg.dirs) (max modtimetmplmain) >>= \allpagesfiles_orig
+    -> _createIndexHtmlIfNoContentPages ctxmain ctxproj (allpagesfiles_orig~:length) >>= \ defaultpage
     -> let
-        (dynpages,dynatoms) = Bloks.buildPlan (modtimeproj,modtimetmplblok) allpagesfiles $projsetup~:Proj.bloks
-        outfileinfostd = _outFileInfo ctxproj id
-        outfileinfoatom func = _outFileInfo ctxproj $(Files.ensureFileExt True ".atom")~.func
+        allpagesfiles_nodate = allpagesfiles_orig >~ renamerelpath where
+            renamerelpath both@(_,file) =
+                (fst$ Pages.customContentDateFromFileName cfg both , file)
+        outfileinfobasic = _outFileInfo ctxproj fst id
+        outfileinfopage = _outFileInfo ctxproj snd id
+        outfileinfoatom func = _outFileInfo ctxproj fst $(Files.ensureFileExt True ".atom")~.func
         outfileinfopost = outfileinfoatom func where
             func|(null relpathpostatoms)= id                                -- no custom dir for posts-derived atoms set up
                 |(relpathpostatoms==Defaults.dir_PostAtoms_None)= const ""  -- dont generate atoms -> force "" to discard in _filterOutFiles
                 |(otherwise)= (relpathpostatoms </>)                        -- prepend user-specified rel dir to atom out-file name
             relpathpostatoms = cfg~:ProjCfg.relPathPostAtoms
         allatoms = (allpostsfiles>~outfileinfopost) ++ (dynatoms>~(outfileinfoatom id))
-        allstatics = allstaticfiles >~ outfileinfostd
-        allpagesalmost = (allpagesfiles++dynpages) >~ outfileinfostd
-        allpages = if defaultpage==NoOutFile
-                    then allpagesalmost else
-                        defaultpage:allpagesalmost
+        allstatics = allstaticfiles >~ outfileinfobasic
+        allpages = let almostall = (dynpages++allpagesfiles_nodate) >~ outfileinfopage
+                    in if defaultpage==NoOutFile then (almostall) else
+                        defaultpage:almostall
+        (dynpages,dynatoms) = Bloks.buildPlan (modtimeproj,modtimetmplblok) allpagesfiles_nodate $projsetup~:Proj.bloks
     in _filterOutFiles allstatics cfgprocstatic >>= \outstatics
     -> _filterOutFiles allpages cfgprocpages >>= \outpages
     -> _filterOutFiles allatoms cfgprocposts >>= \outatoms
@@ -122,15 +127,17 @@ plan ctxmain ctxproj =
 
 
 
-_outFileInfo ctxproj relpather (relpath,file) =
-    let relpathnu = relpather relpath
+_outFileInfo ctxproj contentdater relpather both@(relpath,file) =
+    let (_,cdate) = Pages.customContentDateFromFileName (ctxproj~:Proj.setup~:Proj.cfg) both    --  ignoring the renamed relpath as we already had to take it above (for bloks) when we had to ignore the cdate .. ugly this double call
+        contentdate = contentdater (file~:Files.modTime , cdate)
+        relpathnu = relpather relpath
     in if null relpathnu
         then NoOutFile
         else OutFileInfo {
             relPath = relpathnu,
             outPathBuild = ctxproj~:Proj.dirPathBuild </> relpathnu,
             outPathDeploy = Util.unlessNullOp (ctxproj~:Proj.dirPathDeploy) (</> relpathnu),
-            customDate = [],
+            contentDate = contentdate,
             srcFile = file
         }
 

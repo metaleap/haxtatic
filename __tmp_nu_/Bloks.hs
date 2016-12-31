@@ -71,8 +71,9 @@ bTagResolver curbname hashmap str =
 
 
 isRelPathBlokPage bname relpath =
-    Files.simpleFilePathMatchAny relpath$
-        [ bname++".*" , bname++(System.FilePath.pathSeparator:"*") ]
+    let patterns = [ bname++".*" , bname++(System.FilePath.pathSeparator:"*") ]
+        -- (crelpath , _) = Pages.customContentDateFromFileName (ctxproj~:Proj.setup~:Proj.cfg) both
+    in Files.simpleFilePathMatchAny relpath patterns
 
 
 
