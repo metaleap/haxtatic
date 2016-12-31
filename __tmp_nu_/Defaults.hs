@@ -73,7 +73,7 @@ setupName = System.FilePath.takeBaseName
 
 
 
-blokIndexTmpPathPrefix = "|:B:|"
+blokIndexTmpPathPrefix = ":B|"
 dateTimeFormat = Data.Time.Format.iso8601DateFormat Nothing
 dateTime0 = Data.Time.Clock.UTCTime {   Data.Time.Clock.utctDay = Data.Time.Calendar.ModifiedJulianDay { Data.Time.Calendar.toModifiedJulianDay = 0 },
                                         Data.Time.Clock.utctDayTime = 0 }

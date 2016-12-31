@@ -29,12 +29,10 @@ buildPage ctxproj outjob =
 	Files.writeTo dstfilepath (outjob~:Build.relPath) loadcontent where
 		dstfilepath = outjob~:Build.outPathBuild
 		srcfilepath = outjob~:Build.srcFile~:Files.path
-		blokindexname = if Util.startsWith srcfilepath Defaults.blokIndexTmpPathPrefix
-							then srcfilepath ~: (drop$ Defaults.blokIndexTmpPathPrefix~:length)
-							else ""
+		blokindexname = Bloks.blokNameFromIndexPagePath srcfilepath
 		loadcontent =
 			System.IO.hFlush System.IO.stdout
-			>> Control.Concurrent.threadDelay 654321
+			>> Control.Concurrent.threadDelay 234567
 			>> System.IO.hFlush System.IO.stdout
 
 			>> if null blokindexname

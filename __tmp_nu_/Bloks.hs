@@ -36,6 +36,14 @@ allBlokPageFiles allpagesfiles bname =
 
 
 
+blokNameFromIndexPagePath possiblefakepath =
+    let lenprefix = Defaults.blokIndexTmpPathPrefix~:length
+    in if Defaults.blokIndexTmpPathPrefix == possiblefakepath~:(take lenprefix)
+        then possiblefakepath~:(drop lenprefix)
+        else ""
+
+
+
 buildPlan (modtimeproj,modtimetmplblok) allpagesfiles bloks =
     (dynpages , dynatoms) where
         dynatoms = mapandfilter (tofileinfo atomFile modtimeproj)

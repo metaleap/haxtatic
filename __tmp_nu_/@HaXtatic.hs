@@ -84,6 +84,7 @@ processAll ctxmain projfilename custfilename =
             dtutc = Proj.dtStr2UtcOr0 (ctxproj~:Proj.setup~:Proj.cfg) "foo" dtstr
     in print dtstr
     >> print dtutc
+    >> System.IO.hFlush System.IO.stdout -- remove later
 
     >> if null (ctxproj~:Proj.dirPathDeploy)
         then return () else
