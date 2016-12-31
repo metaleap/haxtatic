@@ -72,22 +72,21 @@ bTagResolver curbname hashmap str =
 
 isRelPathBlokPage bname relpath =
     let patterns = [ bname++".*" , bname++(System.FilePath.pathSeparator:"*") ]
-        -- (crelpath , _) = Pages.customContentDateFromFileName (ctxproj~:Proj.setup~:Proj.cfg) both
     in Files.simpleFilePathMatchAny relpath patterns
 
 
 
 parseDefs linessplits =
     Data.Map.Strict.fromList$
-    linessplits>~persplit ~|(/=noblok) where
-        persplit ("B":"":bname:bvalsplits) =
+    linessplits>~foreach ~|(/=noblok) where
+        foreach ("B":"":bname:bvalsplits) =
             let parsestr = bvalsplits ~: _joinc ~: Util.trim ~: (toParseStr bname)
                 parsed = (Text.Read.readMaybe parsestr) :: Maybe Blok
                 errblok = Blok { title="{!syntax issue near `B::"++bname++":`, couldn't parse `"++parsestr++"`!}",
                                     desc="{!Syntax issue in your .haxproj file defining Blok named '"++bname++"'. Thusly couldn't parse Blok settings (incl. title/desc)!}",
                                     atomFile="", blokIndexPageFile="", inSitemap=False, dater="" }
             in (bname , Data.Maybe.fromMaybe errblok parsed)
-        persplit _ =
+        foreach _ =
             noblok
         noblok = ("",NoBlok)
 

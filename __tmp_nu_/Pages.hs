@@ -7,7 +7,6 @@ import qualified Proj
 import qualified Util
 import Util ( (~:) , (>~) , (~|) , (#) )
 
-import qualified Data.Maybe
 import qualified System.FilePath
 import System.FilePath ( (</>) )
 

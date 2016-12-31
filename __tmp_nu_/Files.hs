@@ -69,13 +69,13 @@ fullFrom oldfile newmodtime newcontent =
 
 
 
-listAllFiles rootdirpath reldirs permodtime =
+listAllFiles rootdirpath reldirs modtimer =
     let allfiles = concat<$> (dirpaths >>~ foreachdir)
         dirpaths = reldirs >~ (System.FilePath.combine rootdirpath)
         foreachfile :: FilePath -> IO (FilePath , Data.Time.Clock.UTCTime)
         foreachfile filepath =
             System.Directory.getModificationTime filepath >>= \ modtime
-            -> return (filepath , permodtime modtime)
+            -> return (filepath , modtimer modtime)
         foreachdir :: FilePath -> IO [(FilePath , Data.Time.Clock.UTCTime)]
         foreachdir dirpath =
             let fstest test = (dirpath</>) ~. test >>= return

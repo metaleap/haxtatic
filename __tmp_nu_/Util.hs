@@ -182,9 +182,9 @@ lastIndexOfSub rev sub str
 
 
 splitBy delim =
-    foldr peritem [[]] where
-        peritem _ [] = []
-        peritem item items@(item0:rest)
+    foldr foreach [[]] where
+        foreach _ [] = []
+        foreach item items@(item0:rest)
             |(item==delim) = []:items
             |(otherwise) = (item:item0):rest
 

@@ -37,22 +37,22 @@ data OutFileInfo = NoOutFile | OutFileInfo {
 
 
 copyAllOutputsToDeploy buildplan =
-    let perfile file =
-            let srcfilepath = file~:outPathBuild
+    let foreach builtfile =
+            let srcfilepath = builtfile~:outPathBuild
             in System.Directory.doesFileExist srcfilepath >>= \isfile
             -> if isfile
-                then Files.copyTo srcfilepath [file~:outPathDeploy]
+                then Files.copyTo srcfilepath [builtfile~:outPathDeploy]
                 else putStrLn ("\t!?\tMissing: `"++srcfilepath++"`")
-    in (buildplan~:outFilesStatic) >>~ perfile
-    >> (buildplan~:outFilesPage) >>~ perfile
-    >> (buildplan~:outFilesAtom) >>~ perfile
+    in (buildplan~:outFilesStatic) >>~ foreach
+    >> (buildplan~:outFilesPage) >>~ foreach
+    >> (buildplan~:outFilesAtom) >>~ foreach
     >> return ()
 
 
 
 copyStaticFiles buildplan =
-    (buildplan~:outFilesStatic) >>~ perfile where
-        perfile file =
+    (buildplan~:outFilesStatic) >>~ foreach where
+        foreach file =
             Files.copyTo (file~:srcFile~:Files.path) [file~:outPathBuild]
 
 
@@ -81,10 +81,10 @@ _createIndexHtmlIfNoContentPages ctxmain ctxproj numpagesrcfiles =
 
 plan ctxmain ctxproj =
     let projsetup = ctxproj~:Proj.setup
-        cfg = projsetup~:Proj.cfg
-        cfgprocstatic = cfg~:ProjCfg.processStatic
-        cfgprocpages = cfg~:ProjCfg.processPages
-        cfgprocposts = cfg~:ProjCfg.processPosts
+        projcfg = projsetup~:Proj.cfg
+        cfgprocstatic = projcfg~:ProjCfg.processStatic
+        cfgprocpages = projcfg~:ProjCfg.processPages
+        cfgprocposts = projcfg~:ProjCfg.processPosts
         listallfiles = Files.listAllFiles $ctxproj~:Proj.dirPath
         modtimeproj = ctxproj~:Proj.coreFiles~:Defaults.projectDefault~:Files.modTime
         modtimetmplmain = ctxproj~:Proj.coreFiles~:Defaults.htmlTemplateMain~:Files.modTime
@@ -95,8 +95,8 @@ plan ctxmain ctxproj =
     -> _createIndexHtmlIfNoContentPages ctxmain ctxproj (allpagesfiles_orig~:length) >>= \ defaultpage
     -> let
         allpagesfiles_nodate = allpagesfiles_orig >~ renamerelpath where
-            renamerelpath both@(_,file) =
-                (fst$ Pages.customContentDateFromFileName cfg both , file)
+            renamerelpath tup@(_,file) =
+                (fst$ Pages.customContentDateFromFileName projcfg tup , file)
         outfileinfobasic = _outFileInfo ctxproj fst id
         outfileinfopage = _outFileInfo ctxproj snd id
         outfileinfoatom func = _outFileInfo ctxproj fst $(Files.ensureFileExt True ".atom")~.func
@@ -104,7 +104,7 @@ plan ctxmain ctxproj =
             func|(null relpathpostatoms)= id                                -- no custom dir for posts-derived atoms set up
                 |(relpathpostatoms==Defaults.dir_PostAtoms_None)= const ""  -- dont generate atoms -> force "" to discard in _filterOutFiles
                 |(otherwise)= (relpathpostatoms </>)                        -- prepend user-specified rel dir to atom out-file name
-            relpathpostatoms = cfg~:ProjCfg.relPathPostAtoms
+            relpathpostatoms = projcfg~:ProjCfg.relPathPostAtoms
         allatoms = (allpostsfiles>~outfileinfopost) ++ (dynatoms>~(outfileinfoatom id))
         allstatics = allstaticfiles >~ outfileinfobasic
         allpages = let almostall = (dynpages++allpagesfiles_nodate) >~ outfileinfopage
@@ -127,8 +127,8 @@ plan ctxmain ctxproj =
 
 
 
-_outFileInfo ctxproj contentdater relpather both@(relpath,file) =
-    let (_,cdate) = Pages.customContentDateFromFileName (ctxproj~:Proj.setup~:Proj.cfg) both    --  ignoring the renamed relpath as we already had to take it above (for bloks) when we had to ignore the cdate .. ugly this double call
+_outFileInfo ctxproj contentdater relpather tup@(relpath,file) =
+    let (_,cdate) = Pages.customContentDateFromFileName (ctxproj~:Proj.setup~:Proj.cfg) tup    --  ignoring the renamed relpath as we already had to take it above (for bloks) when we had to ignore the cdate .. ugly this double call
         contentdate = contentdater (file~:Files.modTime , cdate)
         relpathnu = relpather relpath
     in if null relpathnu

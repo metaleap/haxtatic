@@ -63,12 +63,11 @@ parseDefs linessplits =
         dirnameonly = System.FilePath.takeFileName
         cfgmisc = cfglines2hashmap "" id
         cfgdtformats = cfglines2hashmap "dtformat" id
-        cfgprocs = cfglines2hashmap "process" perprocstr where
-            perprocstr procstr = "Processing {"++procstr++"}"
-        cfglines2hashmap goalprefix pervalue = Data.Map.Strict.fromList$
+        cfgprocs = cfglines2hashmap "process" $("Processing {"++).(++"}")
+        cfglines2hashmap goalprefix onvalue = Data.Map.Strict.fromList$
             linessplits>~foreachline ~|noNull.fst where
                 foreachline ("C":"":prefix:next:rest)
                     |(null goalprefix) = ( prefix , foreachval$ (next:rest) )
                     |(prefix==goalprefix) = ( prefix++":"++next , foreachval$ rest )
                 foreachline _ = ( "" , "" )
-                foreachval = (Util.join ":") ~. Util.trim ~. pervalue
+                foreachval = (Util.join ":") ~. Util.trim ~. onvalue

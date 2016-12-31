@@ -114,13 +114,12 @@ processSrcFully =
     Util.repeatedly . processSrcJustOnce
 
 processSrcJustOnce ctxsetup src =
-    ((Util.splitUp ["{T{","{B{"] "}}" src)>~perchunk) ~: concat
-    where
-        perchunk (str , "{B{") =
+    concat$ (Util.splitUp ["{T{","{B{"] "}}" src)>~foreach where
+        foreach (str , "{B{") =
             (ctxsetup~:bTags) str
-        perchunk (str , "{T{") =
+        foreach (str , "{T{") =
             (ctxsetup~:tTags) str
-        perchunk (str , _) =
+        foreach (str , _) =
             str
 
 
