@@ -15,6 +15,7 @@ import qualified System.Directory
 import System.FilePath ( (</>) )
 
 
+
 data Plan = Plan {
     outAtoms :: [Task],
     outPages :: [Task],
@@ -24,6 +25,7 @@ data Plan = Plan {
     numSkippedPages :: Int,
     numSkippedAtoms :: Int
 }
+
 
 data Task = NoOutput | FileOutput {
     relPath :: FilePath,
@@ -38,10 +40,11 @@ data Task = NoOutput | FileOutput {
 copyAllOutputsToDeploy buildplan =
     let foreach builtfile =
             let srcfilepath = builtfile~:outPathBuild
-            in System.Directory.doesFileExist srcfilepath >>= \isfile
-            -> if isfile
-                then Files.copyTo srcfilepath [builtfile~:outPathDeploy]
-                else putStrLn ("\t!?\tMissing: `"++srcfilepath++"`")
+                ifexists True =
+                    Files.copyTo srcfilepath [builtfile~:outPathDeploy]
+                ifexists False =
+                    putStrLn ("\t!?\tMissing: `"++srcfilepath++"`")
+            in System.Directory.doesFileExist srcfilepath >>= ifexists
     in (buildplan~:outStatics) >>~ foreach
     >> (buildplan~:outPages) >>~ foreach
     >> (buildplan~:outAtoms) >>~ foreach
@@ -160,7 +163,9 @@ _filterOutFiles fileinfos cfgproc =
                 then return True else
                 if (skipall && not forcethis) || skipthis
                     then return False else
-                    System.Directory.doesFileExist outfilepath >>= \ isfile
-                    -> if not isfile then return True else
-                        System.Directory.getModificationTime outfilepath >>= \ outfilemodtime
-                        -> return ((fileinfo~:srcFile~:Files.modTime) > outfilemodtime)
+                    let ifexists False =
+                            return True
+                        ifexists True =
+                            System.Directory.getModificationTime outfilepath >>=
+                                return.((fileinfo~:srcFile~:Files.modTime)>)
+                    in System.Directory.doesFileExist outfilepath >>= ifexists

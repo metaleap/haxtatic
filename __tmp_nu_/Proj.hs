@@ -26,7 +26,7 @@ data Ctx = Ctx {
         dirPathBuild :: FilePath,
         dirPathDeploy :: FilePath,
         setup :: Setup,
-        coreFiles :: Defaults.CoreFiles
+        coreFiles :: Defaults.Files
     }
 
 data Setup = Setup {

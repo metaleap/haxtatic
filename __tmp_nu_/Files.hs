@@ -3,7 +3,7 @@
 module Files where
 
 import qualified Util
-import Util ( noNull , (~:) , (~.) , (~|) , (>~) , (>>~) , (>>|) )
+import Util ( noNull , (~:) , (~.) , (~|) , (|~) , (>~) , (>>~) , (>>|) )
 
 import qualified Data.List
 import qualified Data.Time.Clock
@@ -11,7 +11,7 @@ import qualified System.Directory
 import qualified System.FilePath
 import System.FilePath ( (</>) )
 import qualified System.IO
-
+import qualified Control.Monad
 
 --  general project input file
 data File
@@ -69,11 +69,13 @@ ensureFileExt ignorecase ext filepath =
 
 
 filesInDir dir =
-    System.Directory.doesDirectoryExist dir >>= \isdir
-    -> if not isdir then return [] else
-        System.Directory.listDirectory dir >>= \names
-        -> (names~|_isfsnameok) >>| isfile where
-            isfile = (dir</>) ~. System.Directory.doesFileExist >>= return
+    System.Directory.doesDirectoryExist dir >>= ifexists where
+        ifexists False =
+            return []
+        ifexists True =
+            System.Directory.listDirectory dir >>=
+                (~| _isfsnameok) ~. (>>| filesonly)
+        filesonly = (dir</>) ~. System.Directory.doesFileExist
 
 
 
@@ -91,19 +93,21 @@ listAllFiles rootdirpath reldirs modtimer =
             -> return (filepath , modtimer modtime)
         foreachdir :: FilePath -> IO [(FilePath , Data.Time.Clock.UTCTime)]
         foreachdir dirpath =
-            let fstest test = (dirpath</>) ~. test >>= return
-                joinpath n = n >>= return . (dirpath</>)
-            in System.Directory.doesDirectoryExist dirpath >>= \direxists
-            -> if not direxists then return [] else
-                System.Directory.listDirectory dirpath >>= \names
-                -> let  oknames = names ~| _isfsnameok
-                        files = oknames >>| fstest System.Directory.doesFileExist
-                        dirs = oknames >>| fstest System.Directory.doesDirectoryExist
-                in (joinpath<$> files) >>= \filepaths
-                -> (filepaths >>~ foreachfile) >>= \filetuples
-                -> (joinpath<$> dirs) >>= \subdirpaths
-                -> (subdirpaths >>~ foreachdir) >>= \recursed
-                -> return (concat [filetuples, concat recursed])
+            System.Directory.doesDirectoryExist dirpath >>= ifexists where
+                ifexists False =
+                    return []
+                ifexists True =
+                    System.Directory.listDirectory dirpath >>= \names
+                    -> let  oknames = names ~| _isfsnameok
+                            files = oknames >>| fstest System.Directory.doesFileExist
+                            dirs = oknames >>| fstest System.Directory.doesDirectoryExist
+                            fstest = ((dirpath</>) ~.)
+                            joinpath n = n >>= return.(dirpath</>)
+                    in (joinpath<$> files) >>= \filepaths
+                    -> (filepaths >>~ foreachfile) >>= \filetuples
+                    -> (joinpath<$> dirs) >>= \subdirpaths
+                    -> (subdirpaths >>~ foreachdir) >>= \recursed
+                    -> return (concat [filetuples, concat recursed])
     in allfiles >>= \allfiletuples
     -> let foreachfiletuple (srcfilepath , modtime) =
             ( Util.atOr relpaths 0 srcfilepath,
@@ -128,29 +132,25 @@ readOrDefault _ _ "" _ _ =
     return NoFile
 
 readOrDefault create ctxmain relpath relpath2 defaultcontent =
-    let filepath = System.FilePath.combine (ctxmain~:dirPath) relpath
-    in System.Directory.doesFileExist filepath >>= \ isfile
-    -> if isfile
-        then
+    System.Directory.doesFileExist filepath >>= ifexists where
+        filepath = System.FilePath.combine (ctxmain~:dirPath) relpath
+        ifexists True =
             System.Directory.getModificationTime filepath >>= \ modtime
-            -> readFile filepath >>= \ filecontent
-            -> return$ FileFull filepath modtime filecontent
-        else if relpath2~:noNull && relpath2/=relpath
-                then
-                    --  putStrLn ("\t->\tNo `"++relpath++"`:\n\t\tusing `"++relpath2++"`")
-                    readOrDefault create ctxmain relpath2 "" defaultcontent
-                else
-                    let file = FileFull filepath (ctxmain~:nowTime) defaultcontent
-                        loadcontent = return defaultcontent
-                    in if not create then return file else
-                        writeTo filepath relpath loadcontent
-                        >> return file
+            -> readFile filepath >>= (FileFull filepath modtime)~.return
+        ifexists False
+            | (noNull relpath2 && relpath2/=relpath) =
+                readOrDefault create ctxmain relpath2 "" defaultcontent
+            | otherwise =
+                let file = FileFull filepath (ctxmain~:nowTime) defaultcontent
+                in if not create then return file else
+                    writeTo filepath relpath (defaultcontent~:return)
+                    >> return file
 
 
 
 saneDirPath =
     Util.trim ~. pathSepSlashToSystem ~.
-        (Util.trim' ('.' : System.FilePath.pathSeparators)) ~. Util.trim
+        (Util.trim' $'.':System.FilePath.pathSeparators) ~. Util.trim
 
 
 
@@ -184,7 +184,6 @@ writeTo filepath showpath loadcontent =
     >> if null showpath then return () else
         putStr (_fileoutputbeginmsg showpath)
     >> System.IO.hFlush System.IO.stdout
-    >> loadcontent >>= \filecontent
-    -> writeFile filepath filecontent
+    >> loadcontent >>= writeFile filepath
     >> putStrLn _fileoutputdonemsg
     >> System.IO.hFlush System.IO.stdout

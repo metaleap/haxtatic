@@ -78,7 +78,7 @@ processAll ctxmain projfilename custfilename =
     >> Build.copyStaticFiles buildplan
 
     >> putStrLn ("\n4/5\tGenerating "++(show numgenpages)++"/"++(show$ numgenpages+numskippages)++" page(s) in:\n\t->\t`"++dirbuild++"` ..")
-    >> Pages.buildAll ctxproj buildplan
+    >> Pages.buildAll ctxmain ctxproj buildplan
 
     >> let  dtstr = (Proj.dtUtc2Str (ctxproj~:Proj.setup~:Proj.cfg) "foo" (ctxmain~:Files.nowTime))
             dtutc = Proj.dtStr2UtcOr0 (ctxproj~:Proj.setup~:Proj.cfg) "foo" dtstr

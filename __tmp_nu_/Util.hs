@@ -121,6 +121,9 @@ trimStart = trimStart'' Data.Char.isSpace
 trimStart' dropitems = trimStart'' (`elem` dropitems)
 trimStart'' = Data.List.dropWhile
 
+uniques:: (Eq a)=> [a]-> [a]
+uniques = Data.List.nub
+
 
 atOr::
     [t]-> Int-> t->

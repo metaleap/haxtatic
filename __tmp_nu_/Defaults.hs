@@ -14,7 +14,7 @@ import System.FilePath ( (</>) )
 
 
 --  the basic default input files
-data CoreFiles = CoreFiles {
+data Files = Core {
     projectDefault :: Files.File,
     projectOverwrites :: Files.File,
     htmlTemplateMain :: Files.File,
@@ -24,17 +24,21 @@ data CoreFiles = CoreFiles {
 
 
 loadOrCreate ctxmain projname projfilename custfilename =
-    let projfilecontent = _proj projname
+    let projfiledefcontent = _proj projname
         setupname = setupName projfilename
-    in Files.readOrDefault True ctxmain projfilename fileName_Proj projfilecontent
+        relpathtmplmain = "tmpl" </> (setupname++"-main.haxtmpl.html")
+        relpathtmplmain' = "tmpl" </> (fileName_Pref "-main.haxtmpl.html")
+        relpathtmplblok = "tmpl" </> (setupname++"-blok.haxtmpl.html")
+        relpathtmplblok' = "tmpl" </> (fileName_Pref "-blok.haxtmpl.html")
+    in Files.readOrDefault True ctxmain projfilename fileName_Proj projfiledefcontent
     >>= \ projfile
     -> Files.readOrDefault True ctxmain custfilename "" ""
     >>= \ custfile
-    -> Files.readOrDefault True ctxmain (setupname++"-main.haxtmpl.html") (fileName_Pref "-main.haxtmpl.html") _tmpl_html_main
+    -> Files.readOrDefault True ctxmain relpathtmplmain relpathtmplmain' _tmpl_html_main
     >>= \ tmplmainfile
-    -> Files.readOrDefault True ctxmain (setupname++"-blok.haxtmpl.html") (fileName_Pref "-blok.haxtmpl.html") _tmpl_html_blok
+    -> Files.readOrDefault True ctxmain relpathtmplblok relpathtmplblok' _tmpl_html_blok
     >>= \ tmplblokfile
-    -> return (CoreFiles projfile custfile tmplmainfile tmplblokfile)
+    -> return (Core projfile custfile tmplmainfile tmplblokfile)
 
 
 rewriteTemplates corefiles tmplrewriter =
@@ -44,7 +48,7 @@ rewriteTemplates corefiles tmplrewriter =
                         corefiles~:htmlTemplateMain~:Files.modTime
         rewrite modtime rw file
             = Files.fullFrom file modtime (rw $file~:Files.content)
-    in CoreFiles {
+    in Core {
         projectDefault = rewrite cfgmodtime id $corefiles~:projectDefault,
         projectOverwrites = rewrite cfgmodtime id $corefiles~:projectOverwrites,
         htmlTemplateMain = rewrite tmplmodtime tmplrewriter $corefiles~:htmlTemplateMain,
