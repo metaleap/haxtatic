@@ -26,7 +26,7 @@ data Ctx
 
 
 _applychunkbegin = "{P{C"
-_applychunkend = "ontent}}"
+_applychunkend = "ontent"++tag_Close
 apply ctxtmpl pagesrc =
     let foreach ("","{P{C") = pagesrc
         foreach (wtf,"{P{C") = _applychunkbegin++wtf++_applychunkend
@@ -72,10 +72,19 @@ processSrcFully ctxproc bname =
 
 
 processSrcJustOnce ctxproc bname src =
-    concat$ (Util.splitUp ["{T{","{B{"] "}}" src)>~foreach where
+    concat$ (Util.splitUp [tag_T,tag_B] tag_Close src)>~foreach where
         foreach (str , "{B{") =
             (ctxproc~:bTags) bname str
         foreach (str , "{T{") =
             (ctxproc~:tTags) str
-        foreach (str , beg) =
+        foreach (str , "") =
             str
+        foreach (str , beg) =
+            beg++str++tag_Close
+
+
+tag_Close = "}}"
+tag_B = "{B{"
+tag_P = "{P{"
+tag_T = "{T{"
+tag_X = "{X{"

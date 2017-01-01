@@ -97,12 +97,12 @@ _loadSetup ctxproj =
                                             Tmpl.tTags = ttagsprep
                                         }
                                     }
-        bloksprep = Bloks.parseDefs preplinessplits
-        blokspost = Bloks.parseDefs postlinessplits
-        cfgprep = ProjC.parseDefs preplinessplits
-        cfgpost = ProjC.parseDefs postlinessplits
-        ttagsprep = ProjT.parseDefs preplinessplits False
-        ttagspost = ProjT.parseDefs postlinessplits True
+        bloksprep = Bloks.parseProjLines preplinessplits
+        blokspost = Bloks.parseProjLines postlinessplits
+        cfgprep = ProjC.parseProjLines preplinessplits
+        cfgpost = ProjC.parseProjLines postlinessplits
+        ttagsprep = ProjT.parseProjLines preplinessplits False
+        ttagspost = ProjT.parseProjLines postlinessplits True
 
         preplinessplits = srclinesprep>~ _splitc
         postlinessplits = srclinespost>~ _splitc

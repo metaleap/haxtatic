@@ -2,6 +2,7 @@
 
 module ProjT where
 
+import qualified Tmpl
 import qualified Util
 import Util ( (~:) , (>~) , (~.) , (~|) , noNull )
 
@@ -10,7 +11,7 @@ import qualified Text.Read
 
 
 
-parseDefs linessplits canparsestr =
+parseProjLines linessplits canparsestr =
     \key -> Data.Map.Strict.findWithDefault ("{!T{"++key++"}!}") key ttags where
         ttags = Data.Map.Strict.fromList$
             linessplits>~foreach ~|fst~.noNull where
@@ -53,7 +54,7 @@ srcLinesExpandMl rawsrc =
         --  occurrence rewritten into {T{key}}
         forchunk (i , (str , "{'{")) =
             let tkey = "_Hx_MlRepl_"++(show i) in
-            ( "{T{"++tkey++"}}" , (tkey , str~:show) )
+            ( Tmpl.tag_T++tkey++Tmpl.tag_Close , (tkey , str~:show) )
             -- if to enclose within other tokens than " and ", switch from str~:show to:
             -- _parsestr_topen++ (Util.crop 1 1 $str~:show) ++_parsestr_tclose))
         forchunk (_ , (str , _)) =

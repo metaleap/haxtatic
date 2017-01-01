@@ -3,6 +3,7 @@ module Bloks where
 
 import qualified Defaults
 import qualified Files
+import qualified Tmpl
 import qualified Util
 import Util ( noNull , (#) , (~:) , (>~) , (~|) , (|~) , (~.) )
 
@@ -66,9 +67,7 @@ bTagResolver hashmap curbname str =
                     bn = Util.atOr splits 1 curbname
         blok = if null bname then NoBlok else
                 Data.Map.Strict.findWithDefault NoBlok bname hashmap
-        restore = if null curbname
-                    then "{B{"++(_joinc splits)++"}}"
-                    else "WTF:"++curbname++"-"++bname++"WTF"
+        restore = Tmpl.tag_B++(_joinc splits)++Tmpl.tag_Close
     in if null splits then restore else
         if fname=="name" && bname~:noNull
             then bname else if blok==NoBlok || null fname
@@ -100,7 +99,7 @@ isRelPathBlokPage bname relpath =
 
 
 
-parseDefs linessplits =
+parseProjLines linessplits =
     Data.Map.Strict.fromList$
     linessplits>~foreach ~|(/=noblok) where
         foreach ("B":"":blokname:bvalsplits) =

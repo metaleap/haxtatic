@@ -35,7 +35,7 @@ data Processing
 
 
 
-parseDefs linessplits =
+parseProjLines linessplits =
     CfgFromProj {   dirNameBuild = dirbuild, dirNameDeploy = dirdeploy,
                     relPathPostAtoms = relpathpostatoms, dtFormat = dtformat,
                     processStatic = procstatic, processPages = procpages, processPosts = procposts }
