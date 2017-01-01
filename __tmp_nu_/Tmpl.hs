@@ -67,14 +67,15 @@ loadTmpl ctxproc fileext tmpfile =
 
 
 
-processSrcFully ctxproc bname =
-    Util.repeatedly (processSrcJustOnce ctxproc bname)
+processSrcFully ctxproc =
+    Util.repeatedly.(processSrcJustOnce ctxproc)
 
 
 processSrcJustOnce ctxproc bname src =
     concat$ (Util.splitUp [tag_T,tag_B] tag_Close src)>~foreach where
         foreach (str , "{B{") =
             (ctxproc~:bTags) bname str
+            --  MAYBE!!
         foreach (str , "{T{") =
             (ctxproc~:tTags) str
         foreach (str , "") =

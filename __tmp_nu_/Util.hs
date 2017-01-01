@@ -192,13 +192,19 @@ indexOfSub sub str@(_:rest)
     |(zip sub str) ~: (all $(==)~:uncurry)
         = 0
     |(otherwise)
-        = if idx<0 then idx else 1+idx where
-            idx = indexOfSub sub rest
+        = 1 + (indexOfSub sub rest)
+        --  --this dumb 1+ DOES seem slightly faster
+        --  --(as always, adds up with bigger full-rebuilds)
+        --  --than compare-lt + conditional-add, so NOT this:
+        --  = idx (indexOfSub sub rest)
+        --  where
+        --      idx i |i<0 = i |otherwise = 1+i
 
 lastIndexOfSub revsub revstr
     |(idx<0) = idx
     |(otherwise) = (revstr~:length)-(revsub~:length)-idx
-    where idx = indexOfSub revsub revstr
+    where
+        idx = indexOfSub revsub revstr
 
 
 
