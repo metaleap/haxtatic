@@ -31,6 +31,9 @@ parseDefs linessplits canparsestr =
                         = str
 
 
+_parsestr_topen = "\""
+_parsestr_tclose = "\""
+
 
 srcLinesExpandMl rawsrc =
     --  original lines exposing {'{multi-line
@@ -55,7 +58,3 @@ srcLinesExpandMl rawsrc =
             -- _parsestr_topen++ (Util.crop 1 1 $str~:show) ++_parsestr_tclose))
         forchunk (_ , (str , _)) =
             (str , ("" , ""))
-
-
-_parsestr_topen = "\""
-_parsestr_tclose = "\""

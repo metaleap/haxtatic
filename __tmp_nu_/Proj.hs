@@ -19,7 +19,7 @@ import System.FilePath ( (</>) )
 
 
 --  project context
-data Ctx = Ctx {
+data Ctx = ProjContext {
         projName :: String,
         setupName :: String,
         dirPath :: FilePath,
@@ -29,11 +29,11 @@ data Ctx = Ctx {
         coreFiles :: Defaults.Files
     }
 
-data Setup = Setup {
+data Setup = SetupFromProj {
     --  srcRaw :: [String],
     --  srcPre :: [String],
     bloks :: Data.Map.Strict.Map String Bloks.Blok,
-    cfg :: ProjCfg.Cfg,
+    cfg :: ProjCfg.Config,
     tTags :: String->String,
     bTags :: String->String
 }
@@ -63,7 +63,7 @@ loadCtx ctxmain projname defaultfiles =
         dirpath = ctxmain~:Files.dirPath
         dirpathjoin = (dirpath </>)
         setupname = Defaults.setupName $defaultfiles~:Defaults.projectDefault~:Files.path
-        ctxproj = Ctx {
+        ctxproj = ProjContext {
             projName = projname,
             setupName = setupname,
             dirPath = dirpath,
@@ -82,18 +82,18 @@ _loadCoreFiles projsetup deffiles =
 
 
 _loadSetup ctxproj =
-    let setuppost = Setup { -- srcRaw = srclinespost, srcPre = srclinesprep,
-                            bloks = blokspost,
-                            cfg = cfgpost,
-                            tTags = ttagspost,
-                            bTags =  Bloks.bTagResolver "" blokspost }
+    let setuppost = SetupFromProj { -- srcRaw = srclinespost, srcPre = srclinesprep,
+                                    bloks = blokspost,
+                                    cfg = cfgpost,
+                                    tTags = ttagspost,
+                                    bTags =  Bloks.bTagResolver "" blokspost }
     in setuppost
     where
-        setupprep = Setup { -- srcRaw = [], srcPre = [],
-                            bloks = bloksprep,
-                            cfg = cfgprep,
-                            tTags = ttagsprep,
-                            bTags =  Bloks.bTagResolver "" bloksprep }
+        setupprep = SetupFromProj { -- srcRaw = [], srcPre = [],
+                                    bloks = bloksprep,
+                                    cfg = cfgprep,
+                                    tTags = ttagsprep,
+                                    bTags =  Bloks.bTagResolver "" bloksprep }
 
         bloksprep = Bloks.parseDefs preplinessplits
         blokspost = Bloks.parseDefs postlinessplits

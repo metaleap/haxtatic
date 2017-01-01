@@ -58,8 +58,9 @@ loadTemplates ctxmain ctxproj buildplan =
     foreach "" = return Tmpl { srcFile = ctxproj~:Proj.coreFiles~:Defaults.htmlTemplateMain }
     foreach ext =
         let tp fn = "tmpl" </> (fn $".haxtmpl"++ext)
-        in Files.readOrDefault False ctxmain (tp (ctxproj~:Proj.setupName++))
-            (tp Defaults.fileName_Pref) "" >>= loadTemplate
+        in Files.readOrDefault False ctxmain
+            (tp (ctxproj~:Proj.setupName++)) (tp Defaults.fileName_Pref)
+            "" >>= loadTemplate
     in fileexts>>~foreach
 
 

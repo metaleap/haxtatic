@@ -14,7 +14,7 @@ import System.FilePath ( (</>) )
 
 
 --  the basic default input files
-data Files = Core {
+data Files = DefaultFiles {
     projectDefault :: Files.File,
     projectOverwrites :: Files.File,
     htmlTemplateMain :: Files.File,
@@ -38,7 +38,7 @@ loadOrCreate ctxmain projname projfilename custfilename =
     >>= \ tmplmainfile
     -> Files.readOrDefault True ctxmain relpathtmplblok relpathtmplblok' _tmpl_html_blok
     >>= \ tmplblokfile
-    -> return (Core projfile custfile tmplmainfile tmplblokfile)
+    -> return (DefaultFiles projfile custfile tmplmainfile tmplblokfile)
 
 
 rewriteTemplates corefiles tmplrewriter =
@@ -48,7 +48,7 @@ rewriteTemplates corefiles tmplrewriter =
                         corefiles~:htmlTemplateMain~:Files.modTime
         rewrite modtime rw file
             = Files.fullFrom file modtime (rw $file~:Files.content)
-    in Core {
+    in DefaultFiles {
         projectDefault = rewrite cfgmodtime id $corefiles~:projectDefault,
         projectOverwrites = rewrite cfgmodtime id $corefiles~:projectOverwrites,
         htmlTemplateMain = rewrite tmplmodtime tmplrewriter $corefiles~:htmlTemplateMain,

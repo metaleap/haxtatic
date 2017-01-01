@@ -41,9 +41,9 @@ main =
             \  For a new project: specify path to its intended directory.\n    (I'll create it if missing and its parent isn't.)\n\n"
         else
             let dirpath = cmdargs#0
-                ctxmain = Files.Ctx {   Files.curDir = curdir,
-                                        Files.dirPath = dirpath,
-                                        Files.nowTime=starttime }
+                ctxmain = Files.AppContext {   Files.curDir = curdir,
+                                                Files.dirPath = dirpath,
+                                                Files.nowTime=starttime }
             in processAll ctxmain (Util.atOr cmdargs 1 Defaults.fileName_Proj) (Util.atOr cmdargs 2 "")
             >> Data.Time.Clock.getCurrentTime >>= \ endtime
             -> let timetaken = Data.Time.Clock.diffUTCTime endtime starttime

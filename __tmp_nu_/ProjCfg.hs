@@ -13,7 +13,7 @@ import qualified System.FilePath
 import qualified Text.Read
 
 
-data Cfg = Cfg {
+data Config = CfgFromProj {
     dirNameBuild :: String,
     dirNameDeploy :: String,
     relPathPostAtoms :: String,
@@ -23,7 +23,7 @@ data Cfg = Cfg {
     processPosts :: Processing
 }
 
-data Processing = Processing {
+data Processing = ProcFromProj {
     skip :: [String],
     force :: [String],
     dirs :: [String]
@@ -32,9 +32,9 @@ data Processing = Processing {
 
 
 parseDefs linessplits =
-    Cfg {   dirNameBuild = dirbuild, dirNameDeploy = dirdeploy,
-            relPathPostAtoms = relpathpostatoms, dtFormat = dtformat,
-            processStatic = procstatic, processPages = procpages, processPosts = procposts }
+    CfgFromProj {   dirNameBuild = dirbuild, dirNameDeploy = dirdeploy,
+                    relPathPostAtoms = relpathpostatoms, dtFormat = dtformat,
+                    processStatic = procstatic, processPages = procpages, processPosts = procposts }
     where
         dtformat name = Data.Map.Strict.findWithDefault
                         Defaults.dateTimeFormat ("dtformat:"++name) cfgdtformats
@@ -50,8 +50,8 @@ parseDefs linessplits =
         procfind name = procsane name (Data.Maybe.fromMaybe (procdef name) maybeParsed) where
                             maybeParsed = (Text.Read.readMaybe procstr) :: Maybe Processing
                             procstr = Data.Map.Strict.findWithDefault "" ("process:"++name) cfgprocs
-        procdef dirname = Processing { dirs = [dirname], skip = [], force = [] }
-        procsane defname proc = Processing {
+        procdef dirname = ProcFromProj { dirs = [dirname], skip = [], force = [] }
+        procsane defname proc = ProcFromProj {
                 dirs = Util.ifNull (proc~:dirs >~dirnameonly ~|noNull) [defname],
                 skip = if saneneither then [] else saneskip,
                 force = if saneneither then [] else saneforce
@@ -63,7 +63,7 @@ parseDefs linessplits =
         dirnameonly = System.FilePath.takeFileName
         cfgmisc = cfglines2hashmap "" id
         cfgdtformats = cfglines2hashmap "dtformat" id
-        cfgprocs = cfglines2hashmap "process" $("Processing {"++).(++"}")
+        cfgprocs = cfglines2hashmap "process" $("ProcFromProj {"++).(++"}")
         cfglines2hashmap goalprefix onvalue = Data.Map.Strict.fromList$
             linessplits>~foreachline ~|noNull.fst where
                 foreachline ("C":"":prefix:next:rest)

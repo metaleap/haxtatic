@@ -24,7 +24,7 @@ data File
     deriving (Eq)
 
 
-data Ctx = Ctx {
+data Ctx = AppContext {
     curDir :: FilePath,
     dirPath :: FilePath,
     nowTime :: Data.Time.Clock.UTCTime

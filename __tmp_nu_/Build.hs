@@ -16,7 +16,7 @@ import System.FilePath ( (</>) )
 
 
 
-data Plan = Plan {
+data Plan = BuildPlan {
     outAtoms :: [Task],
     outPages :: [Task],
     outStatics :: [Task],
@@ -116,7 +116,7 @@ plan ctxmain ctxproj =
     in _filterOutFiles allstatics cfgprocstatic >>= \outcopyfiles
     -> _filterOutFiles allpages cfgprocpages >>= \outpagefiles
     -> _filterOutFiles allatoms cfgprocposts >>= \outatomfiles
-    -> let buildplan = Plan {
+    -> let buildplan = BuildPlan {
                 outAtoms = outatomfiles,
                 outPages = outpagefiles,
                 outStatics = outcopyfiles,
