@@ -29,6 +29,7 @@ data Plan = BuildPlan {
 
 data Task = NoOutput | FileOutput {
     relPath :: FilePath,
+    blokName :: String,
     outPathBuild :: FilePath,
     outPathDeploy :: FilePath,
     contentDate :: Data.Time.Clock.UTCTime,
@@ -73,6 +74,7 @@ _createIndexHtmlIfNoContentPages ctxmain ctxproj numpagesrcfiles =
         >>= \ (outfile , outfilerel , pathfinal)
         -> return FileOutput {
                         relPath = outfilerel,
+                        blokName = "",
                         outPathBuild = pathfinal,
                         outPathDeploy = Util.unlessNullOp (ctxproj~:Proj.dirPathDeploy) (</> outfilerel),
                         contentDate = outfile~:Files.modTime,
@@ -110,7 +112,7 @@ plan ctxmain ctxproj =
         allatoms = (allpostsfiles>~outfileinfopost) ++ (dynatoms>~(outfileinfoatom id))
         allstatics = allstaticfiles >~ outfileinfobasic
         allpages = let almostall = (dynpages++allpagesfiles_nodate) >~ outfileinfopage
-                    in if defaultpage==NoOutput then (almostall) else
+                    in if defaultpage==NoOutput then almostall else
                         defaultpage:almostall
         (dynpages,dynatoms) = Bloks.buildPlan (modtimeproj,modtimetmplblok) allpagesfiles_nodate $projsetup~:Proj.bloks
     in _filterOutFiles allstatics cfgprocstatic >>= \outcopyfiles
@@ -140,6 +142,7 @@ _outFileInfo ctxproj contentdater relpather tup@(relpath,file) =
         then NoOutput
         else FileOutput {
             relPath = relpathnu,
+            blokName = Bloks.blokNameFromRelPath (ctxproj~:Proj.setup~:Proj.bloks) relpathnu file,
             outPathBuild = ctxproj~:Proj.dirPathBuild </> relpathnu,
             outPathDeploy = Util.unlessNullOp (ctxproj~:Proj.dirPathDeploy) (</> relpathnu),
             contentDate = contentdate,

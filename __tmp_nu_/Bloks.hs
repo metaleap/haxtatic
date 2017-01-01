@@ -44,6 +44,16 @@ blokNameFromIndexPagePath possiblefakepath =
 
 
 
+blokNameFromRelPath bloks relpath file =
+    Util.atOr (bloks~:Data.Map.Strict.keys >~ foreach ~|noNull) 0 "" where
+        foreach bname
+            |(isRelPathBlokPage bname relpath) =
+                bname
+            |(otherwise)=
+                blokNameFromIndexPagePath $file~:Files.path
+
+
+
 buildPlan (modtimeproj,modtimetmplblok) allpagesfiles bloks =
     (dynpages , dynatoms) where
         dynatoms = mapandfilter (tofileinfo atomFile modtimeproj)
@@ -87,16 +97,18 @@ isRelPathBlokPage bname relpath =
 parseDefs linessplits =
     Data.Map.Strict.fromList$
     linessplits>~foreach ~|(/=noblok) where
-        foreach ("B":"":bname:bvalsplits) =
-            let parsestr = bvalsplits ~: _joinc ~: Util.trim ~: (toParseStr bname)
+        foreach ("B":"":blokname:bvalsplits) =
+            let bname = blokname~:Util.trim
+                parsestr = bvalsplits ~: _joinc ~: Util.trim ~: (toParseStr bname)
                 parsed = (Text.Read.readMaybe parsestr) :: Maybe Blok
                 errblok = Blok { title="{!syntax issue near `B::"++bname++":`, couldn't parse `"++parsestr++"`!}",
                                     desc="{!Syntax issue in your .haxproj file defining Blok named '"++bname++"'. Thusly couldn't parse Blok settings (incl. title/desc)!}",
                                     atomFile="", blokIndexPageFile="", inSitemap=False, dater="" }
-            in (bname , Data.Maybe.fromMaybe errblok parsed)
+            in if null bname then noblok
+                else (bname , Data.Maybe.fromMaybe errblok parsed)
         foreach _ =
             noblok
-        noblok = ("",NoBlok)
+        noblok = ("" , NoBlok)
 
 
 

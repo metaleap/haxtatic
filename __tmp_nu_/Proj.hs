@@ -50,9 +50,6 @@ dtStr2UtcOr projcfg dtfname str defval =
         Just parsed -> parsed
         Nothing -> defval
 
-dtStr2UtcOr0 projcfg dtfname str =
-    dtStr2UtcOr projcfg dtfname str Defaults.dateTime0
-
 dtUtc2Str projcfg dtfname utctime =
     Data.Time.Format.formatTime Data.Time.defaultTimeLocale (ProjCfg.dtFormat projcfg dtfname) utctime
 
@@ -71,14 +68,10 @@ loadCtx ctxmain projname defaultfiles =
             dirPathDeploy = let dd = loadedsetup~:cfg~:ProjCfg.dirNameDeploy
                             in if null dd then "" else dirpathjoin $setupname++"-"++dd,
             setup = loadedsetup,
-            coreFiles = _loadCoreFiles loadedsetup defaultfiles
+            coreFiles = defaultfiles
         }
     in return ctxproj
 
-
-_loadCoreFiles projsetup deffiles =
-    Defaults.rewriteTemplates deffiles tmplrewriter where
-        tmplrewriter = processSrcFully projsetup
 
 
 _loadSetup ctxproj =

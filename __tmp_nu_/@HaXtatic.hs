@@ -81,7 +81,7 @@ processAll ctxmain projfilename custfilename =
     >> Pages.buildAll ctxmain ctxproj buildplan
 
     >> let  dtstr = (Proj.dtUtc2Str (ctxproj~:Proj.setup~:Proj.cfg) "foo" (ctxmain~:Files.nowTime))
-            dtutc = Proj.dtStr2UtcOr0 (ctxproj~:Proj.setup~:Proj.cfg) "foo" dtstr
+            dtutc = Proj.dtStr2UtcOr (ctxproj~:Proj.setup~:Proj.cfg) "foo" dtstr Util.dateTime0
     in print dtstr
     >> print dtutc
     >> System.IO.hFlush System.IO.stdout -- remove later

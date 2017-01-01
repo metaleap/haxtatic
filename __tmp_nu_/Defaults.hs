@@ -6,8 +6,6 @@ import qualified Files
 import Util ( (>~) , (~:) )
 
 import qualified Data.Char
-import qualified Data.Time.Clock
-import qualified Data.Time.Calendar
 import qualified Data.Time.Format
 import qualified System.FilePath
 import System.FilePath ( (</>) )
@@ -38,22 +36,19 @@ loadOrCreate ctxmain projname projfilename custfilename =
     >>= \ tmplmainfile
     -> Files.readOrDefault True ctxmain relpathtmplblok relpathtmplblok' _tmpl_html_blok
     >>= \ tmplblokfile
-    -> return (DefaultFiles projfile custfile tmplmainfile tmplblokfile)
-
-
-rewriteTemplates corefiles tmplrewriter =
-    let cfgmodtime = corefiles~:projectDefault~:Files.modTime~:max$
-                        corefiles~:projectOverwrites~:Files.modTime
-        tmplmodtime = cfgmodtime~:max$
-                        corefiles~:htmlTemplateMain~:Files.modTime
-        rewrite modtime rw file
-            = Files.fullFrom file modtime (rw $file~:Files.content)
-    in DefaultFiles {
-        projectDefault = rewrite cfgmodtime id $corefiles~:projectDefault,
-        projectOverwrites = rewrite cfgmodtime id $corefiles~:projectOverwrites,
-        htmlTemplateMain = rewrite tmplmodtime tmplrewriter $corefiles~:htmlTemplateMain,
-        htmlTemplateBlok = rewrite tmplmodtime tmplrewriter $corefiles~:htmlTemplateBlok
+    -> let
+        cfgmodtime = max (projfile~:Files.modTime) (custfile~:Files.modTime)
+        tmplmodtime = max cfgmodtime (tmplmainfile~:Files.modTime)
+        redated cmpmodtime file
+            = Files.fullFrom file cmpmodtime $file~:Files.content
+    in return DefaultFiles {
+        projectDefault = redated cfgmodtime projfile,
+        projectOverwrites = redated cfgmodtime custfile,
+        htmlTemplateMain = redated tmplmodtime tmplmainfile,
+        htmlTemplateBlok = redated tmplmodtime tmplblokfile
     }
+
+
 
 
 writeDefaultIndexHtml ctxmain projname dirpagesrel dirbuild htmltemplatemain =
@@ -79,8 +74,6 @@ setupName = System.FilePath.takeBaseName
 
 blokIndexTmpPathPrefix = ":B|"
 dateTimeFormat = Data.Time.Format.iso8601DateFormat Nothing
-dateTime0 = Data.Time.Clock.UTCTime {   Data.Time.Clock.utctDay = Data.Time.Calendar.ModifiedJulianDay { Data.Time.Calendar.toModifiedJulianDay = 0 },
-                                        Data.Time.Clock.utctDayTime = 0 }
 dir_Out = "build"
 dir_Deploy =""
 dir_Static = "static"

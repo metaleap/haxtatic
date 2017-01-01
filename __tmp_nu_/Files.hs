@@ -79,8 +79,8 @@ filesInDir dir =
 
 
 
-fullFrom oldfile newmodtime newcontent =
-    FileFull (oldfile~:path) (max newmodtime $oldfile~:modTime) newcontent
+fullFrom oldfile cmpmodtime newcontent =
+    FileFull (oldfile~:path) (max cmpmodtime $oldfile~:modTime) newcontent
 
 
 

@@ -2,10 +2,19 @@
 
 module Util where
 
-import Control.Monad
-import Data.Char
-
+import qualified Control.Monad
+import qualified Data.Char
 import qualified Data.List
+import qualified Data.Time.Calendar
+import qualified Data.Time.Clock
+
+
+
+dateTime0 = Data.Time.Clock.UTCTime {
+                Data.Time.Clock.utctDay = Data.Time.Calendar.ModifiedJulianDay {
+                                            Data.Time.Calendar.toModifiedJulianDay = 0 },
+                Data.Time.Clock.utctDayTime = 0
+            }
 
 
 
@@ -41,6 +50,8 @@ unlessNullOp testval op = if null testval then [] else op testval
 
 noNull = not.null
 
+noneOf vals val = all (val/=) vals
+
 isnt notval = noNull.(butNot notval "")
 
 
@@ -52,17 +63,18 @@ repeatedly fn arg =
 (#)::
     [t] -> Int -> t
 --  alias for: `!!` ..for these most common cases, no need to `fold`
-(x:_) # 0 = x
-(_:x:_) # 1 = x
-(_:_:x:_) # 2 = x
-(_:_:_:x:_) # 3 = x
-(_:_:_:_:x:_) # 4 = x
-(_:_:_:_:_:x:_) # 5 = x
-(_:_:_:_:_:_:x:_) # 6 = x
-(_:_:_:_:_:_:_:x:_) # 7 = x
-(_:_:_:_:_:_:_:_:x:_) # 8 = x
-(_:_:_:_:_:_:_:_:_:x:_) # 9 = x
-list@(_:_) # i = (drop i list) # 0 where
+[] #_ = undefined  --  rids us of the pesky warning?
+(x:_) #0 = x
+(_:x:_) #1 = x
+(_:_:x:_) #2 = x
+(_:_:_:x:_) #3 = x
+(_:_:_:_:x:_) #4 = x
+(_:_:_:_:_:x:_) #5 = x
+(_:_:_:_:_:_:x:_) #6 = x
+(_:_:_:_:_:_:_:x:_) #7 = x
+(_:_:_:_:_:_:_:_:x:_) #8 = x
+(_:_:_:_:_:_:_:_:_:x:_) #9 = x
+list #i = (drop i list) #0
 infix 9 #
 
 
