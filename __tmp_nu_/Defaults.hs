@@ -29,13 +29,13 @@ loadOrCreate ctxmain projname projfilename custfilename =
         relpathtmplblok = "tmpl" </> (setupname++"-blok.haxtmpl.html")
         relpathtmplblok' = "tmpl" </> (fileName_Pref "-blok.haxtmpl.html")
     in Files.readOrDefault True ctxmain projfilename fileName_Proj projfiledefcontent
-    >>= \ projfile
+    >>= \projfile
     -> Files.readOrDefault True ctxmain custfilename "" ""
-    >>= \ custfile
+    >>= \custfile
     -> Files.readOrDefault True ctxmain relpathtmplmain relpathtmplmain' _tmpl_html_main
-    >>= \ tmplmainfile
+    >>= \tmplmainfile
     -> Files.readOrDefault True ctxmain relpathtmplblok relpathtmplblok' _tmpl_html_blok
-    >>= \ tmplblokfile
+    >>= \tmplblokfile
     -> let
         cfgmodtime = max (projfile~:Files.modTime) (custfile~:Files.modTime)
         tmplmodtime = max cfgmodtime (tmplmainfile~:Files.modTime)

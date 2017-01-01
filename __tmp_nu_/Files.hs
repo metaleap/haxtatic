@@ -89,7 +89,7 @@ listAllFiles rootdirpath reldirs modtimer =
         dirpaths = reldirs >~ (System.FilePath.combine rootdirpath)
         foreachfile :: FilePath -> IO (FilePath , Data.Time.Clock.UTCTime)
         foreachfile filepath =
-            System.Directory.getModificationTime filepath >>= \ modtime
+            System.Directory.getModificationTime filepath >>= \modtime
             -> return (filepath , modtimer modtime)
         foreachdir :: FilePath -> IO [(FilePath , Data.Time.Clock.UTCTime)]
         foreachdir dirpath =
@@ -135,7 +135,7 @@ readOrDefault create ctxmain relpath relpath2 defaultcontent =
     System.Directory.doesFileExist filepath >>= ifexists where
         filepath = System.FilePath.combine (ctxmain~:dirPath) relpath
         ifexists True =
-            System.Directory.getModificationTime filepath >>= \ modtime
+            System.Directory.getModificationTime filepath >>= \modtime
             -> readFile filepath >>= (FileFull filepath modtime)~.return
         ifexists False
             | (noNull relpath2 && relpath2/=relpath) =
@@ -176,11 +176,12 @@ simpleFilePathMatchAny relpath dumbpatterns =
 
 
 
-_fileoutputbeginmsg = ("\t>>\t"++).(++"  [ ")
+_fileoutputbeginmsg = ("\t>>\t"++).(++_fileoutputmidmsg)
+_fileoutputmidmsg = " [ "
+_fileoutputdonemsg = "OK ]"
 
 writeTo filepath showpath loadcontent =
-    let _fileoutputdonemsg = "OK ]"
-    in System.Directory.createDirectoryIfMissing True (System.FilePath.takeDirectory filepath)
+    System.Directory.createDirectoryIfMissing True (System.FilePath.takeDirectory filepath)
     >> if null showpath then return () else
         putStr (_fileoutputbeginmsg showpath)
     >> System.IO.hFlush System.IO.stdout

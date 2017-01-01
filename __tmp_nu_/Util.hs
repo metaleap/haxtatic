@@ -39,7 +39,9 @@ infix 8 >>~
 (>>|) = flip Control.Monad.filterM
 
 
-butNot notval defval val |(val==notval) = defval |otherwise = val
+butNot notval defval val
+    |(val==notval) = defval
+    |(otherwise) = val
 
 
 ifNull val defval = if null val then defval else val
@@ -58,6 +60,9 @@ isnt notval = noNull.(butNot notval "")
 repeatedly fn arg =
     let result = fn arg
     in if result==arg then result else repeatedly fn result
+
+
+via fn = ((>>)fn).return
 
 
 (#)::
@@ -133,8 +138,8 @@ trimStart = trimStart'' Data.Char.isSpace
 trimStart' dropitems = trimStart'' (`elem` dropitems)
 trimStart'' = Data.List.dropWhile
 
-uniques:: (Eq a)=> [a]-> [a]
-uniques = Data.List.nub
+unique:: (Eq a)=> [a]-> [a]
+unique = Data.List.nub
 
 
 atOr::
@@ -205,28 +210,32 @@ splitBy delim =
 
 
 
-splitUp beginners =
-    _splitup (length$ atOr beginners 0 "") lastidx beginners where
-        lastidx' = lastIndexOfSub id
-        lastidx bstr = (beginners>~ \each-> lastidx' each bstr) ~: maximum
-
-
-_splitup _ _ _ _ "" = []
-_splitup 0 _ _ _ s = [("",s)]
-_splitup _ _ [] _ s = [("",s)]
-_splitup _ _ _ "" s = [("",s)]
-_splitup beg0len lastidx beginners end str =
-    (tolist pre "") ++ (tolist match beginner) ++ --  only recurse if we have a good reason:
-        (if nomatch && splitat==0 then (tolist rest "") else (_splitup beg0len lastidx beginners end rest))
+splitUp _ _ "" = []
+splitUp _ "" str = [("",str)]
+splitUp allbeginners end str =
+    if null beginners
+        then [("",str)]
+        else _splitup str
     where
-    pre = str ~: (take$ if nomatch then splitat else begpos)
-    match = if nomatch then "" else str ~: (take endpos) ~: (drop $begpos+beg0len)
-    rest = str ~: (drop$ if nomatch then splitat else endposl)
-    beginner = if nomatch then "" else str ~: (take endpos) ~: (drop begpos) ~: take beg0len
-    nomatch = endpos<0 || begpos<0
-    splitat = if nomatch && endpos>=0 then endposl else 0
-    endpos = indexOfSub end str
-    begpos = if endpos<0 then -1 else
-        lastidx$ str ~: (take endpos) ~: reverse
-    endposl = endpos+(end~:length)
-    tolist val beg = unlessNull val [(val,beg)]
+    beginners' = allbeginners>~reverse ~|noNull
+    beg0len = (beginners'#0)~:length
+    beginners = beginners' ~| length~.((==)beg0len)
+
+    lastidx' = lastIndexOfSub id
+    lastidx bstr = (beginners>~ \each-> lastidx' each bstr) ~: maximum
+
+    _splitup str =
+        (tolist pre "") ++ (tolist match beginner) ++ --  only recurse if we have a good reason:
+            (if nomatch && splitat==0 then (tolist rest "") else (_splitup rest))
+        where
+        pre = str ~: (take$ if nomatch then splitat else begpos)
+        match = if nomatch then "" else str ~: (take endpos) ~: (drop $begpos+beg0len)
+        rest = str ~: (drop$ if nomatch then splitat else endposl)
+        beginner = if nomatch then "" else str ~: (take endpos) ~: (drop begpos) ~: take beg0len
+        nomatch = endpos<0 || begpos<0
+        splitat = if nomatch && endpos>=0 then endposl else 0
+        endpos = indexOfSub end str
+        begpos = if endpos<0 then -1 else
+            lastidx$ str ~: (take endpos) ~: reverse
+        endposl = endpos+(end~:length)
+        tolist val beg = unlessNull val [(val,beg)]

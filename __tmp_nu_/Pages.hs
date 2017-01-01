@@ -22,6 +22,7 @@ import qualified System.IO
 
 data Template = Tmpl {
     fileExt :: String,
+    chunks :: [(String , String)],
     srcFile :: Files.File
 }
 
@@ -30,14 +31,15 @@ data Template = Tmpl {
 buildAll ctxmain ctxproj buildplan =
     loadTemplates ctxmain ctxproj buildplan >>= \templates
     -> let
-        tmpldef = templates#0 ; tmplfind "" = tmpldef
-        tmplfind ".htm" = tmpldef ; tmplfind ".html" = tmpldef
+        tmpldef = templates#0
+        tmplfind "" = tmpldef
+        tmplfind ".htm" = tmpldef
+        tmplfind ".html" = tmpldef
         tmplfind ext =
             Data.Maybe.fromMaybe tmpldef $Data.List.find ((ext==).fileExt) templates
         foreach buildtask =
             buildPage ctxproj tmplfind buildtask
-    in print (templates~:length)
-    >> buildplan~:Build.outPages>>~foreach
+    in buildplan~:Build.outPages>>~foreach
 
 
 
@@ -58,15 +60,16 @@ buildPage ctxproj tmplfinder outjob =
 
 
 loadTemplates ctxmain ctxproj buildplan =
-    let foreach "" = loadTmpl ctxproj "" $ctxproj~:Proj.coreFiles~:Defaults.htmlTemplateMain
+    let fileexts = "":":blok":exts where
+            exts = Util.unique$ buildplan~:Build.outPages>~ext ~| Util.noneOf ["",".html",".htm"]
+            ext = Build.srcFile ~. Files.path ~. System.FilePath.takeExtension
+        foreach "" = loadTmpl ctxproj "" $ctxproj~:Proj.coreFiles~:Defaults.htmlTemplateMain
         foreach ":blok" = loadTmpl ctxproj ":blok" $ctxproj~:Proj.coreFiles~:Defaults.htmlTemplateBlok
         foreach ext =
             let tmpath fn = "tmpl" </> (fn $".haxtmpl"++ext)
             in Files.readOrDefault False ctxmain (tmpath (ctxproj~:Proj.setupName++))
                                     (tmpath Defaults.fileName_Pref) "" >>= loadTmpl ctxproj ext
-        fileext = Build.srcFile ~. Files.path ~. System.FilePath.takeExtension
-        fileexts = Util.uniques$ buildplan~:Build.outPages>~fileext ~|Util.noneOf ["",".html",".htm"]
-    in ("":":blok":fileexts)>>~foreach
+    in fileexts>>~foreach
 
 
 
@@ -74,7 +77,9 @@ loadTmpl ctxproj fileext tmplfile =
     let
         srcpreprocessed = Proj.processSrcFully (ctxproj~:Proj.setup) (tmplfile~:Files.content)
         srcfile = Files.fullFrom tmplfile Util.dateTime0 srcpreprocessed
-    in
-        putStrLn ("\n\n\n\t\t"++fileext++"\t\t"++(srcfile~:Files.path))
-        >> print (srcpreprocessed)
-        >> return Tmpl { fileExt = fileext, srcFile = srcfile }
+        tmpl = Tmpl {
+                    fileExt = fileext,
+                    chunks = Util.splitUp ["{P{Body"] "}}" srcpreprocessed,
+                    srcFile = srcfile
+                }
+    in return tmpl

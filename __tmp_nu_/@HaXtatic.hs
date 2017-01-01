@@ -30,11 +30,11 @@ processAll ::
 
 
 main =
-    Data.Time.Clock.getCurrentTime >>= \ starttime
+    Data.Time.Clock.getCurrentTime >>= \starttime
     -> System.IO.hFlush System.IO.stdout -- only because SublimeText2 build-output console is wonky with shell scripts
     >> putStrLn "\n\n\n==== HAXTATIC ====\n"
-    >> System.Environment.getArgs >>= \ cmdargs
-    -> System.Directory.getCurrentDirectory >>= \ curdir
+    >> System.Environment.getArgs >>= \cmdargs
+    -> System.Directory.getCurrentDirectory >>= \curdir
     -> if null cmdargs
         then putStrLn "No project-directory path supplied.\n\
             \  For existing project: specify path to its current directory.\n\
@@ -45,7 +45,7 @@ main =
                                                 Files.dirPath = dirpath,
                                                 Files.nowTime=starttime }
             in processAll ctxmain (Util.atOr cmdargs 1 Defaults.fileName_Proj) (Util.atOr cmdargs 2 "")
-            >> Data.Time.Clock.getCurrentTime >>= \ endtime
+            >> Data.Time.Clock.getCurrentTime >>= \endtime
             -> let timetaken = Data.Time.Clock.diffUTCTime endtime starttime
             in putStrLn ("\n\nWell it's been "++(show timetaken)++":\n\n==== Bye now! ====\n\n\n")
             >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
@@ -60,10 +60,10 @@ processAll ctxmain projfilename custfilename =
     in putStrLn "\n1/5\tReading essential project files [or (re)creating them..]"
     >> System.Directory.createDirectoryIfMissing False dirpath
     >> Defaults.loadOrCreate ctxmain projname (filename projfilename) (filename custfilename)
-    >>= Proj.loadCtx ctxmain projname >>= \ ctxproj
+    >>= Proj.loadCtx ctxmain projname >>= \ctxproj
 
     -> putStrLn "\n2/5\tScanning input files and folders.."
-    >> Build.plan ctxmain ctxproj >>= \ buildplan
+    >> Build.plan ctxmain ctxproj >>= \buildplan
     -> let
         numgenpages = buildplan~:Build.outPages~:length
         numskippages = buildplan~:Build.numSkippedPages

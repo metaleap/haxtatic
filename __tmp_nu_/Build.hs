@@ -71,7 +71,7 @@ _createIndexHtmlIfNoContentPages ctxmain ctxproj numpagesrcfiles =
         in putStrLn ("\t->\tNo content-source files whatsoever.. making one for you:")
         >> Defaults.writeDefaultIndexHtml
             ctxmain sitename dirpagesrel dirbuild htmltemplatemain
-        >>= \ (outfile , outfilerel , pathfinal)
+        >>= \(outfile , outfilerel , pathfinal)
         -> return FileOutput {
                         relPath = outfilerel,
                         blokName = "",
@@ -96,7 +96,7 @@ plan ctxmain ctxproj =
     in listallfiles (cfgprocstatic~:ProjCfg.dirs) id >>= \allstaticfiles
     -> listallfiles (cfgprocposts~:ProjCfg.dirs) (max modtimeproj) >>= \allpostsfiles
     -> listallfiles (cfgprocpages~:ProjCfg.dirs) (max modtimetmplmain) >>= \allpagesfiles_orig
-    -> _createIndexHtmlIfNoContentPages ctxmain ctxproj (allpagesfiles_orig~:length) >>= \ defaultpage
+    -> _createIndexHtmlIfNoContentPages ctxmain ctxproj (allpagesfiles_orig~:length) >>= \defaultpage
     -> let
         allpagesfiles_nodate = allpagesfiles_orig >~ renamerelpath where
             renamerelpath tup@(_,file) =
