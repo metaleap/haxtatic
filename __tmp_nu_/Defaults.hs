@@ -12,18 +12,19 @@ import System.FilePath ( (</>) )
 
 
 --  the basic default input files
-data Files = DefaultFiles {
-    projectDefault :: Files.File,
-    projectOverwrites :: Files.File,
-    htmlTemplateMain :: Files.File,
-    htmlTemplateBlok :: Files.File
-}
+data Files
+    = DefaultFiles {
+        projectDefault :: Files.File,
+        projectOverwrites :: Files.File,
+        htmlTemplateMain :: Files.File,
+        htmlTemplateBlok :: Files.File
+    }
 
 
 
 loadOrCreate ctxmain projname projfilename custfilename =
     let projfiledefcontent = _proj projname
-        setupname = setupName projfilename
+        setupname = ctxmain~:Files.setupName
         relpathtmplmain = "tmpl" </> (setupname++"-main.haxtmpl.html")
         relpathtmplmain' = "tmpl" </> (fileName_Pref "-main.haxtmpl.html")
         relpathtmplblok = "tmpl" </> (setupname++"-blok.haxtmpl.html")
@@ -72,7 +73,7 @@ setupName = System.FilePath.takeBaseName
 
 
 
-blokIndexTmpPathPrefix = ":B|"
+blokIndexPrefix = ":B|"
 dateTimeFormat = Data.Time.Format.iso8601DateFormat Nothing
 dir_Out = "build"
 dir_Deploy =""

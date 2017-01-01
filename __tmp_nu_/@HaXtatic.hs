@@ -41,10 +41,13 @@ main =
             \  For a new project: specify path to its intended directory.\n    (I'll create it if missing and its parent isn't.)\n\n"
         else
             let dirpath = cmdargs#0
-                ctxmain = Files.AppContext {   Files.curDir = curdir,
+                projfilename = (Util.atOr cmdargs 1 Defaults.fileName_Proj)
+                custfilename = (Util.atOr cmdargs 2 "")
+                ctxmain = Files.AppContext {    Files.curDir = curdir,
                                                 Files.dirPath = dirpath,
+                                                Files.setupName = Defaults.setupName projfilename,
                                                 Files.nowTime=starttime }
-            in processAll ctxmain (Util.atOr cmdargs 1 Defaults.fileName_Proj) (Util.atOr cmdargs 2 "")
+            in processAll ctxmain projfilename custfilename
             >> Data.Time.Clock.getCurrentTime >>= \endtime
             -> let timetaken = Data.Time.Clock.diffUTCTime endtime starttime
             in putStrLn ("\n\nWell it's been "++(show timetaken)++":\n\n==== Bye now! ====\n\n\n")
@@ -78,7 +81,7 @@ processAll ctxmain projfilename custfilename =
     >> Build.copyStaticFiles buildplan
 
     >> putStrLn ("\n4/5\tGenerating "++(show numgenpages)++"/"++(show$ numgenpages+numskippages)++" page(s) in:\n\t->\t`"++dirbuild++"` ..")
-    >> Pages.buildAll ctxmain ctxproj buildplan
+    >> Pages.processAll ctxmain ctxproj buildplan
 
     >> let  dtstr = (Proj.dtUtc2Str (ctxproj~:Proj.setup~:Proj.cfg) "foo" (ctxmain~:Files.nowTime))
             dtutc = Proj.dtStr2UtcOr (ctxproj~:Proj.setup~:Proj.cfg) "foo" dtstr Util.dateTime0

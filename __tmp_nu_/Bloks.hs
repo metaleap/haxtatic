@@ -13,14 +13,17 @@ import qualified System.FilePath
 import qualified Text.Read
 
 
-data Blok = NoBlok | Blok {
-    title :: String,
-    desc :: String,
-    atomFile :: FilePath,
-    blokIndexPageFile :: FilePath,
-    inSitemap :: Bool,
-    dater :: String
-} deriving (Eq, Read)
+data Blok
+    = NoBlok
+    | Blok {
+        title :: String,
+        desc :: String,
+        atomFile :: FilePath,
+        blokIndexPageFile :: FilePath,
+        inSitemap :: Bool,
+        dater :: String
+    }
+    deriving (Eq, Read)
 
 
 _joinc = Util.join ":"
@@ -37,8 +40,8 @@ allBlokPageFiles allpagesfiles bname =
 
 
 blokNameFromIndexPagePath possiblefakepath =
-    let lenprefix = Defaults.blokIndexTmpPathPrefix~:length
-    in if Defaults.blokIndexTmpPathPrefix == possiblefakepath~:(take lenprefix)
+    let lenprefix = Defaults.blokIndexPrefix~:length
+    in if Defaults.blokIndexPrefix == possiblefakepath~:(take lenprefix)
         then possiblefakepath~:(drop lenprefix)
         else ""
 
@@ -54,6 +57,28 @@ blokNameFromRelPath bloks relpath file =
 
 
 
+bTagResolver hashmap curbname str =
+    let splits = Util.splitBy ':' str
+        fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
+                    ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dater",dater)  ]
+        fname = splits#0
+        bname = if null bn then curbname else bn where
+                    bn = Util.atOr splits 1 curbname
+        blok = if null bname then NoBlok else
+                Data.Map.Strict.findWithDefault NoBlok bname hashmap
+        restore = if null curbname
+                    then "{B{"++(_joinc splits)++"}}"
+                    else "WTF:"++curbname++"-"++bname++"WTF"
+    in if null splits then restore else
+        if fname=="name" && bname~:noNull
+            then bname else if blok==NoBlok || null fname
+                then restore else
+                    case Data.List.lookup fname fields of
+                        Just fieldval-> fieldval blok
+                        Nothing-> restore
+
+
+
 buildPlan (modtimeproj,modtimetmplblok) allpagesfiles bloks =
     (dynpages , dynatoms) where
         dynatoms = mapandfilter (tofileinfo atomFile modtimeproj)
@@ -65,26 +90,7 @@ buildPlan (modtimeproj,modtimetmplblok) allpagesfiles bloks =
                 bpage@(_,bpagefile) = Util.atOr (allBlokPageFiles allpagesfiles bname) 0 ("" , Files.NoFile)
             in ( Files.pathSepSlashToSystem virtpath ,
                     if null virtpath then Files.NoFile else
-                        Files.FileInfo (Defaults.blokIndexTmpPathPrefix++bname) (max (Files.modTime bpagefile) modtime) )
-
-
-
-bTagResolver curbname hashmap str =
-    let splits = Util.splitBy ':' str
-        fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
-                    ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dater",dater)  ]
-        fname = splits#0
-        bname = Util.atOr splits 1 curbname
-        blok = if null bname then NoBlok else
-                Data.Map.Strict.findWithDefault NoBlok bname hashmap
-        restore = "{B{"++(_joinc splits)++"}}"
-    in if null splits then restore else
-        if fname=="name" && bname~:noNull
-            then bname else if blok==NoBlok || null fname
-                then restore else
-                    case Data.List.lookup fname fields of
-                        Just fieldval-> fieldval blok
-                        Nothing-> restore
+                        Files.FileInfo (Defaults.blokIndexPrefix++bname) (max (Files.modTime bpagefile) modtime) )
 
 
 

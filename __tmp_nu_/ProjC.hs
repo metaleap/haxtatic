@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wall #-}
 
-module ProjCfg where
+module ProjC where
 
 import qualified Defaults
 import qualified Files
@@ -13,21 +13,25 @@ import qualified System.FilePath
 import qualified Text.Read
 
 
-data Config = CfgFromProj {
-    dirNameBuild :: String,
-    dirNameDeploy :: String,
-    relPathPostAtoms :: String,
-    dtFormat :: String->String,
-    processStatic :: Processing,
-    processPages :: Processing,
-    processPosts :: Processing
-}
+data Config
+    = CfgFromProj {
+        dirNameBuild :: String,
+        dirNameDeploy :: String,
+        relPathPostAtoms :: String,
+        dtFormat :: String->String,
+        processStatic :: Processing,
+        processPages :: Processing,
+        processPosts :: Processing
+    }
 
-data Processing = ProcFromProj {
-    skip :: [String],
-    force :: [String],
-    dirs :: [String]
-} deriving (Read)
+
+data Processing
+    = ProcFromProj {
+        skip :: [String],
+        force :: [String],
+        dirs :: [String]
+    }
+    deriving (Read)
 
 
 

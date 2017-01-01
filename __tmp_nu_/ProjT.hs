@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wall #-}
 
-module ProjTxts where
+module ProjT where
 
 import qualified Util
 import Util ( (~:) , (>~) , (~.) , (~|) , noNull )

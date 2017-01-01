@@ -5,10 +5,12 @@ module Proj where
 import qualified Bloks
 import qualified Defaults
 import qualified Files
-import qualified ProjCfg
-import qualified ProjTxts
+import qualified ProjC
+import qualified ProjT
 import qualified Util
 import Util ( (~:) , (>~) )
+
+import qualified Tmpl
 
 import qualified Data.Map.Strict
 import qualified Data.Time
@@ -19,7 +21,8 @@ import System.FilePath ( (</>) )
 
 
 --  project context
-data Ctx = ProjContext {
+data Ctx
+    = ProjContext {
         projName :: String,
         setupName :: String,
         dirPath :: FilePath,
@@ -29,20 +32,21 @@ data Ctx = ProjContext {
         coreFiles :: Defaults.Files
     }
 
-data Setup = SetupFromProj {
-    --  srcRaw :: [String],
-    --  srcPre :: [String],
-    bloks :: Data.Map.Strict.Map String Bloks.Blok,
-    cfg :: ProjCfg.Config,
-    tTags :: String->String,
-    bTags :: String->String
-}
+
+data Setup
+    = SetupFromProj {
+        --  srcRaw :: [String],
+        --  srcPre :: [String],
+        bloks :: Data.Map.Strict.Map String Bloks.Blok,
+        cfg :: ProjC.Config,
+        tmpl :: Tmpl.Ctx
+    }
 
 
 
 dtStr2Utc projcfg dtfname str =
     (Data.Time.Format.parseTimeM
-        True Data.Time.defaultTimeLocale (ProjCfg.dtFormat projcfg dtfname) str)
+        True Data.Time.defaultTimeLocale (ProjC.dtFormat projcfg dtfname) str)
             :: Maybe Data.Time.Clock.UTCTime
 
 dtStr2UtcOr projcfg dtfname str defval =
@@ -51,7 +55,7 @@ dtStr2UtcOr projcfg dtfname str defval =
         Nothing -> defval
 
 dtUtc2Str projcfg dtfname utctime =
-    Data.Time.Format.formatTime Data.Time.defaultTimeLocale (ProjCfg.dtFormat projcfg dtfname) utctime
+    Data.Time.Format.formatTime Data.Time.defaultTimeLocale (ProjC.dtFormat projcfg dtfname) utctime
 
 
 
@@ -59,13 +63,13 @@ loadCtx ctxmain projname defaultfiles =
     let loadedsetup = _loadSetup ctxproj
         dirpath = ctxmain~:Files.dirPath
         dirpathjoin = (dirpath </>)
-        setupname = Defaults.setupName $defaultfiles~:Defaults.projectDefault~:Files.path
+        setupname = ctxmain~:Files.setupName
         ctxproj = ProjContext {
             projName = projname,
             setupName = setupname,
             dirPath = dirpath,
-            dirPathBuild = dirpathjoin $setupname++"-"++loadedsetup~:cfg~:ProjCfg.dirNameBuild,
-            dirPathDeploy = let dd = loadedsetup~:cfg~:ProjCfg.dirNameDeploy
+            dirPathBuild = dirpathjoin $setupname++"-"++loadedsetup~:cfg~:ProjC.dirNameBuild,
+            dirPathDeploy = let dd = loadedsetup~:cfg~:ProjC.dirNameDeploy
                             in if null dd then "" else dirpathjoin $setupname++"-"++dd,
             setup = loadedsetup,
             coreFiles = defaultfiles
@@ -78,42 +82,33 @@ _loadSetup ctxproj =
     let setuppost = SetupFromProj { -- srcRaw = srclinespost, srcPre = srclinesprep,
                                     bloks = blokspost,
                                     cfg = cfgpost,
-                                    tTags = ttagspost,
-                                    bTags =  Bloks.bTagResolver "" blokspost }
+                                    tmpl = Tmpl.Processing {
+                                            Tmpl.bTags =  Bloks.bTagResolver blokspost,
+                                            Tmpl.tTags = ttagspost
+                                        }
+                                    }
     in setuppost
     where
         setupprep = SetupFromProj { -- srcRaw = [], srcPre = [],
                                     bloks = bloksprep,
                                     cfg = cfgprep,
-                                    tTags = ttagsprep,
-                                    bTags =  Bloks.bTagResolver "" bloksprep }
-
+                                    tmpl = Tmpl.Processing {
+                                            Tmpl.bTags =  Bloks.bTagResolver bloksprep,
+                                            Tmpl.tTags = ttagsprep
+                                        }
+                                    }
         bloksprep = Bloks.parseDefs preplinessplits
         blokspost = Bloks.parseDefs postlinessplits
-        cfgprep = ProjCfg.parseDefs preplinessplits
-        cfgpost = ProjCfg.parseDefs postlinessplits
-        ttagsprep = ProjTxts.parseDefs preplinessplits False
-        ttagspost = ProjTxts.parseDefs postlinessplits True
+        cfgprep = ProjC.parseDefs preplinessplits
+        cfgpost = ProjC.parseDefs postlinessplits
+        ttagsprep = ProjT.parseDefs preplinessplits False
+        ttagspost = ProjT.parseDefs postlinessplits True
 
         preplinessplits = srclinesprep>~ _splitc
         postlinessplits = srclinespost>~ _splitc
         _splitc = Util.splitBy ':'
-        srclinesprep = ProjTxts.srcLinesExpandMl$ _rawsrc ctxproj
-        srclinespost = processSrcFully setupprep (srclinesprep~:unlines) ~: lines
-
-
-
-processSrcFully =
-    Util.repeatedly . processSrcJustOnce
-
-processSrcJustOnce ctxsetup src =
-    concat$ (Util.splitUp ["{T{","{B{"] "}}" src)>~foreach where
-        foreach (str , "{B{") =
-            (ctxsetup~:bTags) str
-        foreach (str , "{T{") =
-            (ctxsetup~:tTags) str
-        foreach (str , _) =
-            str
+        srclinesprep = ProjT.srcLinesExpandMl$ _rawsrc ctxproj
+        srclinespost = lines$ Tmpl.processSrcFully (setupprep~:tmpl) "" (srclinesprep~:unlines)
 
 
 

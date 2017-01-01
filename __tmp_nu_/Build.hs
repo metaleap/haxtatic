@@ -6,7 +6,7 @@ import qualified Bloks
 import qualified Defaults
 import qualified Files
 import qualified Proj
-import qualified ProjCfg
+import qualified ProjC
 import qualified Util
 import Util ( (~:) , (>~) , (>>~) , (>>|) , (#) )
 
@@ -16,25 +16,29 @@ import System.FilePath ( (</>) )
 
 
 
-data Plan = BuildPlan {
-    outAtoms :: [Task],
-    outPages :: [Task],
-    outStatics :: [Task],
-    numOutFilesTotal :: Int,
-    numSkippedStatic :: Int,
-    numSkippedPages :: Int,
-    numSkippedAtoms :: Int
-}
+data Plan
+    = BuildPlan {
+        outAtoms :: [Task],
+        outPages :: [Task],
+        outStatics :: [Task],
+        numOutFilesTotal :: Int,
+        numSkippedStatic :: Int,
+        numSkippedPages :: Int,
+        numSkippedAtoms :: Int
+    }
 
 
-data Task = NoOutput | FileOutput {
-    relPath :: FilePath,
-    blokName :: String,
-    outPathBuild :: FilePath,
-    outPathDeploy :: FilePath,
-    contentDate :: Data.Time.Clock.UTCTime,
-    srcFile :: Files.File
-} deriving (Eq)
+data Task
+    = NoOutput
+    | FileOutput {
+        relPath :: FilePath,
+        blokName :: String,
+        outPathBuild :: FilePath,
+        outPathDeploy :: FilePath,
+        contentDate :: Data.Time.Clock.UTCTime,
+        srcFile :: Files.File
+    }
+    deriving (Eq)
 
 
 
@@ -65,7 +69,7 @@ _createIndexHtmlIfNoContentPages ctxmain ctxproj numpagesrcfiles =
         then return NoOutput
         else let
             sitename = ctxproj~:Proj.projName
-            dirpagesrel = (ctxproj~:Proj.setup~:Proj.cfg~:ProjCfg.processPages~:ProjCfg.dirs)#0
+            dirpagesrel = (ctxproj~:Proj.setup~:Proj.cfg~:ProjC.processPages~:ProjC.dirs)#0
             dirbuild = ctxproj~:Proj.dirPathBuild
             htmltemplatemain = ctxproj~:Proj.coreFiles~:Defaults.htmlTemplateMain
         in putStrLn ("\t->\tNo content-source files whatsoever.. making one for you:")
@@ -86,16 +90,16 @@ _createIndexHtmlIfNoContentPages ctxmain ctxproj numpagesrcfiles =
 plan ctxmain ctxproj =
     let projsetup = ctxproj~:Proj.setup
         projcfg = projsetup~:Proj.cfg
-        cfgprocstatic = projcfg~:ProjCfg.processStatic
-        cfgprocpages = projcfg~:ProjCfg.processPages
-        cfgprocposts = projcfg~:ProjCfg.processPosts
+        cfgprocstatic = projcfg~:ProjC.processStatic
+        cfgprocpages = projcfg~:ProjC.processPages
+        cfgprocposts = projcfg~:ProjC.processPosts
         listallfiles = Files.listAllFiles $ctxproj~:Proj.dirPath
         modtimeproj = ctxproj~:Proj.coreFiles~:Defaults.projectDefault~:Files.modTime
         modtimetmplmain = ctxproj~:Proj.coreFiles~:Defaults.htmlTemplateMain~:Files.modTime
         modtimetmplblok = ctxproj~:Proj.coreFiles~:Defaults.htmlTemplateBlok~:Files.modTime
-    in listallfiles (cfgprocstatic~:ProjCfg.dirs) id >>= \allstaticfiles
-    -> listallfiles (cfgprocposts~:ProjCfg.dirs) (max modtimeproj) >>= \allpostsfiles
-    -> listallfiles (cfgprocpages~:ProjCfg.dirs) (max modtimetmplmain) >>= \allpagesfiles_orig
+    in listallfiles (cfgprocstatic~:ProjC.dirs) id >>= \allstaticfiles
+    -> listallfiles (cfgprocposts~:ProjC.dirs) (max modtimeproj) >>= \allpostsfiles
+    -> listallfiles (cfgprocpages~:ProjC.dirs) (max modtimetmplmain) >>= \allpagesfiles_orig
     -> _createIndexHtmlIfNoContentPages ctxmain ctxproj (allpagesfiles_orig~:length) >>= \defaultpage
     -> let
         allpagesfiles_nodate = allpagesfiles_orig >~ renamerelpath where
@@ -108,7 +112,7 @@ plan ctxmain ctxproj =
             func|(null relpathpostatoms)= id                                -- no custom dir for posts-derived atoms set up
                 |(relpathpostatoms==Defaults.dir_PostAtoms_None)= const ""  -- dont generate atoms -> force "" to discard in _filterOutFiles
                 |(otherwise)= (relpathpostatoms </>)                        -- prepend user-specified rel dir to atom out-file name
-            relpathpostatoms = projcfg~:ProjCfg.relPathPostAtoms
+            relpathpostatoms = projcfg~:ProjC.relPathPostAtoms
         allatoms = (allpostsfiles>~outfileinfopost) ++ (dynatoms>~(outfileinfoatom id))
         allstatics = allstaticfiles >~ outfileinfobasic
         allpages = let almostall = (dynpages++allpagesfiles_nodate) >~ outfileinfopage
@@ -153,13 +157,13 @@ _outFileInfo ctxproj contentdater relpather tup@(relpath,file) =
 
 _filterOutFiles fileinfos cfgproc =
     fileinfos >>| shouldbuildfile where
-        skipall = ["*"]== cfgproc~:ProjCfg.skip
-        forceall = ["*"]== cfgproc~:ProjCfg.force
+        skipall = ["*"]== cfgproc~:ProjC.skip
+        forceall = ["*"]== cfgproc~:ProjC.force
         shouldbuildfile NoOutput =
             return False
         shouldbuildfile fileinfo =
-            let skipthis = (not skipall) && (matchesany $cfgproc~:ProjCfg.skip)
-                forcethis = (not forceall) && (matchesany $cfgproc~:ProjCfg.force)
+            let skipthis = (not skipall) && (matchesany $cfgproc~:ProjC.skip)
+                forcethis = (not forceall) && (matchesany $cfgproc~:ProjC.force)
                 matchesany = Files.simpleFileNameMatchAny $fileinfo~:relPath
                 outfilepath = fileinfo~:outPathBuild
             in if (forceall && not skipthis) || forcethis

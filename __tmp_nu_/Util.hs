@@ -191,14 +191,15 @@ indexOfSub _ [] = minBound::Int
 indexOfSub sub str@(_:rest)
     |(zip sub str) ~: (all $(==)~:uncurry)
         = 0
-    |otherwise
-        = 1+(indexOfSub sub rest)
+    |(otherwise)
+        = if idx<0 then idx else 1+idx where
+            idx = indexOfSub sub rest
 
-lastIndexOfSub _ _ [] = minBound::Int
-lastIndexOfSub rev sub str
-    |(idx<0) = minBound::Int
-    |(otherwise) = (str~:length)-(sub~:length)-idx
-    where idx = indexOfSub (rev sub) (rev str)
+lastIndexOfSub revsub revstr
+    |(idx<0) = idx
+    |(otherwise) = (revstr~:length)-(revsub~:length)-idx
+    where idx = indexOfSub revsub revstr
+
 
 
 splitBy delim =
@@ -211,18 +212,17 @@ splitBy delim =
 
 
 splitUp _ _ "" = []
-splitUp _ "" str = [("",str)]
+splitUp _ "" str = [(str,"")]
 splitUp allbeginners end str =
     if null beginners
-        then [("",str)]
+        then [(str,"")]
         else _splitup str
     where
     beginners' = allbeginners>~reverse ~|noNull
     beg0len = (beginners'#0)~:length
     beginners = beginners' ~| length~.((==)beg0len)
 
-    lastidx' = lastIndexOfSub id
-    lastidx bstr = (beginners>~ \each-> lastidx' each bstr) ~: maximum
+    lastidx revstr = (beginners>~ \each-> lastIndexOfSub each revstr) ~: maximum
 
     _splitup str =
         (tolist pre "") ++ (tolist match beginner) ++ --  only recurse if we have a good reason:
@@ -238,4 +238,5 @@ splitUp allbeginners end str =
         begpos = if endpos<0 then -1 else
             lastidx$ str ~: (take endpos) ~: reverse
         endposl = endpos+(end~:length)
-        tolist val beg = unlessNull val [(val,beg)]
+        tolist val beg = if null val && null beg
+                            then [] else [(val,beg)]

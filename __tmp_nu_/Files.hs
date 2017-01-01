@@ -16,19 +16,25 @@ import qualified Control.Monad
 --  general project input file
 data File
     = NoFile
-    | FileInfo {    path :: FilePath,
-                    modTime :: Data.Time.Clock.UTCTime }
-    | FileFull {    path :: FilePath,
-                    modTime :: Data.Time.Clock.UTCTime,
-                    content :: String }
+    | FileInfo {
+        path :: FilePath,
+        modTime :: Data.Time.Clock.UTCTime
+    }
+    | FileFull {
+        path :: FilePath,
+        modTime :: Data.Time.Clock.UTCTime,
+        content :: String
+    }
     deriving (Eq)
 
 
-data Ctx = AppContext {
-    curDir :: FilePath,
-    dirPath :: FilePath,
-    nowTime :: Data.Time.Clock.UTCTime
-}
+data Ctx
+    = AppContext {
+        curDir :: FilePath,
+        dirPath :: FilePath,
+        setupName :: String,
+        nowTime :: Data.Time.Clock.UTCTime
+    }
 
 
 
