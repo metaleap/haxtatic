@@ -1,5 +1,4 @@
 {-# OPTIONS_GHC -Wall #-}
-
 module Util where
 
 import qualified Control.Monad
@@ -22,6 +21,7 @@ dateTime0 = Data.Time.Clock.UTCTime {
 
 (~:) = flip ($)
 
+-- LAST: (>~) :: Functor f => f a -> (a -> b) -> f b
 (>~) = flip fmap
 infix 8 >~
 
@@ -39,22 +39,31 @@ infix 8 >>~
 (>>|) = flip Control.Monad.filterM
 
 
+both f (one,two) =
+    (f one , f two)
+
+
 butNot notval defval val
-    |(val==notval) = defval
-    |(otherwise) = val
+    |(val==notval)= defval
+    |(otherwise)= val
 
 
-ifNull val defval = if null val then defval else val
+ifNull val defval =
+    if null val then defval else val
 
-unlessNull testval goalval = if null testval then [] else goalval
+unlessNull testval goalval =
+    if null testval then [] else goalval
 
-unlessNullOp testval op = if null testval then [] else op testval
+unlessNullOp testval op =
+    if null testval then [] else op testval
 
 noNull = not.null
 
-noneOf vals val = all (val/=) vals
+noneOf vals val =
+    all (val/=) vals
 
-isnt notval = noNull.(butNot notval "")
+isnt notval =
+    noNull.(butNot notval "")
 
 
 repeatedly fn arg =
@@ -62,13 +71,15 @@ repeatedly fn arg =
     in if result==arg then result else repeatedly fn result
 
 
-via fn = ((>>)fn).return
+via fn =
+    --  to `>>=` something into a typically `>>` func such as print
+    ((>>)fn).return
 
 
 (#)::
     [t] -> Int -> t
 --  alias for: `!!` ..for these most common cases, no need to `fold`
-[] #_ = undefined  --  rids us of the pesky warning?
+[] #_ = undefined  --  rids this Careful Coder (TM) of the pesky 'non-exhaustive patterns' warning
 (x:_) #0 = x
 (_:x:_) #1 = x
 (_:_:x:_) #2 = x
@@ -86,7 +97,7 @@ infix 9 #
 -- for uses such as `crop` without (directly) taking the `length`
 dropLast 0 = id
 dropLast 1 = init
-dropLast n = ((#n) . reverse . Data.List.inits)
+dropLast n = (#n) . reverse . Data.List.inits
 -- dropLast n l = l~:take (l~:length - n)
 
 
@@ -95,14 +106,16 @@ takeLast 1 = (:[]).last
 takeLast n = (#n) . reverse . Data.List.tails
 
 
-indexed l = zip [0 .. ] l
+indexed l =
+    zip [0 .. ] l
 
 crop 0 0 = id
-crop 0 1 = init
+crop 0 1 = dropLast 1
 crop 0 end = dropLast end
-crop 1 0 = tail
+crop 1 0 = drop 1 -- `tail` could error out, one less worry
 crop start 0 = drop start
-crop start end = (drop start) . (dropLast end)
+crop start end =
+    (drop start) . (dropLast end)
 
 contains :: (Eq t)=> [t]->[t]->Bool
 contains = flip Data.List.isInfixOf
@@ -119,12 +132,13 @@ toUpper = (>~ Data.Char.toUpper)
 
 join = Data.List.intercalate
 
-subAt start len = (take len) . (drop start)
+subAt start len =
+    (take len) . (drop start)
 
 substitute old new
-    |(old==new) = id
-    |(otherwise) = (>~ subst) where
-        subst item |(item==old) = new |(otherwise) = item
+    |(old==new)= id
+    |(otherwise)= (>~ subst) where
+        subst item |(item==old)= new |(otherwise)= item
 
 trim = trim'' Data.Char.isSpace
 trim' dropitems = trim'' (`elem` dropitems)
@@ -167,8 +181,8 @@ atOr (_:_:_:_:[]) 4 defval = defval
 atOr (_:_:_:_:[]) 5 defval = defval
 atOr (_:_:_:_:_:[]) 5 defval = defval
 atOr list index defval
-    |(index > -1 && lengthGt index list) = list#index
-    |(otherwise) = defval
+    |(index > -1 && lengthGt index list)= list#index
+    |(otherwise)= defval
 
 
 lengthGEq 0 = const True
@@ -187,42 +201,54 @@ fuseElems is2fuse fusion (this:next:more) =
 fuseElems _ _ l = l
 
 
-indexOfSub _ [] = minBound::Int
+indexOf _ [] =
+    minBound::Int
+indexOf item (this:rest)
+    |(this==item)= 0
+    |(otherwise)= 1 + (indexOf item rest)
+
+
+indexOfSub _ [] =
+    minBound::Int
 indexOfSub sub str@(_:rest)
-    |(zip sub str) ~: (all $(==)~:uncurry)
-        = 0
-    |(otherwise)
-        = 1 + (indexOfSub sub rest)
-        --  --this dumb 1+ DOES seem slightly faster
-        --  --(as always, adds up with bigger full-rebuilds)
-        --  --than compare-lt + conditional-add, so NOT this:
-        --  = idx (indexOfSub sub rest)
-        --  where
-        --      idx i |i<0 = i |otherwise = 1+i
+    | (zip sub str) ~: (all $(==)~:uncurry)
+    = 0
+    | otherwise
+    = 1 + (indexOfSub sub rest)
+    --  --this dumb 1+ DOES seem slightly faster
+    --  --(as always, adds up with bigger full-rebuilds)
+    --  --than compare-lt + conditional-add, so NOT this:
+    --  = idx (indexOfSub sub rest)
+    --  where
+    --      idx i |i<0 = i |otherwise = 1+i
 
 lastIndexOfSub revsub revstr
-    |(idx<0) = idx
-    |(otherwise) = (revstr~:length)-(revsub~:length)-idx
+    |(idx<0)= idx
+    |(otherwise)= (revstr~:length)-(revsub~:length)-idx
     where
         idx = indexOfSub revsub revstr
 
+
+splitAt1st delim list =
+    (one , if idx<0 then two else drop 1 two) where
+        (one,two) = Data.List.splitAt idx list
+        idx = indexOf delim list
 
 
 splitBy delim =
     foldr foreach [[]] where
         foreach _ [] = []
         foreach item items@(item0:rest)
-            |(item==delim) = []:items
-            |(otherwise) = (item:item0):rest
+            |(item==delim)= []:items
+            |(otherwise)= (item:item0):rest
 
 
 
 splitUp _ _ "" = []
 splitUp _ "" str = [(str,"")]
+splitUp [] _ str = [(str,"")]
 splitUp allbeginners end str =
-    if null beginners
-        then [(str,"")]
-        else _splitup str
+    if null beginners then [(str,"")] else _splitup str
     where
     beginners' = allbeginners>~reverse ~|noNull
     beg0len = (beginners'#0)~:length
@@ -241,8 +267,8 @@ splitUp allbeginners end str =
         nomatch = endpos<0 || begpos<0
         splitat = if nomatch && endpos>=0 then endposl else 0
         endpos = indexOfSub end str
-        begpos = if endpos<0 then -1 else
-            lastidx$ str ~: (take endpos) ~: reverse
+        begpos = if endpos<0 then -1
+            else lastidx$ str ~: (take endpos) ~: reverse
         endposl = endpos+(end~:length)
         tolist val beg = if null val && null beg
                             then [] else [(val,beg)]

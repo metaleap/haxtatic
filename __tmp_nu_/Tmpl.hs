@@ -17,6 +17,7 @@ data Ctx
         bTags :: String->String->Maybe String,
         cTags :: String->Maybe String,
         tTags :: String->Maybe String,
+        xTags :: String->Maybe String,
         processTags :: [String]
     }
     | Template {
@@ -27,11 +28,11 @@ data Ctx
 
 
 
-_applychunkbegin = "{P{C"
+_applychunkbegin = "{P|c"
 _applychunkend = "ontent"++tag_Close
 apply ctxtmpl pagesrc =
-    let foreach ("","{P{C") = pagesrc
-        foreach (wtf,"{P{C") = _applychunkbegin++wtf++_applychunkend
+    let foreach ("","{P|c") = pagesrc
+        foreach (why,"{P|c") = _applychunkbegin++why++_applychunkend
         foreach (str,"") = str
     in concat$ ctxtmpl~:chunks>~foreach
 
@@ -64,7 +65,8 @@ loadTmpl ctxproc fileext tmpfile =
         srcpreprocessed = processSrcFully ctxproc "" (tmpfile~:Files.content)
         srcchunks = Util.splitUp [_applychunkbegin] _applychunkend srcpreprocessed
         tmpl = Template { fileExt = fileext, srcFile = srcfile,
-                            chunks = if null srcchunks then [("",_applychunkbegin)] else srcchunks }
+                            chunks = if null srcchunks
+                                then [("",_applychunkbegin)] else srcchunks }
     in return tmpl
 
 
@@ -75,15 +77,15 @@ processSrcFully ctxproc =
 
 processSrcJustOnce ctxproc bname src =
     let ptags = ctxproc~:processTags
-        tags = if noNull ptags then ptags
-                else tags_All
-    in concat$ (Util.splitUp tags tag_Close src)>~foreach where
-        foreach tag@(str , "{B{") =
-            with tag $(ctxproc~:bTags) bname str
-        foreach tag@(str , "{C{") =
-            with tag $(ctxproc~:cTags) str
-        foreach tag@(str , "{T{") =
-            with tag $(ctxproc~:tTags) str
+    in concat$ (Util.splitUp ptags tag_Close src)>~foreach where
+        foreach tag@(str , "{B|") =
+            with tag ((ctxproc~:bTags) bname $str~:Util.trim)
+        foreach tag@(str , "{C|") =
+            with tag ((ctxproc~:cTags) $str~:Util.trim)
+        foreach tag@(str , "{T|") =
+            with tag ((ctxproc~:tTags) $str~:Util.trim)
+        foreach tag@(str , "{X|") =
+            with tag ((ctxproc~:xTags) $str~:Util.trim)
         foreach (str , "") =
             str
         foreach tag =
@@ -94,10 +96,10 @@ processSrcJustOnce ctxproc bname src =
                 Nothing-> tagbegin++tagcontent++tag_Close
 
 
-tag_Close = "}}"
-tag_B = "{B{"
-tag_C = "{C{"
-tag_P = "{P{"
-tag_T = "{T{"
-tag_X = "{X{"
+tag_Close = "|}"
+tag_B = "{B|"
+tag_C = "{C|"
+tag_P = "{P|"
+tag_T = "{T|"
+tag_X = "{X|"
 tags_All = [Tmpl.tag_B , Tmpl.tag_C , Tmpl.tag_P , Tmpl.tag_T , Tmpl.tag_X]

@@ -1,5 +1,4 @@
 {-# OPTIONS_GHC -Wall #-}
-
 module ProjC where
 
 import qualified Defaults
@@ -59,7 +58,7 @@ parseProjLines linessplits =
         procsane name (Data.Maybe.fromMaybe (procdef name) maybeParsed) where
             maybeParsed = if null procstr then Nothing
                             else (Text.Read.readMaybe procstr) :: Maybe Processing
-            procstr = if null procval then procval else "ProcFromProj {"++procval++"}"
+            procstr = if null procval then procval else "ProcFromProj {" ++procval++ "}"
             procval = Data.Map.Strict.findWithDefault "" ("process:"++name) cfgprocs
     procdef dirname =
         ProcFromProj { dirs = [dirname], skip = [], force = [] }
@@ -74,7 +73,7 @@ parseProjLines linessplits =
             sanitize fvals = let tmp = proc~:fvals >~Util.trim ~|noNull in
                 if elem "*" tmp then ["*"] else tmp
     proctags = if noNull ptags then ptags else Tmpl.tags_All where
-        ptags = (pstr~:(Util.splitBy ',') >~ Util.trim ~|noNull) >~ ('{':).(++"{")
+        ptags = (pstr~:(Util.splitBy ',') >~ Util.trim ~|noNull) >~ ('{':).(++"|")
         pstr = Util.trim$ Data.Map.Strict.findWithDefault "" ("process:tags") cfgprocs
     dirnameonly = System.FilePath.takeFileName
     cfgmisc = cfglines2hashmap ""
@@ -84,14 +83,15 @@ parseProjLines linessplits =
         Data.Map.Strict.fromList$
             linessplits>~foreachline ~|noNull.fst where
                 foreachline ("|C|":prefix':next:rest)
-                    |(null goalprefix) = ( prefix , foreachvalue$ (next:rest) )
-                    |(prefix==goalprefix) = ( prefix ++":"++ next~:Util.trim , foreachvalue$ rest )
+                    | null goalprefix
+                    = ( prefix , foreachvalue$ (next:rest) )
+                    | prefix==goalprefix
+                    = ( prefix ++":"++ next~:Util.trim , foreachvalue$ rest )
                     where prefix = Util.trim prefix'
                 foreachline _ = ( "" , "" )
                 foreachvalue = (Util.join ":") ~.Util.trim -- ~. onvalue
 
 
 
-tagResolver skip cfgmisc key =
-    if skip then Nothing else
-        Data.Map.Strict.lookup key cfgmisc
+tagResolver cfgmisc key =
+    Data.Map.Strict.lookup key cfgmisc

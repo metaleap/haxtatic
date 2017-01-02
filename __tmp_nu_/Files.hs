@@ -1,5 +1,4 @@
 {-# OPTIONS_GHC -Wall #-}
-
 module Files where
 
 import qualified Util
@@ -121,8 +120,8 @@ listAllFiles rootdirpath reldirs modtimer =
             where
             relpaths = dirpaths>~foreachsrcdir ~|noNull
             foreachsrcdir reldirpath =
-                if Util.startsWith srcfilepath reldirpath then
-                    drop (1+reldirpath~:length) srcfilepath else ""
+                if Util.startsWith srcfilepath reldirpath
+                then drop (1+reldirpath~:length) srcfilepath else ""
         in return$ allfiletuples>~foreachfiletuple
 
 
@@ -144,11 +143,11 @@ readOrDefault create ctxmain relpath relpath2 defaultcontent =
             System.Directory.getModificationTime filepath >>= \modtime
             -> readFile filepath >>= (FileFull filepath modtime)~.return
         ifexists False
-            | (noNull relpath2 && relpath2/=relpath) =
-                readOrDefault create ctxmain relpath2 "" defaultcontent
-            | otherwise =
-                let file = FileFull filepath (ctxmain~:nowTime) defaultcontent
-                in if not create then return file else
+            | noNull relpath2 && relpath2/=relpath
+            = readOrDefault create ctxmain relpath2 "" defaultcontent
+            | otherwise
+            = let file = FileFull filepath (ctxmain~:nowTime) defaultcontent in
+                if not create then return file else
                     writeTo filepath relpath (defaultcontent~:return)
                     >> return file
 
@@ -182,7 +181,7 @@ simpleFilePathMatchAny relpath dumbpatterns =
 
 
 
-_fileoutputbeginmsg = ("\t>>\t"++).(++_fileoutputmidmsg)
+_fileoutputbeginmsg = ("\t>>\t" ++).(++ _fileoutputmidmsg)
 _fileoutputmidmsg = " [ "
 _fileoutputdonemsg = "OK ]"
 

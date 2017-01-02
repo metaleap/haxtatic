@@ -1,7 +1,6 @@
 #!/usr/bin/env stack
 {- stack --install-ghc runghc -}
 {-# OPTIONS_GHC -Wall #-}
-
 module Main where
 
 import qualified Build
@@ -40,17 +39,24 @@ main =
             \  For existing project: specify path to its current directory.\n\
             \  For a new project: specify path to its intended directory.\n    (I'll create it if missing and its parent isn't.)\n\n"
         else
-            let dirpath = cmdargs#0
-                projfilename = (Util.atOr cmdargs 1 Defaults.fileName_Proj)
-                ctxmain = Files.AppContext {    Files.curDir = curdir,
-                                                Files.dirPath = dirpath,
-                                                Files.setupName = Defaults.setupName projfilename,
-                                                Files.nowTime=starttime }
-            in processAll ctxmain projfilename (drop 2 cmdargs)
-            >> Data.Time.Clock.getCurrentTime >>= \endtime
-            -> let timetaken = Data.Time.Clock.diffUTCTime endtime starttime
-            in putStrLn ("\n\nWell it's been "++(show timetaken)++":\n\n==== Bye now! ====\n\n\n")
-            >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
+        let dirpath = cmdargs#0
+            projfilename = (Util.atOr cmdargs 1 Defaults.fileName_Proj)
+            ctxmain = Files.AppContext {    Files.curDir = curdir,
+                                            Files.dirPath = dirpath,
+                                            Files.setupName = Defaults.setupName projfilename,
+                                            Files.nowTime=starttime }
+        in processAll ctxmain projfilename (drop 2 cmdargs)
+        >> Data.Time.Clock.getCurrentTime >>= \endtime
+        -> let timetaken = Data.Time.Clock.diffUTCTime endtime starttime
+        in putStrLn ("\n\nWell it's been " ++(show timetaken)++ ":\n\n==== Bye now! ====\n\n\n")
+        >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
+        >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
+        >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
+        >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
+        >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
+        >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
+        >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
+        >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
 
 
 
@@ -74,14 +80,14 @@ processAll ctxmain projfilename custfilenames =
         numskipfiles = buildplan~:Build.numSkippedStatic
         numoutfiles = buildplan~:Build.numOutFilesTotal
         dirbuild = ctxproj~:Proj.dirPathBuild
-    in putStrLn ("\t->\tStatic files: will copy "++(show numcopyfiles)++", skipping "++(show numskipfiles)++"")
-    >> putStrLn ("\t->\tContent pages: will (re)generate from "++(show numgenpages)++", skipping "++(show numskippages)++"")
-    >> putStrLn ("\t->\tAtom XML files: will (re)generate from "++(show$ buildplan~:Build.outAtoms~:length)++", skipping "++(show$ buildplan~:Build.numSkippedAtoms)++"")
+    in putStrLn ("\t->\tStatic files: will copy " ++(show numcopyfiles)++ ", skipping " ++(show numskipfiles)++ "")
+    >> putStrLn ("\t->\tContent pages: will (re)generate from " ++(show numgenpages)++ ", skipping " ++(show numskippages)++ "")
+    >> putStrLn ("\t->\tAtom XML files: will (re)generate from " ++(show$ buildplan~:Build.outAtoms~:length)++ ", skipping " ++(show$ buildplan~:Build.numSkippedAtoms)++ "")
 
-    >> putStrLn ("\n3/5\tCopying "++(show numcopyfiles)++"/"++(show$ numcopyfiles+numskipfiles)++" static file(s) to:\n\t->\t`"++dirbuild++"` ..")
+    >> putStrLn ("\n3/5\tCopying " ++(show numcopyfiles)++ "/" ++(show$ numcopyfiles+numskipfiles)++ " static file(s) to:\n\t->\t`" ++dirbuild++ "` ..")
     >> Build.copyStaticFiles buildplan
 
-    >> putStrLn ("\n4/5\tGenerating "++(show numgenpages)++"/"++(show$ numgenpages+numskippages)++" page(s) in:\n\t->\t`"++dirbuild++"` ..")
+    >> putStrLn ("\n4/5\tGenerating " ++(show numgenpages)++ "/" ++(show$ numgenpages+numskippages)++ " page(s) in:\n\t->\t`" ++dirbuild++ "` ..")
     >> Pages.processAll ctxmain ctxproj buildplan
 
     >> let  dtstr = (Proj.dtUtc2Str (ctxproj~:Proj.setup~:Proj.cfg) "foo" (ctxmain~:Files.nowTime))
@@ -90,8 +96,8 @@ processAll ctxmain projfilename custfilenames =
     >> print dtutc
     >> System.IO.hFlush System.IO.stdout -- remove later
 
-    >> let deploymsg = "\n5/5\tCopying only the "++(show$ numoutfiles)++" newly (over)written file(s) also to:\n\t->\t"
+    >> let deploymsg = "\n5/5\tCopying only the " ++(show$ numoutfiles)++ " newly (over)written file(s) also to:\n\t->\t"
     in if null (ctxproj~:Proj.dirPathDeploy)
-        then putStrLn (deploymsg++"(skipping this step.)") else
-            putStrLn (deploymsg++"`"++(ctxproj~:Proj.dirPathDeploy)++"` ..")
+        then putStrLn (deploymsg++ "(skipping this step.)") else
+            putStrLn (deploymsg++ "`" ++(ctxproj~:Proj.dirPathDeploy)++ "` ..")
             >> Build.copyAllOutputsToDeploy buildplan

@@ -1,5 +1,4 @@
 {-# OPTIONS_GHC -Wall #-}
-
 module Build where
 
 import qualified Bloks
@@ -48,7 +47,7 @@ copyAllOutputsToDeploy buildplan =
                 ifexists True =
                     Files.copyTo srcfilepath [builtfile~:outPathDeploy]
                 ifexists False =
-                    putStrLn ("\t!?\tMissing: `"++srcfilepath++"`")
+                    putStrLn ("\t!?\tMissing: `" ++srcfilepath++ "`")
             in System.Directory.doesFileExist srcfilepath >>= ifexists
     in (buildplan~:outStatics) >>~ foreach
     >> (buildplan~:outPages) >>~ foreach
@@ -65,25 +64,24 @@ copyStaticFiles buildplan =
 
 
 _createIndexHtmlIfNoContentPages ctxmain ctxproj numpagesrcfiles =
-    if numpagesrcfiles > 0
-        then return NoOutput
-        else let
-            sitename = ctxproj~:Proj.projName
-            dirpagesrel = (ctxproj~:Proj.setup~:Proj.cfg~:ProjC.processPages~:ProjC.dirs)#0
-            dirbuild = ctxproj~:Proj.dirPathBuild
-            htmltemplatemain = ctxproj~:Proj.coreFiles~:Defaults.htmlTemplateMain
-        in putStrLn ("\t->\tNo content-source files whatsoever.. making one for you:")
-        >> Defaults.writeDefaultIndexHtml
-            ctxmain sitename dirpagesrel dirbuild htmltemplatemain
-        >>= \(outfile , outfilerel , pathfinal)
-        -> return FileOutput {
-                        relPath = outfilerel,
-                        blokName = "",
-                        outPathBuild = pathfinal,
-                        outPathDeploy = Util.unlessNullOp (ctxproj~:Proj.dirPathDeploy) (</> outfilerel),
-                        contentDate = outfile~:Files.modTime,
-                        srcFile = outfile
-                    }
+    if numpagesrcfiles > 0 then return NoOutput
+    else let
+        sitename = ctxproj~:Proj.projName
+        dirpagesrel = (ctxproj~:Proj.setup~:Proj.cfg~:ProjC.processPages~:ProjC.dirs)#0
+        dirbuild = ctxproj~:Proj.dirPathBuild
+        htmltemplatemain = ctxproj~:Proj.coreFiles~:Defaults.htmlTemplateMain
+    in putStrLn ("\t->\tNo content-source files whatsoever.. making one for you:")
+    >> Defaults.writeDefaultIndexHtml
+        ctxmain sitename dirpagesrel dirbuild htmltemplatemain
+    >>= \(outfile , outfilerel , pathfinal)
+    -> return FileOutput {
+                    relPath = outfilerel,
+                    blokName = "",
+                    outPathBuild = pathfinal,
+                    outPathDeploy = Util.unlessNullOp (ctxproj~:Proj.dirPathDeploy) (</> outfilerel),
+                    contentDate = outfile~:Files.modTime,
+                    srcFile = outfile
+                }
 
 
 
@@ -116,8 +114,8 @@ plan ctxmain ctxproj =
         allatoms = (allpostsfiles>~outfileinfopost) ++ (dynatoms>~(outfileinfoatom id))
         allstatics = allstaticfiles >~ outfileinfobasic
         allpages = let almostall = (dynpages++allpagesfiles_nodate) >~ outfileinfopage
-                    in if defaultpage==NoOutput then almostall else
-                        defaultpage:almostall
+                    in if defaultpage==NoOutput then almostall
+                        else defaultpage:almostall
         (dynpages,dynatoms) = Bloks.buildPlan (modtimeproj,modtimetmplblok) allpagesfiles_nodate $projsetup~:Proj.bloks
     in _filterOutFiles allstatics cfgprocstatic >>= \outcopyfiles
     -> _filterOutFiles allpages cfgprocpages >>= \outpagefiles
@@ -141,8 +139,7 @@ _outFileInfo ctxproj contentdater relpather both@(relpath,file) =
         dtparser = _dateparser $ctxproj~:Proj.setup~:Proj.cfg
         relpathnu = relpather relpath
         contentdate = contentdater (file~:Files.modTime , cdate)
-    in if null relpathnu
-        then NoOutput
+    in if null relpathnu then NoOutput
         else FileOutput {
             relPath = relpathnu,
             blokName = Bloks.blokNameFromRelPath (ctxproj~:Proj.setup~:Proj.bloks) relpathnu file,

@@ -1,5 +1,4 @@
 {-# OPTIONS_GHC -Wall #-}
-
 module ProjT where
 
 import qualified Tmpl
@@ -22,12 +21,12 @@ parseProjLines linessplits canparsestr =
             | canparsestr
                 && Util.startsWith str _parsestr_topen
                 && Util.endsWith str _parsestr_tclose
-                = case (Text.Read.readMaybe str) :: Maybe String of
-                    --  for open/close tokens other than " --- switch str above to:
-                    --  "\""++ (Util.crop (_parsestr_topen~>length) (_parsestr_tclose~>length) str) ++"\""
-                    Nothing -> str ; Just parsed -> parsed
+            = case (Text.Read.readMaybe str) :: Maybe String of
+                --  for open/close tokens other than " --- switch str above to:
+                --  "\""++ (Util.crop (_parsestr_topen~>length) (_parsestr_tclose~>length) str) ++"\""
+                Nothing -> str ; Just parsed -> parsed
             | otherwise
-                = str
+            = str
 
 
 _parsestr_topen = "\""
@@ -35,8 +34,8 @@ _parsestr_tclose = "\""
 
 
 srcLinesExpandMl rawsrc =
-    --  original lines exposing {'{multi-line
-    --  fragments}'} collapsed into single-line in-place {T{_Hx_MlRepl_n}} placeholders ..
+    --  original lines exposing {'|multi-line
+    --  fragments|'} collapsed into single-line in-place {T|_Hx_MlRepl_n|} placeholders ..
     ((mlchunked>~fst) ~: concat ~: lines) ++
         --  .. plus additional `T::_Hx_MlRepl_n:"original-but-\n-escaped-and-quoted"`
         --  lines appended, supplying the original extracted&replaced multi-line fragments
@@ -45,12 +44,12 @@ srcLinesExpandMl rawsrc =
     mlwriteln ("",_) = ""
     mlwriteln (k,v) = "|T|:"++k++":"++v
     mlchunked = mlchunks>~forchunk where
-        mlchunks = Util.indexed$ Util.splitUp ["{'{"] "}'}" rawsrc
-        --  we splitUp above in order to now turn all {'{multi-line
-        --  fragments}'} into single-line "Text.Read-able" ones,
+        mlchunks = Util.indexed$ Util.splitUp ["{'|"] "|'}" rawsrc
+        --  we splitUp above in order to now turn all {'|multi-line
+        --  fragments|'} into single-line "Text.Read-able" ones,
         --  put into new T::key:value lines, with the original
-        --  occurrence rewritten into {T{key}}
-        forchunk (i , (str , "{'{")) =
+        --  occurrence rewritten into {T|key|}
+        forchunk (i , (str , "{'|")) =
             let tkey = "_Hx_MlRepl_"++(show i) in
             ( Tmpl.tag_T++tkey++Tmpl.tag_Close , (tkey , str~:show) )
             -- if to enclose within other tokens than " and ", switch from str~:show to:

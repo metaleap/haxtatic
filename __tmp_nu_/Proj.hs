@@ -1,5 +1,4 @@
 {-# OPTIONS_GHC -Wall #-}
-
 module Proj where
 
 import qualified Bloks
@@ -9,6 +8,7 @@ import qualified ProjC
 import qualified ProjT
 import qualified Util
 import Util ( (~:) , (>~) )
+import qualified X
 
 import qualified Tmpl
 
@@ -68,9 +68,11 @@ loadCtx ctxmain projname defaultfiles =
             projName = projname,
             setupName = setupname,
             dirPath = dirpath,
-            dirPathBuild = dirpathjoin $setupname ++"-"++ loadedsetup~:cfg~:ProjC.dirNameBuild,
+            dirPathBuild = dirpathjoin$
+                setupname ++"-"++ loadedsetup~:cfg~:ProjC.dirNameBuild,
             dirPathDeploy = let dd = loadedsetup~:cfg~:ProjC.dirNameDeploy
-                            in if null dd then "" else dirpathjoin $setupname ++"-"++ dd,
+                            in if null dd then ""
+                                else dirpathjoin $setupname ++"-"++ dd,
             setup = loadedsetup,
             coreFiles = defaultfiles
         }
@@ -84,8 +86,9 @@ _loadSetup ctxproj =
                     cfg = cfgpost,
                     tmpl = Tmpl.Processing {
                             Tmpl.bTags =  Bloks.tagResolver blokspost,
-                            Tmpl.cTags = ProjC.tagResolver False cfgmiscprep,
+                            Tmpl.cTags = ProjC.tagResolver cfgmiscpost,
                             Tmpl.tTags = ProjT.tagResolver ttagspost,
+                            Tmpl.xTags = X.tagResolver xtagspost,
                             Tmpl.processTags = cfgpost~:ProjC.tmplTags
                         }
                     }
@@ -95,8 +98,9 @@ _loadSetup ctxproj =
                                 cfg = cfgprep,
                                 tmpl = Tmpl.Processing {
                                         Tmpl.bTags =  Bloks.tagResolver bloksprep,
-                                        Tmpl.cTags = ProjC.tagResolver True cfgmiscpost,
+                                        Tmpl.cTags = ProjC.tagResolver cfgmiscprep,
                                         Tmpl.tTags = ProjT.tagResolver ttagsprep,
+                                        Tmpl.xTags = X.tagResolver xtagsprep,
                                         Tmpl.processTags = cfgprep~:ProjC.tmplTags
                                     }
                                 }
@@ -106,6 +110,8 @@ _loadSetup ctxproj =
     (cfgpost,cfgmiscpost) = ProjC.parseProjLines postlinessplits
     ttagsprep = ProjT.parseProjLines preplinessplits False
     ttagspost = ProjT.parseProjLines postlinessplits True
+    xtagsprep = X.parseProjLines preplinessplits
+    xtagspost = X.parseProjLines postlinessplits
 
     preplinessplits = srclinesprep>~ _splitc
     postlinessplits = srclinespost>~ _splitc
