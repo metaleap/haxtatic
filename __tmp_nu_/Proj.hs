@@ -113,7 +113,7 @@ _loadSetup ctxproj =
 
 
 _rawsrc ctxproj =
-    --  join primary project file with additionally-specified 'overwrites' one:
+    --  join primary project file with additionally-specified 'overwrites' ones:
     (ctxproj~:coreFiles~:Defaults.projectDefault~:Files.content) ++
-        let prjoverwrites = (ctxproj~:coreFiles~:Defaults.projectOverwrites) in
-            if prjoverwrites==Files.NoFile then "" else prjoverwrites~:Files.content
+        let projcusts = ctxproj~:coreFiles~:Defaults.projectOverwrites in
+            concat$ projcusts>~Files.content

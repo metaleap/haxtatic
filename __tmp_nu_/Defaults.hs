@@ -3,7 +3,8 @@
 module Defaults where
 
 import qualified Files
-import Util ( (>~) , (~:) )
+import qualified Util
+import Util ( (>~) , (~:) , (#) , (>>~) )
 
 import qualified Data.Char
 import qualified Data.Time.Format
@@ -15,38 +16,43 @@ import System.FilePath ( (</>) )
 data Files
     = DefaultFiles {
         projectDefault :: Files.File,
-        projectOverwrites :: Files.File,
+        projectOverwrites :: [Files.File],
         htmlTemplateMain :: Files.File,
         htmlTemplateBlok :: Files.File
     }
 
 
 
-loadOrCreate ctxmain projname projfilename custfilename =
+loadOrCreate ctxmain projname projfilename custfilenames =
     let projfiledefcontent = _proj projname
         setupname = ctxmain~:Files.setupName
-        relpathtmplmain = "tmpl" </> (setupname++"-main.haxtmpl.html")
-        relpathtmplmain' = "tmpl" </> (fileName_Pref "-main.haxtmpl.html")
+        relpathtmplmain = "tmpl" </> (setupname++".haxtmpl.html")
+        relpathtmplmain' = "tmpl" </> (fileName_Pref ".haxtmpl.html")
         relpathtmplblok = "tmpl" </> (setupname++"-blok.haxtmpl.html")
         relpathtmplblok' = "tmpl" </> (fileName_Pref "-blok.haxtmpl.html")
+        foreach custfilename = Files.readOrDefault False ctxmain custfilename "" ""
     in Files.readOrDefault True ctxmain projfilename fileName_Proj projfiledefcontent
     >>= \projfile
-    -> Files.readOrDefault True ctxmain custfilename "" ""
-    >>= \custfile
     -> Files.readOrDefault True ctxmain relpathtmplmain relpathtmplmain' _tmpl_html_main
     >>= \tmplmainfile
     -> Files.readOrDefault True ctxmain relpathtmplblok relpathtmplblok' _tmpl_html_blok
     >>= \tmplblokfile
+    -> custfilenames>>~foreach
+    >>= \custfiles
     -> let
-        cfgmodtime = max (projfile~:Files.modTime) (custfile~:Files.modTime)
+        custmodtime = if null custfiles then Util.dateTime0
+            else maximum (custfiles>~Files.modTime)
+        cfgmodtime = max custmodtime (projfile~:Files.modTime)
         tmplmodtime = max cfgmodtime (tmplmainfile~:Files.modTime)
         redated cmpmodtime file
             = Files.fullFrom file cmpmodtime $file~:Files.content
+        redatedcfg = redated cfgmodtime
+        redatedtmpl = redated tmplmodtime
     in return DefaultFiles {
-        projectDefault = redated cfgmodtime projfile,
-        projectOverwrites = redated cfgmodtime custfile,
-        htmlTemplateMain = redated tmplmodtime tmplmainfile,
-        htmlTemplateBlok = redated tmplmodtime tmplblokfile
+        projectDefault = projfile~:redatedcfg,
+        projectOverwrites = custfiles>~redatedcfg,
+        htmlTemplateMain = tmplmainfile~:redatedtmpl,
+        htmlTemplateBlok = tmplblokfile~:redatedtmpl
     }
 
 

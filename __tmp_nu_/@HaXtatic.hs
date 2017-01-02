@@ -10,7 +10,7 @@ import qualified Files
 import qualified Pages
 import qualified Proj
 import qualified Util
-import Util ( (#) , (~:) )
+import Util ( (#) , (~:) , (>~) )
 
 import qualified Data.Time.Clock
 import qualified System.Directory
@@ -24,7 +24,7 @@ main ::
     IO ()
 
 processAll ::
-    Files.Ctx-> String-> String->
+    Files.Ctx-> String-> [String]->
     IO ()
 
 
@@ -42,12 +42,11 @@ main =
         else
             let dirpath = cmdargs#0
                 projfilename = (Util.atOr cmdargs 1 Defaults.fileName_Proj)
-                custfilename = (Util.atOr cmdargs 2 "")
                 ctxmain = Files.AppContext {    Files.curDir = curdir,
                                                 Files.dirPath = dirpath,
                                                 Files.setupName = Defaults.setupName projfilename,
                                                 Files.nowTime=starttime }
-            in processAll ctxmain projfilename custfilename
+            in processAll ctxmain projfilename (drop 2 cmdargs)
             >> Data.Time.Clock.getCurrentTime >>= \endtime
             -> let timetaken = Data.Time.Clock.diffUTCTime endtime starttime
             in putStrLn ("\n\nWell it's been "++(show timetaken)++":\n\n==== Bye now! ====\n\n\n")
@@ -55,14 +54,14 @@ main =
 
 
 
-processAll ctxmain projfilename custfilename =
-    let filename = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
+processAll ctxmain projfilename custfilenames =
+    let filenameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
         dirpath = ctxmain~:Files.dirPath
         projname = System.FilePath.takeBaseName dirpath
 
     in putStrLn "\n1/5\tReading essential project files [or (re)creating them..]"
     >> System.Directory.createDirectoryIfMissing False dirpath
-    >> Defaults.loadOrCreate ctxmain projname (filename projfilename) (filename custfilename)
+    >> Defaults.loadOrCreate ctxmain projname (projfilename~:filenameonly) (custfilenames>~filenameonly)
     >>= Proj.loadCtx ctxmain projname >>= \ctxproj
 
     -> putStrLn "\n2/5\tScanning input files and folders.."
