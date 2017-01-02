@@ -60,7 +60,5 @@ srcLinesExpandMl rawsrc =
 
 
 
-tagResolver preferfailorpostpone ttags key =
-    case Data.Map.Strict.lookup key ttags of
-        Just found-> Tmpl.Done found
-        Nothing-> preferfailorpostpone
+tagResolver ttags key =
+    Data.Map.Strict.lookup key ttags

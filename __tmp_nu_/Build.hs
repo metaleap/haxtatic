@@ -103,16 +103,16 @@ plan ctxmain ctxproj =
     -> _createIndexHtmlIfNoContentPages ctxmain ctxproj (allpagesfiles_orig~:length) >>= \defaultpage
     -> let
         allpagesfiles_nodate = allpagesfiles_orig >~ renamerelpath where
-            renamerelpath tup@(_,file) =
-                (fst$ Files.customDateFromFileName (_dateparser projcfg) tup , file)
+            renamerelpath both@(_,file) =
+                (fst$ Files.customDateFromFileName (_dateparser projcfg) both , file)
         outfileinfobasic = _outFileInfo ctxproj fst id
         outfileinfopage = _outFileInfo ctxproj snd id
-        outfileinfoatom func = _outFileInfo ctxproj fst $func.(Files.ensureFileExt True ".atom")
-        outfileinfopost = outfileinfoatom func where
-            func|(null relpathpostatoms)= id                                -- no custom dir for posts-derived atoms set up
-                |(relpathpostatoms==Defaults.dir_PostAtoms_None)= const ""  -- dont generate atoms -> force "" to discard in _filterOutFiles
-                |(otherwise)= (relpathpostatoms </>)                        -- prepend user-specified rel dir to atom out-file name
-            relpathpostatoms = projcfg~:ProjC.relPathPostAtoms
+        outfileinfoatom filenamer = _outFileInfo ctxproj fst $filenamer.(Files.ensureFileExt True ".atom")
+        outfileinfopost
+            |(rppostatoms==Defaults.dir_PostAtoms_None)=    outfileinfoatom (const "")
+            |(null rppostatoms)=                            outfileinfoatom id
+            |(otherwise)=                                   outfileinfoatom (rppostatoms </>)
+            where rppostatoms = projcfg~:ProjC.relPathPostAtoms
         allatoms = (allpostsfiles>~outfileinfopost) ++ (dynatoms>~(outfileinfoatom id))
         allstatics = allstaticfiles >~ outfileinfobasic
         allpages = let almostall = (dynpages++allpagesfiles_nodate) >~ outfileinfopage
@@ -122,7 +122,7 @@ plan ctxmain ctxproj =
     in _filterOutFiles allstatics cfgprocstatic >>= \outcopyfiles
     -> _filterOutFiles allpages cfgprocpages >>= \outpagefiles
     -> _filterOutFiles allatoms cfgprocposts >>= \outatomfiles
-    -> let buildplan = BuildPlan {
+    -> return BuildPlan {
                 outAtoms = outatomfiles,
                 outPages = outpagefiles,
                 outStatics = outcopyfiles,
@@ -131,14 +131,13 @@ plan ctxmain ctxproj =
                 numSkippedPages = allpages~:length - outpagefiles~:length,
                 numSkippedAtoms = allatoms~:length - outatomfiles~:length
             }
-    in return buildplan
 
 
 _dateparser projcfg = Proj.dtStr2Utc projcfg "hax_pagedate"
 
 
-_outFileInfo ctxproj contentdater relpather tup@(relpath,file) =
-    let (_,cdate) = Files.customDateFromFileName dtparser tup   --  ignoring the renamed relpath as we already had to take it above (for bloks) when we had to ignore the cdate .. ugly this double call
+_outFileInfo ctxproj contentdater relpather both@(relpath,file) =
+    let (_,cdate) = Files.customDateFromFileName dtparser both   --  ignoring the renamed relpath as we already had to take it above (for bloks) when we had to ignore the cdate .. ugly this double call
         dtparser = _dateparser $ctxproj~:Proj.setup~:Proj.cfg
         relpathnu = relpather relpath
         contentdate = contentdater (file~:Files.modTime , cdate)

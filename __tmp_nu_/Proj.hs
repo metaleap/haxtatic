@@ -83,8 +83,10 @@ _loadSetup ctxproj =
                                     bloks = blokspost,
                                     cfg = cfgpost,
                                     tmpl = Tmpl.Processing {
-                                            Tmpl.bTags =  Bloks.tagResolver Tmpl.Postpone blokspost,
-                                            Tmpl.tTags = ProjT.tagResolver Tmpl.Failed ttagspost
+                                            Tmpl.bTags =  Bloks.tagResolver blokspost,
+                                            Tmpl.cTags = ProjC.tagResolver False cfgmiscprep,
+                                            Tmpl.tTags = ProjT.tagResolver ttagspost,
+                                            Tmpl.processTags = cfgpost~:ProjC.tmplTags
                                         }
                                     }
     in setuppost
@@ -93,14 +95,16 @@ _loadSetup ctxproj =
                                     bloks = bloksprep,
                                     cfg = cfgprep,
                                     tmpl = Tmpl.Processing {
-                                            Tmpl.bTags =  Bloks.tagResolver Tmpl.Postpone bloksprep,
-                                            Tmpl.tTags = ProjT.tagResolver Tmpl.Postpone ttagsprep
+                                            Tmpl.bTags =  Bloks.tagResolver bloksprep,
+                                            Tmpl.cTags = ProjC.tagResolver True cfgmiscpost,
+                                            Tmpl.tTags = ProjT.tagResolver ttagsprep,
+                                            Tmpl.processTags = cfgprep~:ProjC.tmplTags
                                         }
                                     }
         bloksprep = Bloks.parseProjLines preplinessplits
         blokspost = Bloks.parseProjLines postlinessplits
-        cfgprep = ProjC.parseProjLines preplinessplits
-        cfgpost = ProjC.parseProjLines postlinessplits
+        (cfgprep,cfgmiscprep) = ProjC.parseProjLines preplinessplits
+        (cfgpost,cfgmiscpost) = ProjC.parseProjLines postlinessplits
         ttagsprep = ProjT.parseProjLines preplinessplits False
         ttagspost = ProjT.parseProjLines postlinessplits True
 

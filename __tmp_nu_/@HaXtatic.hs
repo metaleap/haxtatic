@@ -72,6 +72,7 @@ processAll ctxmain projfilename custfilenames =
         numskippages = buildplan~:Build.numSkippedPages
         numcopyfiles = buildplan~:Build.outStatics~:length
         numskipfiles = buildplan~:Build.numSkippedStatic
+        numoutfiles = buildplan~:Build.numOutFilesTotal
         dirbuild = ctxproj~:Proj.dirPathBuild
     in putStrLn ("\t->\tStatic files: will copy "++(show numcopyfiles)++", skipping "++(show numskipfiles)++"")
     >> putStrLn ("\t->\tContent pages: will (re)generate from "++(show numgenpages)++", skipping "++(show numskippages)++"")
@@ -89,7 +90,8 @@ processAll ctxmain projfilename custfilenames =
     >> print dtutc
     >> System.IO.hFlush System.IO.stdout -- remove later
 
-    >> if null (ctxproj~:Proj.dirPathDeploy)
-        then return () else
-            putStrLn ("\n5/5\tCopying "++(show$ buildplan~:Build.numOutFilesTotal)++" newly (over)written file(s) also to:\n\t->\t`"++(ctxproj~:Proj.dirPathDeploy)++"` ..")
+    >> let deploymsg = "\n5/5\tCopying only the "++(show$ numoutfiles)++" newly (over)written file(s) also to:\n\t->\t"
+    in if null (ctxproj~:Proj.dirPathDeploy)
+        then putStrLn (deploymsg++"(skipping this step.)") else
+            putStrLn (deploymsg++"`"++(ctxproj~:Proj.dirPathDeploy)++"` ..")
             >> Build.copyAllOutputsToDeploy buildplan

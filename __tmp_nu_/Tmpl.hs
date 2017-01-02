@@ -14,20 +14,16 @@ import System.FilePath ( (</>) )
 
 data Ctx
     = Processing {
-        bTags :: String->String->Result,
-        tTags :: String->Result
+        bTags :: String->String->Maybe String,
+        cTags :: String->Maybe String,
+        tTags :: String->Maybe String,
+        processTags :: [String]
     }
     | Template {
         fileExt :: String,
         srcFile :: Files.File,
         chunks :: [(String , String)]
     }
-
-
-data Result
-    = Failed
-    | Postpone
-    | Done String
 
 
 
@@ -78,25 +74,26 @@ processSrcFully ctxproc =
 
 
 processSrcJustOnce ctxproc bname src =
-    concat$ (Util.splitUp [tag_T,tag_B] tag_Close src)>~foreach where
+    concat$ (Util.splitUp (ctxproc~:processTags) tag_Close src)>~foreach where
         foreach tag@(str , "{B{") =
             with tag $(ctxproc~:bTags) bname str
+        foreach tag@(str , "{C{") =
+            with tag $(ctxproc~:cTags) str
         foreach tag@(str , "{T{") =
             with tag $(ctxproc~:tTags) str
         foreach (str , "") =
             str
         foreach tag =
-            with tag Postpone
+            with tag Nothing
         with (tagcontent,tagbegin) result =
-            let errorize = Data.List.intersperse '!'
-            in case result of
-                Done output-> output
-                Postpone-> tagbegin++tagcontent++tag_Close
-                Failed-> (errorize tagbegin)++tagcontent++(errorize tag_Close)
+            case result of
+                Just output-> output
+                Nothing-> tagbegin++tagcontent++tag_Close
 
 
 tag_Close = "}}"
 tag_B = "{B{"
+tag_C = "{C{"
 tag_P = "{P{"
 tag_T = "{T{"
 tag_X = "{X{"

@@ -97,7 +97,7 @@ parseProjLines linessplits =
 
 
 
-tagResolver preferfailorpostpone hashmap curbname str =
+tagResolver hashmap curbname str =
     let splits = Util.splitBy ':' str
         fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
                     ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dater",dater)  ]
@@ -106,13 +106,13 @@ tagResolver preferfailorpostpone hashmap curbname str =
                     bn = Util.atOr splits 1 curbname
         blok = if null bname then NoBlok else
                 Data.Map.Strict.findWithDefault NoBlok bname hashmap
-    in if null splits || null fname then Tmpl.Failed else
+    in if null splits || null fname then Nothing else
         if fname=="name" && bname~:noNull
-            then Tmpl.Done bname else if blok==NoBlok
-                then preferfailorpostpone else
+            then Just bname else if blok==NoBlok
+                then Nothing else
                     case Data.List.lookup fname fields of
-                        Just fieldval-> Tmpl.Done $blok~:fieldval
-                        Nothing-> Tmpl.Failed
+                        Just fieldval-> Just $blok~:fieldval
+                        Nothing-> Nothing
 
 
 
