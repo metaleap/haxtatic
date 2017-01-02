@@ -65,17 +65,19 @@ out tname tatts tchildren =
 
 
 
-stripTags::
+stripMarkup::
+    Char->
     String->
     String
-stripTags markup =
-    striptags False markup
+stripMarkup substchar markup =
+    stripmarkup False markup
     where
-    striptags _ [] = []
-    striptags intagwas (c:rest) =
-        char:(striptags intagnext rest) where
-            char = if intagnow then ' ' else c
-            intagnow = intagwas || istagopen || istagclose
-            intagnext = intagnow && not istagclose
-            istagopen = c=='<'
-            istagclose = c=='>'
+    stripmarkup _ [] = []
+    stripmarkup intagwas (curchar:rest) =
+        nextchar:(stripmarkup intagnext rest)
+        where
+        nextchar = if intagnow then substchar else curchar
+        intagnow = intagwas || istagopen || istagclose
+        intagnext = intagnow && not istagclose
+        istagopen = curchar=='<'
+        istagclose = curchar=='>'

@@ -10,6 +10,7 @@ register _name cfgstr =
     where
 
     renderer _ctxpage argstr =
-        enclose argstr
+    	let wot = Html.out cfgstr [("","argstr") , ("test","bla")] []
+        in wot -- enclose (show argstr)
 
     enclose = (('<':cfgstr++">") ++) . (++ ("</"++cfgstr++">"))
