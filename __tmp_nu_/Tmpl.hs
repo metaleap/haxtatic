@@ -4,7 +4,7 @@ module Tmpl where
 import qualified Defaults
 import qualified Files
 import qualified Util
-import Util ( (#) , (~|) , (~:) , (>>~) , (>~) )
+import Util ( (#) , (~|) , (~:) , (>>~) , (>~) , noNull )
 
 import qualified Data.List
 import qualified Data.Maybe
@@ -74,7 +74,10 @@ processSrcFully ctxproc =
 
 
 processSrcJustOnce ctxproc bname src =
-    concat$ (Util.splitUp (ctxproc~:processTags) tag_Close src)>~foreach where
+    let ptags = ctxproc~:processTags
+        tags = if noNull ptags then ptags
+                else tags_All
+    in concat$ (Util.splitUp tags tag_Close src)>~foreach where
         foreach tag@(str , "{B{") =
             with tag $(ctxproc~:bTags) bname str
         foreach tag@(str , "{C{") =
@@ -97,3 +100,4 @@ tag_C = "{C{"
 tag_P = "{P{"
 tag_T = "{T{"
 tag_X = "{X{"
+tags_All = [Tmpl.tag_B , Tmpl.tag_C , Tmpl.tag_P , Tmpl.tag_T , Tmpl.tag_X]

@@ -68,9 +68,9 @@ loadCtx ctxmain projname defaultfiles =
             projName = projname,
             setupName = setupname,
             dirPath = dirpath,
-            dirPathBuild = dirpathjoin $setupname++"-"++loadedsetup~:cfg~:ProjC.dirNameBuild,
+            dirPathBuild = dirpathjoin $setupname ++"-"++ loadedsetup~:cfg~:ProjC.dirNameBuild,
             dirPathDeploy = let dd = loadedsetup~:cfg~:ProjC.dirNameDeploy
-                            in if null dd then "" else dirpathjoin $setupname++"-"++dd,
+                            in if null dd then "" else dirpathjoin $setupname ++"-"++ dd,
             setup = loadedsetup,
             coreFiles = defaultfiles
         }
@@ -79,40 +79,39 @@ loadCtx ctxmain projname defaultfiles =
 
 
 _loadSetup ctxproj =
-    let setuppost = SetupFromProj { -- srcRaw = srclinespost, srcPre = srclinesprep,
-                                    bloks = blokspost,
-                                    cfg = cfgpost,
-                                    tmpl = Tmpl.Processing {
-                                            Tmpl.bTags =  Bloks.tagResolver blokspost,
-                                            Tmpl.cTags = ProjC.tagResolver False cfgmiscprep,
-                                            Tmpl.tTags = ProjT.tagResolver ttagspost,
-                                            Tmpl.processTags = cfgpost~:ProjC.tmplTags
-                                        }
-                                    }
-    in setuppost
+    SetupFromProj { -- srcRaw = srclinespost, srcPre = srclinesprep,
+                    bloks = blokspost,
+                    cfg = cfgpost,
+                    tmpl = Tmpl.Processing {
+                            Tmpl.bTags =  Bloks.tagResolver blokspost,
+                            Tmpl.cTags = ProjC.tagResolver False cfgmiscprep,
+                            Tmpl.tTags = ProjT.tagResolver ttagspost,
+                            Tmpl.processTags = cfgpost~:ProjC.tmplTags
+                        }
+                    }
     where
-        setupprep = SetupFromProj { -- srcRaw = [], srcPre = [],
-                                    bloks = bloksprep,
-                                    cfg = cfgprep,
-                                    tmpl = Tmpl.Processing {
-                                            Tmpl.bTags =  Bloks.tagResolver bloksprep,
-                                            Tmpl.cTags = ProjC.tagResolver True cfgmiscpost,
-                                            Tmpl.tTags = ProjT.tagResolver ttagsprep,
-                                            Tmpl.processTags = cfgprep~:ProjC.tmplTags
-                                        }
+    setupprep = SetupFromProj { -- srcRaw = [], srcPre = [],
+                                bloks = bloksprep,
+                                cfg = cfgprep,
+                                tmpl = Tmpl.Processing {
+                                        Tmpl.bTags =  Bloks.tagResolver bloksprep,
+                                        Tmpl.cTags = ProjC.tagResolver True cfgmiscpost,
+                                        Tmpl.tTags = ProjT.tagResolver ttagsprep,
+                                        Tmpl.processTags = cfgprep~:ProjC.tmplTags
                                     }
-        bloksprep = Bloks.parseProjLines preplinessplits
-        blokspost = Bloks.parseProjLines postlinessplits
-        (cfgprep,cfgmiscprep) = ProjC.parseProjLines preplinessplits
-        (cfgpost,cfgmiscpost) = ProjC.parseProjLines postlinessplits
-        ttagsprep = ProjT.parseProjLines preplinessplits False
-        ttagspost = ProjT.parseProjLines postlinessplits True
+                                }
+    bloksprep = Bloks.parseProjLines preplinessplits
+    blokspost = Bloks.parseProjLines postlinessplits
+    (cfgprep,cfgmiscprep) = ProjC.parseProjLines preplinessplits
+    (cfgpost,cfgmiscpost) = ProjC.parseProjLines postlinessplits
+    ttagsprep = ProjT.parseProjLines preplinessplits False
+    ttagspost = ProjT.parseProjLines postlinessplits True
 
-        preplinessplits = srclinesprep>~ _splitc
-        postlinessplits = srclinespost>~ _splitc
-        _splitc = Util.splitBy ':'
-        srclinesprep = ProjT.srcLinesExpandMl$ _rawsrc ctxproj
-        srclinespost = lines$ Tmpl.processSrcFully (setupprep~:tmpl) "" (srclinesprep~:unlines)
+    preplinessplits = srclinesprep>~ _splitc
+    postlinessplits = srclinespost>~ _splitc
+    _splitc = Util.splitBy ':'
+    srclinesprep = ProjT.srcLinesExpandMl$ _rawsrc ctxproj
+    srclinespost = lines$ Tmpl.processSrcFully (setupprep~:tmpl) "" (srclinesprep~:unlines)
 
 
 

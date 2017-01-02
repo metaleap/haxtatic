@@ -13,7 +13,7 @@ import qualified Text.Read
 
 parseProjLines linessplits canparsestr =
     Data.Map.Strict.fromList$ linessplits>~foreach ~|fst~.noNull where
-        foreach ("T":"":tname:tvalsplits) =
+        foreach ("|T|":tname:tvalsplits) =
             ( tname~:Util.trim ,
                 srcparsestr$ tvalsplits~:(Util.join ":")~:Util.trim )
         foreach _ =
@@ -43,7 +43,7 @@ srcLinesExpandMl rawsrc =
         (mlchunked>~ snd~.mlwriteln)
     where
     mlwriteln ("",_) = ""
-    mlwriteln (k,v) = "T::"++k++":"++v
+    mlwriteln (k,v) = "|T|:"++k++":"++v
     mlchunked = mlchunks>~forchunk where
         mlchunks = Util.indexed$ Util.splitUp ["{'{"] "}'}" rawsrc
         --  we splitUp above in order to now turn all {'{multi-line

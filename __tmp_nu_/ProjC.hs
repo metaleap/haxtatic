@@ -52,14 +52,15 @@ parseProjLines linessplits =
                     Defaults.dir_Deploy "_hax_dir_deploy" cfgmisc
     relpathpostatoms = Files.saneDirPath$ Data.Map.Strict.findWithDefault
                     Defaults.dir_PostAtoms "_hax_posts_atomrelpath" cfgmisc
-    proctags = [Tmpl.tag_T , Tmpl.tag_B , Tmpl.tag_C]
     procstatic = procfind Defaults.dir_Static
     procpages = procfind Defaults.dir_Pages
     procposts = procfind Defaults.dir_Posts
     procfind name =
         procsane name (Data.Maybe.fromMaybe (procdef name) maybeParsed) where
-            maybeParsed = (Text.Read.readMaybe procstr) :: Maybe Processing
-            procstr = Data.Map.Strict.findWithDefault "" ("process:"++name) cfgprocs
+            maybeParsed = if null procstr then Nothing
+                            else (Text.Read.readMaybe procstr) :: Maybe Processing
+            procstr = if null procval then procval else "ProcFromProj {"++procval++"}"
+            procval = Data.Map.Strict.findWithDefault "" ("process:"++name) cfgprocs
     procdef dirname =
         ProcFromProj { dirs = [dirname], skip = [], force = [] }
     procsane defname proc =
@@ -72,18 +73,23 @@ parseProjLines linessplits =
             saneskip = sanitize skip ; saneforce = sanitize force
             sanitize fvals = let tmp = proc~:fvals >~Util.trim ~|noNull in
                 if elem "*" tmp then ["*"] else tmp
+    proctags = if noNull ptags then ptags else Tmpl.tags_All where
+        ptags = (pstr~:(Util.splitBy ',') >~ Util.trim ~|noNull) >~ ('{':).(++"{")
+        pstr = Util.trim$ Data.Map.Strict.findWithDefault "" ("process:tags") cfgprocs
     dirnameonly = System.FilePath.takeFileName
-    cfgmisc = cfglines2hashmap "" id
-    cfgdtformats = cfglines2hashmap "dtformat" id
-    cfgprocs = cfglines2hashmap "process" $("ProcFromProj {"++).(++"}")
-    cfglines2hashmap goalprefix onvalue =
+    cfgmisc = cfglines2hashmap ""
+    cfgdtformats = cfglines2hashmap "dtformat"
+    cfgprocs = cfglines2hashmap "process"
+    cfglines2hashmap goalprefix = -- onvalue =
         Data.Map.Strict.fromList$
             linessplits>~foreachline ~|noNull.fst where
-                foreachline ("C":"":prefix:next:rest)
+                foreachline ("|C|":prefix':next:rest)
                     |(null goalprefix) = ( prefix , foreachvalue$ (next:rest) )
-                    |(prefix==goalprefix) = ( prefix++":"++next , foreachvalue$ rest )
+                    |(prefix==goalprefix) = ( prefix ++":"++ next~:Util.trim , foreachvalue$ rest )
+                    where prefix = Util.trim prefix'
                 foreachline _ = ( "" , "" )
-                foreachvalue = (Util.join ":") ~. Util.trim ~. onvalue
+                foreachvalue = (Util.join ":") ~.Util.trim -- ~. onvalue
+
 
 
 tagResolver skip cfgmisc key =

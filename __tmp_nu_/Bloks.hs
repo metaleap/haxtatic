@@ -82,7 +82,7 @@ isRelPathBlokPage bname relpath =
 parseProjLines linessplits =
     Data.Map.Strict.fromList$
     linessplits>~foreach ~|(/=noblok) where
-        foreach ("B":"":blokname:bvalsplits) =
+        foreach ("|B|":blokname:bvalsplits) =
             let bname = blokname~:Util.trim
                 parsestr = bvalsplits ~: _joinc ~: Util.trim ~: (toParseStr bname)
                 parsed = (Text.Read.readMaybe parsestr) :: Maybe Blok
