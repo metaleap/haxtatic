@@ -12,24 +12,22 @@ import qualified Text.Read
 
 
 parseProjLines linessplits canparsestr =
-    \key -> Data.Map.Strict.findWithDefault ("{!T{"++key++"}!}") key ttags where
-        ttags = Data.Map.Strict.fromList$
-            linessplits>~foreach ~|fst~.noNull where
-                foreach ("T":"":tname:tvalsplits) =
-                    ( tname~:Util.trim ,
-                        srcparsestr$ tvalsplits~:(Util.join ":")~:Util.trim )
-                foreach _ =
-                    ( "" , "" )
-                srcparsestr str
-                    | canparsestr
-                        && Util.startsWith str _parsestr_topen
-                        && Util.endsWith str _parsestr_tclose
-                        = case (Text.Read.readMaybe str) :: Maybe String of
-                            --  for open/close tokens other than " --- switch str above to:
-                            --  "\""++ (Util.crop (_parsestr_topen~>length) (_parsestr_tclose~>length) str) ++"\""
-                            Nothing -> str ; Just parsed -> parsed
-                    | otherwise
-                        = str
+    Data.Map.Strict.fromList$ linessplits>~foreach ~|fst~.noNull where
+        foreach ("T":"":tname:tvalsplits) =
+            ( tname~:Util.trim ,
+                srcparsestr$ tvalsplits~:(Util.join ":")~:Util.trim )
+        foreach _ =
+            ( "" , "" )
+        srcparsestr str
+            | canparsestr
+                && Util.startsWith str _parsestr_topen
+                && Util.endsWith str _parsestr_tclose
+                = case (Text.Read.readMaybe str) :: Maybe String of
+                    --  for open/close tokens other than " --- switch str above to:
+                    --  "\""++ (Util.crop (_parsestr_topen~>length) (_parsestr_tclose~>length) str) ++"\""
+                    Nothing -> str ; Just parsed -> parsed
+            | otherwise
+                = str
 
 
 _parsestr_topen = "\""
@@ -59,3 +57,10 @@ srcLinesExpandMl rawsrc =
             -- _parsestr_topen++ (Util.crop 1 1 $str~:show) ++_parsestr_tclose))
         forchunk (_ , (str , _)) =
             (str , ("" , ""))
+
+
+
+tagResolver preferfailorpostpone ttags key =
+    case Data.Map.Strict.lookup key ttags of
+        Just found-> Tmpl.Done found
+        Nothing-> preferfailorpostpone

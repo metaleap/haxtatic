@@ -58,26 +58,6 @@ blokNameFromRelPath bloks relpath file =
 
 
 
-bTagResolver hashmap curbname str =
-    let splits = Util.splitBy ':' str
-        fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
-                    ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dater",dater)  ]
-        fname = splits#0
-        bname = if null bn then curbname else bn where
-                    bn = Util.atOr splits 1 curbname
-        blok = if null bname then NoBlok else
-                Data.Map.Strict.findWithDefault NoBlok bname hashmap
-        restore = Tmpl.tag_B++(_joinc splits)++Tmpl.tag_Close
-    in if null splits then restore else
-        if fname=="name" && bname~:noNull
-            then bname else if blok==NoBlok || null fname
-                then restore else
-                    case Data.List.lookup fname fields of
-                        Just fieldval-> fieldval blok
-                        Nothing-> restore
-
-
-
 buildPlan (modtimeproj,modtimetmplblok) allpagesfiles bloks =
     (dynpages , dynatoms) where
         dynatoms = mapandfilter (tofileinfo atomFile modtimeproj)
@@ -114,6 +94,25 @@ parseProjLines linessplits =
         foreach _ =
             noblok
         noblok = ("" , NoBlok)
+
+
+
+tagResolver preferfailorpostpone hashmap curbname str =
+    let splits = Util.splitBy ':' str
+        fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
+                    ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dater",dater)  ]
+        fname = Util.trim$ splits#0
+        bname = Util.trim$ if null bn then curbname else bn where
+                    bn = Util.atOr splits 1 curbname
+        blok = if null bname then NoBlok else
+                Data.Map.Strict.findWithDefault NoBlok bname hashmap
+    in if null splits || null fname then Tmpl.Failed else
+        if fname=="name" && bname~:noNull
+            then Tmpl.Done bname else if blok==NoBlok
+                then preferfailorpostpone else
+                    case Data.List.lookup fname fields of
+                        Just fieldval-> Tmpl.Done $blok~:fieldval
+                        Nothing-> Tmpl.Failed
 
 
 

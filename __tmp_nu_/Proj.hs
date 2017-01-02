@@ -83,8 +83,8 @@ _loadSetup ctxproj =
                                     bloks = blokspost,
                                     cfg = cfgpost,
                                     tmpl = Tmpl.Processing {
-                                            Tmpl.bTags =  Bloks.bTagResolver blokspost,
-                                            Tmpl.tTags = ttagspost
+                                            Tmpl.bTags =  Bloks.tagResolver Tmpl.Postpone blokspost,
+                                            Tmpl.tTags = ProjT.tagResolver Tmpl.Failed ttagspost
                                         }
                                     }
     in setuppost
@@ -93,8 +93,8 @@ _loadSetup ctxproj =
                                     bloks = bloksprep,
                                     cfg = cfgprep,
                                     tmpl = Tmpl.Processing {
-                                            Tmpl.bTags =  Bloks.bTagResolver bloksprep,
-                                            Tmpl.tTags = ttagsprep
+                                            Tmpl.bTags =  Bloks.tagResolver Tmpl.Postpone bloksprep,
+                                            Tmpl.tTags = ProjT.tagResolver Tmpl.Postpone ttagsprep
                                         }
                                     }
         bloksprep = Bloks.parseProjLines preplinessplits

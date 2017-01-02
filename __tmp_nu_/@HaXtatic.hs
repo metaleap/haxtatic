@@ -57,11 +57,12 @@ main =
 processAll ctxmain projfilename custfilenames =
     let filenameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
         dirpath = ctxmain~:Files.dirPath
-        projname = System.FilePath.takeBaseName dirpath
 
     in putStrLn "\n1/5\tReading essential project files [or (re)creating them..]"
     >> System.Directory.createDirectoryIfMissing False dirpath
-    >> Defaults.loadOrCreate ctxmain projname (projfilename~:filenameonly) (custfilenames>~filenameonly)
+    >> System.Directory.makeAbsolute dirpath >>= \dirfullpath   --  we do this just in case
+    -> let projname = System.FilePath.takeBaseName dirfullpath  --  `dirpath` ended in `.` or `..`
+    in Defaults.loadOrCreate ctxmain projname (projfilename~:filenameonly) (custfilenames>~filenameonly)
     >>= Proj.loadCtx ctxmain projname >>= \ctxproj
 
     -> putStrLn "\n2/5\tScanning input files and folders.."
