@@ -4,7 +4,7 @@ module Tmpl where
 import qualified Defaults
 import qualified Files
 import qualified Util
-import Util ( (#) , (~|) , (~:) , (>>~) , (>~) , noNull )
+import Util ( (#) , (~|) , (~:) , (>>~) , (>~) )
 
 import qualified Data.List
 import qualified Data.Maybe
@@ -28,12 +28,13 @@ data Ctx
 
 
 
-_applychunkbegin = "{P|c"
-_applychunkend = "ontent"++tag_Close
+_applychunkbegin = "{P|:c"              --  we're really
+_applychunkmid = "on"                   --  looking for:
+_applychunkend = "tent:"++tag_Close     --  {P|:content:|}
 apply ctxtmpl pagesrc =
-    let foreach ("","{P|c") = pagesrc
-        foreach (why,"{P|c") = _applychunkbegin++why++_applychunkend
-        foreach (str,"") = str
+    let foreach ("on","{P|:c") = pagesrc    --  OK we found one
+        foreach (weird,"{P|:c") = _applychunkbegin++weird++_applychunkend -- the once-in-a-1000-years case .. someone went for {P|:cUriously persiStent:|} ?
+        foreach (tmplsrc,_) = tmplsrc -- rest of template src as-is
     in concat$ ctxtmpl~:chunks>~foreach
 
 
@@ -66,7 +67,7 @@ loadTmpl ctxproc fileext tmpfile =
         srcchunks = Util.splitUp [_applychunkbegin] _applychunkend srcpreprocessed
         tmpl = Template { fileExt = fileext, srcFile = srcfile,
                             chunks = if null srcchunks
-                                then [("",_applychunkbegin)] else srcchunks }
+                                then [(_applychunkmid,_applychunkbegin)] else srcchunks }
     in return tmpl
 
 

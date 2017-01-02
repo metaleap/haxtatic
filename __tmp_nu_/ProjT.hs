@@ -35,9 +35,9 @@ _parsestr_tclose = "\""
 
 srcLinesExpandMl rawsrc =
     --  original lines exposing {'|multi-line
-    --  fragments|'} collapsed into single-line in-place {T|_Hx_MlRepl_n|} placeholders ..
+    --  fragments|'} collapsed into single-line in-place {T|_hax_MlRepl_n|} placeholders ..
     ((mlchunked>~fst) ~: concat ~: lines) ++
-        --  .. plus additional `T::_Hx_MlRepl_n:"original-but-\n-escaped-and-quoted"`
+        --  .. plus additional `T::_hax_MlRepl_n:"original-but-\n-escaped-and-quoted"`
         --  lines appended, supplying the original extracted&replaced multi-line fragments
         (mlchunked>~ snd~.mlwriteln)
     where
@@ -50,7 +50,7 @@ srcLinesExpandMl rawsrc =
         --  put into new T::key:value lines, with the original
         --  occurrence rewritten into {T|key|}
         forchunk (i , (str , "{'|")) =
-            let tkey = "_Hx_MlRepl_"++(show i) in
+            let tkey = "_hax_MlRepl_"++(show i) in
             ( Tmpl.tag_T++tkey++Tmpl.tag_Close , (tkey , str~:show) )
             -- if to enclose within other tokens than " and ", switch from str~:show to:
             -- _parsestr_topen++ (Util.crop 1 1 $str~:show) ++_parsestr_tclose))

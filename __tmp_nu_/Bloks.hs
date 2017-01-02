@@ -3,9 +3,8 @@ module Bloks where
 
 import qualified Defaults
 import qualified Files
-import qualified Tmpl
 import qualified Util
-import Util ( noNull , (#) , (~:) , (>~) , (~|) , (|~) , (~.) )
+import Util ( noNull , (~:) , (>~) , (~|) , (|~) , (~.) )
 
 import qualified Data.List
 import qualified Data.Map.Strict
@@ -22,7 +21,7 @@ data Blok
         atomFile :: FilePath,
         blokIndexPageFile :: FilePath,
         inSitemap :: Bool,
-        dater :: String
+        dtFormat :: String
     }
     deriving (Eq, Read)
 
@@ -85,7 +84,7 @@ parseProjLines linessplits =
                 parsed = (Text.Read.readMaybe parsestr) :: Maybe Blok
                 errblok = Blok { title="{!B| syntax issue near `B::" ++bname++ ":`, couldn't parse `" ++parsestr++ "` |!}",
                                     desc="{!B| Syntax issue in your .haxproj file defining Blok named '" ++bname++ "'. Thusly couldn't parse Blok settings (incl. title/desc) |!}",
-                                    atomFile="", blokIndexPageFile="", inSitemap=False, dater="" }
+                                    atomFile="", blokIndexPageFile="", inSitemap=False, dtFormat="" }
             in if null bname then noblok
                 else (bname , Data.Maybe.fromMaybe errblok parsed)
         foreach _ =
@@ -97,7 +96,7 @@ parseProjLines linessplits =
 tagResolver hashmap curbname str =
     let (fname, bn) = Util.both Util.trim (Util.splitAt1st ':' str)
         fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
-                    ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dater",dater)  ]
+                    ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dtFormat",dtFormat)  ]
         bname = if null bn then curbname else bn
         blok = Data.Map.Strict.findWithDefault NoBlok bname hashmap
     in if null fname then Nothing
@@ -113,7 +112,7 @@ toParseStr bname projline =
     let
         pl = projline ~: (checkfield "title" "") ~: (checkfield "desc" "") ~:
                 (checkfield "atomFile" "") ~: (checkfield "blokIndexPageFile" (bname++ ".html")) ~:
-                    (checkfield "inSitemap" True) ~: (checkfield "dater" "")
+                    (checkfield "inSitemap" True) ~: (checkfield "dtFormat" "")
     in
         "Blok {" ++pl++ "}" where
             checkfield field defval prjln =

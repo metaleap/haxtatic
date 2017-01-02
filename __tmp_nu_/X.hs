@@ -13,13 +13,13 @@ parseProjLines linessplits =
     Data.Map.Strict.fromList$ linessplits>~foreach ~|fst~.noNull where
         foreach ("|X|":"miniTag":tname:tvals) =
             with XminiTag.register tname tvals
-        foreach ("|X|":xname:tname:tvals) =
-            ( tname~:Util.trim , render_err xname )
+        foreach ("|X|":xname:tname:_) =
+            ( tname~:Util.trim , rendererr xname )
         foreach _ =
             ( "" , id )
         with registerer tname tvals =
             ( tname~:Util.trim , registerer tname (Util.join ":" tvals) )
-        render_err xname _ argstr =
+        rendererr xname _ctxpage _argstr =
             "{!X| Specified X-renderer `"++xname++"` not known |!}"
 
 

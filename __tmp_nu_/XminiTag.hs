@@ -1,13 +1,15 @@
 {-# OPTIONS_GHC -Wall #-}
 module XminiTag where
 
+import qualified Html
 
 
-register name cfgstr =
+
+register _name cfgstr =
     renderer
     where
 
-    renderer _ argstr =
+    renderer _ctxpage argstr =
         enclose argstr
 
     enclose = (('<':cfgstr++">") ++) . (++ ("</"++cfgstr++">"))

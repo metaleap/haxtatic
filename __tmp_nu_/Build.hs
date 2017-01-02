@@ -131,7 +131,7 @@ plan ctxmain ctxproj =
             }
 
 
-_dateparser projcfg = Proj.dtStr2Utc projcfg "hax_pagedate"
+_dateparser projcfg = Proj.dtStr2Utc projcfg "_hax_pagedtformat"
 
 
 _outFileInfo ctxproj contentdater relpather both@(relpath,file) =

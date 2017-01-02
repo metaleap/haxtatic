@@ -9,6 +9,10 @@ import qualified Data.Time.Clock
 
 
 
+type StringPairs = [(String,String)]
+
+
+
 dateTime0 = Data.Time.Clock.UTCTime {
                 Data.Time.Clock.utctDay = Data.Time.Calendar.ModifiedJulianDay {
                                             Data.Time.Calendar.toModifiedJulianDay = 0 },
@@ -245,10 +249,10 @@ splitBy delim =
 
 
 splitUp _ _ "" = []
-splitUp _ "" str = [(str,"")]
-splitUp [] _ str = [(str,"")]
-splitUp allbeginners end str =
-    if null beginners then [(str,"")] else _splitup str
+splitUp _ "" src = [(src,"")]
+splitUp [] _ src = [(src,"")]
+splitUp allbeginners end src =
+    if null beginners then [(src,"")] else _splitup src
     where
     beginners' = allbeginners>~reverse ~|noNull
     beg0len = (beginners'#0)~:length

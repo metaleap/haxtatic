@@ -3,7 +3,7 @@ module Defaults where
 
 import qualified Files
 import qualified Util
-import Util ( (>~) , (~:) , (#) , (>>~) )
+import Util ( (>~) , (~:) , (>>~) )
 
 import qualified Data.Char
 import qualified Data.Time.Format
@@ -134,7 +134,7 @@ _tmpl_html_main =
     \</head><body>\n\
     \    <h3>{T|SiteTitle|}</h3>\n\
     \    <div><!-- begin {P|FileName|} content generated from {P|OrigPath|} -->\n\n\n\
-    \{P|content|}\n\n\
+    \{P|:content:|}\n\n\
     \    </div><!-- end of generated content -->\n\
     \    <hr/><small>Generated with <a href=\"http://github.com/HaXtatic\">{P|%demo_hax|}</a> on {P|Date|}</small>\n\
     \</body></html>"
