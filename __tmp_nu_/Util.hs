@@ -43,9 +43,10 @@ infix 8 >>~
 (>>|) = flip Control.Monad.filterM
 
 
-both f (one,two) =
-    (f one , f two)
+both (f1,f2) (p1,p2) =
+    (f1 p1 , f2 p2)
 
+both1 f = both (f,f)
 
 butNot notval defval val
     |(val==notval)= defval
@@ -220,17 +221,41 @@ indexOfSub sub str@(_:rest)
     | otherwise
     = 1 + (indexOfSub sub rest)
     --  --this dumb 1+ DOES seem slightly faster
-    --  --(as always, adds up with bigger full-rebuilds)
     --  --than compare-lt + conditional-add, so NOT this:
     --  = idx (indexOfSub sub rest)
     --  where
     --      idx i |i<0 = i |otherwise = 1+i
+
+indexOfSub1st subs str =
+    let isubs = indexed subs
+        indexinof = (flip indexOfSub) str
+        iidxs = isubs >~ (both (id,indexinof)) ~|snd~.(>=0)
+        (i,index) = Data.List.minimumBy (\(_,idx1) (_,idx2) -> compare idx1 idx2) iidxs
+    in if null iidxs then (minBound::Int , "")
+        else (index , subs#i)
 
 lastIndexOfSub revsub revstr
     |(idx<0)= idx
     |(otherwise)= (revstr~:length)-(revsub~:length)-idx
     where
         idx = indexOfSub revsub revstr
+
+
+
+replace old new str =
+    let idx = indexOfSub old str
+    in _replace_helper idx old (const new) (replace old new) str
+
+replaceAny olds tonew str =
+    let (idx,old) = indexOfSub1st olds str
+    in _replace_helper idx old tonew (replaceAny olds tonew) str
+
+_replace_helper idx old tonew replrest str =
+    if idx < 0 then str else
+        let pre = take idx str
+            rest = drop (idx + old~:length) str
+        in pre ++ (tonew old) ++ replrest rest
+
 
 
 splitAt1st delim list =

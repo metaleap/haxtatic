@@ -94,7 +94,7 @@ parseProjLines linessplits =
 
 
 tagResolver hashmap curbname str =
-    let (fname, bn) = Util.both Util.trim (Util.splitAt1st ':' str)
+    let (fname, bn) = Util.both1 Util.trim (Util.splitAt1st ':' str)
         fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
                     ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dtFormat",dtFormat)  ]
         bname = if null bn then curbname else bn

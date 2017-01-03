@@ -35,8 +35,8 @@ _parsestr_tclose = "\""
 
 
 srcLinesExpandMl rawsrc =
-    --  original lines exposing {"|multi-line
-    --  fragments|"} collapsed into single-line in-place {T|_hax_multiline_n|} placeholders ..
+    --  original lines exposing {``|multi-line
+    --  fragments|``} collapsed into single-line in-place {T|_hax_multiline_n|} placeholders ..
     ((mlchunked>~fst) ~: concat ~: lines) ++
         --  .. plus additional `T::_hax_multiline_n:"original-but-\n-escaped-and-quoted"`
         --  lines appended, supplying the original extracted&replaced multi-line fragments
@@ -45,14 +45,15 @@ srcLinesExpandMl rawsrc =
     mlwriteln ("",_) = ""
     mlwriteln (k,v) = "|T|:"++k++":"++v
     mlchunked = mlchunks>~forchunk where
-        mlchunks = Util.indexed$ Util.splitUp ["{\"|"] "|\"}" rawsrc
-        --  we splitUp above in order to now turn all {"|multi-line
-        --  fragments|"} into single-line "Text.Read-able" ones,
+        mlchunks = Util.indexed$ Util.splitUp ["{``|"] "|``}" rawsrc
+        --  we splitUp above in order to now turn all {``|multi-line
+        --  fragments|``} into single-line "Text.Read-able" ones,
         --  put into new T::key:value lines, with the original
         --  occurrence rewritten into {T|key|}
-        forchunk (i , (str , "{\"|")) =
+        forchunk (i , (str , "{``|")) =
             let tkey = "_hax_multiline_"++(show i)
-            in ( Tmpl.tag_T++tkey++Tmpl.tag_Close , (tkey , show str) )
+                escstr = Util.replaceAny Tmpl.tags_All (++"``:") str
+            in ( Tmpl.tag_T++tkey++Tmpl.tag_Close , (tkey , show escstr) )
             -- if to enclose within other tokens than " and ", switch from str~:show to:
             -- _parsestr_topen++ (Util.crop 1 1 $str~:show) ++_parsestr_tclose))
         forchunk (_ , (str , _)) =

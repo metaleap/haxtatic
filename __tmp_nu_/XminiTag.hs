@@ -5,12 +5,12 @@ import qualified Html
 
 
 
-register _name cfgstr =
+registerX _name cfgstr =
     renderer
     where
 
-    renderer _ctxpage argstr =
-    	let wot = Html.out cfgstr [("","argstr") , ("test","bla")] []
-        in wot -- enclose (show argstr)
+    tagname = cfgstr
 
-    enclose = (('<':cfgstr++">") ++) . (++ ("</"++cfgstr++">"))
+    renderer _ctxpage argstr =
+        Html.out tagname [("",innercontent)] []
+        where innercontent = argstr

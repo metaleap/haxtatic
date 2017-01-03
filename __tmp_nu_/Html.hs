@@ -34,10 +34,9 @@ emit tag =
                         |(otherwise)= " " ++n++ "=\"" ++v++ "\""
     outinner = ifselfclosing++(concat$ tchildren>~emit)++innercontent where
         ifselfclosing = if nooutertag then "" else
-            if noinneroutput then "/>\n" else
-                ">" ++ if noNull innercontent then "" else "\n"
+                        if noinneroutput then "/>" else ">"
     outclose = if noinneroutput then ""
-        else "</" ++tagname++ ">\n"
+        else "</" ++tagname++ ">"
 
     nooutertag = null tagname
     tagname = tag~:name

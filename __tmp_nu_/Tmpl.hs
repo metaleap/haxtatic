@@ -79,22 +79,27 @@ processSrcFully ctxproc =
 processSrcJustOnce ctxproc bname src =
     let ptags = ctxproc~:processTags
     in concat$ (Util.splitUp ptags tag_Close src)>~foreach where
-        foreach tag@(str , "{B|") =
-            with tag ((ctxproc~:bTags) bname $str~:Util.trim)
-        foreach tag@(str , "{C|") =
-            with tag ((ctxproc~:cTags) $str~:Util.trim)
-        foreach tag@(str , "{T|") =
-            with tag ((ctxproc~:tTags) $str~:Util.trim)
-        foreach tag@(str , "{X|") =
-            with tag ((ctxproc~:xTags) $str~:Util.trim)
+        foreach tag@(_ , "{B|") =
+            with tag ((ctxproc~:bTags) bname)
+        foreach tag@(_ , "{C|") =
+            with tag (ctxproc~:cTags)
+        foreach tag@(_ , "{T|") =
+            with tag (ctxproc~:tTags)
+        foreach tag@(_ , "{X|") =
+            with tag (ctxproc~:xTags)
         foreach (str , "") =
             str
         foreach tag =
-            with tag Nothing
-        with (tagcontent,tagbegin) result =
-            case result of
-                Just output-> output
-                Nothing-> tagbegin++tagcontent++tag_Close
+            with tag (const Nothing)
+        with (tagcontent,tagbegin) tagresolver =
+            let noesc = not$ Util.startsWith tagcontent "``:"
+                instr = if noesc then tagcontent else drop 3 tagcontent
+                result = case (tagresolver instr) of
+                            Just output-> output
+                            Nothing-> tagbegin++tagcontent++tag_Close
+            in if noesc then result
+                else Util.crop 1 1 (show result)
+
 
 
 tag_Close = "|}"
