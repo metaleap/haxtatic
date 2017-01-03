@@ -5,7 +5,7 @@ import qualified Defaults
 import qualified Files
 import qualified Tmpl
 import qualified Util
-import Util ( (~:) , (>~) , (~|) , (~.) , noNull )
+import Util ( (~:) , (>~) , (~|) , (~.) , (~?) , (~!) , noNull )
 
 import qualified Data.Map.Strict
 import qualified Data.Maybe
@@ -49,30 +49,30 @@ parseProjLines linessplits =
                     Defaults.dir_Out "_hax_dir_build" cfgmisc
     dirdeploy = dirnameonly$ Data.Map.Strict.findWithDefault
                     Defaults.dir_Deploy "_hax_dir_deploy" cfgmisc
-    relpathpostatoms = Files.saneDirPath$ Data.Map.Strict.findWithDefault
+    relpathpostatoms = Files.sanitizeDirPath$ Data.Map.Strict.findWithDefault
                     Defaults.dir_PostAtoms "_hax_posts_atomrelpath" cfgmisc
     procstatic = procfind Defaults.dir_Static
     procpages = procfind Defaults.dir_Pages
     procposts = procfind Defaults.dir_Posts
     procfind name =
         procsane name (Data.Maybe.fromMaybe (procdef name) maybeParsed) where
-            maybeParsed = if null procstr then Nothing
-                            else (Text.Read.readMaybe procstr) :: Maybe Processing
-            procstr = if null procval then procval else "ProcFromProj {" ++procval++ "}"
+            maybeParsed = null procstr ~? Nothing ~!
+                            (Text.Read.readMaybe procstr) :: Maybe Processing
+            procstr = null procval ~? procval ~! "ProcFromProj {"++procval++"}"
             procval = Data.Map.Strict.findWithDefault "" ("process:"++name) cfgprocs
     procdef dirname =
         ProcFromProj { dirs = [dirname], skip = [], force = [] }
     procsane defname proc =
         ProcFromProj {
             dirs = Util.ifNull (proc~:dirs >~dirnameonly ~|noNull) [defname],
-            skip = if saneneither then [] else saneskip,
-            force = if saneneither then [] else saneforce
+            skip = Util.when saneneither [] saneskip,
+            force = Util.when saneneither [] saneforce
         } where
             saneneither = saneskip==saneforce
             saneskip = sanitize skip ; saneforce = sanitize force
-            sanitize fvals = let tmp = proc~:fvals >~Util.trim ~|noNull in
-                if elem "*" tmp then ["*"] else tmp
-    proctags = if noNull ptags then ptags else Tmpl.tags_All where
+            sanitize fvals = let them = proc~:fvals >~Util.trim ~|noNull
+                                in (elem "*" them) ~? ["*"] ~! them
+    proctags = (noNull ptags) ~? ptags ~! Tmpl.tags_All where
         ptags = (pstr~:(Util.splitBy ',') >~ Util.trim ~|noNull) >~ ('{':).(++"|")
         pstr = Util.trim$ Data.Map.Strict.findWithDefault "" ("process:tags") cfgprocs
     dirnameonly = System.FilePath.takeFileName

@@ -2,7 +2,7 @@
 module Html where
 
 import qualified Util
-import Util ( noNull , (~:) , (>~) , (#) , (~|) )
+import Util ( noNull , (~:) , (>~) , (#) , (~|) , (~?) , (~!) )
 
 
 
@@ -25,24 +25,23 @@ emit::
     Tag->
     String
 emit tag =
-    if nooutertag then outinner else
+    nooutertag ~? outinner ~!
         outopen++outatts++outinner++outclose
     where
     outopen = "<"++tagname
     outatts = concat$ tagatts>~foreach where
         foreach (n,v)   |(null n || null v)= ""
-                        |(otherwise)= " " ++n++ "=\"" ++v++ "\""
-    outinner = ifselfclosing++(concat$ tchildren>~emit)++innercontent where
-        ifselfclosing = if nooutertag then "" else
-                        if noinneroutput then "/>" else ">"
-    outclose = if noinneroutput then ""
-        else "</" ++tagname++ ">"
+                        |(otherwise)= " " ++ n ++ "=\"" ++ v ++ "\""
+    outinner = ifselfclosing ++ (concat$ tchildren>~emit) ++ innercontent where
+        ifselfclosing = nooutertag ~? "" ~!
+                            noinneroutput ~? "/>" ~! ">"
+    outclose = noinneroutput ~? "" ~! "</"++tagname++">"
 
     nooutertag = null tagname
     tagname = tag~:name
     tagatts = tag~:attribs
-    innercontent = if noNull tagatts && null att0n then att0v else "" where
-        (att0n,att0v) = tagatts#0
+    innercontent = noNull tagatts && null att0n ~? att0v ~! ""
+                    where (att0n,att0v) = tagatts#0
     tchildren = tag~:subTags
     noinneroutput = null tchildren && null innercontent
 
@@ -75,7 +74,7 @@ stripMarkup substchar markup =
     stripmarkup intagwas (curchar:rest) =
         nextchar:(stripmarkup intagnext rest)
         where
-        nextchar = if intagnow then substchar else curchar
+        nextchar = intagnow ~? substchar ~! curchar
         intagnow = intagwas || istagopen || istagclose
         intagnext = intagnow && not istagclose
         istagopen = curchar=='<'

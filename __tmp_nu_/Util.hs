@@ -42,11 +42,28 @@ infix 8 >>~
 (>>|) :: Applicative m => [a] -> (a -> m Bool) -> m [a]
 (>>|) = flip Control.Monad.filterM
 
+(~?) :: Bool -> a -> a -> a
+(~?) = when
+infixl 1 ~?
+
+(~!) = ($)
+infixr 0 ~!
+
+when True v _ = v
+when False _ v = v
+
 
 both (f1,f2) (p1,p2) =
     (f1 p1 , f2 p2)
 
-both1 f = both (f,f)
+both' f = both (f,f)
+
+
+both1st fn (fst1,_) (fst2,_) =
+    fn fst1 fst2
+
+both2nd fn (_,snd1) (_,snd2) =
+    fn snd1 snd2
 
 butNot notval defval val
     |(val==notval)= defval
@@ -73,7 +90,7 @@ isnt notval =
 
 repeatedly fn arg =
     let result = fn arg
-    in if result==arg then result else repeatedly fn result
+    in result==arg ~? result ~! repeatedly fn result
 
 
 via fn =
@@ -200,17 +217,16 @@ lengthGt n = noNull . drop n
 fuseElems is2fuse fusion (this:next:more) =
     (fused:rest) where
         nofuse = not$ is2fuse this next
-        fused = if nofuse then this else fusion this next
+        fused = nofuse ~? this ~! fusion this next
         rest = fuseElems is2fuse fusion$
-                if nofuse then (next:more) else more
+                nofuse ~? (next:more) ~! more
 fuseElems _ _ l = l
 
 
 indexOf _ [] =
     minBound::Int
-indexOf item (this:rest)
-    |(this==item)= 0
-    |(otherwise)= 1 + (indexOf item rest)
+indexOf item (this:rest) =
+    (this==item) ~? 0 ~! 1 + (indexOf item rest)
 
 
 indexOfSub _ [] =
@@ -226,13 +242,14 @@ indexOfSub sub str@(_:rest)
     --  where
     --      idx i |i<0 = i |otherwise = 1+i
 
-indexOfSub1st subs str =
+indexOfSubs1st subs str =
     let isubs = indexed subs
         indexinof = (flip indexOfSub) str
         iidxs = isubs >~ (both (id,indexinof)) ~|snd~.(>=0)
-        (i,index) = Data.List.minimumBy (\(_,idx1) (_,idx2) -> compare idx1 idx2) iidxs
-    in if null iidxs then (minBound::Int , "")
-        else (index , subs#i)
+        (i,index) = Data.List.minimumBy (both2nd compare) iidxs
+    in null iidxs
+        ~? (minBound::Int , "")
+        ~! (index , subs#i)
 
 lastIndexOfSub revsub revstr
     |(idx<0)= idx
@@ -243,23 +260,23 @@ lastIndexOfSub revsub revstr
 
 
 replace old new str =
-    let idx = indexOfSub old str
-    in _replace_helper idx old (const new) (replace old new) str
+    _replace_helper idx old (const new) (replace old new) str
+    where idx = indexOfSub old str
 
 replaceAny olds tonew str =
-    let (idx,old) = indexOfSub1st olds str
-    in _replace_helper idx old tonew (replaceAny olds tonew) str
+    _replace_helper idx old tonew (replaceAny olds tonew) str
+    where (idx,old) = indexOfSubs1st olds str
 
 _replace_helper idx old tonew replrest str =
-    if idx < 0 then str else
-        let pre = take idx str
+    idx<0 ~? str ~!
+        pre ++ (tonew old) ++ replrest rest where
+            pre = take idx str
             rest = drop (idx + old~:length) str
-        in pre ++ (tonew old) ++ replrest rest
 
 
 
 splitAt1st delim list =
-    (one , if idx<0 then two else drop 1 two) where
+    (one , idx<0 ~? two ~! drop 1 two) where
         (one,two) = Data.List.splitAt idx list
         idx = indexOf delim list
 
@@ -277,7 +294,7 @@ splitUp _ _ "" = []
 splitUp _ "" src = [(src,"")]
 splitUp [] _ src = [(src,"")]
 splitUp allbeginners end src =
-    if null beginners then [(src,"")] else _splitup src
+    null beginners ~? [(src,"")] ~! _splitup src
     where
     beginners' = allbeginners>~reverse ~|noNull
     beg0len = (beginners'#0)~:length
@@ -287,17 +304,15 @@ splitUp allbeginners end src =
 
     _splitup str =
         (tolist pre "") ++ (tolist match beginner) ++ --  only recurse if we have a good reason:
-            (if nomatch && splitat==0 then (tolist rest "") else (_splitup rest))
+            (nomatch && splitat==0 ~? (tolist rest "") ~! (_splitup rest))
         where
-        pre = str ~: (take$ if nomatch then splitat else begpos)
-        match = if nomatch then "" else str ~: (take endpos) ~: (drop $begpos+beg0len)
-        rest = str ~: (drop$ if nomatch then splitat else endposl)
-        beginner = if nomatch then "" else str ~: (take endpos) ~: (drop begpos) ~: take beg0len
+        pre = str ~: (take$ nomatch ~? splitat ~! begpos)
+        match = nomatch ~? "" ~! (str ~: (take endpos) ~: (drop $begpos+beg0len))
+        rest = str ~: (drop$ nomatch ~? splitat ~! endposl)
+        beginner = nomatch ~? "" ~! str ~: (take endpos) ~: (drop begpos) ~: take beg0len
         nomatch = endpos<0 || begpos<0
-        splitat = if nomatch && endpos>=0 then endposl else 0
+        splitat = nomatch && endpos>=0 ~? endposl ~! 0
         endpos = indexOfSub end str
-        begpos = if endpos<0 then -1
-            else lastidx$ str ~: (take endpos) ~: reverse
-        endposl = endpos+(end~:length)
-        tolist val beg = if null val && null beg
-                            then [] else [(val,beg)]
+        begpos = endpos<0 ~? -1 ~! lastidx$ str ~: (take endpos) ~: reverse
+        endposl = endpos + (end~:length)
+        tolist val beg = null val && null beg ~? [] ~! [(val,beg)]

@@ -2,7 +2,7 @@
 module Files where
 
 import qualified Util
-import Util ( noNull , (~:) , (~.) , (~|) , (>~) , (>>~) , (>>|) )
+import Util ( noNull , (~:) , (~.) , (~|) , (>~) , (>>~) , (>>|) , (~?) , (~!) )
 
 import qualified Data.List
 import qualified Data.Time.Clock
@@ -38,7 +38,7 @@ data Ctx
 
 
 
-_isfsnameok = not . (Data.List.isPrefixOf ".")
+_isfsnameok = not.(Data.List.isPrefixOf ".")
 
 
 
@@ -58,7 +58,7 @@ customDateFromFileName dateparser (filepath , srcfile) =
         datemaybe = dateparser datepart
     in case datemaybe of
         Just customdate->
-            ( (saneDirPath filedir) </> (Util.trimStart' ['.'] fnrest) , customdate )
+            ( (sanitizeDirPath filedir) </> (Util.trimStart' ['.'] fnrest) , customdate )
         Nothing->
             ( filepath , srcfile~:modTime )
 
@@ -75,13 +75,14 @@ ensureFileExt ignorecase ext filepath =
 
 
 filesInDir dir =
-    System.Directory.doesDirectoryExist dir >>= ifexists where
-        ifexists False =
+    System.Directory.doesDirectoryExist dir >>= direxists where
+        direxists False =
             return []
-        ifexists True =
+        direxists True =
             System.Directory.listDirectory dir >>=
-                (~| _isfsnameok) ~. (>>| filesonly)
-        filesonly = (dir</>) ~. System.Directory.doesFileExist
+            (~| _isfsnameok) ~. (>>| filesonly) where
+                filesonly = (dir</>) ~. System.Directory.doesFileExist
+
 
 
 
@@ -99,10 +100,10 @@ listAllFiles rootdirpath reldirs modtimer =
             -> return (filepath , modtimer modtime)
         foreachdir :: FilePath -> IO [(FilePath , Data.Time.Clock.UTCTime)]
         foreachdir dirpath =
-            System.Directory.doesDirectoryExist dirpath >>= ifexists where
-                ifexists False =
+            System.Directory.doesDirectoryExist dirpath >>= direxists where
+                direxists False =
                     return []
-                ifexists True =
+                direxists True =
                     System.Directory.listDirectory dirpath >>= \names
                     -> let  oknames = names ~| _isfsnameok
                             files = oknames >>| fstest System.Directory.doesFileExist
@@ -138,23 +139,23 @@ readOrDefault _ _ "" _ _ =
     return NoFile
 
 readOrDefault create ctxmain relpath relpath2 defaultcontent =
-    System.Directory.doesFileExist filepath >>= ifexists where
+    System.Directory.doesFileExist filepath >>= fileexists where
         filepath = System.FilePath.combine (ctxmain~:dirPath) relpath
-        ifexists True =
+        fileexists True =
             System.Directory.getModificationTime filepath >>= \modtime
             -> readFile filepath >>= (FileFull filepath modtime)~.return
-        ifexists False
+        fileexists False
             | noNull relpath2 && relpath2/=relpath
             = readOrDefault create ctxmain relpath2 "" defaultcontent
             | otherwise
-            = let file = FileFull filepath (ctxmain~:nowTime) defaultcontent in
-                if not create then return file else
-                    writeTo filepath relpath (defaultcontent~:return)
+            = let file = FileFull filepath (ctxmain~:nowTime) defaultcontent
+                in not create ~? return file
+                    ~! writeTo filepath relpath (return defaultcontent)
                     >> return file
 
 
 
-saneDirPath =
+sanitizeDirPath =
     Util.trim ~. pathSepSlashToSystem ~.
         (Util.trim' $'.':System.FilePath.pathSeparators) ~. Util.trim
 

@@ -3,7 +3,7 @@ module Defaults where
 
 import qualified Files
 import qualified Util
-import Util ( (>~) , (~:) , (>>~) )
+import Util ( (>~) , (~:) , (>>~) , (~?) , (~!) )
 
 import qualified Data.Char
 import qualified Data.Time.Format
@@ -39,8 +39,7 @@ loadOrCreate ctxmain projname projfilename custfilenames =
     -> custfilenames>>~foreach
     >>= \custfiles
     -> let
-        custmodtime = if null custfiles then Util.dateTime0
-            else maximum (custfiles>~Files.modTime)
+        custmodtime = null custfiles ~? Util.dateTime0 ~! maximum (custfiles>~Files.modTime)
         cfgmodtime = max custmodtime (projfile~:Files.modTime)
         tmplmodtime = max cfgmodtime (tmplmainfile~:Files.modTime)
         redated cmpmodtime file

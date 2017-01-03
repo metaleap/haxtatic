@@ -17,17 +17,16 @@ parseProjLines linessplits canparsestr =
                 outputfor tname $ tvalsplits~:(Util.join ":")~:Util.trim )
         foreach _ =
             ( "" , "" )
-        outputfor tname str
-            | canparsestr
+        outputfor tname str =
+            if canparsestr
                 && Util.startsWith str _parsestr_topen
                 && Util.endsWith str _parsestr_tclose
-            = case (Text.Read.readMaybe str) :: Maybe String of
-                --  for open/close tokens other than " --- switch str above to:
+                --  for open/close tokens other than " --- switch `str` below to:
                 --  "\""++ (Util.crop (_parsestr_topen~>length) (_parsestr_tclose~>length) str) ++"\""
-                Just parsed -> parsed
-                Nothing -> "{!T|" ++tname++ ":" ++str++ "|!}"
-            | otherwise
-            = str
+            then case (Text.Read.readMaybe str) :: Maybe String of
+                    Just parsed -> parsed
+                    Nothing -> "{!T|" ++tname++ ":" ++str++ "|!}"
+            else str
 
 
 _parsestr_topen = "\""

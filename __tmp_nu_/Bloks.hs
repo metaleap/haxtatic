@@ -4,7 +4,7 @@ module Bloks where
 import qualified Defaults
 import qualified Files
 import qualified Util
-import Util ( noNull , (~:) , (>~) , (~|) , (|~) , (~.) )
+import Util ( noNull , (~:) , (>~) , (~|) , (|~) , (~.) , (~?) , (~!) )
 
 import qualified Data.List
 import qualified Data.Map.Strict
@@ -38,9 +38,8 @@ allBlokPageFiles allpagesfiles bname =
 
 blokNameFromIndexPagePath possiblefakepath =
     let lenprefix = Defaults.blokIndexPrefix~:length
-    in if Defaults.blokIndexPrefix == possiblefakepath~:(take lenprefix)
-        then possiblefakepath~:(drop lenprefix)
-        else ""
+    in Defaults.blokIndexPrefix /= possiblefakepath~:(take lenprefix)
+        ~? "" ~! possiblefakepath~:(drop lenprefix)
 
 
 
@@ -61,11 +60,10 @@ buildPlan (modtimeproj,modtimetmplblok) allpagesfiles bloks =
         mapandfilter fn = isblokpagefile |~ (Data.Map.Strict.elems$ Data.Map.Strict.mapWithKey fn bloks)
         isblokpagefile (relpath,file) = noNull relpath && file /= Files.NoFile
         tofileinfo bfield modtime bname blok =
-            let virtpath = if isblokpagefile bpage then blok~:bfield else ""
+            let virtpath = isblokpagefile bpage ~? blok~:bfield ~! ""
                 bpage@(_,bpagefile) = Util.atOr (allBlokPageFiles allpagesfiles bname) 0 ("" , Files.NoFile)
-            in ( Files.pathSepSlashToSystem virtpath ,
-                    if null virtpath then Files.NoFile else
-                        Files.FileInfo (Defaults.blokIndexPrefix++bname) (max (Files.modTime bpagefile) modtime) )
+            in ( Files.pathSepSlashToSystem virtpath , null virtpath ~? Files.NoFile ~!
+                    Files.FileInfo (Defaults.blokIndexPrefix++bname) (max (Files.modTime bpagefile) modtime) )
 
 
 
@@ -85,8 +83,8 @@ parseProjLines linessplits =
                 errblok = Blok { title="{!B| syntax issue near `B::" ++bname++ ":`, couldn't parse `" ++parsestr++ "` |!}",
                                     desc="{!B| Syntax issue in your .haxproj file defining Blok named '" ++bname++ "'. Thusly couldn't parse Blok settings (incl. title/desc) |!}",
                                     atomFile="", blokIndexPageFile="", inSitemap=False, dtFormat="" }
-            in if null bname then noblok
-                else (bname , Data.Maybe.fromMaybe errblok parsed)
+            in null bname ~? noblok ~!
+                (bname , Data.Maybe.fromMaybe errblok parsed)
         foreach _ =
             noblok
         noblok = ("" , NoBlok)
@@ -94,17 +92,17 @@ parseProjLines linessplits =
 
 
 tagResolver hashmap curbname str =
-    let (fname, bn) = Util.both1 Util.trim (Util.splitAt1st ':' str)
+    let (fname, bn) = Util.both' Util.trim (Util.splitAt1st ':' str)
         fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
                     ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dtFormat",dtFormat)  ]
-        bname = if null bn then curbname else bn
+        bname = null bn ~? curbname ~! bn
         blok = Data.Map.Strict.findWithDefault NoBlok bname hashmap
-    in if null fname then Nothing
-        else if fname=="name" && noNull bname then Just bname
-        else if blok==NoBlok then Nothing
-        else case Data.List.lookup fname fields of
-            Just fieldval-> Just $blok~:fieldval
-            Nothing-> Nothing
+    in null fname ~? Nothing
+        ~! fname=="name" && noNull bname ~? Just bname
+            ~! blok==NoBlok ~? Nothing
+                ~! case Data.List.lookup fname fields of
+                    Just fieldval-> Just $blok~:fieldval
+                    Nothing-> Nothing
 
 
 
@@ -113,13 +111,11 @@ toParseStr bname projline =
         pl = projline ~: (checkfield "title" "") ~: (checkfield "desc" "") ~:
                 (checkfield "atomFile" "") ~: (checkfield "blokIndexPageFile" (bname++ ".html")) ~:
                     (checkfield "inSitemap" True) ~: (checkfield "dtFormat" "")
-    in
-        "Blok {" ++pl++ "}" where
-            checkfield field defval prjln =
-                let haswith = (Util.contains prjln) . (field++)
-                in if any haswith$
-                    ["=\"", " = \"", "= \"", " =\"", "\t=\t\"", "=\t\"", "\t=\""]++
-                    ["={", " = {", "= {", " ={", "\t=\t{", "=\t{", "\t={"]++
-                    ["=True","=False"]
-                    then prjln -- there was a hint field is already in def-string
-                    else prjln++ ", " ++field++ "=" ++(show defval) -- user skipped field, append
+    in "Blok {" ++pl++ "}"
+    where
+    checkfield field defval prjln =
+        any ((Util.contains prjln).(field++)) ( ["=True","=False"]++
+                ["={", " = {", "= {", " ={", "\t=\t{", "=\t{", "\t={"]++
+                    ["=\"", " = \"", "= \"", " =\"", "\t=\t\"", "=\t\"", "\t=\""] )
+        ~? prjln -- there was a hint field is already in def-string
+        ~! prjln ++ ", " ++ field ++ "=" ++ (show defval) -- user skipped field, append

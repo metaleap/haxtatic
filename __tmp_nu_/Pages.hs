@@ -7,7 +7,7 @@ import qualified Defaults
 import qualified Files
 import qualified Proj
 import qualified Tmpl
-import Util ( (~:) , (>>~) , (>~) , (~.) )
+import Util ( (~:) , (>>~) , (>~) , (~.) , (~?) , (~!) )
 
 import qualified System.FilePath
 import qualified System.IO
@@ -40,5 +40,5 @@ processPage ctxtmpl tmplfinder outjob =
             let srcfilepath = outjob~:Build.srcFile~:Files.path
                 blokindexname = Bloks.blokNameFromIndexPagePath srcfilepath
                 blokindextmpl = tmplfinder Defaults.blokIndexPrefix
-            in if null blokindexname then readFile srcfilepath
-                else return (blokindextmpl~:Tmpl.srcFile~:Files.content)
+            in null blokindexname ~? readFile srcfilepath ~!
+                return (blokindextmpl~:Tmpl.srcFile~:Files.content)

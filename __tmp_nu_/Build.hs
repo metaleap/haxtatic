@@ -7,7 +7,7 @@ import qualified Files
 import qualified Proj
 import qualified ProjC
 import qualified Util
-import Util ( (~:) , (>~) , (>>~) , (>>|) , (#) )
+import Util ( (~:) , (>~) , (>>~) , (>>|) , (#) , (~?) , (~!) )
 
 import qualified Data.Time.Clock
 import qualified System.Directory
@@ -106,16 +106,14 @@ plan ctxmain ctxproj =
         outfileinfobasic = _outFileInfo ctxproj fst id
         outfileinfopage = _outFileInfo ctxproj snd id
         outfileinfoatom filenamer = _outFileInfo ctxproj fst $filenamer.(Files.ensureFileExt True ".atom")
-        outfileinfopost
-            |(rppostatoms==Defaults.dir_PostAtoms_None)=    outfileinfoatom (const "")
-            |(null rppostatoms)=                            outfileinfoatom id
-            |(otherwise)=                                   outfileinfoatom (rppostatoms </>)
-            where rppostatoms = projcfg~:ProjC.relPathPostAtoms
+        outfileinfopost |(rppostatoms==Defaults.dir_PostAtoms_None)= outfileinfoatom (const "")
+                        |(null rppostatoms)= outfileinfoatom id
+                        |(otherwise)= outfileinfoatom (rppostatoms </>)
+                        where rppostatoms = projcfg~:ProjC.relPathPostAtoms
         allatoms = (allpostsfiles>~outfileinfopost) ++ (dynatoms>~(outfileinfoatom id))
         allstatics = allstaticfiles >~ outfileinfobasic
-        allpages = let almostall = (dynpages++allpagesfiles_nodate) >~ outfileinfopage
-                    in if defaultpage==NoOutput then almostall
-                        else defaultpage:almostall
+        allpages |(defaultpage==NoOutput)= almostall |(otherwise)= defaultpage:almostall
+                    where almostall = (dynpages++allpagesfiles_nodate) >~ outfileinfopage
         (dynpages,dynatoms) = Bloks.buildPlan (modtimeproj,modtimetmplblok) allpagesfiles_nodate $projsetup~:Proj.bloks
     in _filterOutFiles allstatics cfgprocstatic >>= \outcopyfiles
     -> _filterOutFiles allpages cfgprocpages >>= \outpagefiles
@@ -139,8 +137,7 @@ _outFileInfo ctxproj contentdater relpather both@(relpath,file) =
         dtparser = _dateparser $ctxproj~:Proj.setup~:Proj.cfg
         relpathnu = relpather relpath
         contentdate = contentdater (file~:Files.modTime , cdate)
-    in if null relpathnu then NoOutput
-        else FileOutput {
+    in null relpathnu ~? NoOutput ~! FileOutput {
             relPath = relpathnu,
             blokName = Bloks.blokNameFromRelPath (ctxproj~:Proj.setup~:Proj.bloks) relpathnu file,
             outPathBuild = ctxproj~:Proj.dirPathBuild </> relpathnu,
@@ -161,14 +158,15 @@ _filterOutFiles fileinfos cfgproc =
             let skipthis = (not skipall) && (matchesany $cfgproc~:ProjC.skip)
                 forcethis = (not forceall) && (matchesany $cfgproc~:ProjC.force)
                 matchesany = Files.simpleFileNameMatchAny $fileinfo~:relPath
+            in forcethis || (forceall && not skipthis)
+            ~? return True
+            ~! skipthis || (skipall && not forcethis)
+            ~? return False
+            ~! let
                 outfilepath = fileinfo~:outPathBuild
-            in if (forceall && not skipthis) || forcethis
-                then return True else
-                if (skipall && not forcethis) || skipthis
-                    then return False else
-                    let ifexists False =
-                            return True
-                        ifexists True =
-                            System.Directory.getModificationTime outfilepath >>=
-                                return.((fileinfo~:srcFile~:Files.modTime)>)
-                    in System.Directory.doesFileExist outfilepath >>= ifexists
+                ifexists False =
+                    return True
+                ifexists True =
+                    System.Directory.getModificationTime outfilepath
+                    >>= return.((fileinfo~:srcFile~:Files.modTime)>)
+            in System.Directory.doesFileExist outfilepath >>= ifexists
