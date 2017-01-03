@@ -39,7 +39,7 @@ apply ctxtmpl pagesrc =
 
 
 
-loadAll ctxmain ctxproc deffiles filenameexts =
+loadAll ctxmain ctxproc deffiles filenameexts htmlequivexts =
     let foreach fileext
             | null fileext
             = loadTmpl ctxproc "" $deffiles~:Defaults.htmlTemplateMain
@@ -54,7 +54,7 @@ loadAll ctxmain ctxproc deffiles filenameexts =
                         (_applychunkbegin++_applychunkmid++_applychunkend)
                     >>= loadTmpl ctxproc fileext
         fileexts = "":Defaults.blokIndexPrefix:otherexts where
-            otherexts = Util.unique$ filenameexts ~| Util.noneOf ["",".html",".htm"]
+            otherexts = Util.unique$ filenameexts ~| Util.noneOf htmlequivexts
     in fileexts>>~foreach
     >>= \loadedtemplates
     -> let
@@ -63,7 +63,8 @@ loadAll ctxmain ctxproc deffiles filenameexts =
         tmplfind ".htm" = tmpldef
         tmplfind ".html" = tmpldef
         tmplfind ext =
-            Data.Maybe.fromMaybe tmpldef $Data.List.find ((ext==).fileExt) loadedtemplates
+            elem ext htmlequivexts ~? tmpldef ~!
+                Data.Maybe.fromMaybe tmpldef $Data.List.find ((ext==).fileExt) loadedtemplates
     in return tmplfind
 
 

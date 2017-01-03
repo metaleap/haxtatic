@@ -39,7 +39,7 @@ loadOrCreate ctxmain projname projfilename custfilenames =
     -> custfilenames>>~foreach
     >>= \custfiles
     -> let
-        custmodtime = null custfiles ~? Util.dateTime0 ~! maximum (custfiles>~Files.modTime)
+        custmodtime = (null custfiles) ~? Util.dateTime0 ~! maximum (custfiles>~Files.modTime)
         cfgmodtime = max custmodtime (projfile~:Files.modTime)
         tmplmodtime = max cfgmodtime (tmplmainfile~:Files.modTime)
         redated cmpmodtime file

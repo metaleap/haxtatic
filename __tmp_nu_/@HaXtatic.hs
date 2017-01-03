@@ -9,7 +9,7 @@ import qualified Files
 import qualified Pages
 import qualified Proj
 import qualified Util
-import Util ( (#) , (~:) , (>~) )
+import Util ( (#) , (~:) , (>~) , (~?) , (~!) )
 
 import qualified Data.Time.Clock
 import qualified System.Directory
@@ -79,21 +79,24 @@ processAll ctxmain projfilename custfilenames =
         numcopyfiles = buildplan~:Build.outStatics~:length
         numskipfiles = buildplan~:Build.numSkippedStatic
         numoutfiles = buildplan~:Build.numOutFilesTotal
+        numxmlfiles = buildplan~:Build.outAtoms~:length
+        numsitemaps = ((buildplan~:Build.siteMap~:fst) == Build.NoOutput) ~? 0 ~! 1
         dirbuild = ctxproj~:Proj.dirPathBuild
     in putStrLn ("\t->\tStatic files: will copy " ++(show numcopyfiles)++ ", skipping " ++(show numskipfiles)++ "")
     >> putStrLn ("\t->\tContent pages: will (re)generate from " ++(show numgenpages)++ ", skipping " ++(show numskippages)++ "")
-    >> putStrLn ("\t->\tAtom XML files: will (re)generate from " ++(show$ buildplan~:Build.outAtoms~:length)++ ", skipping " ++(show$ buildplan~:Build.numSkippedAtoms)++ "")
+    >> putStrLn ("\t->\tXML files: will (re)generate from "++(show numxmlfiles)++" feeds, skipping " ++(show$ buildplan~:Build.numSkippedAtoms)++ "\n\t\t           plus "++(show numsitemaps)++" sitemap(s)")
 
     >> putStrLn ("\n3/5\tCopying " ++(show numcopyfiles)++ "/" ++(show$ numcopyfiles+numskipfiles)++ " static file(s) to:\n\t->\t`" ++dirbuild++ "` ..")
     >> Build.copyStaticFiles buildplan
 
     >> putStrLn ("\n4/5\tGenerating " ++(show numgenpages)++ "/" ++(show$ numgenpages+numskippages)++ " page(s) in:\n\t->\t`" ++dirbuild++ "` ..")
     >> Pages.processAll ctxmain ctxproj buildplan
+    >> Pages.writeSitemapXml ctxproj buildplan
 
-    >> let  dtstr = (Proj.dtUtc2Str (ctxproj~:Proj.setup~:Proj.cfg) "foo" (ctxmain~:Files.nowTime))
-            dtutc = Proj.dtStr2UtcOr (ctxproj~:Proj.setup~:Proj.cfg) "foo" dtstr Util.dateTime0
-    in print dtstr
-    >> print dtutc
+    --  >> let  dtstr = (Proj.dtUtc2Str (ctxproj~:Proj.setup~:Proj.cfg) "foo" (ctxmain~:Files.nowTime))
+    --          dtutc = Proj.dtStr2UtcOr (ctxproj~:Proj.setup~:Proj.cfg) "foo" dtstr Util.dateTime0
+    --  in print dtstr
+    --  >> print dtutc
     >> System.IO.hFlush System.IO.stdout -- remove later
 
     >> let deploymsg = "\n5/5\tCopying only the " ++(show$ numoutfiles)++ " newly (over)written file(s) also to:\n\t->\t"

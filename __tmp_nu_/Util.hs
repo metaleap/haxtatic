@@ -90,7 +90,7 @@ isnt notval =
 
 repeatedly fn arg =
     let result = fn arg
-    in result==arg ~? result ~! repeatedly fn result
+    in (result==arg) ~? result ~! repeatedly fn result
 
 
 via fn =
@@ -138,6 +138,11 @@ crop 1 0 = drop 1 -- `tail` could error out, one less worry
 crop start 0 = drop start
 crop start end =
     (drop start) . (dropLast end)
+
+count _ [] = 0
+count item (this:rest) =
+    (item==this ~? 1 ~! 0) + (count item rest)
+
 
 contains :: (Eq t)=> [t]->[t]->Bool
 contains = flip Data.List.isInfixOf
@@ -247,7 +252,7 @@ indexOfSubs1st subs str =
         indexinof = (flip indexOfSub) str
         iidxs = isubs >~ (both (id,indexinof)) ~|snd~.(>=0)
         (i,index) = Data.List.minimumBy (both2nd compare) iidxs
-    in null iidxs
+    in (null iidxs)
         ~? (minBound::Int , "")
         ~! (index , subs#i)
 
@@ -294,7 +299,7 @@ splitUp _ _ "" = []
 splitUp _ "" src = [(src,"")]
 splitUp [] _ src = [(src,"")]
 splitUp allbeginners end src =
-    null beginners ~? [(src,"")] ~! _splitup src
+    (null beginners) ~? [(src,"")] ~! _splitup src
     where
     beginners' = allbeginners>~reverse ~|noNull
     beg0len = (beginners'#0)~:length
@@ -304,15 +309,15 @@ splitUp allbeginners end src =
 
     _splitup str =
         (tolist pre "") ++ (tolist match beginner) ++ --  only recurse if we have a good reason:
-            (nomatch && splitat==0 ~? (tolist rest "") ~! (_splitup rest))
+            (nomatch && splitat==0 ~? tolist rest "" ~! _splitup rest)
         where
         pre = str ~: (take$ nomatch ~? splitat ~! begpos)
         match = nomatch ~? "" ~! (str ~: (take endpos) ~: (drop $begpos+beg0len))
         rest = str ~: (drop$ nomatch ~? splitat ~! endposl)
         beginner = nomatch ~? "" ~! str ~: (take endpos) ~: (drop begpos) ~: take beg0len
         nomatch = endpos<0 || begpos<0
-        splitat = nomatch && endpos>=0 ~? endposl ~! 0
+        splitat = (nomatch && endpos>=0) ~? endposl ~! 0
         endpos = indexOfSub end str
         begpos = endpos<0 ~? -1 ~! lastidx$ str ~: (take endpos) ~: reverse
         endposl = endpos + (end~:length)
-        tolist val beg = null val && null beg ~? [] ~! [(val,beg)]
+        tolist val beg = (null val && null beg) ~? [] ~! [(val,beg)]

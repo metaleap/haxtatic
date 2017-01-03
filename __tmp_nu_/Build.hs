@@ -7,7 +7,7 @@ import qualified Files
 import qualified Proj
 import qualified ProjC
 import qualified Util
-import Util ( (~:) , (>~) , (>>~) , (>>|) , (#) , (~?) , (~!) )
+import Util ( (~:) , (>~) , (~|) , (~.) , (>>~) , (>>|) , (#) , (~?) , (~!) )
 
 import qualified Data.Time.Clock
 import qualified System.Directory
@@ -23,26 +23,30 @@ data Plan
         numOutFilesTotal :: Int,
         numSkippedStatic :: Int,
         numSkippedPages :: Int,
-        numSkippedAtoms :: Int
-    }
+        numSkippedAtoms :: Int,
+        siteMap :: (Task , [Task])
+    } deriving (Show)
 
 
 data Task
     = NoOutput
     | FileOutput {
         relPath :: FilePath,
+        relPathSlashes :: FilePath,
         blokName :: String,
         outPathBuild :: FilePath,
         outPathDeploy :: FilePath,
         contentDate :: Data.Time.Clock.UTCTime,
         srcFile :: Files.File
     }
-    deriving (Eq)
+    deriving (Eq, Show)
 
 
 
 copyAllOutputsToDeploy buildplan =
-    let foreach builtfile =
+    let foreach NoOutput =
+            return ()
+        foreach builtfile =
             let srcfilepath = builtfile~:outPathBuild
                 ifexists True =
                     Files.copyTo srcfilepath [builtfile~:outPathDeploy]
@@ -52,6 +56,7 @@ copyAllOutputsToDeploy buildplan =
     in (buildplan~:outStatics) >>~ foreach
     >> (buildplan~:outPages) >>~ foreach
     >> (buildplan~:outAtoms) >>~ foreach
+    >> (buildplan~:siteMap~:fst) ~: foreach
     >> return ()
 
 
@@ -76,6 +81,7 @@ _createIndexHtmlIfNoContentPages ctxmain ctxproj numpagesrcfiles =
     >>= \(outfile , outfilerel , pathfinal)
     -> return FileOutput {
                     relPath = outfilerel,
+                    relPathSlashes = Files.pathSepSystemToSlash outfilerel,
                     blokName = "",
                     outPathBuild = pathfinal,
                     outPathDeploy = Util.unlessNullOp (ctxproj~:Proj.dirPathDeploy) (</> outfilerel),
@@ -102,7 +108,7 @@ plan ctxmain ctxproj =
     -> let
         allpagesfiles_nodate = allpagesfiles_orig >~ renamerelpath where
             renamerelpath both@(_,file) =
-                (fst$ Files.customDateFromFileName (_dateparser projcfg) both , file)
+                (fst$ Files.customDateFromFileName (ProjC.dtPageDateParse projcfg) both , file)
         outfileinfobasic = _outFileInfo ctxproj fst id
         outfileinfopage = _outFileInfo ctxproj snd id
         outfileinfoatom filenamer = _outFileInfo ctxproj fst $filenamer.(Files.ensureFileExt True ".atom")
@@ -112,33 +118,44 @@ plan ctxmain ctxproj =
                         where rppostatoms = projcfg~:ProjC.relPathPostAtoms
         allatoms = (allpostsfiles>~outfileinfopost) ++ (dynatoms>~(outfileinfoatom id))
         allstatics = allstaticfiles >~ outfileinfobasic
-        allpages |(defaultpage==NoOutput)= almostall |(otherwise)= defaultpage:almostall
-                    where almostall = (dynpages++allpagesfiles_nodate) >~ outfileinfopage
-        (dynpages,dynatoms) = Bloks.buildPlan (modtimeproj,modtimetmplblok) allpagesfiles_nodate $projsetup~:Proj.bloks
-    in _filterOutFiles allstatics cfgprocstatic >>= \outcopyfiles
-    -> _filterOutFiles allpages cfgprocpages >>= \outpagefiles
-    -> _filterOutFiles allatoms cfgprocposts >>= \outatomfiles
-    -> return BuildPlan {
+        allpages = (defaultpage==NoOutput) ~? almostall ~! defaultpage:almostall
+                    where almostall = (allpagesfiles_nodate++dynpages) >~ outfileinfopage
+        (dynpages,dynatoms) = Bloks.buildPlan (modtimeproj,modtimetmplblok) projcfg allpagesfiles_nodate $projsetup~:Proj.bloks
+    in _filterOutFiles False allstatics cfgprocstatic >>= \outcopyfiles
+    -> _filterOutFiles False allpages cfgprocpages >>= \outpagefiles
+    -> _filterOutFiles False allatoms cfgprocposts >>= \outatomfiles
+    -> _filterOutFiles True allpages cfgprocpages >>= \sitemapfiles
+    -> let
+        sitemaprelpath = projcfg~:ProjC.relPathSiteMap
+        sitemap = ( (null$ sitemaprelpath)
+                        ~? NoOutput
+                        ~! FileOutput { relPath = sitemaprelpath,
+                                        outPathBuild =
+                                            ctxproj~:Proj.dirPathBuild </> sitemaprelpath,
+                                        outPathDeploy =
+                                            Util.unlessNullOp (ctxproj~:Proj.dirPathDeploy) (</> sitemaprelpath) } ,
+                            sitemapfiles ~|relPath~.(Files.hasAnyFileExt $projcfg~:ProjC.htmlEquivExts) )
+    in return BuildPlan {
                 outAtoms = outatomfiles,
                 outPages = outpagefiles,
                 outStatics = outcopyfiles,
                 numOutFilesTotal = outcopyfiles~:length + outpagefiles~:length + outatomfiles~:length,
                 numSkippedStatic = allstatics~:length - outcopyfiles~:length,
                 numSkippedPages = allpages~:length - outpagefiles~:length,
-                numSkippedAtoms = allatoms~:length - outatomfiles~:length
+                numSkippedAtoms = allatoms~:length - outatomfiles~:length,
+                siteMap = sitemap
             }
 
-
-_dateparser projcfg = Proj.dtStr2Utc projcfg "_hax_pagedtformat"
 
 
 _outFileInfo ctxproj contentdater relpather both@(relpath,file) =
     let (_,cdate) = Files.customDateFromFileName dtparser both   --  ignoring the renamed relpath as we already had to take it above (for bloks) when we had to ignore the cdate .. ugly this double call
-        dtparser = _dateparser $ctxproj~:Proj.setup~:Proj.cfg
+        dtparser = ProjC.dtPageDateParse$ ctxproj~:Proj.setup~:Proj.cfg
         relpathnu = relpather relpath
         contentdate = contentdater (file~:Files.modTime , cdate)
-    in null relpathnu ~? NoOutput ~! FileOutput {
+    in (null relpathnu) ~? NoOutput ~! FileOutput {
             relPath = relpathnu,
+            relPathSlashes = Files.pathSepSystemToSlash relpathnu,
             blokName = Bloks.blokNameFromRelPath (ctxproj~:Proj.setup~:Proj.bloks) relpathnu file,
             outPathBuild = ctxproj~:Proj.dirPathBuild </> relpathnu,
             outPathDeploy = Util.unlessNullOp (ctxproj~:Proj.dirPathDeploy) (</> relpathnu),
@@ -148,7 +165,7 @@ _outFileInfo ctxproj contentdater relpather both@(relpath,file) =
 
 
 
-_filterOutFiles fileinfos cfgproc =
+_filterOutFiles forceforceall fileinfos cfgproc =
     fileinfos >>| shouldbuildfile where
         skipall = ["*"]== cfgproc~:ProjC.skip
         forceall = ["*"]== cfgproc~:ProjC.force
@@ -158,7 +175,7 @@ _filterOutFiles fileinfos cfgproc =
             let skipthis = (not skipall) && (matchesany $cfgproc~:ProjC.skip)
                 forcethis = (not forceall) && (matchesany $cfgproc~:ProjC.force)
                 matchesany = Files.simpleFileNameMatchAny $fileinfo~:relPath
-            in forcethis || (forceall && not skipthis)
+            in forcethis || (forceall && not skipthis) || forceforceall
             ~? return True
             ~! skipthis || (skipall && not forcethis)
             ~? return False

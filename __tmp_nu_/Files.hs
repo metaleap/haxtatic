@@ -25,7 +25,7 @@ data File
         modTime :: Data.Time.Clock.UTCTime,
         content :: String
     }
-    deriving (Eq)
+    deriving (Eq, Show)
 
 
 data Ctx
@@ -53,12 +53,12 @@ copyTo srcfilepath (dstpath:dstmore) =
 
 customDateFromFileName dateparser (filepath , srcfile) =
     let
-        (filedir , filename) = System.FilePath.splitFileName filepath
+        filedir = System.FilePath.takeDirectory filepath
+        filename = System.FilePath.takeFileName $srcfile~:path
         (datepart , fnrest) = System.FilePath.splitExtensions filename
-        datemaybe = dateparser datepart
-    in case datemaybe of
+    in case (dateparser datepart) of
         Just customdate->
-            ( (sanitizeDirPath filedir) </> (Util.trimStart' ['.'] fnrest) , customdate )
+            ( (sanitizeRelPath filedir) </> (Util.trimStart' ['.'] fnrest) , customdate )
         Nothing->
             ( filepath , srcfile~:modTime )
 
@@ -88,6 +88,11 @@ filesInDir dir =
 
 fullFrom oldfile cmpmodtime newcontent =
     FileFull (oldfile~:path) (max cmpmodtime $oldfile~:modTime) newcontent
+
+
+
+hasAnyFileExt exts filename =
+    any ((==) (System.FilePath.takeExtension filename)) exts
 
 
 
@@ -149,13 +154,13 @@ readOrDefault create ctxmain relpath relpath2 defaultcontent =
             = readOrDefault create ctxmain relpath2 "" defaultcontent
             | otherwise
             = let file = FileFull filepath (ctxmain~:nowTime) defaultcontent
-                in not create ~? return file
+                in (not create) ~? return file
                     ~! writeTo filepath relpath (return defaultcontent)
                     >> return file
 
 
 
-sanitizeDirPath =
+sanitizeRelPath =
     Util.trim ~. pathSepSlashToSystem ~.
         (Util.trim' $'.':System.FilePath.pathSeparators) ~. Util.trim
 

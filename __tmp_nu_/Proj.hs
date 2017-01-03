@@ -13,9 +13,6 @@ import qualified X
 import qualified Tmpl
 
 import qualified Data.Map.Strict
-import qualified Data.Time
-import qualified Data.Time.Clock
-import qualified Data.Time.Format
 import System.FilePath ( (</>) )
 
 
@@ -25,6 +22,7 @@ data Ctx
     = ProjContext {
         projName :: String,
         setupName :: String,
+        domainName :: String,
         dirPath :: FilePath,
         dirPathBuild :: FilePath,
         dirPathDeploy :: FilePath,
@@ -44,21 +42,6 @@ data Setup
 
 
 
-dtStr2Utc projcfg dtfname str =
-    (Data.Time.Format.parseTimeM
-        True Data.Time.defaultTimeLocale (ProjC.dtFormat projcfg dtfname) str)
-            :: Maybe Data.Time.Clock.UTCTime
-
-dtStr2UtcOr projcfg dtfname str defval =
-    case dtStr2Utc projcfg dtfname str of
-        Just parsed -> parsed
-        Nothing -> defval
-
-dtUtc2Str projcfg dtfname utctime =
-    Data.Time.Format.formatTime Data.Time.defaultTimeLocale (ProjC.dtFormat projcfg dtfname) utctime
-
-
-
 loadCtx ctxmain projname defaultfiles =
     let loadedsetup = _loadSetup ctxproj
         dirpath = ctxmain~:Files.dirPath
@@ -67,11 +50,12 @@ loadCtx ctxmain projname defaultfiles =
         ctxproj = ProjContext {
             projName = projname,
             setupName = setupname,
+            domainName = Util.ifNull (loadedsetup~:cfg~:ProjC.domainName) projname,
             dirPath = dirpath,
             dirPathBuild = dirpathjoin$
                 setupname ++"-"++ loadedsetup~:cfg~:ProjC.dirNameBuild,
             dirPathDeploy = let dd = loadedsetup~:cfg~:ProjC.dirNameDeploy
-                            in null dd ~? "" ~! dirpathjoin $setupname++"-"++dd,
+                            in (null dd) ~? "" ~! dirpathjoin $setupname++"-"++dd,
             setup = loadedsetup,
             coreFiles = defaultfiles
         }
