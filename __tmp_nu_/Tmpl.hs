@@ -4,7 +4,7 @@ module Tmpl where
 import qualified Defaults
 import qualified Files
 import qualified Util
-import Util ( (#) , (~|) , (~:) , (>>~) , (>~) , (~?) , (~!) , noNull )
+import Util ( (#) , (~|) , (~:) , (>>~) , (>~) , (|?) , (|!) , noNull )
 
 import qualified Data.List
 import qualified Data.Maybe
@@ -63,7 +63,7 @@ loadAll ctxmain ctxproc deffiles filenameexts htmlequivexts =
         tmplfind ".htm" = tmpldef
         tmplfind ".html" = tmpldef
         tmplfind ext =
-            elem ext htmlequivexts ~? tmpldef ~!
+            elem ext htmlequivexts |? tmpldef |!
                 Data.Maybe.fromMaybe tmpldef $Data.List.find ((ext==).fileExt) loadedtemplates
     in return tmplfind
 
@@ -90,14 +90,14 @@ processSrcJustOnce ctxproc bname src =
     foreach (srccontent , "") =
         srccontent
     foreach (tagcontent , tagbegin) =
-        noesc ~? result ~! Util.crop 1 1 (show result)
+        noesc |? result |! Util.crop 1 1 (show result)
         where
         noesc = not$ Util.startsWith tagcontent "``:"
         result = case (tagresolver taginner) of
             Just output-> output
             Nothing-> tagbegin++tagcontent++tag_Close
             where
-            taginner = noesc ~? tagcontent ~! drop 3 tagcontent
+            taginner = noesc |? tagcontent |! drop 3 tagcontent
             tagresolver
                 |(tagbegin==tag_B)= (ctxproc~:bTags) bname
                 |(tagbegin==tag_C)= ctxproc~:cTags

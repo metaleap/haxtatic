@@ -6,6 +6,7 @@ import qualified Data.Char
 import qualified Data.List
 import qualified Data.Time.Calendar
 import qualified Data.Time.Clock
+import Data.Function ( (&) )
 
 
 
@@ -23,7 +24,7 @@ dateTime0 = Data.Time.Clock.UTCTime {
 
 (~.) = flip (.)
 
-(~:) = flip ($)
+(~:) = (&)
 
 -- LAST: (>~) :: Functor f => f a -> (a -> b) -> f b
 (>~) = flip fmap
@@ -42,12 +43,12 @@ infix 8 >>~
 (>>|) :: Applicative m => [a] -> (a -> m Bool) -> m [a]
 (>>|) = flip Control.Monad.filterM
 
-(~?) :: Bool -> a -> a -> a
-(~?) = when
-infixl 1 ~?
+(|?) :: Bool -> a -> a -> a
+(|?) = when
+infixl 1 |?
 
-(~!) = ($)
-infixr 0 ~!
+(|!) = ($)
+infixr 0 |!
 
 when True v _ = v
 when False _ v = v
@@ -90,7 +91,7 @@ isnt notval =
 
 repeatedly fn arg =
     let result = fn arg
-    in (result==arg) ~? result ~! repeatedly fn result
+    in (result==arg) |? result |! repeatedly fn result
 
 
 via fn =
@@ -141,7 +142,7 @@ crop start end =
 
 count _ [] = 0
 count item (this:rest) =
-    (item==this ~? 1 ~! 0) + (count item rest)
+    (item==this |? 1 |! 0) + (count item rest)
 
 
 contains :: (Eq t)=> [t]->[t]->Bool
@@ -222,58 +223,58 @@ lengthGt n = noNull . drop n
 fuseElems is2fuse fusion (this:next:more) =
     (fused:rest) where
         nofuse = not$ is2fuse this next
-        fused = nofuse ~? this ~! fusion this next
+        fused = nofuse |? this |! fusion this next
         rest = fuseElems is2fuse fusion$
-                nofuse ~? (next:more) ~! more
+                nofuse |? (next:more) |! more
 fuseElems _ _ l = l
 
 
 indexOf _ [] =
     minBound::Int
 indexOf item (this:rest) =
-    (this==item) ~? 0 ~! 1 + (indexOf item rest)
+    (this==item) |? 0 |! 1 + (indexOf item rest)
 
 
-indexOfSub _ [] =
+indexOfSub [] _ =
     minBound::Int
-indexOfSub sub str@(_:rest)
+indexOfSub str@(_:rest) sub
     | (zip sub str) ~: (all $(==)~:uncurry)
     = 0
     | otherwise
-    = 1 + (indexOfSub sub rest)
+    = 1 + (indexOfSub rest sub)
     --  --this dumb 1+ DOES seem slightly faster
     --  --than compare-lt + conditional-add, so NOT this:
     --  = idx (indexOfSub sub rest)
     --  where
     --      idx i |i<0 = i |otherwise = 1+i
 
-indexOfSubs1st subs str =
+indexOfSubs1st str subs =
     let isubs = indexed subs
-        indexinof = (flip indexOfSub) str
-        iidxs = isubs >~ (both (id,indexinof)) ~|snd~.(>=0)
+        indexof = indexOfSub str
+        iidxs = isubs >~ (both (id,indexof)) ~|snd~.(>=0)
         (i,index) = Data.List.minimumBy (both2nd compare) iidxs
     in (null iidxs)
-        ~? (minBound::Int , "")
-        ~! (index , subs#i)
+        |? (minBound::Int , "")
+        |! (index , subs#i)
 
-lastIndexOfSub revsub revstr
+lastIndexOfSub revstr revsub
     |(idx<0)= idx
-    |(otherwise)= (revstr~:length)-(revsub~:length)-idx
+    |(otherwise)= revstr~:length - revsub~:length - idx
     where
-        idx = indexOfSub revsub revstr
+        idx = indexOfSub revstr revsub
 
 
 
 replace old new str =
     _replace_helper idx old (const new) (replace old new) str
-    where idx = indexOfSub old str
+    where idx = indexOfSub str old
 
 replaceAny olds tonew str =
     _replace_helper idx old tonew (replaceAny olds tonew) str
-    where (idx,old) = indexOfSubs1st olds str
+    where (idx,old) = indexOfSubs1st str olds
 
 _replace_helper idx old tonew replrest str =
-    idx<0 ~? str ~!
+    idx<0 |? str |!
         pre ++ (tonew old) ++ replrest rest where
             pre = take idx str
             rest = drop (idx + old~:length) str
@@ -281,7 +282,7 @@ _replace_helper idx old tonew replrest str =
 
 
 splitAt1st delim list =
-    (one , idx<0 ~? two ~! drop 1 two) where
+    (one , idx<0 |? two |! drop 1 two) where
         (one,two) = Data.List.splitAt idx list
         idx = indexOf delim list
 
@@ -299,25 +300,25 @@ splitUp _ _ "" = []
 splitUp _ "" src = [(src,"")]
 splitUp [] _ src = [(src,"")]
 splitUp allbeginners end src =
-    (null beginners) ~? [(src,"")] ~! _splitup src
+    (null beginners) |? [(src,"")] |! _splitup src
     where
     beginners' = allbeginners>~reverse ~|noNull
     beg0len = (beginners'#0)~:length
     beginners = beginners' ~| length~.((==)beg0len)
 
-    lastidx revstr = (beginners>~ \each-> lastIndexOfSub each revstr) ~: maximum
+    lastidx revstr = (beginners>~ (lastIndexOfSub revstr)) ~: maximum
 
     _splitup str =
         (tolist pre "") ++ (tolist match beginner) ++ --  only recurse if we have a good reason:
-            (nomatch && splitat==0 ~? tolist rest "" ~! _splitup rest)
+            (nomatch && splitat==0 |? tolist rest "" |! _splitup rest)
         where
-        pre = str ~: (take$ nomatch ~? splitat ~! begpos)
-        match = nomatch ~? "" ~! (str ~: (take endpos) ~: (drop $begpos+beg0len))
-        rest = str ~: (drop$ nomatch ~? splitat ~! endposl)
-        beginner = nomatch ~? "" ~! str ~: (take endpos) ~: (drop begpos) ~: take beg0len
+        pre = str ~: (take$ nomatch |? splitat |! begpos)
+        match = nomatch |? "" |! (str ~: (take endpos) ~: (drop $begpos+beg0len))
+        rest = str ~: (drop$ nomatch |? splitat |! endposl)
+        beginner = nomatch |? "" |! str ~: (take endpos) ~: (drop begpos) ~: take beg0len
         nomatch = endpos<0 || begpos<0
-        splitat = (nomatch && endpos>=0) ~? endposl ~! 0
-        endpos = indexOfSub end str
-        begpos = endpos<0 ~? -1 ~! lastidx$ str ~: (take endpos) ~: reverse
+        splitat = (nomatch && endpos>=0) |? endposl |! 0
+        endpos = indexOfSub str end
+        begpos = endpos<0 |? -1 |! lastidx$ str ~: (take endpos) ~: reverse
         endposl = endpos + (end~:length)
-        tolist val beg = (null val && null beg) ~? [] ~! [(val,beg)]
+        tolist val beg = (null val && null beg) |? [] |! [(val,beg)]

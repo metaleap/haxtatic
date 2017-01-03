@@ -7,7 +7,7 @@ import qualified Files
 import qualified ProjC
 import qualified ProjT
 import qualified Util
-import Util ( (~:) , (>~) , (~?) , (~!) )
+import Util ( (~:) , (>~) , (|?) , (|!) )
 import qualified X
 
 import qualified Tmpl
@@ -55,7 +55,7 @@ loadCtx ctxmain projname defaultfiles =
             dirPathBuild = dirpathjoin$
                 setupname ++"-"++ loadedsetup~:cfg~:ProjC.dirNameBuild,
             dirPathDeploy = let dd = loadedsetup~:cfg~:ProjC.dirNameDeploy
-                            in (null dd) ~? "" ~! dirpathjoin $setupname++"-"++dd,
+                            in (null dd) |? "" |! dirpathjoin $setupname++"-"++dd,
             setup = loadedsetup,
             coreFiles = defaultfiles
         }

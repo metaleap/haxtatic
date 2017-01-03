@@ -9,7 +9,7 @@ import qualified Files
 import qualified Pages
 import qualified Proj
 import qualified Util
-import Util ( (#) , (~:) , (>~) , (~?) , (~!) )
+import Util ( (#) , (~:) , (>~) , (|?) , (|!) )
 
 import qualified Data.Time.Clock
 import qualified System.Directory
@@ -80,7 +80,7 @@ processAll ctxmain projfilename custfilenames =
         numskipfiles = buildplan~:Build.numSkippedStatic
         numoutfiles = buildplan~:Build.numOutFilesTotal
         numxmlfiles = buildplan~:Build.outAtoms~:length
-        numsitemaps = ((buildplan~:Build.siteMap~:fst) == Build.NoOutput) ~? 0 ~! 1
+        numsitemaps = ((buildplan~:Build.siteMap~:fst) == Build.NoOutput) |? 0 |! 1
         dirbuild = ctxproj~:Proj.dirPathBuild
     in putStrLn ("\t->\tStatic files: will copy " ++(show numcopyfiles)++ ", skipping " ++(show numskipfiles)++ "")
     >> putStrLn ("\t->\tContent pages: will (re)generate from " ++(show numgenpages)++ ", skipping " ++(show numskippages)++ "")

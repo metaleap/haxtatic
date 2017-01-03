@@ -5,7 +5,7 @@ import qualified Defaults
 import qualified Files
 import qualified ProjC
 import qualified Util
-import Util ( noNull , (~:) , (>~) , (~|) , (|~) , (~.) , (~?) , (~!) , (#) )
+import Util ( noNull , (~:) , (>~) , (~|) , (|~) , (~.) , (|?) , (|!) , (#) )
 
 import qualified Data.List
 import qualified Data.Map.Strict
@@ -35,14 +35,14 @@ allBlokPageFiles projcfg allpagesfiles bname =
             compare (pagedate file2) (pagedate file1)
         pagedate = snd.(Files.customDateFromFileName$ ProjC.dtPageDateParse projcfg)
         sortedmatches = Data.List.sortBy cmpblogpages blokpagematches
-    in (sortedmatches ,  (null sortedmatches) ~? Util.dateTime0 ~! pagedate $sortedmatches#0 )
+    in (sortedmatches ,  (null sortedmatches) |? Util.dateTime0 |! pagedate $sortedmatches#0 )
 
 
 
 blokNameFromIndexPagePath possiblefakepath =
     let lenprefix = Defaults.blokIndexPrefix~:length
     in Defaults.blokIndexPrefix /= possiblefakepath~:(take lenprefix)
-        ~? "" ~! drop 1 (System.FilePath.takeExtension possiblefakepath)
+        |? "" |! drop 1 (System.FilePath.takeExtension possiblefakepath)
 
 
 
@@ -64,11 +64,11 @@ buildPlan (modtimeproj,modtimetmplblok) projcfg allpagesfiles bloks =
         isblokpagefile (relpath,file) = noNull relpath && file /= Files.NoFile
         _allblokpagefiles = allBlokPageFiles projcfg allpagesfiles
         tofileinfo ispage bfield modtime bname blok =
-            let virtpath = (isblokpagefile bpage) ~? blok~:bfield ~! ""
+            let virtpath = (isblokpagefile bpage) |? blok~:bfield |! ""
                 (allblokpagefiles , datelatest) = _allblokpagefiles bname
                 bpage@(_,bpagefile) = Util.atOr allblokpagefiles 0 ("" , Files.NoFile)
             in ( Files.pathSepSlashToSystem virtpath ,
-                (null virtpath) ~? Files.NoFile ~! Files.FileInfo {
+                (null virtpath) |? Files.NoFile |! Files.FileInfo {
                                                     Files.path =
                                                         Defaults.blokIndexPrefix++"/"
                                                         ++(ProjC.dtPageDateFormat projcfg datelatest)
@@ -93,7 +93,7 @@ parseProjLines linessplits =
                 errblok = Blok { title="{!B| syntax issue near `B::" ++bname++ ":`, couldn't parse `" ++parsestr++ "` |!}",
                                     desc="{!B| Syntax issue in your .haxproj file defining Blok named '" ++bname++ "'. Thusly couldn't parse Blok settings (incl. title/desc) |!}",
                                     atomFile="", blokIndexPageFile="", inSitemap=False, dtFormat="" }
-            in (null bname) ~? noblok ~!
+            in (null bname) |? noblok |!
                 (bname , Data.Maybe.fromMaybe errblok parsed)
         foreach _ =
             noblok
@@ -105,12 +105,12 @@ tagResolver hashmap curbname str =
     let (fname, bn) = Util.both' Util.trim (Util.splitAt1st ':' str)
         fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
                     ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dtFormat",dtFormat)  ]
-        bname = (null bn) ~? curbname ~! bn
+        bname = (null bn) |? curbname |! bn
         blok = Data.Map.Strict.findWithDefault NoBlok bname hashmap
-    in (null fname) ~? Nothing
-        ~! (fname=="name" && noNull bname) ~? Just bname
-            ~! (blok==NoBlok) ~? Nothing
-                ~! case Data.List.lookup fname fields of
+    in (null fname) |? Nothing
+        |! (fname=="name" && noNull bname) |? Just bname
+            |! (blok==NoBlok) |? Nothing
+                |! case Data.List.lookup fname fields of
                     Just fieldval-> Just $blok~:fieldval
                     Nothing-> Nothing
 
@@ -127,5 +127,5 @@ toParseStr bname projline =
         any ((Util.contains prjln).(field++)) ( ["=True","=False"]++
                 ["={", " = {", "= {", " ={", "\t=\t{", "=\t{", "\t={"]++
                     ["=\"", " = \"", "= \"", " =\"", "\t=\t\"", "=\t\"", "\t=\""] )
-        ~? prjln -- there was a hint field is already in def-string
-        ~! prjln ++ ", " ++ field ++ "=" ++ (show defval) -- user skipped field, append
+        |? prjln -- there was a hint field is already in def-string
+        |! prjln ++ ", " ++ field ++ "=" ++ (show defval) -- user skipped field, append

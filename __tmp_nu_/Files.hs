@@ -2,7 +2,7 @@
 module Files where
 
 import qualified Util
-import Util ( noNull , (~:) , (~.) , (~|) , (>~) , (>>~) , (>>|) , (~?) , (~!) )
+import Util ( noNull , (~:) , (~.) , (~|) , (>~) , (>>~) , (>>|) , (|?) , (|!) )
 
 import qualified Data.List
 import qualified Data.Time.Clock
@@ -154,8 +154,8 @@ readOrDefault create ctxmain relpath relpath2 defaultcontent =
             = readOrDefault create ctxmain relpath2 "" defaultcontent
             | otherwise
             = let file = FileFull filepath (ctxmain~:nowTime) defaultcontent
-                in (not create) ~? return file
-                    ~! writeTo filepath relpath (return defaultcontent)
+                in (not create) |? return file
+                    |! writeTo filepath relpath (return defaultcontent)
                     >> return file
 
 

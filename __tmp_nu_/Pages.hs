@@ -9,7 +9,7 @@ import qualified Proj
 import qualified ProjC
 import qualified Tmpl
 import qualified Util
-import Util ( (~:) , (>>~) , (>~) , (~.) , (~?) , (~!) )
+import Util ( (~:) , (>>~) , (>~) , (~.) , (|?) , (|!) )
 
 import qualified Data.Map.Strict
 import qualified System.FilePath
@@ -51,7 +51,7 @@ processPage ctxtmpl tmplfinder outjob =
             let srcfilepath = outjob~:Build.srcFile~:Files.path
                 blokindexname = Bloks.blokNameFromIndexPagePath srcfilepath
                 blokindextmpl = tmplfinder Defaults.blokIndexPrefix
-            in (null blokindexname) ~? readFile srcfilepath ~!
+            in (null blokindexname) |? readFile srcfilepath |!
                 return (blokindextmpl~:Tmpl.srcFile~:Files.content)
 
 
@@ -69,7 +69,7 @@ writeSitemapXml ctxproj buildplan =
             \        <priority>"++(take 3 (show priority))++"</priority>\n\
             \    </url>"
         foreach pageinfo =
-            skip ~? "" ~!
+            skip |? "" |!
                 xmlsitemapitem (ctxproj~:Proj.domainName) relpath (pageinfo~:Build.contentDate) priorel
             where
             skip = (blok/=Bloks.NoBlok) && (not$ blok~:Bloks.inSitemap)

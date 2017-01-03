@@ -7,7 +7,7 @@ import qualified Files
 import qualified Proj
 import qualified ProjC
 import qualified Util
-import Util ( (~:) , (>~) , (~|) , (~.) , (>>~) , (>>|) , (#) , (~?) , (~!) )
+import Util ( (~:) , (>~) , (~|) , (~.) , (>>~) , (>>|) , (#) , (|?) , (|!) )
 
 import qualified Data.Time.Clock
 import qualified System.Directory
@@ -118,7 +118,7 @@ plan ctxmain ctxproj =
                         where rppostatoms = projcfg~:ProjC.relPathPostAtoms
         allatoms = (allpostsfiles>~outfileinfopost) ++ (dynatoms>~(outfileinfoatom id))
         allstatics = allstaticfiles >~ outfileinfobasic
-        allpages = (defaultpage==NoOutput) ~? almostall ~! defaultpage:almostall
+        allpages = (defaultpage==NoOutput) |? almostall |! defaultpage:almostall
                     where almostall = (allpagesfiles_nodate++dynpages) >~ outfileinfopage
         (dynpages,dynatoms) = Bloks.buildPlan (modtimeproj,modtimetmplblok) projcfg allpagesfiles_nodate $projsetup~:Proj.bloks
     in _filterOutFiles False allstatics cfgprocstatic >>= \outcopyfiles
@@ -128,8 +128,8 @@ plan ctxmain ctxproj =
     -> let
         sitemaprelpath = projcfg~:ProjC.relPathSiteMap
         sitemap = ( (null$ sitemaprelpath)
-                        ~? NoOutput
-                        ~! FileOutput { relPath = sitemaprelpath,
+                        |? NoOutput
+                        |! FileOutput { relPath = sitemaprelpath,
                                         outPathBuild =
                                             ctxproj~:Proj.dirPathBuild </> sitemaprelpath,
                                         outPathDeploy =
@@ -153,7 +153,7 @@ _outFileInfo ctxproj contentdater relpather both@(relpath,file) =
         dtparser = ProjC.dtPageDateParse$ ctxproj~:Proj.setup~:Proj.cfg
         relpathnu = relpather relpath
         contentdate = contentdater (file~:Files.modTime , cdate)
-    in (null relpathnu) ~? NoOutput ~! FileOutput {
+    in (null relpathnu) |? NoOutput |! FileOutput {
             relPath = relpathnu,
             relPathSlashes = Files.pathSepSystemToSlash relpathnu,
             blokName = Bloks.blokNameFromRelPath (ctxproj~:Proj.setup~:Proj.bloks) relpathnu file,
@@ -176,10 +176,10 @@ _filterOutFiles forceforceall fileinfos cfgproc =
                 forcethis = (not forceall) && (matchesany $cfgproc~:ProjC.force)
                 matchesany = Files.simpleFileNameMatchAny $fileinfo~:relPath
             in forcethis || (forceall && not skipthis) || forceforceall
-            ~? return True
-            ~! skipthis || (skipall && not forcethis)
-            ~? return False
-            ~! let
+            |? return True
+            |! skipthis || (skipall && not forcethis)
+            |? return False
+            |! let
                 outfilepath = fileinfo~:outPathBuild
                 ifexists False =
                     return True

@@ -5,7 +5,7 @@ import qualified Defaults
 import qualified Files
 import qualified Tmpl
 import qualified Util
-import Util ( (~:) , (>~) , (~|) , (~.) , (~?) , (~!) , noNull )
+import Util ( (~:) , (>~) , (~|) , (~.) , (|?) , (|!) , noNull )
 
 import qualified Data.Map.Strict
 import qualified Data.Maybe
@@ -54,8 +54,8 @@ dtStr2UtcOr cfgproj dtfname str defval =
 
 dtUtc2Str cfgproj dtfname utctime =
     let dtformat = (dtfname == "_hax_dtformat_iso8601")
-                    ~? Data.Time.Format.iso8601DateFormat (Just "%H:%M:%S")
-                    ~! dtFormat cfgproj dtfname
+                    |? Data.Time.Format.iso8601DateFormat (Just "%H:%M:%S")
+                    |! dtFormat cfgproj dtfname
     in Data.Time.Format.formatTime Data.Time.defaultTimeLocale dtformat utctime
 
 
@@ -94,9 +94,9 @@ parseProjLines linessplits =
     procposts = procfind Defaults.dir_Posts
     procfind name =
         procsane name (Data.Maybe.fromMaybe (procdef name) maybeparsed) where
-            maybeparsed = (null procstr) ~? Nothing ~!
+            maybeparsed = (null procstr) |? Nothing |!
                             (Text.Read.readMaybe procstr) :: Maybe Processing
-            procstr = (null procval) ~? procval ~! "ProcFromProj {"++procval++"}"
+            procstr = (null procval) |? procval |! "ProcFromProj {"++procval++"}"
             procval = Data.Map.Strict.findWithDefault "" ("process:"++name) cfgprocs
     procdef dirname =
         ProcFromProj { dirs = [dirname], skip = [], force = [] }
@@ -109,8 +109,8 @@ parseProjLines linessplits =
             saneneither = saneskip==saneforce
             saneskip = sanitize skip ; saneforce = sanitize force
             sanitize fvals = let them = proc~:fvals >~Util.trim ~|noNull
-                                in (elem "*" them) ~? ["*"] ~! them
-    proctags = (noNull ptags) ~? ptags ~! Tmpl.tags_All where
+                                in (elem "*" them) |? ["*"] |! them
+    proctags = (noNull ptags) |? ptags |! Tmpl.tags_All where
         ptags = (pstr~:(Util.splitBy ',') >~ Util.trim ~|noNull) >~ ('{':).(++"|")
         pstr = Util.trim$ Data.Map.Strict.findWithDefault "" ("process:tags") cfgprocs
     dirnameonly = System.FilePath.takeFileName ~. Util.trim

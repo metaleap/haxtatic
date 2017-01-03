@@ -2,7 +2,7 @@
 module Html where
 
 import qualified Util
-import Util ( noNull , (~:) , (>~) , (#) , (~|) , (~?) , (~!) )
+import Util ( noNull , (~:) , (>~) , (#) , (~|) , (|?) , (|!) )
 
 
 
@@ -25,7 +25,7 @@ emit::
     Tag->
     String
 emit tag =
-    nooutertag ~? outinner ~!
+    nooutertag |? outinner |!
         outopen++outatts++outinner++outclose
     where
     outopen = "<"++tagname
@@ -33,14 +33,14 @@ emit tag =
         foreach (n,v)   |(null n || null v)= ""
                         |(otherwise)= " " ++ n ++ "=\"" ++ v ++ "\""
     outinner = ifselfclosing ++ (concat$ tchildren>~emit) ++ innercontent where
-        ifselfclosing = nooutertag ~? "" ~!
-                            noinneroutput ~? "/>" ~! ">"
-    outclose = noinneroutput ~? "" ~! "</"++tagname++">"
+        ifselfclosing = nooutertag |? "" |!
+                            noinneroutput |? "/>" |! ">"
+    outclose = noinneroutput |? "" |! "</"++tagname++">"
 
     nooutertag = null tagname
     tagname = tag~:name
     tagatts = tag~:attribs
-    innercontent = (noNull tagatts && null att0n) ~? att0v ~! ""
+    innercontent = (noNull tagatts && null att0n) |? att0v |! ""
                     where (att0n,att0v) = tagatts#0
     tchildren = tag~:subTags
     noinneroutput = null tchildren && null innercontent
@@ -74,7 +74,7 @@ stripMarkup substchar markup =
     stripmarkup intagwas (curchar:rest) =
         nextchar:(stripmarkup intagnext rest)
         where
-        nextchar = intagnow ~? substchar ~! curchar
+        nextchar = intagnow |? substchar |! curchar
         intagnow = intagwas || istagopen || istagclose
         intagnext = intagnow && not istagclose
         istagopen = curchar=='<'
