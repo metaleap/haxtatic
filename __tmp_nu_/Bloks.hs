@@ -5,7 +5,7 @@ import qualified Defaults
 import qualified Files
 import qualified ProjC
 import qualified Util
-import Util ( noNull , (~:) , (>~) , (~|) , (|~) , (~.) , (|?) , (|!) , (#) )
+import Util ( is , (~:) , (>~) , (~|) , (|~) , (~.) , (|?) , (|!) , (#) )
 
 import qualified Data.List
 import qualified Data.Map.Strict
@@ -47,7 +47,7 @@ blokNameFromIndexPagePath possiblefakepath =
 
 
 blokNameFromRelPath bloks relpath file =
-    Util.atOr (bloks~:Data.Map.Strict.keys >~ foreach ~|noNull) 0 "" where
+    Util.atOr (bloks~:Data.Map.Strict.keys >~ foreach ~|is) 0 "" where
         foreach bname
             | isRelPathBlokPage bname relpath
             = bname
@@ -61,7 +61,7 @@ buildPlan (modtimeproj,modtimetmplblok) projcfg allpagesfiles bloks =
         dynatoms = mapandfilter (tofileinfo False atomFile modtimeproj)
         dynpages = mapandfilter (tofileinfo True blokIndexPageFile modtimetmplblok)
         mapandfilter fn = isblokpagefile |~ (Data.Map.Strict.elems$ Data.Map.Strict.mapWithKey fn bloks)
-        isblokpagefile (relpath,file) = noNull relpath && file /= Files.NoFile
+        isblokpagefile (relpath,file) = is relpath && file /= Files.NoFile
         _allblokpagefiles = allBlokPageFiles projcfg allpagesfiles
         tofileinfo ispage bfield modtime bname blok =
             let virtpath = (isblokpagefile bpage) |? blok~:bfield |! ""
@@ -108,7 +108,7 @@ tagResolver hashmap curbname str =
         bname = (null bn) |? curbname |! bn
         blok = Data.Map.Strict.findWithDefault NoBlok bname hashmap
     in (null fname) |? Nothing
-        |! (fname=="name" && noNull bname) |? Just bname
+        |! (fname=="name" && is bname) |? Just bname
             |! (blok==NoBlok) |? Nothing
                 |! case Data.List.lookup fname fields of
                     Just fieldval-> Just $blok~:fieldval

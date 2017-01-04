@@ -37,20 +37,21 @@ data Setup
         --  srcPre :: [String],
         bloks :: Data.Map.Strict.Map String Bloks.Blok,
         cfg :: ProjC.Config,
-        tmpl :: Tmpl.Ctx
+        tmpl :: Tmpl.Ctx,
+        tagMismatches :: (Int , Int)
     }
 
 
 
-loadCtx ctxmain projname defaultfiles =
-    let loadedsetup = _loadSetup ctxproj
+loadCtx ctxmain projname xregs defaultfiles =
+    let loadedsetup = _loadSetup ctxproj xregs
         dirpath = ctxmain~:Files.dirPath
         dirpathjoin = (dirpath </>)
         setupname = ctxmain~:Files.setupName
         ctxproj = ProjContext {
             projName = projname,
             setupName = setupname,
-            domainName = Util.ifNull (loadedsetup~:cfg~:ProjC.domainName) projname,
+            domainName = Util.ifNo (loadedsetup~:cfg~:ProjC.domainName) projname,
             dirPath = dirpath,
             dirPathBuild = dirpathjoin$
                 setupname ++"-"++ loadedsetup~:cfg~:ProjC.dirNameBuild,
@@ -63,7 +64,7 @@ loadCtx ctxmain projname defaultfiles =
 
 
 
-_loadSetup ctxproj =
+_loadSetup ctxproj xregs =
     SetupFromProj { -- srcRaw = srclinespost, srcPre = srclinesprep,
                     bloks = blokspost,
                     cfg = cfgpost,
@@ -73,7 +74,8 @@ _loadSetup ctxproj =
                             Tmpl.tTags = ProjT.tagResolver ttagspost,
                             Tmpl.xTags = X.tagResolver xtagspost,
                             Tmpl.processTags = cfgpost~:ProjC.tmplTags
-                        }
+                        },
+                    tagMismatches = Tmpl.tagMismatches rawsrc
                     }
     where
     setupprep = SetupFromProj { -- srcRaw = [], srcPre = [],
@@ -85,7 +87,8 @@ _loadSetup ctxproj =
                                         Tmpl.tTags = ProjT.tagResolver ttagsprep,
                                         Tmpl.xTags = X.tagResolver xtagsprep,
                                         Tmpl.processTags = cfgprep~:ProjC.tmplTags
-                                    }
+                                    },
+                                tagMismatches = (0,0)
                                 }
     bloksprep = Bloks.parseProjLines preplinessplits
     blokspost = Bloks.parseProjLines postlinessplits
@@ -93,13 +96,14 @@ _loadSetup ctxproj =
     (cfgpost,cfgmiscpost) = ProjC.parseProjLines postlinessplits
     ttagsprep = ProjT.parseProjLines preplinessplits False
     ttagspost = ProjT.parseProjLines postlinessplits True
-    xtagsprep = X.parseProjLines preplinessplits
-    xtagspost = X.parseProjLines postlinessplits
+    xtagsprep = X.parseProjLines preplinessplits xregs
+    xtagspost = X.parseProjLines postlinessplits xregs
 
     preplinessplits = srclinesprep>~ _splitc
     postlinessplits = srclinespost>~ _splitc
     _splitc = Util.splitBy ':'
-    srclinesprep = ProjT.srcLinesExpandMl$ _rawsrc ctxproj
+    rawsrc = _rawsrc ctxproj
+    srclinesprep = ProjT.srcLinesExpandMl rawsrc
     srclinespost = lines$ Tmpl.processSrcFully (setupprep~:tmpl) "" (srclinesprep~:unlines)
 
 

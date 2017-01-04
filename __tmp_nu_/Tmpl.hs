@@ -4,7 +4,7 @@ module Tmpl where
 import qualified Defaults
 import qualified Files
 import qualified Util
-import Util ( (#) , (~|) , (~:) , (>>~) , (>~) , (|?) , (|!) , noNull )
+import Util ( (#) , (~|) , (~:) , (>>~) , (>~) , (|?) , (|!) )
 
 import qualified Data.List
 import qualified Data.Maybe
@@ -42,9 +42,9 @@ apply ctxtmpl pagesrc =
 loadAll ctxmain ctxproc deffiles filenameexts htmlequivexts =
     let foreach fileext
             | null fileext
-            = loadTmpl ctxproc "" $deffiles~:Defaults.htmlTemplateMain
+            = loadTmpl ctxmain ctxproc "" $deffiles~:Defaults.htmlTemplateMain
             | fileext==Defaults.blokIndexPrefix
-            =  loadTmpl ctxproc Defaults.blokIndexPrefix $deffiles~:Defaults.htmlTemplateBlok
+            =  loadTmpl ctxmain ctxproc Defaults.blokIndexPrefix $deffiles~:Defaults.htmlTemplateBlok
             | otherwise
             = let tmplpath name = "tmpl" </> (name $".haxtmpl"++fileext)
                 in Files.readOrDefault False ctxmain (tmplpath ((ctxmain~:Files.setupName)++))
@@ -52,7 +52,7 @@ loadAll ctxmain ctxproc deffiles filenameexts htmlequivexts =
                     (tmplpath Defaults.fileName_Pref)
                         --  fallback template content: `{P|:content:|}`
                         (_applychunkbegin++_applychunkmid++_applychunkend)
-                    >>= loadTmpl ctxproc fileext
+                    >>= loadTmpl ctxmain ctxproc fileext
         fileexts = "":Defaults.blokIndexPrefix:otherexts where
             otherexts = Util.unique$ filenameexts ~| Util.noneOf htmlequivexts
     in fileexts>>~foreach
@@ -69,14 +69,16 @@ loadAll ctxmain ctxproc deffiles filenameexts htmlequivexts =
 
 
 
-loadTmpl ctxproc fileext tmpfile =
-    return Template {
+loadTmpl ctxmain ctxproc fileext tmpfile =
+    warnIfTagMismatches ctxmain (srcfile~:Files.path) (tagMismatches rawsrc)
+    >> return Template {
                 fileExt = fileext, srcFile = srcfile, chunks = srcchunks
             }
     where
     srcfile = Files.fullFrom tmpfile Util.dateTime0 srcpreprocessed
     srcchunks = Util.splitUp [_applychunkbegin] _applychunkend srcpreprocessed
-    srcpreprocessed = processSrcFully ctxproc "" (tmpfile~:Files.content)
+    srcpreprocessed = processSrcFully ctxproc "" rawsrc
+    rawsrc = (tmpfile~:Files.content)
 
 
 
@@ -104,6 +106,25 @@ processSrcJustOnce ctxproc bname src =
                 |(tagbegin==tag_T)= ctxproc~:tTags
                 |(tagbegin==tag_X)= ctxproc~:xTags
                 |(otherwise)= const Nothing
+
+
+
+tagMismatches src =
+    (numtagbegins , numtagends)
+    where
+    numtagends = Util.countSub src tag_Close
+    numtagbegins = sum (tags_All>~(Util.countSub src))
+
+
+
+warnIfTagMismatches ctxmain filename (numtagbegins , numtagends) =
+    if Util.startsWith filename Defaults.blokIndexPrefix || numtagbegins == numtagends
+        then return () else
+        let dropnum = (Util.startsWith filename maindirpath) |? (maindirpath~:length + 1) |! 0
+            maindirpath = ctxmain~:Files.dirPath
+        in putStrLn ("\t!!\tPotential syntax issue: "++
+                     (show numtagends)++"x `|}` but "++(show numtagbegins)++"x `{*|`"++
+                        "\n\t\tin your `"++(drop dropnum filename)++"`")
 
 
 

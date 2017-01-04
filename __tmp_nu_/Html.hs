@@ -1,8 +1,9 @@
 {-# OPTIONS_GHC -Wall #-}
 module Html where
 
+import qualified Files
 import qualified Util
-import Util ( noNull , (~:) , (>~) , (#) , (~|) , (|?) , (|!) )
+import Util ( (~:) , (>~) , (#) , (~|) , (~.) , (|?) , is , (|!) , (=:) )
 
 
 
@@ -18,21 +19,36 @@ data Tag =
 
 basicEscapes ::
     Util.StringPairs
-basicEscapes = [("\"","&quot;"),("'","&apos;"),(">","&gt;"),("<","&lt;"),("&","&amp;")]
+basicEscapes = [ "\""=:"&quot;" , "'"=:"&apos;" , ">"=:"&gt;" , "<"=:"&lt;" , "&"=:"&amp;" ]
+
+
+
+attrEscapeVals [] =
+    []
+attrEscapeVals ((thisname,thisval):rest) =
+    ( thisname , (null thisname) |? thisval |! escape [] thisval ):(attrEscapeVals rest)
+
+
+
+attrClearInner attribs =
+    let inner = Util.lookup "" "" attribs
+    in ( inner , attribs~|fst~.is )
+
 
 
 emit::
-    Tag->
+    Bool-> Tag->
     String
-emit tag =
+emit escapeattrvals tag =
     nooutertag |? outinner |!
         outopen++outatts++outinner++outclose
     where
     outopen = "<"++tagname
-    outatts = concat$ tagatts>~foreach where
+    outatts = concat$ (Util.uniqueFst tagatts)>~foreach where
         foreach (n,v)   |(null n || null v)= ""
-                        |(otherwise)= " " ++ n ++ "=\"" ++ v ++ "\""
-    outinner = ifselfclosing ++ (concat$ tchildren>~emit) ++ innercontent where
+                        |(otherwise)= " " ++ n ++ "=\"" ++ (escattval v) ++ "\""
+        escattval = escapeattrvals |? (escape []) |! id
+    outinner = ifselfclosing ++ (concat$ tchildren>~(emit escapeattrvals)) ++ innercontent where
         ifselfclosing = nooutertag |? "" |!
                             noinneroutput |? "/>" |! ">"
     outclose = noinneroutput |? "" |! "</"++tagname++">"
@@ -46,19 +62,29 @@ emit tag =
 
 
 
+escape moreescapes =
+    Util.replaceAll (basicEscapes++moreescapes)
+
+
+
 innerContentsNoAtts tagname htmlsrc =
     let chunks = Util.splitUp ["<"++tagname++">"] ("</"++tagname++">") htmlsrc
         foreach (_,"") = ""
         foreach (inner,_) = inner
-    in chunks>~foreach ~|noNull
+    in chunks>~foreach ~|is
+
+
+
+joinUri relpath relpath' =
+    (Files.sanitizeUriRelPathForJoin relpath) ++ ('/':Files.sanitizeUriRelPathForJoin relpath')
 
 
 
 out::
-    String-> Util.StringPairs-> [Tag]->
+    String-> (Bool , Util.StringPairs)-> [Tag]->
     String
-out tname tatts tchildren =
-    emit$ T tname tatts tchildren
+out tname (escapeattrvals,tatts) tchildren =
+    emit escapeattrvals (T tname tatts tchildren)
 
 
 

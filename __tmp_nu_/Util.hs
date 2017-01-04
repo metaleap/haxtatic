@@ -28,6 +28,10 @@ dateTime0 = Data.Time.Clock.UTCTime {
 
 (~:) = (&)
 
+
+(=:=) :: Eq eq => (eq, eq) -> Bool
+(=:=) = uncurry (==)
+
 (=:) = (,)
 infix 0 =:
 
@@ -59,16 +63,16 @@ when True v _ = v
 when False _ v = v
 
 
-both (f1,f2) (p1,p2) =
-    (f1 p1 , f2 p2)
+both (fun1,fun2) (tfst,tsnd) =
+    (fun1 tfst , fun2 tsnd)
 
 both' f = both (f,f)
 
 
-both1sts fn (fst1,_) (fst2,_) =
+bothFsts fn (fst1,_) (fst2,_) =
     fn fst1 fst2
 
-both2nds fn (_,snd1) (_,snd2) =
+bothSnds fn (_,snd1) (_,snd2) =
     fn snd1 snd2
 
 butNot notval defval val
@@ -76,27 +80,21 @@ butNot notval defval val
     |(otherwise)= val
 
 
-ifNull val defval =
+ifNo val defval =
     if null val then defval else val
 
-unlessNull testval goalval =
-    if null testval then [] else goalval
-
-unlessNullOp testval op =
+ifIs testval op =
     if null testval then [] else op testval
 
-noNull = not.null
+is = not.null
 
 noneOf vals val =
     all (val/=) vals
 
-isnt notval =
-    noNull.(butNot notval "")
-
 
 repeatedly fn arg =
     let result = fn arg
-    in (result==arg) |? result |! repeatedly fn result
+    in if (result==arg) then result else repeatedly fn result
 
 
 via fn =
@@ -147,7 +145,21 @@ crop start end =
 
 count _ [] = 0
 count item (this:rest) =
-    (item==this |? 1 |! 0) + (count item rest)
+    (if item==this then 1 else 0) + (count item rest)
+
+countSub _ [] = 0
+countSub [] _ = 0
+countSub list sub =
+    --  isInfixOf needle haystack = any (isPrefixOf needle) (tails haystack)
+    let startindex = indexOf (sub#0) list
+    in if startindex<0 then 0 else
+    countsub (sub~:length) (drop startindex list) sub
+    where
+    countsub _ [] _ = 0
+    countsub len this@(_:rest) sub =
+        let c = if sub == (take len this) then 1 else 0
+        --  let c = if (zip sub this)~:(all (=:=)) then 1 else 0
+        in c + countsub len rest sub
 
 
 contains :: (Eq t)=> [t]->[t]->Bool
@@ -167,6 +179,8 @@ join = Data.List.intercalate
 
 lookup key defval = (Data.Maybe.fromMaybe defval) . (Data.List.lookup key)
 
+unMaybe = Data.Maybe.fromMaybe
+
 subAt start len =
     (take len) . (drop start)
 
@@ -178,6 +192,7 @@ substitute old new
 trim = trim'' Data.Char.isSpace
 trim' dropitems = trim'' (`elem` dropitems)
 trim'' fn = (trimStart'' fn) ~. (trimEnd'' fn)
+trimSpaceOr dropitems = trim'' (\c -> Data.Char.isSpace c || elem c dropitems )
 
 trimEnd = trimEnd'' Data.Char.isSpace
 trimEnd' dropitems = trimEnd'' (`elem` dropitems)
@@ -198,6 +213,12 @@ tryParseOr defval =
 
 unique:: (Eq a)=> [a]-> [a]
 unique = Data.List.nub
+
+uniqueFst:: (Eq f)=> [(f,s)]-> [(f,s)]
+uniqueFst = Data.List.nubBy (bothFsts (==))
+
+uniqueSnd:: (Eq s)=> [(f,s)]-> [(f,s)]
+uniqueSnd = Data.List.nubBy (bothSnds (==))
 
 
 atOr::
@@ -230,10 +251,10 @@ atOr list index defval
 
 
 lengthGEq 0 = const True
-lengthGEq n = noNull . drop (n - 1)
+lengthGEq n = is . drop (n - 1)
 
-lengthGt 0 = noNull
-lengthGt n = noNull . drop n
+lengthGt 0 = is
+lengthGt n = is . drop n
 
 
 fuseElems is2fuse fusion (this:next:more) =
@@ -248,30 +269,47 @@ fuseElems _ _ l = l
 indexOf _ [] =
     minBound::Int
 indexOf item (this:rest) =
-    (this==item) |? 0 |! 1 + (indexOf item rest)
+    if this==item then 0 else
+        (1 + (indexOf item rest))
+
+indexOf1st [] _ =
+    minBound::Int
+indexOf1st _ [] =
+    minBound::Int
+indexOf1st items (this:rest) =
+    if elem this items then 0 else
+        (1 + (indexOf1st items rest))
 
 
 indexOfSub [] _ =
     minBound::Int
-indexOfSub str@(_:rest) sub
-    | (zip sub str) ~: (all $(==)~:uncurry)
-    = 0
-    | otherwise
-    = 1 + (indexOfSub rest sub)
-    --  --this dumb 1+ DOES seem slightly faster
-    --  --than compare-lt + conditional-add, so NOT this:
-    --  = idx (indexOfSub sub rest)
-    --  where
-    --      idx i |i<0 = i |otherwise = 1+i
+indexOfSub _ [] =
+    minBound::Int
+indexOfSub list sub =
+    --  let startindex = 0
+    let startindex = indexOf (sub#0) list
+    in if startindex<0 then startindex else
+    startindex + indexofsub (length sub) (drop startindex list) sub
+    where
+    indexofsub _ [] _ =
+        minBound::Int
+    indexofsub len list@(_:rest) sub =
+        if sub == take len list then 0
+            else 1 + indexofsub len rest sub
 
+indexOfSubs1st [] _ =
+    (minBound::Int , "")
+indexOfSubs1st _ [] =
+    (minBound::Int , "")
 indexOfSubs1st str subs =
-    let isubs = indexed subs
-        indexof = indexOfSub str
-        iidxs = isubs >~ (both (id,indexof)) ~|snd~.(>=0)
-        (i,index) = Data.List.minimumBy (both2nds compare) iidxs
-    in (null iidxs)
-        |? (minBound::Int , "")
-        |! (index , subs#i)
+    let iidxs = isubs >~ (both (id,indexof)) ~|snd~.(>=0)
+        isubs = indexed subs
+        indexof = indexOfSub (drop startindex str)
+        startindex = indexOf1st (subs >~ (#0)) str
+        (i,index) = Data.List.minimumBy (bothSnds compare) iidxs
+    in if startindex<0 || null iidxs || index<0
+        then ( minBound::Int , "" )
+        else ( index+startindex , subs#i )
 
 lastIndexOfSub revstr revsub
     |(idx<0)= idx
@@ -283,22 +321,32 @@ lastIndexOfSub revstr revsub
 
 replace old new str =
     _replace_helper idx old (const new) (replace old new) str
-    where idx = indexOfSub str old
+    where
+    idx = indexOfSub str old
 
 replaceAny olds tonew str =
     _replace_helper idx old tonew (replaceAny olds tonew) str
-    where (idx,old) = indexOfSubs1st str olds
+    where
+    (idx,old) = indexOfSubs1st str olds
 
-_replace_helper idx old tonew replrest str =
-    idx<0 |? str |!
-        pre ++ (tonew old) ++ replrest rest where
-            pre = take idx str
-            rest = drop (idx + old~:length) str
+replaceAll replpairs str =
+    _replace_helper idx old (tonew replpairs) (replaceAll replpairs) str
+    where
+    (idx,old) = indexOfSubs1st str olds
+    (olds,_) = unzip replpairs
+    tonew ((oldval,newval):rest) old =
+        if oldval==old then newval else tonew rest old
+
+_replace_helper idx old tonew recurse str =
+    if idx<0 then str else
+    pre ++ tonew old ++ recurse rest where
+        pre = take idx str
+        rest = drop (idx + old~:length) str
 
 
 
 splitAt1st delim list =
-    i<0 |? (list , []) |! (one , drop 1 two) where
+    if i<0 then (list , []) else (one , drop 1 two) where
         i = indexOf delim list
         (one,two) = Data.List.splitAt i list
 
@@ -318,7 +366,7 @@ splitUp [] _ src = [(src,"")]
 splitUp allbeginners end src =
     (null beginners) |? [(src,"")] |! _splitup src
     where
-    beginners' = allbeginners>~reverse ~|noNull
+    beginners' = allbeginners>~reverse ~|is
     beg0len = (beginners'#0)~:length
     beginners = beginners' ~| length~.((==)beg0len)
 

@@ -8,8 +8,14 @@ import qualified Defaults
 import qualified Files
 import qualified Pages
 import qualified Proj
+import qualified Tmpl
 import qualified Util
-import Util ( (#) , (~:) , (>~) , (|?) , (|!) )
+import Util ( (#) , (~:) , (>~) , (|?) , (|!) , (=:) )
+
+import qualified XdemoSimplest
+import qualified XdemoCfgArgs
+import qualified Ximage
+import qualified XminiTag
 
 import qualified Data.Time.Clock
 import qualified System.Directory
@@ -21,13 +27,6 @@ import qualified System.IO
 
 main ::
     IO ()
-
-processAll ::
-    Files.Ctx-> String-> [String]->
-    IO ()
-
-
-
 main =
     Data.Time.Clock.getCurrentTime >>= \starttime
     -> System.IO.hFlush System.IO.stdout -- only because SublimeText2 build-output console is wonky with shell scripts
@@ -60,18 +59,28 @@ main =
 
 
 
+processAll ::
+    Files.Ctx-> String-> [String]->
+    IO ()
 processAll ctxmain projfilename custfilenames =
-    let filenameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
+    let xregs = [ ("hax.demoSimplest" =: XdemoSimplest.registerX)
+                , ("hax.demoCfgArgs" =: XdemoCfgArgs.registerX)
+                , ("hax.image" =: Ximage.registerX)
+                , ("hax.miniTag" =: XminiTag.registerX)
+                ]
         dirpath = ctxmain~:Files.dirPath
+        filenameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
 
     in putStrLn "\n1/5\tReading essential project files [or (re)creating them..]"
     >> System.Directory.createDirectoryIfMissing False dirpath
     >> System.Directory.makeAbsolute dirpath >>= \dirfullpath   --  we do this just in case
     -> let projname = System.FilePath.takeBaseName dirfullpath  --  `dirpath` ended in `.` or `..`
     in Defaults.loadOrCreate ctxmain projname (projfilename~:filenameonly) (custfilenames>~filenameonly)
-    >>= Proj.loadCtx ctxmain projname >>= \ctxproj
+    >>= Proj.loadCtx ctxmain projname xregs >>= \ctxproj
+    -> Tmpl.warnIfTagMismatches ctxmain "*.haxproj"
+                (ctxproj~:Proj.setup~:Proj.tagMismatches)
 
-    -> putStrLn "\n2/5\tScanning input files and folders.."
+    >> putStrLn "\n2/5\tScanning input files and folders.."
     >> Build.plan ctxmain ctxproj >>= \buildplan
     -> let
         numgenpages = buildplan~:Build.outPages~:length
@@ -86,10 +95,10 @@ processAll ctxmain projfilename custfilenames =
     >> putStrLn ("\t->\tContent pages: will (re)generate from " ++(show numgenpages)++ ", skipping " ++(show numskippages)++ "")
     >> putStrLn ("\t->\tXML files: will (re)generate from "++(show numxmlfiles)++" feeds, skipping " ++(show$ buildplan~:Build.numSkippedAtoms)++ "\n\t\t           plus "++(show numsitemaps)++" sitemap(s)")
 
-    >> putStrLn ("\n3/5\tCopying " ++(show numcopyfiles)++ "/" ++(show$ numcopyfiles+numskipfiles)++ " static file(s) to:\n\t->\t`" ++dirbuild++ "` ..")
+    >> putStrLn ("\n3/5\tCopying " ++(show numcopyfiles)++ "/" ++(show$ numcopyfiles+numskipfiles)++ " static file(s) to:\n\t->\t"++dirbuild)
     >> Build.copyStaticFiles buildplan
 
-    >> putStrLn ("\n4/5\tGenerating " ++(show numgenpages)++ "/" ++(show$ numgenpages+numskippages)++ " page(s) in:\n\t->\t`" ++dirbuild++ "` ..")
+    >> putStrLn ("\n4/5\tGenerating " ++(show numgenpages)++ "/" ++(show$ numgenpages+numskippages)++ " page(s) in:\n\t->\t"++dirbuild)
     >> Pages.processAll ctxmain ctxproj buildplan
     >> Pages.writeSitemapXml ctxproj buildplan
 
@@ -100,7 +109,7 @@ processAll ctxmain projfilename custfilenames =
     >> System.IO.hFlush System.IO.stdout -- remove later
 
     >> let deploymsg = "\n5/5\tCopying only the " ++(show$ numoutfiles)++ " newly (over)written file(s) also to:\n\t->\t"
-    in if null (ctxproj~:Proj.dirPathDeploy)
-        then putStrLn (deploymsg++ "(skipping this step.)") else
-            putStrLn (deploymsg++ "`" ++(ctxproj~:Proj.dirPathDeploy)++ "` ..")
+    in if null (ctxproj~:Proj.dirPathDeploy) then
+        putStrLn (deploymsg++ "(skipping this step.)") else
+            putStrLn (deploymsg++(ctxproj~:Proj.dirPathDeploy))
             >> Build.copyAllOutputsToDeploy buildplan

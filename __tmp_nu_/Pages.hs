@@ -9,7 +9,7 @@ import qualified Proj
 import qualified ProjC
 import qualified Tmpl
 import qualified Util
-import Util ( (~:) , (>>~) , (>~) , (~.) , (|?) , (|!) )
+import Util ( (~:) , (>>~) , (>~) , (~.) , (|?) , (|!) , is )
 
 import qualified Data.Map.Strict
 import qualified System.FilePath
@@ -30,29 +30,33 @@ processAll ctxmain ctxproj buildplan =
                 (ctxproj~:Proj.setup~:Proj.cfg~:ProjC.htmlEquivExts)
         >>= \tmplfinder
     -> let foreach buildtask =
-            processPage ctxtmpl tmplfinder buildtask
+            processPage ctxmain ctxtmpl tmplfinder buildtask
         in buildplan~:Build.outPages>>~foreach
         >> return ()
 
 
 
-processPage ctxtmpl tmplfinder outjob =
-    Files.writeTo dstfilepath (outjob~:Build.relPath) processcontent where
-        dstfilepath = outjob~:Build.outPathBuild
-        processcontent =
-            System.IO.hFlush System.IO.stdout
-            >> loadsrccontent >>= \pagesrc
-            -> let
-                blokname = outjob~:Build.blokName
-                tmpl = tmplfinder$ System.FilePath.takeExtension dstfilepath
-                outsrc = Tmpl.apply tmpl pagesrc
-            in return (Tmpl.processSrcFully ctxtmpl blokname outsrc)
-        loadsrccontent =
-            let srcfilepath = outjob~:Build.srcFile~:Files.path
-                blokindexname = Bloks.blokNameFromIndexPagePath srcfilepath
-                blokindextmpl = tmplfinder Defaults.blokIndexPrefix
-            in (null blokindexname) |? readFile srcfilepath |!
-                return (blokindextmpl~:Tmpl.srcFile~:Files.content)
+processPage ctxmain ctxtmpl tmplfinder outjob =
+    Files.writeTo dstfilepath (outjob~:Build.relPath) processcontent
+    >>= Tmpl.warnIfTagMismatches ctxmain srcfilepath
+    where
+    dstfilepath = outjob~:Build.outPathBuild
+    srcfilepath = outjob~:Build.srcFile~:Files.path
+    processcontent =
+        System.IO.hFlush System.IO.stdout
+        >> loadsrccontent >>= \(mismatches , pagesrc)
+        -> let
+            blokname = outjob~:Build.blokName
+            tmpl = tmplfinder$ System.FilePath.takeExtension dstfilepath
+            outsrc = Tmpl.apply tmpl pagesrc
+        in return (Tmpl.processSrcFully ctxtmpl blokname outsrc , mismatches)
+    loadsrccontent =
+        let blokindexname = Bloks.blokNameFromIndexPagePath srcfilepath
+            blokindextmpl = tmplfinder Defaults.blokIndexPrefix
+        in if is blokindexname
+            then return ((0,0) , blokindextmpl~:Tmpl.srcFile~:Files.content)
+            else readFile srcfilepath >>= \rawsrc
+                    -> return (Tmpl.tagMismatches rawsrc , rawsrc)
 
 
 
@@ -87,10 +91,11 @@ writeSitemapXml ctxproj buildplan =
                 = 0.66
         (outjob , pagefileinfos) = buildplan~:Build.siteMap
         xmlitems = (pagefileinfos >~foreach)
-        xmloutput = return$ xmlsitemapfull xmlitems
+        xmloutput = return (xmlsitemapfull xmlitems , undefined)
     in if outjob == Build.NoOutput
         then return ()
         else Files.writeTo
                 (outjob~:Build.outPathBuild)
                 (outjob~:Build.relPath)
                 xmloutput
+            >> return ()

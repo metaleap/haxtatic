@@ -51,7 +51,7 @@ copyAllOutputsToDeploy buildplan =
                 ifexists True =
                     Files.copyTo srcfilepath [builtfile~:outPathDeploy]
                 ifexists False =
-                    putStrLn ("\t!?\tMissing: `" ++srcfilepath++ "`")
+                    putStrLn ("\t?>\tMissing: `" ++srcfilepath++ "`")
             in System.Directory.doesFileExist srcfilepath >>= ifexists
     in (buildplan~:outStatics) >>~ foreach
     >> (buildplan~:outPages) >>~ foreach
@@ -84,7 +84,7 @@ _createIndexHtmlIfNoContentPages ctxmain ctxproj numpagesrcfiles =
                     relPathSlashes = Files.pathSepSystemToSlash outfilerel,
                     blokName = "",
                     outPathBuild = pathfinal,
-                    outPathDeploy = Util.unlessNullOp (ctxproj~:Proj.dirPathDeploy) (</> outfilerel),
+                    outPathDeploy = Util.ifIs (ctxproj~:Proj.dirPathDeploy) (</> outfilerel),
                     contentDate = outfile~:Files.modTime,
                     srcFile = outfile
                 }
@@ -133,7 +133,7 @@ plan ctxmain ctxproj =
                                         outPathBuild =
                                             ctxproj~:Proj.dirPathBuild </> sitemaprelpath,
                                         outPathDeploy =
-                                            Util.unlessNullOp (ctxproj~:Proj.dirPathDeploy) (</> sitemaprelpath) } ,
+                                            Util.ifIs (ctxproj~:Proj.dirPathDeploy) (</> sitemaprelpath) } ,
                             sitemapfiles ~|relPath~.(Files.hasAnyFileExt $projcfg~:ProjC.htmlEquivExts) )
     in return BuildPlan {
                 outAtoms = outatomfiles,
@@ -158,7 +158,7 @@ _outFileInfo ctxproj contentdater relpather both@(relpath,file) =
             relPathSlashes = Files.pathSepSystemToSlash relpathnu,
             blokName = Bloks.blokNameFromRelPath (ctxproj~:Proj.setup~:Proj.bloks) relpathnu file,
             outPathBuild = ctxproj~:Proj.dirPathBuild </> relpathnu,
-            outPathDeploy = Util.unlessNullOp (ctxproj~:Proj.dirPathDeploy) (</> relpathnu),
+            outPathDeploy = Util.ifIs (ctxproj~:Proj.dirPathDeploy) (</> relpathnu),
             contentDate = contentdate,
             srcFile = file
         }

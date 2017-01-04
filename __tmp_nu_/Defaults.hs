@@ -66,8 +66,8 @@ writeDefaultIndexHtml ctxmain projname dirpagesrel dirbuild htmltemplatemain =
         outfilerel = dirpagesrel </> fileName_IndexHtml
         pathtmpl = htmltemplatemain~:Files.path
         pathfinal = dirbuild </> fileName_IndexHtml
-        outfilecontent = return$ _index_html
-                            dircur projname dirproj dirpages outfilepath pathtmpl pathfinal
+        outfilecontent = return ( _index_html
+                                    dircur projname dirproj dirpages outfilepath pathtmpl pathfinal, undefined)
         outfile = Files.FileInfo outfilepath (ctxmain~:Files.nowTime)
     in
         Files.writeTo outfilepath outfilerel outfilecontent

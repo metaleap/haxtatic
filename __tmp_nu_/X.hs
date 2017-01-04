@@ -2,28 +2,28 @@
 module X where
 
 import qualified Util
-import Util ( (~:) , (>~) , (~.) , (~|) , (=:) , (|?) , (|!) , noNull )
-
-import qualified XdemoSimplest
-import qualified XdemoCfgArgs
-import qualified XminiTag
+import Util ( (~:) , (>~) , (~.) , (~|) , (=:) , (|?) , (|!) , is )
 
 import qualified Data.List
 import qualified Data.Map.Strict
 
 
 
-parseProjLines linessplits =
-    Data.Map.Strict.fromList$ linessplits>~foreach ~|fst~.noNull where
-        xregnames = [ ("hax.demoSimplest" =: XdemoSimplest.registerX)
-                    , ("hax.demoCfgArgs" =: XdemoCfgArgs.registerX)
-                    , ("hax.miniTag" =: XminiTag.registerX)
-                    ]
+htmlAttsForParseError (xname , tname) loc =
+    [ "style" =: "background-color: yellow !important; color: red !important; border: solid 0.5em red !important;"
+    , "" =: "{!X| Parse error following `X|:"++xname++":"++tname++":"++
+                (Util.ifIs loc (++":"))++"` in your *.haxproj |!}"
+    ]
+
+
+
+parseProjLines linessplits xregisterers =
+    Data.Map.Strict.fromList$ linessplits>~foreach ~|fst~.is where
         foreach ("|X|":xname:tname:tvals) =
             let xn = Util.trim xname
                 tn = Util.trim tname
             in if null tn then ( "" , id ) else
-                case Data.List.lookup xn xregnames of
+                case Data.List.lookup xn xregisterers of
                     Nothing -> ( tn , rendererr ("{!X| Specified X-renderer `"++xname++"` not known |!}") )
                     Just regx -> from regx xn tn tvals
         foreach _ =

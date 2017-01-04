@@ -3,15 +3,14 @@ module ProjT where
 
 import qualified Tmpl
 import qualified Util
-import Util ( (~:) , (>~) , (~.) , (~|) , noNull )
+import Util ( (~:) , (>~) , (~.) , (~|) , is )
 
 import qualified Data.Map.Strict
-import qualified Text.Read
 
 
 
 parseProjLines linessplits canparsestr =
-    Data.Map.Strict.fromList$ linessplits>~foreach ~|fst~.noNull where
+    Data.Map.Strict.fromList$ linessplits>~foreach ~|fst~.is where
         foreach ("|T|":tname:tvalsplits) =
             ( tname~:Util.trim ,
                 outputfor tname $ tvalsplits~:(Util.join ":")~:Util.trim )
@@ -25,9 +24,6 @@ parseProjLines linessplits canparsestr =
                 --  "\""++ (Util.crop (_parsestr_topen~>length) (_parsestr_tclose~>length) str) ++"\""
             then let iferror = "{!T|" ++tname++ ":" ++str++ "|!}"
                     in Util.tryParseOr iferror str
-             --  case (Text.Read.readMaybe str) :: Maybe String of
-             --         Just parsed -> parsed
-             --         Nothing -> "{!T|" ++tname++ ":" ++str++ "|!}"
             else str
 
 

@@ -2,7 +2,7 @@
 module Files where
 
 import qualified Util
-import Util ( noNull , (~:) , (~.) , (~|) , (>~) , (>>~) , (>>|) , (|?) , (|!) )
+import Util ( is , (~:) , (~.) , (~|) , (>~) , (>>~) , (>>|) , (|?) , (|!) )
 
 import qualified Data.List
 import qualified Data.Time.Clock
@@ -125,7 +125,7 @@ listAllFiles rootdirpath reldirs modtimer =
             ( Util.atOr relpaths 0 srcfilepath,
                 FileInfo srcfilepath modtime )
             where
-            relpaths = dirpaths>~foreachsrcdir ~|noNull
+            relpaths = dirpaths>~foreachsrcdir ~|is
             foreachsrcdir reldirpath =
                 if Util.startsWith srcfilepath reldirpath
                 then drop (1+reldirpath~:length) srcfilepath else ""
@@ -150,19 +150,21 @@ readOrDefault create ctxmain relpath relpath2 defaultcontent =
             System.Directory.getModificationTime filepath >>= \modtime
             -> readFile filepath >>= (FileFull filepath modtime)~.return
         fileexists False
-            | noNull relpath2 && relpath2/=relpath
+            | is relpath2 && relpath2/=relpath
             = readOrDefault create ctxmain relpath2 "" defaultcontent
             | otherwise
             = let file = FileFull filepath (ctxmain~:nowTime) defaultcontent
-                in (not create) |? return file
-                    |! writeTo filepath relpath (return defaultcontent)
+                in if not create then return file else
+                    writeTo filepath relpath (return (defaultcontent , undefined))
                     >> return file
 
 
 
 sanitizeRelPath =
-    Util.trim ~. pathSepSlashToSystem ~.
-        (Util.trim' $'.':System.FilePath.pathSeparators) ~. Util.trim
+    (Util.trimSpaceOr ('.':System.FilePath.pathSeparators)) ~. pathSepSlashToSystem
+
+sanitizeUriRelPathForJoin =
+    (Util.trimSpaceOr System.FilePath.pathSeparators) ~. pathSepSystemToSlash
 
 
 
@@ -192,11 +194,14 @@ _fileoutputbeginmsg = ("\t>>\t" ++).(++ _fileoutputmidmsg)
 _fileoutputmidmsg = " [ "
 _fileoutputdonemsg = "OK ]"
 
+
+
 writeTo filepath showpath loadcontent =
     System.Directory.createDirectoryIfMissing True (System.FilePath.takeDirectory filepath)
-    >> if null showpath then return () else
-        putStr (_fileoutputbeginmsg showpath)
+    >> putStr (_fileoutputbeginmsg showpath)
     >> System.IO.hFlush System.IO.stdout
-    >> loadcontent >>= writeFile filepath
+    >> loadcontent >>= \(content , retval)
+    -> writeFile filepath content
     >> putStrLn _fileoutputdonemsg
     >> System.IO.hFlush System.IO.stdout
+    >> return retval

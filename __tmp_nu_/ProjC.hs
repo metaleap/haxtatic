@@ -5,7 +5,7 @@ import qualified Defaults
 import qualified Files
 import qualified Tmpl
 import qualified Util
-import Util ( (~:) , (>~) , (~|) , (~.) , (|?) , (|!) , noNull )
+import Util ( (~:) , (>~) , (~|) , (~.) , (|?) , (|!) , is )
 
 import qualified Data.Map.Strict
 import qualified Data.Maybe
@@ -99,16 +99,16 @@ parseProjLines linessplits =
         ProcFromProj { dirs = [dirname], skip = [], force = [] }
     procsane defname proc =
         ProcFromProj {
-            dirs = Util.ifNull (proc~:dirs >~dirnameonly ~|noNull) [defname],
+            dirs = Util.ifNo (proc~:dirs >~dirnameonly ~|is) [defname],
             skip = Util.when saneneither [] saneskip,
             force = Util.when saneneither [] saneforce
         } where
             saneneither = saneskip==saneforce
             saneskip = sanitize skip ; saneforce = sanitize force
-            sanitize fvals = let them = proc~:fvals >~Util.trim ~|noNull
+            sanitize fvals = let them = proc~:fvals >~Util.trim ~|is
                                 in (elem "*" them) |? ["*"] |! them
-    proctags = (noNull ptags) |? ptags |! Tmpl.tags_All where
-        ptags = (pstr~:(Util.splitBy ',') >~ Util.trim ~|noNull) ~:Util.unique >~('{':).(++"|")
+    proctags = (is ptags) |? ptags |! Tmpl.tags_All where
+        ptags = (pstr~:(Util.splitBy ',') >~ Util.trim ~|is) ~:Util.unique >~('{':).(++"|")
         pstr = Util.trim$ Data.Map.Strict.findWithDefault "" ("process:tags") cfgprocs
     dirnameonly = System.FilePath.takeFileName ~. Util.trim
     cfgmisc = cfglines2hashmap ""
@@ -116,7 +116,7 @@ parseProjLines linessplits =
     cfgprocs = cfglines2hashmap "process"
     cfglines2hashmap goalprefix = -- onvalue =
         Data.Map.Strict.fromList$
-            linessplits>~foreachline ~|noNull.fst where
+            linessplits>~foreachline ~|fst~.is where
                 foreachline ("|C|":prefix':next:rest)
                     | null goalprefix
                     = ( prefix , foreachvalue$ (next:rest) )
