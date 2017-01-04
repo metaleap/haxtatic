@@ -25,7 +25,7 @@ data Plan
         numSkippedPages :: Int,
         numSkippedAtoms :: Int,
         siteMap :: (Task , [Task])
-    } deriving (Show)
+    }
 
 
 data Task
@@ -39,7 +39,7 @@ data Task
         contentDate :: Data.Time.Clock.UTCTime,
         srcFile :: Files.File
     }
-    deriving (Eq, Show)
+    deriving (Eq)
 
 
 

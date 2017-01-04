@@ -4,13 +4,14 @@ module Util where
 import qualified Control.Monad
 import qualified Data.Char
 import qualified Data.List
+import qualified Data.Maybe
 import qualified Data.Time.Calendar
 import qualified Data.Time.Clock
 import Data.Function ( (&) )
 
 
 
-type StringPairs = [(String,String)]
+type StringPairs = [(String , String)]
 
 
 
@@ -25,6 +26,9 @@ dateTime0 = Data.Time.Clock.UTCTime {
 (~.) = flip (.)
 
 (~:) = (&)
+
+(=:) = (,)
+infix 4 =:
 
 -- LAST: (>~) :: Functor f => f a -> (a -> b) -> f b
 (>~) = flip fmap
@@ -160,6 +164,8 @@ toUpper = (>~ Data.Char.toUpper)
 
 join = Data.List.intercalate
 
+lookup key defval = (Data.Maybe.fromMaybe defval) . (Data.List.lookup key)
+
 subAt start len =
     (take len) . (drop start)
 
@@ -282,9 +288,9 @@ _replace_helper idx old tonew replrest str =
 
 
 splitAt1st delim list =
-    (one , idx<0 |? two |! drop 1 two) where
-        (one,two) = Data.List.splitAt idx list
-        idx = indexOf delim list
+    i<0 |? (list , []) |! (one , drop 1 two) where
+        i = indexOf delim list
+        (one,two) = Data.List.splitAt i list
 
 
 splitBy delim =

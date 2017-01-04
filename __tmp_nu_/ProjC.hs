@@ -85,7 +85,7 @@ parseProjLines linessplits =
                     "sitemap.xml" "_hax_relpath_sitemap" cfgmisc
     relpathpostatoms = Files.sanitizeRelPath$ Data.Map.Strict.findWithDefault
                     Defaults.dir_PostAtoms "_hax_relpath_postatoms" cfgmisc
-    htmlequivexts = htmldefexts ++ hexts where
+    htmlequivexts = Util.unique$ htmldefexts ++ hexts where
         htmldefexts = ["",".html",".htm"]
         hexts = hstr~:(Util.splitBy ',') >~ (('.':) . Util.trim . (Util.trim' ['.']) . Util.trim)
         hstr = Data.Map.Strict.findWithDefault "" "_hax_htmlequivexts" cfgmisc
@@ -111,7 +111,7 @@ parseProjLines linessplits =
             sanitize fvals = let them = proc~:fvals >~Util.trim ~|noNull
                                 in (elem "*" them) |? ["*"] |! them
     proctags = (noNull ptags) |? ptags |! Tmpl.tags_All where
-        ptags = (pstr~:(Util.splitBy ',') >~ Util.trim ~|noNull) >~ ('{':).(++"|")
+        ptags = (pstr~:(Util.splitBy ',') >~ Util.trim ~|noNull) ~: Util.unique >~ ('{':).(++"|")
         pstr = Util.trim$ Data.Map.Strict.findWithDefault "" ("process:tags") cfgprocs
     dirnameonly = System.FilePath.takeFileName ~. Util.trim
     cfgmisc = cfglines2hashmap ""

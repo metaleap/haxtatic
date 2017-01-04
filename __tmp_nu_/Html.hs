@@ -40,8 +40,7 @@ emit tag =
     nooutertag = null tagname
     tagname = tag~:name
     tagatts = tag~:attribs
-    innercontent = (noNull tagatts && null att0n) |? att0v |! ""
-                    where (att0n,att0v) = tagatts#0
+    innercontent = Util.lookup "" "" tagatts
     tchildren = tag~:subTags
     noinneroutput = null tchildren && null innercontent
 
