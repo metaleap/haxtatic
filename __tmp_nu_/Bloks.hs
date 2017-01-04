@@ -11,7 +11,7 @@ import qualified Data.List
 import qualified Data.Map.Strict
 import qualified Data.Maybe
 import qualified System.FilePath
-import qualified Text.Read
+
 
 
 data Blok
@@ -86,18 +86,18 @@ isRelPathBlokPage bname relpath =
 parseProjLines linessplits =
     Data.Map.Strict.fromList$
     linessplits>~foreach ~|(/=noblok) where
+        noblok = ("" , NoBlok)
         foreach ("|B|":blokname:bvalsplits) =
-            let bname = blokname~:Util.trim
-                parsestr = bvalsplits ~: (Util.join ":") ~: Util.trim ~: (toParseStr bname)
-                parsed = (Text.Read.readMaybe parsestr) :: Maybe Blok
-                errblok = Blok { title="{!B| syntax issue near `B::" ++bname++ ":`, couldn't parse `" ++parsestr++ "` |!}",
-                                    desc="{!B| Syntax issue in your .haxproj file defining Blok named '" ++bname++ "'. Thusly couldn't parse Blok settings (incl. title/desc) |!}",
-                                    atomFile="", blokIndexPageFile="", inSitemap=False, dtFormat="" }
-            in (null bname) |? noblok |!
-                (bname , Data.Maybe.fromMaybe errblok parsed)
+            (bname , Util.tryParse NoBlok errblok parsestr)
+            where
+            bname = blokname~:Util.trim
+            parsestr = bvalsplits ~: (Util.join ":") ~: Util.trim ~: (toParseStr bname)
+            errblok = Blok { title="{!B| syntax issue near `B::" ++bname++ ":`, couldn't parse `" ++parsestr++ "` |!}",
+                                desc="{!B| Syntax issue in your .haxproj file defining Blok named '" ++bname++
+                                        "'. Thusly couldn't parse Blok settings (incl. title/desc) |!}",
+                                atomFile="", blokIndexPageFile="", inSitemap=False, dtFormat="" }
         foreach _ =
             noblok
-        noblok = ("" , NoBlok)
 
 
 

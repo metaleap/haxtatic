@@ -23,9 +23,11 @@ parseProjLines linessplits canparsestr =
                 && Util.endsWith str _parsestr_tclose
                 --  for open/close tokens other than " --- switch `str` below to:
                 --  "\""++ (Util.crop (_parsestr_topen~>length) (_parsestr_tclose~>length) str) ++"\""
-            then case (Text.Read.readMaybe str) :: Maybe String of
-                    Just parsed -> parsed
-                    Nothing -> "{!T|" ++tname++ ":" ++str++ "|!}"
+            then let iferror = "{!T|" ++tname++ ":" ++str++ "|!}"
+                    in Util.tryParseOr iferror str
+             --  case (Text.Read.readMaybe str) :: Maybe String of
+             --         Just parsed -> parsed
+             --         Nothing -> "{!T|" ++tname++ ":" ++str++ "|!}"
             else str
 
 

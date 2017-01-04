@@ -1,9 +1,9 @@
 {-# OPTIONS_GHC -Wall #-}
-module XhelloWorld where
+module XdemoCfgArgs where
 
 
 
-registerX (_xname , _tname) (cfgstr , _cfgvals) (_ , _) =
+registerX (_ , tname) (cfgstr , _) (_ , _) =
     renderer
     where
 
@@ -12,4 +12,4 @@ registerX (_xname , _tname) (cfgstr , _cfgvals) (_ , _) =
         where
         greet = if (not.null) argstr then argstr
                     else if (not.null) cfgstr then cfgstr
-                        else "world"
+                        else tname

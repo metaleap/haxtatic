@@ -8,6 +8,7 @@ import qualified Data.Maybe
 import qualified Data.Time.Calendar
 import qualified Data.Time.Clock
 import Data.Function ( (&) )
+import qualified Text.Read
 
 
 
@@ -28,7 +29,7 @@ dateTime0 = Data.Time.Clock.UTCTime {
 (~:) = (&)
 
 (=:) = (,)
-infix 4 =:
+infix 0 =:
 
 -- LAST: (>~) :: Functor f => f a -> (a -> b) -> f b
 (>~) = flip fmap
@@ -64,10 +65,10 @@ both (f1,f2) (p1,p2) =
 both' f = both (f,f)
 
 
-both1st fn (fst1,_) (fst2,_) =
+both1sts fn (fst1,_) (fst2,_) =
     fn fst1 fst2
 
-both2nd fn (_,snd1) (_,snd2) =
+both2nds fn (_,snd1) (_,snd2) =
     fn snd1 snd2
 
 butNot notval defval val
@@ -186,6 +187,15 @@ trimStart = trimStart'' Data.Char.isSpace
 trimStart' dropitems = trimStart'' (`elem` dropitems)
 trimStart'' = Data.List.dropWhile
 
+
+tryParse nullval errval str =
+    if (null str) then nullval else
+        (Text.Read.readMaybe str) ~: (Data.Maybe.fromMaybe errval)
+
+tryParseOr defval =
+    Text.Read.readMaybe ~. (Data.Maybe.fromMaybe defval)
+
+
 unique:: (Eq a)=> [a]-> [a]
 unique = Data.List.nub
 
@@ -258,7 +268,7 @@ indexOfSubs1st str subs =
     let isubs = indexed subs
         indexof = indexOfSub str
         iidxs = isubs >~ (both (id,indexof)) ~|snd~.(>=0)
-        (i,index) = Data.List.minimumBy (both2nd compare) iidxs
+        (i,index) = Data.List.minimumBy (both2nds compare) iidxs
     in (null iidxs)
         |? (minBound::Int , "")
         |! (index , subs#i)

@@ -4,7 +4,8 @@ module X where
 import qualified Util
 import Util ( (~:) , (>~) , (~.) , (~|) , (=:) , (|?) , (|!) , noNull )
 
-import qualified XhelloWorld
+import qualified XdemoSimplest
+import qualified XdemoCfgArgs
 import qualified XminiTag
 
 import qualified Data.List
@@ -14,19 +15,20 @@ import qualified Data.Map.Strict
 
 parseProjLines linessplits =
     Data.Map.Strict.fromList$ linessplits>~foreach ~|fst~.noNull where
-        xnames = [  ("haxHelloWorld" =: XhelloWorld.registerX),
-                    ("haxMiniTag" =: XminiTag.registerX)
+        xregnames = [ ("hax.demoSimplest" =: XdemoSimplest.registerX)
+                    , ("hax.demoCfgArgs" =: XdemoCfgArgs.registerX)
+                    , ("hax.miniTag" =: XminiTag.registerX)
                     ]
         foreach ("|X|":xname:tname:tvals) =
             let xn = Util.trim xname
                 tn = Util.trim tname
             in if null tn then ( "" , id ) else
-                case Data.List.lookup xn xnames of
+                case Data.List.lookup xn xregnames of
                     Nothing -> ( tn , rendererr ("{!X| Specified X-renderer `"++xname++"` not known |!}") )
-                    Just registerx -> with registerx xn tn tvals
+                    Just regx -> from regx xn tn tvals
         foreach _ =
             ( "" , id )
-        with registerx xname tname tvals =
+        from registerx xname tname tvals =
             ( tname ,
                 registerx (xname , tname)
                             (cfgstr , cfgvals)
@@ -35,8 +37,7 @@ parseProjLines linessplits =
                     cfgstr = Util.trim$ Util.join ":" tvals
                     cfgvals = tvals>~Util.trim
                     cfgsplit = Util.both' Util.trim (Util.splitAt1st ':' cfgstr)
-        rendererr msg _ctxpage _argstr =
-            msg
+        rendererr msg = \_ _ -> msg -- same as `rendererr = const.const` but why befuddle!
 
 
 

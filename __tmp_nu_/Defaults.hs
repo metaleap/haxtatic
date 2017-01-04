@@ -29,14 +29,15 @@ loadOrCreate ctxmain projname projfilename custfilenames =
         relpathtmplmain' = "tmpl" </> (fileName_Pref ".haxtmpl.html")
         relpathtmplblok = "tmpl" </> (setupname++ "-blok.haxtmpl.html")
         relpathtmplblok' = "tmpl" </> (fileName_Pref "-blok.haxtmpl.html")
-        foreach custfilename = Files.readOrDefault False ctxmain custfilename "" ""
+        foreach custfilename =
+            Files.readOrDefault False ctxmain custfilename "" ""
     in Files.readOrDefault True ctxmain projfilename fileName_Proj projfiledefcontent
     >>= \projfile
     -> Files.readOrDefault True ctxmain relpathtmplmain relpathtmplmain' _tmpl_html_main
     >>= \tmplmainfile
     -> Files.readOrDefault True ctxmain relpathtmplblok relpathtmplblok' _tmpl_html_blok
     >>= \tmplblokfile
-    -> custfilenames>>~foreach
+    -> custfilenames >>~ foreach
     >>= \custfiles
     -> let
         custmodtime = (null custfiles) |? Util.dateTime0 |! maximum (custfiles>~Files.modTime)

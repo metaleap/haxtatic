@@ -13,7 +13,6 @@ import qualified Data.Time
 import qualified Data.Time.Clock
 import qualified Data.Time.Format
 import qualified System.FilePath
-import qualified Text.Read
 
 
 data Config
@@ -85,7 +84,7 @@ parseProjLines linessplits =
                     "sitemap.xml" "_hax_relpath_sitemap" cfgmisc
     relpathpostatoms = Files.sanitizeRelPath$ Data.Map.Strict.findWithDefault
                     Defaults.dir_PostAtoms "_hax_relpath_postatoms" cfgmisc
-    htmlequivexts = Util.unique$ htmldefexts ++ hexts where
+    htmlequivexts = Util.unique (htmldefexts ++ hexts) where
         htmldefexts = ["",".html",".htm"]
         hexts = hstr~:(Util.splitBy ',') >~ (('.':) . Util.trim . (Util.trim' ['.']) . Util.trim)
         hstr = Data.Map.Strict.findWithDefault "" "_hax_htmlequivexts" cfgmisc
@@ -93,10 +92,8 @@ parseProjLines linessplits =
     procpages = procfind Defaults.dir_Pages
     procposts = procfind Defaults.dir_Posts
     procfind name =
-        procsane name (Data.Maybe.fromMaybe (procdef name) maybeparsed) where
-            maybeparsed = (null procstr) |? Nothing |!
-                            (Text.Read.readMaybe procstr) :: Maybe Processing
-            procstr = (null procval) |? procval |! "ProcFromProj {"++procval++"}"
+        procsane name (Util.tryParseOr (procdef name) procstr) where
+            procstr = (null procval) |? procval |! "ProcFromProj "++procval
             procval = Data.Map.Strict.findWithDefault "" ("process:"++name) cfgprocs
     procdef dirname =
         ProcFromProj { dirs = [dirname], skip = [], force = [] }
@@ -111,7 +108,7 @@ parseProjLines linessplits =
             sanitize fvals = let them = proc~:fvals >~Util.trim ~|noNull
                                 in (elem "*" them) |? ["*"] |! them
     proctags = (noNull ptags) |? ptags |! Tmpl.tags_All where
-        ptags = (pstr~:(Util.splitBy ',') >~ Util.trim ~|noNull) ~: Util.unique >~ ('{':).(++"|")
+        ptags = (pstr~:(Util.splitBy ',') >~ Util.trim ~|noNull) ~:Util.unique >~('{':).(++"|")
         pstr = Util.trim$ Data.Map.Strict.findWithDefault "" ("process:tags") cfgprocs
     dirnameonly = System.FilePath.takeFileName ~. Util.trim
     cfgmisc = cfglines2hashmap ""
