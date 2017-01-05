@@ -51,7 +51,7 @@ copyAllOutputsToDeploy buildplan =
                 ifexists True =
                     Files.copyTo srcfilepath [builtfile~:outPathDeploy]
                 ifexists False =
-                    putStrLn ("\t?>\tMissing: `" ++srcfilepath++ "`")
+                    putStrLn ("\t!?\tMissing: `" ++srcfilepath++ "`")
             in System.Directory.doesFileExist srcfilepath >>= ifexists
     in (buildplan~:outStatics) >>~ foreach
     >> (buildplan~:outPages) >>~ foreach
@@ -139,7 +139,8 @@ plan ctxmain ctxproj =
                 outAtoms = outatomfiles,
                 outPages = outpagefiles,
                 outStatics = outcopyfiles,
-                numOutFilesTotal = outcopyfiles~:length + outpagefiles~:length + outatomfiles~:length,
+                numOutFilesTotal = (sitemap~:fst == NoOutput |? 0 |! 1) +
+                                        outcopyfiles~:length + outpagefiles~:length + outatomfiles~:length,
                 numSkippedStatic = allstatics~:length - outcopyfiles~:length,
                 numSkippedPages = allpages~:length - outpagefiles~:length,
                 numSkippedAtoms = allatoms~:length - outatomfiles~:length,

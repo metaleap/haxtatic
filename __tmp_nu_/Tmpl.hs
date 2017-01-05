@@ -110,21 +110,17 @@ processSrcJustOnce ctxproc bname src =
 
 
 tagMismatches src =
-    (numtagbegins , numtagends)
-    where
-    numtagends = Util.countSub src tag_Close
-    numtagbegins = sum (tags_All>~(Util.countSub src))
+    Util.countSubVsSubs src (tag_Close , tags_All)
 
 
-
-warnIfTagMismatches ctxmain filename (numtagbegins , numtagends) =
+warnIfTagMismatches ctxmain filename (numtagends , numtagbegins) =
     if Util.startsWith filename Defaults.blokIndexPrefix || numtagbegins == numtagends
         then return () else
-        let dropnum = (Util.startsWith filename maindirpath) |? (maindirpath~:length + 1) |! 0
+        let drops = (Util.startsWith filename maindirpath) |? (maindirpath~:length + 1) |! 0
             maindirpath = ctxmain~:Files.dirPath
-        in putStrLn ("\t!!\tPotential syntax issue: "++
+        in putStrLn ("\t!?\tPotential syntax issue: "++
                      (show numtagends)++"x `|}` but "++(show numtagbegins)++"x `{*|`"++
-                        "\n\t\tin your `"++(drop dropnum filename)++"`")
+                        "\n\t\tin your `"++(drop drops filename)++"`")
 
 
 

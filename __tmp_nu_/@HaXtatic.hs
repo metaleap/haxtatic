@@ -80,7 +80,7 @@ processAll ctxmain projfilename custfilenames =
     -> Tmpl.warnIfTagMismatches ctxmain "*.haxproj"
                 (ctxproj~:Proj.setup~:Proj.tagMismatches)
 
-    >> putStrLn "\n2/5\tScanning input files and folders.."
+    >> putStrLn "\n2/5\tPlanning the work.."
     >> Build.plan ctxmain ctxproj >>= \buildplan
     -> let
         numgenpages = buildplan~:Build.outPages~:length

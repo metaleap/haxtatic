@@ -21,6 +21,7 @@ dateTime0 = Data.Time.Clock.UTCTime {
                                             Data.Time.Calendar.toModifiedJulianDay = 0 },
                 Data.Time.Clock.utctDayTime = 0
             }
+_intmin = minBound::Int
 
 
 
@@ -150,16 +151,32 @@ count item (this:rest) =
 countSub _ [] = 0
 countSub [] _ = 0
 countSub list sub =
-    --  isInfixOf needle haystack = any (isPrefixOf needle) (tails haystack)
-    let startindex = indexOf (sub#0) list
-    in if startindex<0 then 0 else
-    countsub (sub~:length) (drop startindex list) sub
-    where
-    countsub _ [] _ = 0
-    countsub len this@(_:rest) sub =
-        let c = if sub == (take len this) then 1 else 0
-        --  let c = if (zip sub this)~:(all (=:=)) then 1 else 0
-        in c + countsub len rest sub
+    foldr each 0 (Data.List.tails list) where
+        each listtail counter =
+            if Data.List.isPrefixOf sub listtail then counter + 1 else counter
+
+countAnySubs list subs =
+    --  equivalent to, but faster than:
+    --      sum (map (countSub list) subs)
+    foldr each 0 (Data.List.tails list) where
+    each listtail counter =
+        if any isprefix subs then counter + 1 else counter where
+        isprefix sub = Data.List.isPrefixOf sub listtail
+
+countSubVsSubs list (sub,subs) =
+    --  equivalent to, but faster than:
+    --      (countSub list sub, countAnySubs list subs)
+    foldr each (0,0) (Data.List.tails list) where
+    each listtail count =
+        let isprefix sub = Data.List.isPrefixOf sub listtail
+            isp1 = isprefix sub
+            isp2 = any isprefix subs
+        in if isp1 || isp2
+            then let (c1,c2) = count in
+                    (if isp1 then c1 + 1 else c1,
+                    if isp2 then c2 + 1 else c2)
+            else count
+
 
 
 contains :: (Eq t)=> [t]->[t]->Bool
@@ -267,40 +284,43 @@ fuseElems _ _ l = l
 
 
 indexOf _ [] =
-    minBound::Int
+    _intmin
 indexOf item (this:rest) =
     if this==item then 0 else
         (1 + (indexOf item rest))
 
 indexOf1st [] _ =
-    minBound::Int
+    _intmin
 indexOf1st _ [] =
-    minBound::Int
+    _intmin
 indexOf1st items (this:rest) =
     if elem this items then 0 else
         (1 + (indexOf1st items rest))
 
 
 indexOfSub [] _ =
-    minBound::Int
+    _intmin
 indexOfSub _ [] =
-    minBound::Int
+    _intmin
+--  indexOfSub list@(_:rest) sub =
+--      if Data.List.isPrefixOf sub list then 0
+--          else (1 + indexOfSub rest sub)
 indexOfSub list sub =
-    --  let startindex = 0
-    let startindex = indexOf (sub#0) list
-    in if startindex<0 then startindex else
-    startindex + indexofsub (length sub) (drop startindex list) sub
-    where
-    indexofsub _ [] _ =
-        minBound::Int
-    indexofsub len list@(_:rest) sub =
-        if sub == take len list then 0
-            else 1 + indexofsub len rest sub
+    let startindex = indexOf (sub#0) list in
+    if startindex<0 then startindex else
+        startindex + indexofsub (drop startindex list) sub
+        where
+        indexofsub [] _ =
+            _intmin
+        indexofsub list@(_:rest) sub =
+            if Data.List.isPrefixOf sub list then 0
+                else (1 + indexofsub rest sub)
+
 
 indexOfSubs1st [] _ =
-    (minBound::Int , "")
+    (_intmin , "")
 indexOfSubs1st _ [] =
-    (minBound::Int , "")
+    (_intmin , "")
 indexOfSubs1st str subs =
     let iidxs = isubs >~ (both (id,indexof)) ~|snd~.(>=0)
         isubs = indexed subs
@@ -308,7 +328,7 @@ indexOfSubs1st str subs =
         startindex = indexOf1st (subs >~ (#0)) str
         (i,index) = Data.List.minimumBy (bothSnds compare) iidxs
     in if startindex<0 || null iidxs || index<0
-        then ( minBound::Int , "" )
+        then ( _intmin , "" )
         else ( index+startindex , subs#i )
 
 lastIndexOfSub revstr revsub
@@ -352,9 +372,9 @@ splitAt1st delim list =
 
 
 splitBy delim =
-    foldr foreach [[]] where
-        foreach _ [] = []
-        foreach item items@(item0:rest)
+    foldr each [[]] where
+        each _ [] = []
+        each item items@(item0:rest)
             |(item==delim)= []:items
             |(otherwise)= (item:item0):rest
 
