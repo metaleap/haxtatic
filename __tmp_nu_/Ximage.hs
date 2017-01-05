@@ -19,26 +19,27 @@ data Tag =
 
 
 
-registerX xntn (_ , _) (cfg_imgrelpath , cfg_parsestr) =
+registerX xreg =
     renderer cfg
     where
 
     renderer cfg _ctxpage argstr =
-        Html.emit False tag
+        Html.emit tag
         where
         tag = if null (cfg~:lnkAtts) then imgtag else lnktag
 
-        (imgsrc,imgdesc) = (Util.splitAt1st ':' argstr) ~: (Util.both' Util.trim)
+        (imgsrc,imgdesc) = (Util.splitAt1stSpace argstr) ~: (Util.both' Util.trim)
         imgtag = Html.T "img" (cfgimgatts ++ imgatts) []
         imgatts = myatts "src" "title"
         lnktag = Html.T "a" (cfglnkatts ++ lnkatts) [imgtag]
         lnkatts = myatts "href" "title"
         myatts uriattname descattname =
-            Html.attrEscapeVals [uriattname =: Html.joinUri cfg_imgrelpath imgsrc,
-                                    descattname =: Util.ifNo cfgerrmsg imgdesc ]
+            [uriattname =: Html.joinUri cfg_imgrelpath imgsrc,
+                            descattname =: Util.ifNo cfgerrmsg imgdesc ]
 
-    (cfgerrmsg , cfgimgatts) = Html.attrClearInner (Html.attrEscapeVals $cfg~:imgAtts)
-    (_ , cfglnkatts) = Html.attrClearInner (Html.attrEscapeVals $cfg~:lnkAtts)
+    (cfg_imgrelpath , cfg_parsestr) = xreg~:X.cfgSplitOnce
+    (cfgerrmsg , cfgimgatts) = Html.attrClearInner $cfg~:imgAtts
+    (_ , cfglnkatts) = Html.attrClearInner $cfg~:lnkAtts
     cfg = Util.tryParse defcfg errcfg $"Cfg"++cfg_parsestr where
         defcfg = Cfg { lnkAtts = [], imgAtts = [] }
-        errcfg = Cfg { lnkAtts = [], imgAtts = X.htmlAttsForParseError xntn cfg_imgrelpath }
+        errcfg = Cfg { lnkAtts = [], imgAtts = X.htmlAttsForParseError xreg }

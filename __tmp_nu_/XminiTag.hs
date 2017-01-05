@@ -22,18 +22,20 @@ data Tag =
 
 
 
-registerX xntn _ (cfg_htmltagname , cfg_parsestr) =
+registerX xreg =
     renderer cfg
     where
 
     renderer cfg _ctxpage argstr =
         Html.out cfg_htmltagname
-                    (False , cfghtmlatts ++ [("" =: innercontent)])
+                    (cfghtmlatts ++ [("" =: innercontent)])
                         []
         where
         innercontent = argstr
 
-    cfghtmlatts =  Html.attrEscapeVals $cfg~:htmlAtts
+    (cfg_htmltagname , cfg_parsestr ) = xreg~:X.cfgSplitOnce
+    cfghtmlatts =  cfg~:htmlAtts
     cfg = Util.tryParse defcfg errcfg $"Cfg"++cfg_parsestr where
         defcfg = Cfg { htmlAtts = [] }
-        errcfg = Cfg { htmlAtts = X.htmlAttsForParseError xntn cfg_htmltagname }
+        errcfg = Cfg { htmlAtts = X.htmlAttsForParseError xreg }
+        xntn = (xreg~:X.xname , xreg~:X.tname)

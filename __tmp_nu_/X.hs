@@ -9,9 +9,23 @@ import qualified Data.Map.Strict
 
 
 
-htmlAttsForParseError (xname , tname) loc =
+data Reg =
+    Named {
+        xname :: String,
+        tname :: String,
+        cfgFullStr :: String,
+        cfgSplitAll :: [String],
+        cfgSplitOnce ::  (String,String)
+    }
+
+
+
+htmlAttsForParseError reg =
+    let (xn,tn) = (reg~:xname , reg~:tname)
+        loc = Util.atOr (reg~:cfgSplitAll) 0 ""
+    in
     [ "style" =: "background-color: yellow !important; color: red !important; border: solid 0.5em red !important;"
-    , "" =: "{!X| Parse error following `X|:"++xname++":"++tname++":"++
+    , "" =: "{!X| Parse error following `X|:"++xn++":"++tn++":"++
                 (Util.ifIs loc (++":"))++"` in your *.haxproj |!}"
     ]
 
@@ -28,15 +42,13 @@ parseProjLines linessplits xregisterers =
                     Just regx -> from regx xn tn tvals
         foreach _ =
             ( "" , id )
-        from registerx xname tname tvals =
-            ( tname ,
-                registerx (xname , tname)
-                            (cfgstr , cfgvals)
-                                cfgsplit
-                ) where
-                    cfgstr = Util.trim$ Util.join ":" tvals
-                    cfgvals = tvals>~Util.trim
-                    cfgsplit = Util.both' Util.trim (Util.splitAt1st ':' cfgstr)
+        from registerx xn tn tvals =
+            let cfgstr = Util.trim$ Util.join ":" tvals
+            in ( tn , registerx Named { xname = xn,
+                                        tname = tn,
+                                        cfgFullStr = cfgstr,
+                                        cfgSplitAll = tvals>~Util.trim,
+                                        cfgSplitOnce = Util.both' Util.trim (Util.splitAt1st ':' cfgstr) } )
         rendererr msg = \_ _ -> msg -- same as `rendererr = const.const` but why befuddle!
 
 

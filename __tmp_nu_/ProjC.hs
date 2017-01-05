@@ -86,7 +86,7 @@ parseProjLines linessplits =
                     Defaults.dir_PostAtoms "_hax_relpath_postatoms" cfgmisc
     htmlequivexts = Util.unique (htmldefexts ++ hexts) where
         htmldefexts = ["",".html",".htm"]
-        hexts = hstr~:(Util.splitBy ',') >~ (('.':) . Util.trim . (Util.trim' ['.']) . Util.trim)
+        hexts = hstr~:(Util.splitOn ',') >~ (('.':) . Util.trim . (Util.trim' ['.']) . Util.trim)
         hstr = Data.Map.Strict.findWithDefault "" "_hax_htmlequivexts" cfgmisc
     procstatic = procfind Defaults.dir_Static
     procpages = procfind Defaults.dir_Pages
@@ -108,7 +108,7 @@ parseProjLines linessplits =
             sanitize fvals = let them = proc~:fvals >~Util.trim ~|is
                                 in (elem "*" them) |? ["*"] |! them
     proctags = (is ptags) |? ptags |! Tmpl.tags_All where
-        ptags = (pstr~:(Util.splitBy ',') >~ Util.trim ~|is) ~:Util.unique >~('{':).(++"|")
+        ptags = (pstr~:(Util.splitOn ',') >~ Util.trim ~|is) ~:Util.unique >~('{':).(++"|")
         pstr = Util.trim$ Data.Map.Strict.findWithDefault "" ("process:tags") cfgprocs
     dirnameonly = System.FilePath.takeFileName ~. Util.trim
     cfgmisc = cfglines2hashmap ""

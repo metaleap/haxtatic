@@ -289,11 +289,12 @@ indexOf item (this:rest) =
     if this==item then 0 else
         (1 + (indexOf item rest))
 
-_indexof_droptil _ _ [] =
+_indexof_droptil delim = _indexof_droptil' (delim==)
+_indexof_droptil' _ _ [] =
     (_intmin , [])
-_indexof_droptil count item list@(this:rest) =
-    if this==item then (count , list)
-        else _indexof_droptil (count + 1) item rest
+_indexof_droptil' predicate count list@(this:rest) =
+    if (predicate this) then (count , list)
+        else _indexof_droptil' predicate (count + 1) rest
 
 indexOf1st =
     indexof1st 0
@@ -309,7 +310,7 @@ indexOfSub [] _ =
 indexOfSub _ [] =
     _intmin
 indexOfSub haystack needle =
-    let (startindex , _haystack) = _indexof_droptil 0 (needle#0) haystack
+    let (startindex , _haystack) = _indexof_droptil (needle#0) 0 haystack
     in if startindex<0 then startindex else
         startindex + indexofsub _haystack needle
         where
@@ -374,18 +375,22 @@ _replace_helper recurse tonew (idx,old) str =
 
 
 
-splitAt1st delim list =
-    let (i , rest) = _indexof_droptil 0 delim list
+splitAt1st delim =
+    splitAt1st' (delim==)
+splitAt1stSpace = splitAt1st' Data.Char.isSpace
+splitAt1st' predicate list =
+    let (i , rest) = _indexof_droptil' predicate 0 list
     in if i<0 then (list , [])
         else (take i list , drop 1 rest)
 
 
-
-splitBy delim =
+splitOn delim =
+    splitOn' (delim==)
+splitOn' predicate =
     foldr each [[]] where
         each _ [] = []
         each item accum@(item0:rest)
-            |(item==delim)= []:accum
+            |(predicate item)= []:accum
             |(otherwise)= (item:item0):rest
 
 

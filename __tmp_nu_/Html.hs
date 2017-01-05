@@ -37,18 +37,17 @@ attrClearInner attribs =
 
 
 emit::
-    Bool-> Tag->
+    Tag->
     String
-emit escapeattrvals tag =
+emit tag =
     nooutertag |? outinner |!
         outopen++outatts++outinner++outclose
     where
     outopen = "<"++tagname
     outatts = concat$ (Util.uniqueFst tagatts)>~foreach where
         foreach (n,v)   |(null n || null v)= ""
-                        |(otherwise)= " " ++ n ++ "=\"" ++ (escattval v) ++ "\""
-        escattval = escapeattrvals |? (escape []) |! id
-    outinner = ifselfclosing ++ (concat$ tchildren>~(emit escapeattrvals)) ++ innercontent where
+                        |(otherwise)= " " ++ n ++ "=\"" ++ v ++ "\""
+    outinner = ifselfclosing ++ (concat$ tchildren>~emit) ++ innercontent where
         ifselfclosing = nooutertag |? "" |!
                             noinneroutput |? "/>" |! ">"
     outclose = noinneroutput |? "" |! "</"++tagname++">"
@@ -81,10 +80,10 @@ joinUri relpath relpath' =
 
 
 out::
-    String-> (Bool , Util.StringPairs)-> [Tag]->
+    String-> Util.StringPairs-> [Tag]->
     String
-out tname (escapeattrvals,tatts) tchildren =
-    emit escapeattrvals (T tname tatts tchildren)
+out tname tatts tchildren =
+    emit (T tname tatts tchildren)
 
 
 

@@ -101,7 +101,7 @@ _loadSetup ctxproj xregs =
 
     preplinessplits = srclinesprep>~ _splitc
     postlinessplits = srclinespost>~ _splitc
-    _splitc = Util.splitBy ':'
+    _splitc = Util.splitOn ':'
     rawsrc = _rawsrc ctxproj
     srclinesprep = ProjT.srcLinesExpandMl rawsrc
     srclinespost = lines$ Tmpl.processSrcFully (setupprep~:tmpl) "" (srclinesprep~:unlines)

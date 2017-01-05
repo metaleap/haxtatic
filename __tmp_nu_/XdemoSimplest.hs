@@ -3,7 +3,7 @@ module XdemoSimplest where
 
 
 
-registerX (_xname , _tname) (_cfgfullstr , _cfgsplitsall) (_cfgsplitat1st_prefix , _cfgsplitat1st_reststr) =
+registerX _reginfo =
     renderer
     where
 
