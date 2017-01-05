@@ -7,7 +7,6 @@ import qualified Util
 import Util ( (#) , (~|) , (~:) , (>>~) , (>~) , (|?) , (|!) )
 
 import qualified Data.List
-import qualified Data.Maybe
 import System.FilePath ( (</>) )
 
 
@@ -64,7 +63,7 @@ loadAll ctxmain ctxproc deffiles filenameexts htmlequivexts =
         tmplfind ".html" = tmpldef
         tmplfind ext =
             elem ext htmlequivexts |? tmpldef |!
-                Data.Maybe.fromMaybe tmpldef $Data.List.find ((ext==).fileExt) loadedtemplates
+                Util.unMaybe tmpldef $Data.List.find ((ext==).fileExt) loadedtemplates
     in return tmplfind
 
 

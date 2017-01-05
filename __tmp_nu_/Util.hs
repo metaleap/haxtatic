@@ -289,43 +289,49 @@ indexOf item (this:rest) =
     if this==item then 0 else
         (1 + (indexOf item rest))
 
-indexOf1st [] _ =
-    _intmin
-indexOf1st _ [] =
-    _intmin
-indexOf1st items (this:rest) =
-    if elem this items then 0 else
-        (1 + (indexOf1st items rest))
+_indexof_droptil _ _ [] =
+    (_intmin , [])
+_indexof_droptil count item list@(this:rest) =
+    if this==item then (count , list)
+        else _indexof_droptil (count + 1) item rest
 
+indexOf1st =
+    indexof1st 0
+    where
+    indexof1st _ [] _ = (_intmin , [])
+    indexof1st _ _ [] = (_intmin , [])
+    indexof1st count items list@(this:rest) =
+        if elem this items then (count , list) else
+            indexof1st (count + 1) items rest
 
 indexOfSub [] _ =
     _intmin
 indexOfSub _ [] =
     _intmin
---  indexOfSub list@(_:rest) sub =
---      if Data.List.isPrefixOf sub list then 0
---          else (1 + indexOfSub rest sub)
-indexOfSub list sub =
-    let startindex = indexOf (sub#0) list in
-    if startindex<0 then startindex else
-        startindex + indexofsub (drop startindex list) sub
+indexOfSub haystack needle =
+    let (startindex , _haystack) = _indexof_droptil 0 (needle#0) haystack
+    in if startindex<0 then startindex else
+        startindex + indexofsub _haystack needle
         where
         indexofsub [] _ =
             _intmin
         indexofsub list@(_:rest) sub =
             if Data.List.isPrefixOf sub list then 0
                 else (1 + indexofsub rest sub)
+--  indexOfSub list@(_:rest) sub =
+--      if Data.List.isPrefixOf sub list then 0
+--          else (1 + indexOfSub rest sub)
 
 
 indexOfSubs1st [] _ =
-    (_intmin , "")
+    (_intmin , "" )
 indexOfSubs1st _ [] =
-    (_intmin , "")
-indexOfSubs1st str subs =
+    (_intmin , "" )
+indexOfSubs1st subs str =
     let iidxs = isubs >~ (both (id,indexof)) ~|snd~.(>=0)
         isubs = indexed subs
-        indexof = indexOfSub (drop startindex str)
-        startindex = indexOf1st (subs >~ (#0)) str
+        indexof = indexOfSub _haystack
+        (startindex , _haystack) = indexOf1st (subs >~ (#0)) str
         (i,index) = Data.List.minimumBy (bothSnds compare) iidxs
     in if startindex<0 || null iidxs || index<0
         then ( _intmin , "" )
@@ -340,42 +346,46 @@ lastIndexOfSub revstr revsub
 
 
 replace old new str =
-    _replace_helper idx old (const new) (replace old new) str
+    _replace_helper (replace old new) (const new) (idx,old) str
     where
     idx = indexOfSub str old
 
 replaceAny olds tonew str =
-    _replace_helper idx old tonew (replaceAny olds tonew) str
-    where
-    (idx,old) = indexOfSubs1st str olds
+    _replace_helper (replaceAny olds tonew) tonew (indexOfSubs1st olds str) str
 
-replaceAll replpairs str =
-    _replace_helper idx old (tonew replpairs) (replaceAll replpairs) str
+replaceAll [] = id
+replaceAll ((old,new):[]) = replace old new
+replaceAll replpairs =
+    _replaceall
     where
-    (idx,old) = indexOfSubs1st str olds
-    (olds,_) = unzip replpairs
     tonew ((oldval,newval):rest) old =
         if oldval==old then newval else tonew rest old
+    (olds,_) = unzip replpairs
+    _replhelper = _replace_helper _replaceall (tonew replpairs)
+    _replaceall [] = []
+    _replaceall str =
+        _replhelper (indexOfSubs1st olds str) str
 
-_replace_helper idx old tonew recurse str =
+_replace_helper recurse tonew (idx,old) str =
     if idx<0 then str else
-    pre ++ tonew old ++ recurse rest where
-        pre = take idx str
-        rest = drop (idx + old~:length) str
+        let pre = take idx str
+            rest = drop (idx + old~:length) str
+        in pre ++ tonew old ++ recurse rest
 
 
 
 splitAt1st delim list =
-    if i<0 then (list , []) else (one , drop 1 two) where
-        i = indexOf delim list
-        (one,two) = Data.List.splitAt i list
+    let (i , rest) = _indexof_droptil 0 delim list
+    in if i<0 then (list , [])
+        else (take i list , drop 1 rest)
+
 
 
 splitBy delim =
     foldr each [[]] where
         each _ [] = []
-        each item items@(item0:rest)
-            |(item==delim)= []:items
+        each item accum@(item0:rest)
+            |(item==delim)= []:accum
             |(otherwise)= (item:item0):rest
 
 
