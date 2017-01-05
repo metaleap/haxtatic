@@ -10,9 +10,17 @@ registerX xreg =
     where
 
     renderer _ctxpage argstr =
-        "<i style='background: gold'>Hello, "++greet++"!</i>"
+        "<h1>Hello, " ++ greet ++ "!</h1>"
         where
-        tname = X.tname xreg ; cfgstr = X.cfgFullStr xreg
-        greet = if (not.null) argstr then argstr
-                    else if (not.null) cfgstr then cfgstr
-                        else tname
+        greet = pick1of argstr
+                        cfgstr
+                        myname
+
+        pick1of trydis trydat giveup =
+            if (not.null) trydis then trydis
+                else if (not.null) trydat then trydat
+                    else giveup
+
+
+    myname = X.tname xreg
+    cfgstr = X.cfgFullStr xreg

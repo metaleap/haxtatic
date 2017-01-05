@@ -1,10 +1,10 @@
 {-# OPTIONS_GHC -Wall #-}
 module Ximage where
 
+import Base
 import qualified Html
 import qualified Pages
 import qualified Util
-import Util ( (=:) , (~:) )
 import qualified X
 
 import System.FilePath ( (</>) )
@@ -28,7 +28,7 @@ registerX xreg =
         where
         tag = if null (cfg~:lnkAtts) then imgtag else lnktag
 
-        (imgsrc,imgdesc) = (Util.splitAt1stSpace argstr) ~: (Util.both' Util.trim)
+        (imgsrc,imgdesc) = (Util.splitOn1stSpace argstr) ~: (Util.both' Util.trim)
         imgtag = Html.T "img" (cfgimgatts ++ imgatts) []
         imgatts = myatts "src" "title"
         lnktag = Html.T "a" (cfglnkatts ++ lnkatts) [imgtag]
@@ -37,9 +37,11 @@ registerX xreg =
             [uriattname =: Html.joinUri cfg_imgrelpath imgsrc,
                             descattname =: Util.ifNo cfgerrmsg imgdesc ]
 
+
+
     (cfg_imgrelpath , cfg_parsestr) = xreg~:X.cfgSplitOnce
     (cfgerrmsg , cfgimgatts) = Html.attrClearInner $cfg~:imgAtts
     (_ , cfglnkatts) = Html.attrClearInner $cfg~:lnkAtts
-    cfg = Util.tryParse defcfg errcfg $"Cfg"++cfg_parsestr where
+    cfg = Util.tryParse defcfg errcfg ("Cfg"++) cfg_parsestr where
         defcfg = Cfg { lnkAtts = [], imgAtts = [] }
-        errcfg = Cfg { lnkAtts = [], imgAtts = X.htmlAttsForParseError xreg }
+        errcfg = Cfg { lnkAtts = [], imgAtts = X.htmlAttsForCfgParseError xreg }

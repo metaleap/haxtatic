@@ -1,13 +1,13 @@
 {-# OPTIONS_GHC -Wall #-}
 module Proj where
 
+import Base
 import qualified Bloks
 import qualified Defaults
 import qualified Files
 import qualified ProjC
 import qualified ProjT
 import qualified Util
-import Util ( (~:) , (>~) , (|?) , (|!) )
 import qualified X
 
 import qualified Tmpl

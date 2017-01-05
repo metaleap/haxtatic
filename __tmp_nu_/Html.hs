@@ -1,9 +1,9 @@
 {-# OPTIONS_GHC -Wall #-}
 module Html where
 
+import Base
 import qualified Files
 import qualified Util
-import Util ( (~:) , (>~) , (#) , (~|) , (~.) , (|?) , is , (|!) , (=:) )
 
 
 

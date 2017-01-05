@@ -1,11 +1,11 @@
 {-# OPTIONS_GHC -Wall #-}
 module Bloks where
 
+import Base
 import qualified Defaults
 import qualified Files
 import qualified ProjC
 import qualified Util
-import Util ( is , (~:) , (>~) , (~|) , (|~) , (~.) , (|?) , (|!) , (#) )
 
 import qualified Data.List
 import qualified Data.Map.Strict
@@ -88,7 +88,7 @@ parseProjLines linessplits =
     linessplits>~foreach ~|(/=noblok) where
         noblok = ("" , NoBlok)
         foreach ("|B|":blokname:bvalsplits) =
-            (bname , Util.tryParse NoBlok errblok parsestr)
+            (bname , Util.tryParse NoBlok errblok id parsestr)
             where
             bname = blokname~:Util.trim
             parsestr = bvalsplits ~: (Util.join ":") ~: Util.trim ~: (toParseStr bname)
@@ -102,7 +102,7 @@ parseProjLines linessplits =
 
 
 tagResolver hashmap curbname str =
-    let (fname, bn) = Util.both' Util.trim (Util.splitAt1st ':' str)
+    let (fname, bn) = Util.both' Util.trim (Util.splitOn1st ':' str)
         fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
                     ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dtFormat",dtFormat)  ]
         bname = (null bn) |? curbname |! bn

@@ -1,9 +1,9 @@
 {-# OPTIONS_GHC -Wall #-}
 module ProjT where
 
+import Base
 import qualified Tmpl
 import qualified Util
-import Util ( (~:) , (>~) , (~.) , (~|) , is )
 
 import qualified Data.Map.Strict
 

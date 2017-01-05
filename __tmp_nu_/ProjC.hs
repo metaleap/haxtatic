@@ -1,11 +1,11 @@
 {-# OPTIONS_GHC -Wall #-}
 module ProjC where
 
+import Base
 import qualified Defaults
 import qualified Files
 import qualified Tmpl
 import qualified Util
-import Util ( (~:) , (>~) , (~|) , (~.) , (|?) , (|!) , is )
 
 import qualified Data.Map.Strict
 import qualified Data.Maybe
@@ -100,8 +100,8 @@ parseProjLines linessplits =
     procsane defname proc =
         ProcFromProj {
             dirs = Util.ifNo (proc~:dirs >~dirnameonly ~|is) [defname],
-            skip = Util.when saneneither [] saneskip,
-            force = Util.when saneneither [] saneforce
+            skip = when saneneither [] saneskip,
+            force = when saneneither [] saneforce
         } where
             saneneither = saneskip==saneforce
             saneskip = sanitize skip ; saneforce = sanitize force

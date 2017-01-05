@@ -1,8 +1,8 @@
 {-# OPTIONS_GHC -Wall #-}
 module Files where
 
+import Base
 import qualified Util
-import Util ( is , (~:) , (~.) , (~|) , (>~) , (>>~) , (>>|) , (|?) , (|!) )
 
 import qualified Data.List
 import qualified Data.Time.Clock
@@ -174,6 +174,7 @@ simpleFileNameMatch =
 simpleFileNameMatchAny =
     simpleFilePathMatchAny . System.FilePath.takeFileName
 
+simpleFilePathMatch :: FilePath -> String -> Bool
 simpleFilePathMatch _ "*" = True
 simpleFilePathMatch relpath dumbpattern =
     let testcontains = patternstarts && patternends
@@ -185,6 +186,7 @@ simpleFilePathMatch relpath dumbpattern =
     || (teststarts && Util.startsWith relpath (Util.crop 0 1 dumbpattern))
     || (testends && Util.endsWith relpath (Util.crop 1 0 dumbpattern))
 
+simpleFilePathMatchAny :: FilePath -> [String] -> Bool
 simpleFilePathMatchAny relpath dumbpatterns =
     or$ dumbpatterns >~ (simpleFilePathMatch relpath)
 

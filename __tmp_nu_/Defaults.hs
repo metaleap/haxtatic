@@ -1,9 +1,9 @@
 {-# OPTIONS_GHC -Wall #-}
 module Defaults where
 
+import Base
 import qualified Files
 import qualified Util
-import Util ( (>~) , (~:) , (>>~) , (|?) , (|!) )
 
 import qualified Data.Char
 import qualified Data.Time.Format

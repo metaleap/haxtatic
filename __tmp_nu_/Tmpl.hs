@@ -1,10 +1,10 @@
 {-# OPTIONS_GHC -Wall #-}
 module Tmpl where
 
+import Base
 import qualified Defaults
 import qualified Files
 import qualified Util
-import Util ( (#) , (~|) , (~:) , (>>~) , (>~) , (|?) , (|!) )
 
 import qualified Data.List
 import System.FilePath ( (</>) )

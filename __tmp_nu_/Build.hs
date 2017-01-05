@@ -1,13 +1,13 @@
 {-# OPTIONS_GHC -Wall #-}
 module Build where
 
+import Base
 import qualified Bloks
 import qualified Defaults
 import qualified Files
 import qualified Proj
 import qualified ProjC
 import qualified Util
-import Util ( (~:) , (>~) , (~|) , (~.) , (>>~) , (>>|) , (#) , (|?) , (|!) )
 
 import qualified Data.Time.Clock
 import qualified System.Directory

@@ -3,7 +3,7 @@ module XdemoSimplest where
 
 
 
-registerX _reginfo =
+registerX _xreg =
     renderer
     where
 

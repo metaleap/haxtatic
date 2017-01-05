@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -Wall #-}
 module Util where
 
+import Base
 import qualified Control.Monad
 import qualified Data.Char
 import qualified Data.List
@@ -23,45 +24,6 @@ dateTime0 = Data.Time.Clock.UTCTime {
             }
 _intmin = minBound::Int
 
-
-
-(~.) = flip (.)
-
-(~:) = (&)
-
-
-(=:=) :: Eq eq => (eq, eq) -> Bool
-(=:=) = uncurry (==)
-
-(=:) = (,)
-infix 0 =:
-
--- LAST: (>~) :: Functor f => f a -> (a -> b) -> f b
-(>~) = flip fmap
-infix 8 >~
-
-(|~) = filter
-infix 7 |~
-
-(~|) = flip filter
-infix 7 ~|
-
-(>>~) :: (Traversable t, Monad m) => t a -> (a -> m b) -> m (t b)
-(>>~) = Control.Monad.forM
-infix 8 >>~
-
-(>>|) :: Applicative m => [a] -> (a -> m Bool) -> m [a]
-(>>|) = flip Control.Monad.filterM
-
-(|?) :: Bool -> a -> a -> a
-(|?) = when
-infixl 1 |?
-
-(|!) = ($)
-infixr 0 |!
-
-when True v _ = v
-when False _ v = v
 
 
 both (fun1,fun2) (tfst,tsnd) =
@@ -87,7 +49,6 @@ ifNo val defval =
 ifIs testval op =
     if null testval then [] else op testval
 
-is = not.null
 
 noneOf vals val =
     all (val/=) vals
@@ -99,26 +60,10 @@ repeatedly fn arg =
 
 
 via fn =
-    --  to `>>=` something into a typically `>>` func such as print
+    --  use it to `>>=` a value over to fn but then
+    --  discard its return and return the value instead
     ((>>)fn).return
 
-
-(#)::
-    [t] -> Int -> t
---  alias for: `!!` ..for these most common cases, no need to `fold`
-[] #_ = undefined  --  rids this Careful Coder (TM) of the pesky 'non-exhaustive patterns' warning
-(x:_) #0 = x
-(_:x:_) #1 = x
-(_:_:x:_) #2 = x
-(_:_:_:x:_) #3 = x
-(_:_:_:_:x:_) #4 = x
-(_:_:_:_:_:x:_) #5 = x
-(_:_:_:_:_:_:x:_) #6 = x
-(_:_:_:_:_:_:_:x:_) #7 = x
-(_:_:_:_:_:_:_:_:x:_) #8 = x
-(_:_:_:_:_:_:_:_:_:x:_) #9 = x
-list #i = (drop i list) #0
-infix 9 #
 
 
 -- for uses such as `crop` without (directly) taking the `length`
@@ -188,8 +133,10 @@ endsWith = flip Data.List.isSuffixOf
 startsWith :: (Eq t)=> [t]->[t]->Bool
 startsWith = flip Data.List.isPrefixOf
 
+toLower :: String -> String
 toLower = (>~ Data.Char.toLower)
 
+toUpper :: String -> String
 toUpper = (>~ Data.Char.toUpper)
 
 join = Data.List.intercalate
@@ -220,9 +167,9 @@ trimStart' dropitems = trimStart'' (`elem` dropitems)
 trimStart'' = Data.List.dropWhile
 
 
-tryParse nullval errval str =
+tryParse nullval errval toparsestr str =
     if (null str) then nullval else
-        (Text.Read.readMaybe str) ~: (Data.Maybe.fromMaybe errval)
+        (Text.Read.readMaybe (toparsestr str)) ~: (Data.Maybe.fromMaybe errval)
 
 tryParseOr defval =
     Text.Read.readMaybe ~. (Data.Maybe.fromMaybe defval)
@@ -273,6 +220,9 @@ lengthGEq n = is . drop (n - 1)
 lengthGt 0 = is
 lengthGt n = is . drop n
 
+excerpt maxlen str =
+    if s==str then s else (s++"...")
+    where s = take maxlen str
 
 fuseElems is2fuse fusion (this:next:more) =
     (fused:rest) where
@@ -375,15 +325,6 @@ _replace_helper recurse tonew (idx,old) str =
 
 
 
-splitAt1st delim =
-    splitAt1st' (delim==)
-splitAt1stSpace = splitAt1st' Data.Char.isSpace
-splitAt1st' predicate list =
-    let (i , rest) = _indexof_droptil' predicate 0 list
-    in if i<0 then (list , [])
-        else (take i list , drop 1 rest)
-
-
 splitOn delim =
     splitOn' (delim==)
 splitOn' predicate =
@@ -392,6 +333,14 @@ splitOn' predicate =
         each item accum@(item0:rest)
             |(predicate item)= []:accum
             |(otherwise)= (item:item0):rest
+
+splitOn1st delim =
+    splitOn1st' (delim==)
+splitOn1st' predicate list =
+    let (i , rest) = _indexof_droptil' predicate 0 list
+    in if i<0 then (list , [])
+        else (take i list , drop 1 rest)
+splitOn1stSpace = splitOn1st' Data.Char.isSpace
 
 
 

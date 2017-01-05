@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -Wall #-}
 module Pages where
 
+import Base
 import qualified Bloks
 import qualified Build
 import qualified Defaults
@@ -9,7 +10,6 @@ import qualified Proj
 import qualified ProjC
 import qualified Tmpl
 import qualified Util
-import Util ( (~:) , (>>~) , (>~) , (~.) , (|?) , (|!) , is )
 
 import qualified Data.Map.Strict
 import qualified System.FilePath

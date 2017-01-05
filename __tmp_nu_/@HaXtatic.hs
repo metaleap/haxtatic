@@ -3,6 +3,7 @@
 {-# OPTIONS_GHC -Wall #-}
 module Main where
 
+import Base
 import qualified Build
 import qualified Defaults
 import qualified Files
@@ -10,11 +11,11 @@ import qualified Pages
 import qualified Proj
 import qualified Tmpl
 import qualified Util
-import Util ( (#) , (~:) , (>~) , (|?) , (|!) , (=:) )
 
 import qualified XdemoSimplest
 import qualified XdemoCfgArgs
 import qualified Ximage
+import qualified Xlinks
 import qualified XminiTag
 
 import qualified Data.Time.Clock
@@ -66,6 +67,7 @@ processAll ctxmain projfilename custfilenames =
     let xregs = [ ("hax.demoSimplest" =: XdemoSimplest.registerX)
                 , ("hax.demoCfgArgs" =: XdemoCfgArgs.registerX)
                 , ("hax.image" =: Ximage.registerX)
+                , ("hax.links" =: Xlinks.registerX)
                 , ("hax.miniTag" =: XminiTag.registerX)
                 ]
         dirpath = ctxmain~:Files.dirPath
