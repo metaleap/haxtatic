@@ -25,7 +25,7 @@ registerX xreg =
 
         Just$ Html.emit tag
         where
-        tag = if null (cfg~:lnkAtts) then imgtag else lnktag
+        tag = if null (cfg.:lnkAtts) then imgtag else lnktag
         imgtag = Html.T "img" (cfgimgatts ++ (atts "src" "alt")) []
         lnktag = Html.T "a" (cfglnkatts ++ (atts "href" "title")) [imgtag]
         (imgsrc,imgdesc) = (Util.splitOn1stSpace argstr) ~> (Util.both' Util.trim)
@@ -38,9 +38,9 @@ registerX xreg =
     where
 
 
-    (cfg_imgrelpath , cfg_parsestr) = xreg~:X.cfgSplitOnce
-    (cfgerrmsg , cfgimgatts) = Html.attrClearInner $cfg~:imgAtts
-    (_ , cfglnkatts) = Html.attrClearInner $cfg~:lnkAtts
+    (cfg_imgrelpath , cfg_parsestr) = xreg.:X.cfgSplitOnce
+    (cfgerrmsg , cfgimgatts) = Html.attrClearInner $cfg.:imgAtts
+    (_ , cfglnkatts) = Html.attrClearInner $cfg.:lnkAtts
     cfg = Util.tryParse defcfg errcfg ("Cfg"++) cfg_parsestr where
         defcfg = Cfg { lnkAtts = [], imgAtts = [] }
         errcfg = Cfg { lnkAtts = [], imgAtts = X.htmlAttsForCfgParseError xreg }

@@ -96,7 +96,7 @@ parseProjLines linessplits =
         ProcFromProj { dirs = [dirname], skip = [], force = [] }
     procsane defname proc =
         ProcFromProj {
-            dirs = Util.ifNo (proc~:dirs >~dirnameonly ~|is) [defname],
+            dirs = Util.ifNo (proc.:dirs >~dirnameonly ~|is) [defname],
             skip = when saneneither [] saneskip,
             force = when saneneither [] saneforce
         } where
@@ -105,7 +105,7 @@ parseProjLines linessplits =
             sanitize fvals = let them = proc~>fvals >~Util.trim ~|is
                                 in (elem "*" them) |? ["*"] |! them
     proctags = (is ptags) |? ptags |! Tmpl.tags_All where
-        ptags = (pstr~>(Util.splitOn ',') >~ Util.trim ~|is) ~>Util.unique >~('{':).(++"|")
+        ptags = (pstr~>(Util.splitOn ',') >~ Util.trim ~|is) ~>Util.unique >~(('{':).(++"|"))
         pstr = Util.trim$ Data.Map.Strict.findWithDefault "" ("process:tags") cfgprocs
     dirnameonly = System.FilePath.takeFileName ~. Util.trim
     cfgmisc = cfglines2hashmap ""

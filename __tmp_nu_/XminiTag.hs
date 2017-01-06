@@ -15,6 +15,8 @@ data Tag =
     deriving (Read)
 
 
+
+
 registerX xreg =
     let
     renderer (_ , argstr) =
@@ -29,8 +31,10 @@ registerX xreg =
     where
 
 
-    (cfg_htmltagname , cfg_parsestr ) = xreg~:X.cfgSplitOnce
-    cfghtmlatts =  cfg~:htmlAtts
+
+
+    (cfg_htmltagname , cfg_parsestr ) = xreg.:X.cfgSplitOnce
+    cfghtmlatts =  cfg.:htmlAtts
     cfg = Util.tryParse defcfg errcfg ("Cfg"++) cfg_parsestr where
         defcfg = Cfg { htmlAtts = [] }
         errcfg = Cfg { htmlAtts = X.htmlAttsForCfgParseError xreg }

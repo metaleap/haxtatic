@@ -29,16 +29,21 @@ when False _ v = v
 
 
 
+infixl ~.
 (~.) = flip (.)
 
-(~:) = (&)
 
+
+infixl 9 .:
+(.:) = (&)
+
+infixl ~>
 (~>) = (&)
 
 
 
-(=:) = (,)
 infix 0 =:
+(=:) = (,)
 
 --  (=:=)  :: Eq eq => (eq, eq) -> Bool
 --  (=:=) = uncurry (==)
@@ -49,18 +54,17 @@ infix 0 =:
 (>~) ::
     (Functor f)=>
     f a -> (a -> b) -> f b
-
+infixl 9 >~
 (>~) = flip fmap
-infix 8 >~
 
 
 
 
+infixr 7 |~
 (|~) = filter
-infix 7 |~
 
+infixl 7 ~|
 (~|) = flip filter
-infix 7 ~|
 
 
 
@@ -68,9 +72,8 @@ infix 7 ~|
 (>>~) ::
     (Traversable t, Monad m)=>
     t a -> (a -> m b) -> m (t b)
-
+infixl 8 >>~
 (>>~) = Control.Monad.forM
-infix 8 >>~
 
 
 
@@ -78,7 +81,7 @@ infix 8 >>~
 (>>|) ::
     (Applicative m)=>
     [a] -> (a -> m Bool) -> m [a]
-
+infixl >>|
 (>>|) = flip Control.Monad.filterM
 
 
@@ -87,26 +90,25 @@ infix 8 >>~
 
 (|?) ::
     Bool -> a -> a -> a
-
+infix 1 |?
 (|?) = when
-infixl 1 |?
 
 
-(|!) = ($)
 infixr 0 |!
+(|!) = ($)
 
 
+infix 1 -|=
 (-|=) = Data.Maybe.fromMaybe
-infix 9 -|=
 
+infix 0 =|-
 (=|-) = flip maybe
-infix 9 =|-
 
 
 (#) ::
     [a] -> Int -> a
---  alias for: `!!` ..for these most common cases, no need to `fold`
-infix 9 #
+infixl 9 #
+--  alias for: `!!`
 [] #_ = undefined  --  rids this Careful Coder (TM) of the pesky 'non-exhaustive patterns' warning
 (x:_) #0 = x
 (_:x:_) #1 = x

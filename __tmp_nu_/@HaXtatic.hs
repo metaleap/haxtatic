@@ -66,7 +66,7 @@ processAll ::
     Files.Ctx-> String-> [String]->
     IO ()
 processAll ctxmain projfilename custfilenames =
-    let dirpath = ctxmain~:Files.dirPath
+    let dirpath = ctxmain.:Files.dirPath
         filenameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
 
     in putStrLn "\n1/5\tReading essential project files [or (re)creating them..]"
@@ -76,22 +76,22 @@ processAll ctxmain projfilename custfilenames =
     in Defaults.loadOrCreate ctxmain projname (projfilename~>filenameonly) (custfilenames>~filenameonly)
     >>= Proj.loadCtx ctxmain projname xregs >>= \ctxproj
     -> Tmpl.warnIfTagMismatches ctxmain "*.haxproj"
-                (ctxproj~:Proj.setup~:Proj.tagMismatches)
+                (ctxproj.:Proj.setup.:Proj.tagMismatches)
 
     >> putStrLn "\n2/5\tPlanning the work.."
     >> Build.plan ctxmain ctxproj >>= \buildplan
     -> let
-        numgenpages = buildplan~:Build.outPages~>length
-        numskippages = buildplan~:Build.numSkippedPages
-        numcopyfiles = buildplan~:Build.outStatics~>length
-        numskipfiles = buildplan~:Build.numSkippedStatic
-        numoutfiles = buildplan~:Build.numOutFilesTotal
-        numxmlfiles = buildplan~:Build.outAtoms~>length
-        numsitemaps = ((buildplan~:Build.siteMap~>fst) == Build.NoOutput) |? 0 |! 1
-        dirbuild = ctxproj~:Proj.dirPathBuild
+        numgenpages = buildplan.:Build.outPages~>length
+        numskippages = buildplan.:Build.numSkippedPages
+        numcopyfiles = buildplan.:Build.outStatics~>length
+        numskipfiles = buildplan.:Build.numSkippedStatic
+        numoutfiles = buildplan.:Build.numOutFilesTotal
+        numxmlfiles = buildplan.:Build.outAtoms~>length
+        numsitemaps = ((buildplan.:Build.siteMap~>fst) == Build.NoOutput) |? 0 |! 1
+        dirbuild = ctxproj.:Proj.dirPathBuild
     in putStrLn ("\t->\tStatic files: will copy " ++(show numcopyfiles)++ ", skipping " ++(show numskipfiles)++ "")
     >> putStrLn ("\t->\tContent pages: will (re)generate from " ++(show numgenpages)++ ", skipping " ++(show numskippages)++ "")
-    >> putStrLn ("\t->\tXML files: will (re)generate from "++(show numxmlfiles)++" feeds, skipping " ++(show$ buildplan~:Build.numSkippedAtoms)++ "\n\t\t           plus "++(show numsitemaps)++" sitemap(s)")
+    >> putStrLn ("\t->\tXML files: will (re)generate from "++(show numxmlfiles)++" feeds, skipping " ++(show$ buildplan.:Build.numSkippedAtoms)++ "\n\t\t           plus "++(show numsitemaps)++" sitemap(s)")
 
     >> putStrLn ("\n3/5\tCopying " ++(show numcopyfiles)++ "/" ++(show$ numcopyfiles+numskipfiles)++ " static file(s) to:\n\t->\t"++dirbuild)
     >> Build.copyStaticFiles buildplan
@@ -100,14 +100,14 @@ processAll ctxmain projfilename custfilenames =
     >> Pages.processAll ctxmain ctxproj buildplan
     >> Pages.writeSitemapXml ctxproj buildplan
 
-    --  >> let  dtstr = (Proj.dtUtc2Str (ctxproj~:Proj.setup~:Proj.cfg) "foo" (ctxmain~:Files.nowTime))
-    --          dtutc = Proj.dtStr2UtcOr (ctxproj~:Proj.setup~:Proj.cfg) "foo" dtstr Util.dateTime0
+    --  >> let  dtstr = (Proj.dtUtc2Str (ctxproj.:Proj.setup.:Proj.cfg) "foo" (ctxmain.:Files.nowTime))
+    --          dtutc = Proj.dtStr2UtcOr (ctxproj.:Proj.setup.:Proj.cfg) "foo" dtstr Util.dateTime0
     --  in print dtstr
     --  >> print dtutc
     >> System.IO.hFlush System.IO.stdout -- remove later
 
     >> let deploymsg = "\n5/5\tCopying only the " ++(show$ numoutfiles)++ " newly (over)written file(s) also to:\n\t->\t"
-    in if null (ctxproj~:Proj.dirPathDeploy) then
+    in if null (ctxproj.:Proj.dirPathDeploy) then
         putStrLn (deploymsg++ "(skipping this step.)") else
-            putStrLn (deploymsg++(ctxproj~:Proj.dirPathDeploy))
+            putStrLn (deploymsg++(ctxproj.:Proj.dirPathDeploy))
             >> Build.copyAllOutputsToDeploy buildplan

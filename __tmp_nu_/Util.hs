@@ -123,13 +123,13 @@ countSubVsSubs list (sub,subs) =
 
 
 
-contains :: (Eq t)=> [t]->[t]->Bool
+contains :: (Eq t)=> [t] -> [t] -> Bool
 contains = flip Data.List.isInfixOf
 
-endsWith :: (Eq t)=> [t]->[t]->Bool
+endsWith :: (Eq t)=> [t] -> [t] -> Bool
 endsWith = flip Data.List.isSuffixOf
 
-startsWith :: (Eq t)=> [t]->[t]->Bool
+startsWith :: (Eq t)=> [t] -> [t] -> Bool
 startsWith = flip Data.List.isPrefixOf
 
 toLower :: String -> String
@@ -152,7 +152,7 @@ substitute old new
 
 trim = trim'' Data.Char.isSpace
 trim' dropitems = trim'' (`elem` dropitems)
-trim'' fn = (trimStart'' fn)~.(trimEnd'' fn)
+trim'' fn = (trimStart'' fn) ~. (trimEnd'' fn)
 trimSpaceOr dropitems = trim'' (\c -> Data.Char.isSpace c || elem c dropitems )
 
 trimEnd = trimEnd'' Data.Char.isSpace
@@ -172,18 +172,26 @@ tryParseOr defval =
     (defval -|=).Text.Read.readMaybe
 
 
-unique:: (Eq a)=> [a]-> [a]
+
+unMaybes list =
+    (list ~|(/=Nothing)) >~ foreach where
+    foreach (Just val) = val
+    foreach _ = undefined
+
+
+
+unique:: (Eq a)=> [a] -> [a]
 unique = Data.List.nub
 
-uniqueFst:: (Eq f)=> [(f,s)]-> [(f,s)]
+uniqueFst:: (Eq f)=> [(f,s)] -> [(f,s)]
 uniqueFst = Data.List.nubBy (bothFsts (==))
 
-uniqueSnd:: (Eq s)=> [(f,s)]-> [(f,s)]
+uniqueSnd:: (Eq s)=> [(f,s)] -> [(f,s)]
 uniqueSnd = Data.List.nubBy (bothSnds (==))
 
 
 atOr::
-    [t]-> Int-> t->
+    [t]  ->  Int  ->  t  ->
     t
 --  value in `list` at `index`, or `defval`
 atOr [] _ defval = defval
@@ -288,7 +296,7 @@ indexOfSubs1st subs str =
 
 lastIndexOfSub revstr revsub
     |(idx<0)= idx
-    |(otherwise)= revstr~:length - revsub~:length - idx
+    |(otherwise)= revstr~>length - revsub~>length - idx
     where
         idx = indexOfSub revstr revsub
 
@@ -320,7 +328,7 @@ replaceAll replpairs =
 _replace_helper recurse tonew (idx,old) str =
     if idx<0 then str else
         let pre = take idx str
-            rest = drop (idx + old~:length) str
+            rest = drop (idx + old~>length) str
         in pre ++ tonew old ++ recurse rest
 
 
@@ -351,22 +359,22 @@ splitUp allbeginners end src =
     (null beginners) |? [(src,"")] |! _splitup src
     where
     beginners' = allbeginners>~reverse ~|is
-    beg0len = (beginners'#0)~:length
+    beg0len = (beginners'#0)~>length
     beginners = beginners' ~| length~.((==)beg0len)
 
-    lastidx revstr = (beginners>~ (lastIndexOfSub revstr)) ~: maximum
+    lastidx revstr = (beginners>~ (lastIndexOfSub revstr)) ~> maximum
 
     _splitup str =
         (tolist "" pre) ++ (tolist beginner match) ++ --  only recurse if we have a good reason:
             (nomatch && splitat==0 |? (tolist "" rest) |! (_splitup rest))
         where
-        pre = str ~: (take$ nomatch |? splitat |! begpos)
-        match = nomatch |? "" |! (str ~: (take endpos) ~: (drop $begpos+beg0len))
-        rest = str ~: (drop$ nomatch |? splitat |! endposl)
-        beginner = nomatch |? "" |! str ~: (take endpos) ~: (drop begpos) ~: take beg0len
+        pre = str ~> (take$ nomatch |? splitat |! begpos)
+        match = nomatch |? "" |! (str ~> (take endpos) ~> (drop $begpos+beg0len))
+        rest = str ~> (drop$ nomatch |? splitat |! endposl)
+        beginner = nomatch |? "" |! str ~> (take endpos) ~> (drop begpos) ~> (take beg0len)
         nomatch = endpos<0 || begpos<0
         splitat = (nomatch && endpos>=0) |? endposl |! 0
         endpos = indexOfSub str end
-        begpos = endpos<0 |? -1 |! lastidx$ str ~: (take endpos) ~: reverse
-        endposl = endpos + (end~:length)
+        begpos = endpos<0 |? -1 |! lastidx$ str ~> (take endpos) ~> reverse
+        endposl = endpos + (end~>length)
         tolist beg val = (null val && null beg) |? [] |! [(val,beg)]

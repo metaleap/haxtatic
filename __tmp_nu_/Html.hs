@@ -53,10 +53,10 @@ emit tag =
     outclose = noinneroutput |? "" |! "</"++tagname++">"
 
     nooutertag = null tagname
-    tagname = tag~:name
-    tagatts = tag~:attribs
+    tagname = tag.:name
+    tagatts = tag.:attribs
     innercontent = Util.lookup "" "" tagatts
-    tchildren = tag~:subTags
+    tchildren = tag.:subTags
     noinneroutput = null tchildren && null innercontent
 
 

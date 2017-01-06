@@ -27,18 +27,18 @@ data Render r = NoRender | Early r | WaitForPage r
 
 
 _htmlattsfor xreg clarify codemain codemore =
-    let (xn,tn) = (xreg~:xname , xreg~:tname) in
+    let (xn,tn) = (xreg.:xname , xreg.:tname) in
     [ "style" =: "background-color: yellow !important; color: red !important; border: solid 0.5em red !important; display: inline-block !important;"
     , "" =: "{!X| Bad syntax "++clarify++" `"++codemain++": "++ (Html.escape [] codemore)++"` (couldn't parse it) |!}"
     ]
 
 htmlAttsForArgsParseError xreg arghint =
-    let (xn,tn) = (xreg~:xname , xreg~:tname)
+    let (xn,tn) = (xreg.:xname , xreg.:tname)
     in _htmlattsfor xreg ( "(for `" ++ xn ++"` args) within" ) ( "{<!---->X|" ++ tn ) arghint
 
 htmlAttsForCfgParseError xreg =
-    let (xn,tn) = (xreg~:xname , xreg~:tname)
-        hint = Util.ifIs (Util.atOr (xreg~:cfgSplitAll) 0 "") (++": ...")
+    let (xn,tn) = (xreg.:xname , xreg.:tname)
+        hint = Util.ifIs (Util.atOr (xreg.:cfgSplitAll) 0 "") (++": ...")
     in _htmlattsfor xreg ( "(in your *.haxproj) following" ) ( "X|:" ++ xn ++ ":" ++ tn ) (Util.excerpt 23 hint)
 
 

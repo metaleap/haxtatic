@@ -51,7 +51,7 @@ blokNameFromRelPath bloks relpath file =
             | isRelPathBlokPage bname relpath
             = bname
             | otherwise
-            = blokNameFromIndexPagePath $file~:Files.path
+            = blokNameFromIndexPagePath $file.:Files.path
 
 
 
@@ -63,7 +63,7 @@ buildPlan (modtimeproj,modtimetmplblok) projcfg allpagesfiles bloks =
         isblokpagefile (relpath,file) = is relpath && file /= Files.NoFile
         _allblokpagefiles = allBlokPageFiles projcfg allpagesfiles
         tofileinfo ispage bfield modtime bname blok =
-            let virtpath = (isblokpagefile bpage) |? blok~:bfield |! ""
+            let virtpath = (isblokpagefile bpage) |? blok.:bfield |! ""
                 (allblokpagefiles , datelatest) = _allblokpagefiles bname
                 bpage@(_,bpagefile) = Util.atOr allblokpagefiles 0 ("" , Files.NoFile)
             in ( Files.pathSepSlashToSystem virtpath ,
@@ -110,7 +110,7 @@ tagResolver hashmap curbname str =
         |! (fname=="name" && is bname) |? Just bname
             |! (blok==NoBlok) |? Nothing
                 |! case Data.List.lookup fname fields of
-                    Just fieldval-> Just $blok~:fieldval
+                    Just fieldval-> Just $blok.:fieldval
                     Nothing-> Nothing
 
 

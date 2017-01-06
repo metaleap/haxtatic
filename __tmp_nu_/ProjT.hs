@@ -37,7 +37,7 @@ srcLinesExpandMl rawsrc =
     ((mlchunked>~fst) ~> concat ~> lines) ++
         --  .. plus additional `T::_hax_multiline_n:"original-but-\n-escaped-and-quoted"`
         --  lines appended, supplying the original extracted&replaced multi-line fragments
-        (mlchunked>~ snd~.mlwriteln)
+        (mlchunked >~ (snd~.mlwriteln))
     where
     mlwriteln ("",_) = ""
     mlwriteln (k,v) = "|T|:"++k++":"++v

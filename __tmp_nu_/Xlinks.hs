@@ -21,13 +21,15 @@ data Tag =
     deriving (Read)
 
 
+
+
 registerX xreg =
     let
     renderer (_ , argstr) =
 
         Just$ cfgitemspre ++ allitems ++ cfgitemspost
         where
-        allitems = htmlout (args~:htmlAtts ++ cfghtmlatts) (args~:items)
+        allitems = htmlout (args.:htmlAtts ++ cfghtmlatts) (args.:items)
         args = Util.tryParse defargs errargs (("Args{"++).(++"}")) argstr where
             defargs = Args { items = [], htmlAtts = [] }
             errargs = Args { items = ["#"=:""], htmlAtts = X.htmlAttsForArgsParseError xreg (Util.excerpt 23 argstr) }
@@ -37,15 +39,17 @@ registerX xreg =
     where
 
 
+
+
     htmlout atts items = concat$ items>~(foreach atts)
     foreach attribs (url,text) =
         Html.out cfg_htmltagname attribs [ Html.T "a" ["" =: text , "href" =: url] [] ]
 
-    cfgitemspre = htmlout cfghtmlatts $cfg~:itemsFirst
-    cfgitemspost = htmlout cfghtmlatts $cfg~:itemsLast
+    cfgitemspre = htmlout cfghtmlatts $cfg.:itemsFirst
+    cfgitemspost = htmlout cfghtmlatts $cfg.:itemsLast
 
-    (cfg_htmltagname , cfg_parsestr ) = xreg~:X.cfgSplitOnce
-    cfghtmlatts =  cfg~:htmlAtts
+    (cfg_htmltagname , cfg_parsestr ) = xreg.:X.cfgSplitOnce
+    cfghtmlatts =  cfg.:htmlAtts
     cfg = Util.tryParse defcfg errcfg ("Cfg"++) cfg_parsestr where
         defcfg = Cfg { htmlAtts = [],
                         itemsFirst = [], itemsLast = [] }
