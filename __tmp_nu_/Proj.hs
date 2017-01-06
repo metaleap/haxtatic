@@ -38,7 +38,7 @@ data Setup
         --  srcPre :: [String],
         bloks :: Data.Map.Strict.Map String Bloks.Blok,
         cfg :: ProjC.Config,
-        tmpl :: Tmpl.Ctx,
+        tmpl :: Tmpl.CtxProc,
         tagMismatches :: (Int , Int)
     }
 
@@ -69,7 +69,7 @@ _loadSetup ctxproj xregs =
     SetupFromProj { -- srcRaw = srclinespost, srcPre = srclinesprep,
                     bloks = blokspost,
                     cfg = cfgpost,
-                    tmpl = Tmpl.Processing {
+                    tmpl = Tmpl.ProcessingContext {
                             Tmpl.bTags =  Bloks.tagResolver blokspost,
                             Tmpl.cTags = ProjC.tagResolver cfgmiscpost,
                             Tmpl.tTags = ProjT.tagResolver ttagspost,
@@ -82,7 +82,7 @@ _loadSetup ctxproj xregs =
     setupprep = SetupFromProj { -- srcRaw = [], srcPre = [],
                                 bloks = bloksprep,
                                 cfg = cfgprep,
-                                tmpl = Tmpl.Processing {
+                                tmpl = Tmpl.ProcessingContext {
                                         Tmpl.bTags =  Bloks.tagResolver bloksprep,
                                         Tmpl.cTags = ProjC.tagResolver cfgmiscprep,
                                         Tmpl.tTags = ProjT.tagResolver ttagsprep,
@@ -105,7 +105,7 @@ _loadSetup ctxproj xregs =
     _splitc = Util.splitOn ':'
     rawsrc = _rawsrc ctxproj
     srclinesprep = ProjT.srcLinesExpandMl rawsrc
-    srclinespost = lines$ Tmpl.processSrcFully (setupprep~:tmpl) Nothing (srclinesprep~:unlines)
+    srclinespost = lines$ Tmpl.processSrcFully (setupprep~:tmpl) Nothing (srclinesprep~>unlines)
 
 
 

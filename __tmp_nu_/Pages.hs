@@ -19,7 +19,7 @@ import qualified System.IO
 
 
 processAll ctxmain ctxproj buildplan =
-    let filenameexts = buildplan~:Build.outPages>~filenameext
+    let filenameexts = buildplan~:Build.outPages >~ filenameext
         filenameext = Build.srcFile ~. Files.path ~. System.FilePath.takeExtension
         ctxtmpl = ctxproj~:Proj.setup~:Proj.tmpl
     in Tmpl.loadAll
@@ -31,7 +31,7 @@ processAll ctxmain ctxproj buildplan =
         >>= \tmplfinder
     -> let foreach buildtask =
             processPage ctxmain ctxtmpl tmplfinder buildtask
-        in buildplan~:Build.outPages>>~foreach
+        in buildplan~:Build.outPages >>~ foreach
         >> return ()
 
 
@@ -46,9 +46,10 @@ processPage ctxmain ctxtmpl tmplfinder outjob =
         System.IO.hFlush System.IO.stdout
         >> loadsrccontent >>= \(mismatches , pagesrc)
         -> let
-            ctxpage = Tmpl.PageCtx {
+            ctxpage = Tmpl.PageContext {
                             Tmpl.blokName = outjob~:Build.blokName,
-                            Tmpl.pTags = tagresolver
+                            Tmpl.pTags = tagresolver,
+                            Tmpl.tmpl = tmpl
                         }
             tagresolver = tagResolver ctxpage
             tmpl = tmplfinder$ System.FilePath.takeExtension dstfilepath

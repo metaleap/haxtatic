@@ -48,10 +48,10 @@ loadOrCreate ctxmain projname projfilename custfilenames =
         redatedcfg = redated cfgmodtime
         redatedtmpl = redated tmplmodtime
     in return DefaultFiles {
-        projectDefault = projfile~:redatedcfg,
+        projectDefault = projfile~>redatedcfg,
         projectOverwrites = custfiles>~redatedcfg,
-        htmlTemplateMain = tmplmainfile~:redatedtmpl,
-        htmlTemplateBlok = tmplblokfile~:redatedtmpl
+        htmlTemplateMain = tmplmainfile~>redatedtmpl,
+        htmlTemplateBlok = tmplblokfile~>redatedtmpl
     }
 
 

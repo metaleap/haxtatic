@@ -12,8 +12,8 @@ import qualified Data.Map.Strict
 parseProjLines linessplits canparsestr =
     Data.Map.Strict.fromList$ linessplits>~foreach ~|fst~.is where
         foreach ("|T|":tname:tvalsplits) =
-            ( tname~:Util.trim ,
-                outputfor tname $ tvalsplits~:(Util.join ":")~:Util.trim )
+            ( tname ~> Util.trim ,
+                outputfor tname $ tvalsplits ~> (Util.join ":") ~> Util.trim )
         foreach _ =
             ( "" , "" )
         outputfor tname str =
@@ -34,7 +34,7 @@ _parsestr_tclose = "\""
 srcLinesExpandMl rawsrc =
     --  original lines exposing {``|multi-line
     --  fragments|``} collapsed into single-line in-place {T|_hax_multiline_n|} placeholders ..
-    ((mlchunked>~fst) ~: concat ~: lines) ++
+    ((mlchunked>~fst) ~> concat ~> lines) ++
         --  .. plus additional `T::_hax_multiline_n:"original-but-\n-escaped-and-quoted"`
         --  lines appended, supplying the original extracted&replaced multi-line fragments
         (mlchunked>~ snd~.mlwriteln)
@@ -51,8 +51,8 @@ srcLinesExpandMl rawsrc =
             let tkey = "_hax_multiline_"++(show i)
                 escstr = Util.replaceAny Tmpl.tags_All (++"``:") str
             in ( Tmpl.tag_T++tkey++Tmpl.tag_Close , (tkey , show escstr) )
-            -- if to enclose within other tokens than " and ", switch from str~:show to:
-            -- _parsestr_topen++ (Util.crop 1 1 $str~:show) ++_parsestr_tclose))
+            -- if to enclose within other tokens than " and ", switch from str~>show to:
+            -- _parsestr_topen++ (Util.crop 1 1 $str~>show) ++_parsestr_tclose))
         forchunk (_ , (str , _)) =
             (str , ("" , ""))
 

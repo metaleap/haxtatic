@@ -59,13 +59,6 @@ main =
         -> let timetaken = Data.Time.Clock.diffUTCTime endtime starttime
         in putStrLn ("\n\nWell it's been " ++(show timetaken)++ ":\n\n==== Bye now! ====\n\n\n")
         >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
-        >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
-        >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
-        >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
-        >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
-        >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
-        >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
-        >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
 
 
 
@@ -80,7 +73,7 @@ processAll ctxmain projfilename custfilenames =
     >> System.Directory.createDirectoryIfMissing False dirpath
     >> System.Directory.makeAbsolute dirpath >>= \dirfullpath   --  we do this just in case
     -> let projname = System.FilePath.takeBaseName dirfullpath  --  `dirpath` ended in `.` or `..`
-    in Defaults.loadOrCreate ctxmain projname (projfilename~:filenameonly) (custfilenames>~filenameonly)
+    in Defaults.loadOrCreate ctxmain projname (projfilename~>filenameonly) (custfilenames>~filenameonly)
     >>= Proj.loadCtx ctxmain projname xregs >>= \ctxproj
     -> Tmpl.warnIfTagMismatches ctxmain "*.haxproj"
                 (ctxproj~:Proj.setup~:Proj.tagMismatches)
@@ -88,13 +81,13 @@ processAll ctxmain projfilename custfilenames =
     >> putStrLn "\n2/5\tPlanning the work.."
     >> Build.plan ctxmain ctxproj >>= \buildplan
     -> let
-        numgenpages = buildplan~:Build.outPages~:length
+        numgenpages = buildplan~:Build.outPages~>length
         numskippages = buildplan~:Build.numSkippedPages
-        numcopyfiles = buildplan~:Build.outStatics~:length
+        numcopyfiles = buildplan~:Build.outStatics~>length
         numskipfiles = buildplan~:Build.numSkippedStatic
         numoutfiles = buildplan~:Build.numOutFilesTotal
-        numxmlfiles = buildplan~:Build.outAtoms~:length
-        numsitemaps = ((buildplan~:Build.siteMap~:fst) == Build.NoOutput) |? 0 |! 1
+        numxmlfiles = buildplan~:Build.outAtoms~>length
+        numsitemaps = ((buildplan~:Build.siteMap~>fst) == Build.NoOutput) |? 0 |! 1
         dirbuild = ctxproj~:Proj.dirPathBuild
     in putStrLn ("\t->\tStatic files: will copy " ++(show numcopyfiles)++ ", skipping " ++(show numskipfiles)++ "")
     >> putStrLn ("\t->\tContent pages: will (re)generate from " ++(show numgenpages)++ ", skipping " ++(show numskippages)++ "")

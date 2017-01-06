@@ -9,7 +9,6 @@ import qualified Util
 
 import qualified Data.List
 import qualified Data.Map.Strict
-import qualified Data.Maybe
 import qualified System.FilePath
 
 
@@ -40,14 +39,14 @@ allBlokPageFiles projcfg allpagesfiles bname =
 
 
 blokNameFromIndexPagePath possiblefakepath =
-    let lenprefix = Defaults.blokIndexPrefix~:length
-    in Defaults.blokIndexPrefix /= possiblefakepath~:(take lenprefix)
+    let lenprefix = Defaults.blokIndexPrefix~>length
+    in Defaults.blokIndexPrefix /= possiblefakepath~>(take lenprefix)
         |? "" |! drop 1 (System.FilePath.takeExtension possiblefakepath)
 
 
 
 blokNameFromRelPath bloks relpath file =
-    Util.atOr (bloks~:Data.Map.Strict.keys >~ foreach ~|is) 0 "" where
+    Util.atOr (bloks~>Data.Map.Strict.keys >~ foreach ~|is) 0 "" where
         foreach bname
             | isRelPathBlokPage bname relpath
             = bname
@@ -90,8 +89,8 @@ parseProjLines linessplits =
         foreach ("|B|":blokname:bvalsplits) =
             (bname , Util.tryParse NoBlok errblok id parsestr)
             where
-            bname = blokname~:Util.trim
-            parsestr = bvalsplits ~: (Util.join ":") ~: Util.trim ~: (toParseStr bname)
+            bname = blokname~>Util.trim
+            parsestr = bvalsplits ~> (Util.join ":") ~> Util.trim ~> (toParseStr bname)
             errblok = Blok { title="{!B| syntax issue near `B::" ++bname++ ":`, couldn't parse `" ++parsestr++ "` |!}",
                                 desc="{!B| Syntax issue in your .haxproj file defining Blok named '" ++bname++
                                         "'. Thusly couldn't parse Blok settings (incl. title/desc) |!}",
@@ -102,11 +101,11 @@ parseProjLines linessplits =
 
 
 tagResolver hashmap curbname str =
-    let (fname, bn) = Util.both' Util.trim (Util.splitOn1st ':' str)
-        fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
+    let fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
                     ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dtFormat",dtFormat)  ]
-        bname = (is bn) |? bn |! curbname
+        bname = Util.ifNo bn curbname
         blok = Data.Map.Strict.findWithDefault NoBlok bname hashmap
+        (fname, bn) = Util.both' Util.trim (Util.splitOn1st ':' str)
     in (null fname) |? Nothing
         |! (fname=="name" && is bname) |? Just bname
             |! (blok==NoBlok) |? Nothing
@@ -118,9 +117,9 @@ tagResolver hashmap curbname str =
 
 toParseStr bname projline =
     let
-        pl = projline ~: (checkfield "title" "") ~: (checkfield "desc" "") ~:
-                (checkfield "atomFile" "") ~: (checkfield "blokIndexPageFile" (bname++ ".html")) ~:
-                    (checkfield "inSitemap" True) ~: (checkfield "dtFormat" "")
+        pl = projline ~> (checkfield "title" "") ~> (checkfield "desc" "") ~>
+                (checkfield "atomFile" "") ~> (checkfield "blokIndexPageFile" (bname++ ".html")) ~>
+                    (checkfield "inSitemap" True) ~> (checkfield "dtFormat" "")
     in "Blok {" ++pl++ "}"
     where
     checkfield field defval prjln =

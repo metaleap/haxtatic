@@ -8,7 +8,6 @@ import qualified Tmpl
 import qualified Util
 
 import qualified Data.Map.Strict
-import qualified Data.Maybe
 import qualified Data.Time
 import qualified Data.Time.Clock
 import qualified Data.Time.Format
@@ -24,9 +23,9 @@ data Config
         relPathSiteMap :: String,
         htmlEquivExts :: [String],
         dtFormat :: String->String,
-        processStatic :: Processing,
-        processPages :: Processing,
-        processPosts :: Processing,
+        processingOfFiles :: Processing,
+        processingOfPages :: Processing,
+        processingOfPosts :: Processing,
         tmplTags :: [String]
     }
 
@@ -47,9 +46,7 @@ dtStr2Utc cfgproj dtfname str =
             :: Maybe Data.Time.Clock.UTCTime
 
 dtStr2UtcOr cfgproj dtfname str defval =
-    case dtStr2Utc cfgproj dtfname str of
-        Just parsed -> parsed
-        Nothing -> defval
+    defval -|= (dtStr2Utc cfgproj dtfname str)
 
 dtUtc2Str cfgproj dtfname utctime =
     let dtformat = (dtfname == "_hax_dtformat_iso8601")
@@ -70,7 +67,7 @@ parseProjLines linessplits =
     cfg = CfgFromProj { dirNameBuild = dirbuild, dirNameDeploy = dirdeploy, domainName = domainname,
                         relPathPostAtoms = relpathpostatoms, relPathSiteMap = relpathsitemap,
                         htmlEquivExts = htmlequivexts, dtFormat = dtformat,
-                        processStatic = procstatic, processPages = procpages, processPosts = procposts,
+                        processingOfFiles = procstatic, processingOfPages = procpages, processingOfPosts = procposts,
                         tmplTags = proctags }
     dtformat name = Data.Map.Strict.findWithDefault
                     Defaults.dateTimeFormat ("dtformat:"++name) cfgdtformats
@@ -86,7 +83,7 @@ parseProjLines linessplits =
                     Defaults.dir_PostAtoms "_hax_relpath_postatoms" cfgmisc
     htmlequivexts = Util.unique (htmldefexts ++ hexts) where
         htmldefexts = ["",".html",".htm"]
-        hexts = hstr~:(Util.splitOn ',') >~ (('.':) . Util.trim . (Util.trim' ['.']) . Util.trim)
+        hexts = hstr ~> (Util.splitOn ',') >~ (('.':).(Util.trimSpaceOr ['.']))
         hstr = Data.Map.Strict.findWithDefault "" "_hax_htmlequivexts" cfgmisc
     procstatic = procfind Defaults.dir_Static
     procpages = procfind Defaults.dir_Pages
@@ -105,10 +102,10 @@ parseProjLines linessplits =
         } where
             saneneither = saneskip==saneforce
             saneskip = sanitize skip ; saneforce = sanitize force
-            sanitize fvals = let them = proc~:fvals >~Util.trim ~|is
+            sanitize fvals = let them = proc~>fvals >~Util.trim ~|is
                                 in (elem "*" them) |? ["*"] |! them
     proctags = (is ptags) |? ptags |! Tmpl.tags_All where
-        ptags = (pstr~:(Util.splitOn ',') >~ Util.trim ~|is) ~:Util.unique >~('{':).(++"|")
+        ptags = (pstr~>(Util.splitOn ',') >~ Util.trim ~|is) ~>Util.unique >~('{':).(++"|")
         pstr = Util.trim$ Data.Map.Strict.findWithDefault "" ("process:tags") cfgprocs
     dirnameonly = System.FilePath.takeFileName ~. Util.trim
     cfgmisc = cfglines2hashmap ""
@@ -121,7 +118,7 @@ parseProjLines linessplits =
                     | null goalprefix
                     = ( prefix , foreachvalue$ (next:rest) )
                     | prefix==goalprefix
-                    = ( prefix ++":"++ next~:Util.trim , foreachvalue$ rest )
+                    = ( prefix ++ ":" ++ next~>Util.trim , foreachvalue$ rest )
                     where prefix = Util.trim prefix'
                 foreachline _ = ( "" , "" )
                 foreachvalue = (Util.join ":") ~.Util.trim -- ~. onvalue

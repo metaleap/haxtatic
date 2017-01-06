@@ -128,7 +128,7 @@ listAllFiles rootdirpath reldirs modtimer =
             relpaths = dirpaths>~foreachsrcdir ~|is
             foreachsrcdir reldirpath =
                 if Util.startsWith srcfilepath reldirpath
-                then drop (1+reldirpath~:length) srcfilepath else ""
+                then drop (1 + reldirpath~>length) srcfilepath else ""
         in return$ allfiletuples>~foreachfiletuple
 
 

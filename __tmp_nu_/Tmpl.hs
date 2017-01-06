@@ -11,15 +11,17 @@ import System.FilePath ( (</>) )
 
 
 
-data Ctx
-    = Processing {
+data CtxProc
+    = ProcessingContext {
         bTags :: String->String->Maybe String,
         cTags :: String->Maybe String,
         tTags :: String->Maybe String,
         xTags :: Maybe CtxPage->String->Maybe String,
         processTags :: [String]
     }
-    | Template {
+
+data CtxTmpl
+    = TemplateContext {
         fileExt :: String,
         srcFile :: Files.File,
         chunks :: [(String , String)]
@@ -28,9 +30,10 @@ data Ctx
 
 
 data CtxPage
-    = PageCtx {
+    = PageContext {
         blokName :: String,
-        pTags :: String->Maybe String
+        pTags :: String->Maybe String,
+        tmpl :: CtxTmpl
     }
 
 
@@ -71,14 +74,14 @@ loadAll ctxmain ctxproc deffiles filenameexts htmlequivexts =
         tmplfind ".html" = tmpldef
         tmplfind ext =
             elem ext htmlequivexts |? tmpldef |!
-                Util.unMaybe tmpldef $Data.List.find ((ext==).fileExt) loadedtemplates
+                tmpldef -|= (Data.List.find ((ext==).fileExt) loadedtemplates)
     in return tmplfind
 
 
 
 loadTmpl ctxmain ctxproc fileext tmpfile =
     warnIfTagMismatches ctxmain (srcfile~:Files.path) (tagMismatches rawsrc)
-    >> return Template {
+    >> return TemplateContext {
                 fileExt = fileext, srcFile = srcfile, chunks = srcchunks
             }
     where
@@ -112,13 +115,10 @@ processSrcJustOnce ctxproc ctxpage src =
                 |(tagbegin==tag_C)= ctxproc~:cTags
                 |(tagbegin==tag_T)= ctxproc~:tTags
                 |(tagbegin==tag_X)= (ctxproc~:xTags) ctxpage
-                |(tagbegin==tag_P)= case ctxpage of
-                                        Nothing -> const Nothing
-                                        Just pagectx -> pagectx~:pTags
-                |(otherwise)= const Nothing
-            (blokname,ptags) = case ctxpage of
-                                Nothing -> ("" , const Nothing)
-                                Just pagectx -> (pagectx~:blokName , pagectx~:pTags)
+                |(tagbegin==tag_P)= ctxpage~:(pTags =|- preserveunprocessedtag)
+                |(otherwise)= preserveunprocessedtag
+            preserveunprocessedtag = const Nothing
+            blokname = ctxpage~:(blokName =|- "")
 
 
 
@@ -129,7 +129,7 @@ tagMismatches src =
 warnIfTagMismatches ctxmain filename (numtagends , numtagbegins) =
     if Util.startsWith filename Defaults.blokIndexPrefix || numtagbegins == numtagends
         then return () else
-        let drops = (Util.startsWith filename maindirpath) |? (maindirpath~:length + 1) |! 0
+        let drops = (Util.startsWith filename maindirpath) |? (maindirpath~>length + 1) |! 0
             maindirpath = ctxmain~:Files.dirPath
         in putStrLn ("\t!?\tPotential syntax issue: "++
                      (show numtagends)++"x `|}` but "++(show numtagbegins)++"x `{*|`"++

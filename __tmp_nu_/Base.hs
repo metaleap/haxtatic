@@ -33,6 +33,8 @@ when False _ v = v
 
 (~:) = (&)
 
+(~>) = (&)
+
 
 
 (=:) = (,)
@@ -82,6 +84,7 @@ infix 8 >>~
 
 
 
+
 (|?) ::
     Bool -> a -> a -> a
 
@@ -93,6 +96,11 @@ infixl 1 |?
 infixr 0 |!
 
 
+(-|=) = Data.Maybe.fromMaybe
+infix 9 -|=
+
+(=|-) = flip maybe
+infix 9 =|-
 
 
 (#) ::

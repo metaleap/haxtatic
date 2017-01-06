@@ -47,6 +47,8 @@ htmlAttsForCfgParseError xreg =
 parseProjLines linessplits xregisterers =
     Data.Map.Strict.fromList (linessplits>~foreach ~|fst~.is)
     where
+    nope = ("" , NoRender)
+    rendererr msg (_,_) = Just msg
     foreach ("|X|":xname:tname:tvals) =
         let xn = Util.trim xname
             tn = Util.trim tname
@@ -66,8 +68,6 @@ parseProjLines linessplits xregisterers =
                                     cfgSplitOnce = Util.both' Util.trim (Util.splitOn1st ':' cfgstr)
                                 }
         in ( tn , xreg )
-    rendererr msg = \(_,_) -> Just msg
-    nope = ("" , NoRender)
 
 
 
@@ -79,15 +79,10 @@ tagResolver xtags ctxpage tagcontent =
     renderargs = (ctxpage , Util.trim argstr)
 
     renderwhen (Just (WaitForPage xrend)) =
-        case ctxpage of
-            Nothing -> Nothing
-            Just pagectx -> xrend renderargs
+        ctxpage~> ((const$ xrend renderargs) =|- Nothing)
 
     renderwhen (Just (Early xrend)) =
         xrend renderargs
 
-    renderwhen (Just _) =
-        Nothing
-
-    renderwhen Nothing =
+    renderwhen _ =
         Nothing

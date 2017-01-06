@@ -5,7 +5,6 @@ import Base
 import qualified Control.Monad
 import qualified Data.Char
 import qualified Data.List
-import qualified Data.Maybe
 import qualified Data.Time.Calendar
 import qualified Data.Time.Clock
 import Data.Function ( (&) )
@@ -70,7 +69,7 @@ via fn =
 dropLast 0 = id
 dropLast 1 = init
 dropLast n = (#n) . reverse . Data.List.inits
--- dropLast n l = l~:take (l~:length - n)
+-- dropLast n l = l~>take (l~>length - n)
 
 
 takeLast 0 = const []
@@ -141,9 +140,7 @@ toUpper = (>~ Data.Char.toUpper)
 
 join = Data.List.intercalate
 
-lookup key defval = (Data.Maybe.fromMaybe defval) . (Data.List.lookup key)
-
-unMaybe = Data.Maybe.fromMaybe
+lookup key defval = (defval -|=) . (Data.List.lookup key)
 
 subAt start len =
     (take len) . (drop start)
@@ -155,7 +152,7 @@ substitute old new
 
 trim = trim'' Data.Char.isSpace
 trim' dropitems = trim'' (`elem` dropitems)
-trim'' fn = (trimStart'' fn) ~. (trimEnd'' fn)
+trim'' fn = (trimStart'' fn)~.(trimEnd'' fn)
 trimSpaceOr dropitems = trim'' (\c -> Data.Char.isSpace c || elem c dropitems )
 
 trimEnd = trimEnd'' Data.Char.isSpace
@@ -169,10 +166,10 @@ trimStart'' = Data.List.dropWhile
 
 tryParse nullval errval toparsestr str =
     if (null str) then nullval else
-        (Text.Read.readMaybe (toparsestr str)) ~: (Data.Maybe.fromMaybe errval)
+        errval -|= (Text.Read.readMaybe$ toparsestr str)
 
 tryParseOr defval =
-    Text.Read.readMaybe ~. (Data.Maybe.fromMaybe defval)
+    (defval -|=).Text.Read.readMaybe
 
 
 unique:: (Eq a)=> [a]-> [a]
@@ -313,7 +310,7 @@ replaceAll replpairs =
     tonew ((oldval,newval):rest) old =
         if old==oldval then newval else tonew rest old
     tonew _ _ =
-        undefined -- OK to crash here, means a bug in the codebase
+        error "Well somehow this codebase got messed up badly now!" -- OK to crash here, means a bug in the codebase
     (olds,_) = unzip replpairs
     _replhelper = _replace_helper _replaceall (tonew replpairs)
     _replaceall [] = []

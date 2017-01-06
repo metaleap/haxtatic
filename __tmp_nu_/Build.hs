@@ -56,7 +56,7 @@ copyAllOutputsToDeploy buildplan =
     in (buildplan~:outStatics) >>~ foreach
     >> (buildplan~:outPages) >>~ foreach
     >> (buildplan~:outAtoms) >>~ foreach
-    >> (buildplan~:siteMap~:fst) ~: foreach
+    >> (buildplan~:siteMap~>fst) ~> foreach
     >> return ()
 
 
@@ -72,7 +72,7 @@ _createIndexHtmlIfNoContentPages ctxmain ctxproj numpagesrcfiles =
     if numpagesrcfiles > 0 then return NoOutput
     else let
         sitename = ctxproj~:Proj.projName
-        dirpagesrel = (ctxproj~:Proj.setup~:Proj.cfg~:ProjC.processPages~:ProjC.dirs)#0
+        dirpagesrel = (ctxproj~:Proj.setup~:Proj.cfg~:ProjC.processingOfPages~:ProjC.dirs)#0
         dirbuild = ctxproj~:Proj.dirPathBuild
         htmltemplatemain = ctxproj~:Proj.coreFiles~:Defaults.htmlTemplateMain
     in putStrLn ("\t->\tNo content-source files whatsoever.. making one for you:")
@@ -94,9 +94,9 @@ _createIndexHtmlIfNoContentPages ctxmain ctxproj numpagesrcfiles =
 plan ctxmain ctxproj =
     let projsetup = ctxproj~:Proj.setup
         projcfg = projsetup~:Proj.cfg
-        cfgprocstatic = projcfg~:ProjC.processStatic
-        cfgprocpages = projcfg~:ProjC.processPages
-        cfgprocposts = projcfg~:ProjC.processPosts
+        cfgprocstatic = projcfg~:ProjC.processingOfFiles
+        cfgprocpages = projcfg~:ProjC.processingOfPages
+        cfgprocposts = projcfg~:ProjC.processingOfPosts
         listallfiles = Files.listAllFiles $ctxproj~:Proj.dirPath
         modtimeproj = ctxproj~:Proj.coreFiles~:Defaults.projectDefault~:Files.modTime
         modtimetmplmain = ctxproj~:Proj.coreFiles~:Defaults.htmlTemplateMain~:Files.modTime
@@ -104,7 +104,7 @@ plan ctxmain ctxproj =
     in listallfiles (cfgprocstatic~:ProjC.dirs) id >>= \allstaticfiles
     -> listallfiles (cfgprocposts~:ProjC.dirs) (max modtimeproj) >>= \allpostsfiles
     -> listallfiles (cfgprocpages~:ProjC.dirs) (max modtimetmplmain) >>= \allpagesfiles_orig
-    -> _createIndexHtmlIfNoContentPages ctxmain ctxproj (allpagesfiles_orig~:length) >>= \defaultpage
+    -> _createIndexHtmlIfNoContentPages ctxmain ctxproj (allpagesfiles_orig~>length) >>= \defaultpage
     -> let
         allpagesfiles_nodate = allpagesfiles_orig >~ renamerelpath where
             renamerelpath both@(_,file) =
@@ -120,7 +120,8 @@ plan ctxmain ctxproj =
         allstatics = allstaticfiles >~ outfileinfobasic
         allpages = (defaultpage==NoOutput) |? almostall |! defaultpage:almostall
                     where almostall = (allpagesfiles_nodate++dynpages) >~ outfileinfopage
-        (dynpages,dynatoms) = Bloks.buildPlan (modtimeproj,modtimetmplblok) projcfg allpagesfiles_nodate $projsetup~:Proj.bloks
+        (dynpages,dynatoms) = Bloks.buildPlan (modtimeproj,modtimetmplblok) projcfg
+                                                allpagesfiles_nodate $projsetup~:Proj.bloks
     in _filterOutFiles False allstatics cfgprocstatic >>= \outcopyfiles
     -> _filterOutFiles False allpages cfgprocpages >>= \outpagefiles
     -> _filterOutFiles False allatoms cfgprocposts >>= \outatomfiles
@@ -139,11 +140,11 @@ plan ctxmain ctxproj =
                 outAtoms = outatomfiles,
                 outPages = outpagefiles,
                 outStatics = outcopyfiles,
-                numOutFilesTotal = (sitemap~:fst == NoOutput |? 0 |! 1) +
-                                        outcopyfiles~:length + outpagefiles~:length + outatomfiles~:length,
-                numSkippedStatic = allstatics~:length - outcopyfiles~:length,
-                numSkippedPages = allpages~:length - outpagefiles~:length,
-                numSkippedAtoms = allatoms~:length - outatomfiles~:length,
+                numOutFilesTotal = (sitemap~>fst == NoOutput |? 0 |! 1) +
+                                        outcopyfiles~>length + outpagefiles~>length + outatomfiles~>length,
+                numSkippedStatic = allstatics~>length - outcopyfiles~>length,
+                numSkippedPages = allpages~>length - outpagefiles~>length,
+                numSkippedAtoms = allatoms~>length - outatomfiles~>length,
                 siteMap = sitemap
             }
 
@@ -186,5 +187,5 @@ _filterOutFiles forceforceall fileinfos cfgproc =
                     return True
                 ifexists True =
                     System.Directory.getModificationTime outfilepath
-                    >>= return.((fileinfo~:srcFile~:Files.modTime)>)
+                    >>= return.((fileinfo~:srcFile~:Files.modTime) >)
             in System.Directory.doesFileExist outfilepath >>= ifexists
