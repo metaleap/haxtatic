@@ -2,10 +2,14 @@
 module XdemoSimplest where
 
 
+import qualified X
+import qualified Tmpl
 
+registerX :: X.Reg -> (Tmpl.CtxPage , String) -> String
 registerX _xreg =
     renderer
     where
 
-    renderer _ctxpage _argstr =
-        "<h1>Hello world!</h1>"
+    renderer :: (Tmpl.CtxPage , String) -> String
+    renderer (pagectx , _argstr) =
+        "<h1>Hello "++(Tmpl.blokName pagectx)++"!</h1>"

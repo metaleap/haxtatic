@@ -22,7 +22,7 @@ registerX xreg =
     renderer cfg
     where
 
-    renderer cfg _ctxpage argstr =
+    renderer cfg argstr =
         Html.out cfg_htmltagname
                     (cfghtmlatts ++ [("" =: innercontent)])
                         []

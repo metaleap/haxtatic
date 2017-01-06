@@ -23,7 +23,7 @@ registerX xreg =
     renderer cfg
     where
 
-    renderer cfg _ctxpage argstr =
+    renderer cfg argstr =
         Html.emit tag
         where
         tag = if null (cfg~:lnkAtts) then imgtag else lnktag

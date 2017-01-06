@@ -192,23 +192,24 @@ atOr::
 atOr [] _ defval = defval
 atOr (x:_) 0 _ = x
 atOr (_:x:_) 1 _ = x
-atOr (_:_:x:_) 2 _ = x
-atOr (_:_:_:x:_) 3 _ = x
-atOr (_:[]) 1 defval = defval
-atOr (_:[]) 2 defval = defval
-atOr (_:[]) 3 defval = defval
-atOr (_:[]) 4 defval = defval
-atOr (_:[]) 5 defval = defval
-atOr (_:_:[]) 2 defval = defval
-atOr (_:_:[]) 3 defval = defval
-atOr (_:_:[]) 4 defval = defval
-atOr (_:_:[]) 5 defval = defval
-atOr (_:_:_:[]) 3 defval = defval
-atOr (_:_:_:[]) 4 defval = defval
-atOr (_:_:_:[]) 5 defval = defval
-atOr (_:_:_:_:[]) 4 defval = defval
-atOr (_:_:_:_:[]) 5 defval = defval
-atOr (_:_:_:_:_:[]) 5 defval = defval
+--  atOr (_:_:x:_) 2 _ = x
+--  atOr (_:_:_:x:_) 3 _ = x
+--  atOr (_:[]) 1 defval = defval
+--  atOr (_:[]) 2 defval = defval
+--  atOr (_:[]) 3 defval = defval
+--  atOr (_:[]) 4 defval = defval
+--  atOr (_:[]) 5 defval = defval
+--  atOr (_:_:[]) 2 defval = defval
+--  atOr (_:_:[]) 3 defval = defval
+--  atOr (_:_:[]) 4 defval = defval
+--  atOr (_:_:[]) 5 defval = defval
+--  atOr (_:_:_:[]) 3 defval = defval
+--  atOr (_:_:_:[]) 4 defval = defval
+--  atOr (_:_:_:[]) 5 defval = defval
+--  atOr (_:_:_:_:[]) 4 defval = defval
+--  atOr (_:_:_:_:[]) 5 defval = defval
+--  atOr (_:_:_:_:_:[]) 5 defval = defval
+--  these above are all branches so release only as necessary
 atOr list index defval
     |(index > -1 && lengthGt index list)= list#index
     |(otherwise)= defval
@@ -357,8 +358,8 @@ splitUp allbeginners end src =
     lastidx revstr = (beginners>~ (lastIndexOfSub revstr)) ~: maximum
 
     _splitup str =
-        (tolist pre "") ++ (tolist match beginner) ++ --  only recurse if we have a good reason:
-            (nomatch && splitat==0 |? tolist rest "" |! _splitup rest)
+        (tolist "" pre) ++ (tolist beginner match) ++ --  only recurse if we have a good reason:
+            (nomatch && splitat==0 |? (tolist "" rest) |! (_splitup rest))
         where
         pre = str ~: (take$ nomatch |? splitat |! begpos)
         match = nomatch |? "" |! (str ~: (take endpos) ~: (drop $begpos+beg0len))
@@ -369,4 +370,4 @@ splitUp allbeginners end src =
         endpos = indexOfSub str end
         begpos = endpos<0 |? -1 |! lastidx$ str ~: (take endpos) ~: reverse
         endposl = endpos + (end~:length)
-        tolist val beg = (null val && null beg) |? [] |! [(val,beg)]
+        tolist beg val = (null val && null beg) |? [] |! [(val,beg)]

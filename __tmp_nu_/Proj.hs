@@ -7,6 +7,7 @@ import qualified Defaults
 import qualified Files
 import qualified ProjC
 import qualified ProjT
+import qualified Tmpl
 import qualified Util
 import qualified X
 
@@ -104,7 +105,7 @@ _loadSetup ctxproj xregs =
     _splitc = Util.splitOn ':'
     rawsrc = _rawsrc ctxproj
     srclinesprep = ProjT.srcLinesExpandMl rawsrc
-    srclinespost = lines$ Tmpl.processSrcFully (setupprep~:tmpl) "" (srclinesprep~:unlines)
+    srclinespost = lines$ Tmpl.processSrcFully (setupprep~:tmpl) Tmpl.noPageContext (srclinesprep~:unlines)
 
 
 

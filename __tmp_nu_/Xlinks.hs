@@ -27,7 +27,7 @@ registerX xreg =
     where
 
 
-    renderer cfg _ctxpage argstr =
+    renderer cfg argstr =
         cfgitemspre ++ allitems ++ cfgitemspost
         where
         args = Util.tryParse defargs errargs (("Args{"++).(++"}")) argstr where

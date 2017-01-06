@@ -49,7 +49,12 @@ processPage ctxmain ctxtmpl tmplfinder outjob =
             blokname = outjob~:Build.blokName
             tmpl = tmplfinder$ System.FilePath.takeExtension dstfilepath
             outsrc = Tmpl.apply tmpl pagesrc
-        in return (Tmpl.processSrcFully ctxtmpl blokname outsrc , mismatches)
+            tagresolver = tagResolver ctxpage blokname
+            ctxpage = Tmpl.PageCtx {
+                            Tmpl.blokName = blokname,
+                            Tmpl.pTags = tagresolver
+                        }
+        in return (Tmpl.processSrcFully ctxtmpl ctxpage outsrc , mismatches)
     loadsrccontent =
         let blokindexname = Bloks.blokNameFromIndexPagePath srcfilepath
             blokindextmpl = tmplfinder Defaults.blokIndexPrefix
@@ -57,6 +62,11 @@ processPage ctxmain ctxtmpl tmplfinder outjob =
             then return ((0,0) , blokindextmpl~:Tmpl.srcFile~:Files.content)
             else readFile srcfilepath >>= \rawsrc
                     -> return (Tmpl.tagMismatches rawsrc , rawsrc)
+
+
+
+tagResolver ctxpage blokname test =
+    if test=="Title" then Just "FOO dere!?!" else Nothing
 
 
 

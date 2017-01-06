@@ -9,7 +9,7 @@ registerX xreg =
     renderer
     where
 
-    renderer _ctxpage argstr =
+    renderer argstr =
         "<h1>Hello, " ++ greet ++ "!</h1>"
         where
         greet = pick1of argstr

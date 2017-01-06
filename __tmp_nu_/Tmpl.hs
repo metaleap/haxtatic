@@ -16,7 +16,7 @@ data Ctx
         bTags :: String->String->Maybe String,
         cTags :: String->Maybe String,
         tTags :: String->Maybe String,
-        xTags :: String->Maybe String,
+        xTags :: CtxPage->String->Maybe String,
         processTags :: [String]
     }
     | Template {
@@ -24,6 +24,21 @@ data Ctx
         srcFile :: Files.File,
         chunks :: [(String , String)]
     }
+
+
+
+data CtxPage
+    = PageCtx {
+        blokName :: String,
+        pTags :: String->Maybe String
+    }
+
+
+
+noPageContext = PageCtx {
+    blokName = "",
+    pTags = const Nothing
+}
 
 
 
@@ -76,16 +91,16 @@ loadTmpl ctxmain ctxproc fileext tmpfile =
     where
     srcfile = Files.fullFrom tmpfile Util.dateTime0 srcpreprocessed
     srcchunks = Util.splitUp [_applychunkbegin] _applychunkend srcpreprocessed
-    srcpreprocessed = processSrcFully ctxproc "" rawsrc
+    srcpreprocessed = processSrcFully ctxproc noPageContext rawsrc
     rawsrc = (tmpfile~:Files.content)
 
 
 
-processSrcFully ctxproc =
-    Util.repeatedly.(processSrcJustOnce ctxproc)
+processSrcFully ctxproc ctxpage src =
+    Util.repeatedly (processSrcJustOnce ctxproc ctxpage) src
 
 
-processSrcJustOnce ctxproc bname src =
+processSrcJustOnce ctxproc ctxpage src =
     concat$ (Util.splitUp (ctxproc~:processTags) tag_Close src)>~foreach
     where
     foreach (srccontent , "") =
@@ -100,10 +115,11 @@ processSrcJustOnce ctxproc bname src =
             where
             taginner = noesc |? tagcontent |! drop 3 tagcontent
             tagresolver
-                |(tagbegin==tag_B)= (ctxproc~:bTags) bname
+                |(tagbegin==tag_B)= (ctxproc~:bTags) (ctxpage~:blokName)
                 |(tagbegin==tag_C)= ctxproc~:cTags
                 |(tagbegin==tag_T)= ctxproc~:tTags
-                |(tagbegin==tag_X)= ctxproc~:xTags
+                |(tagbegin==tag_X)= (ctxproc~:xTags) ctxpage
+                |(tagbegin==tag_P)= ctxpage~:pTags
                 |(otherwise)= const Nothing
 
 

@@ -13,10 +13,10 @@ import qualified Tmpl
 import qualified Util
 
 import qualified XdemoSimplest
-import qualified XdemoCfgArgs
-import qualified Ximage
-import qualified Xlinks
-import qualified XminiTag
+--  import qualified XdemoCfgArgs
+--  import qualified Ximage
+--  import qualified Xlinks
+--  import qualified XminiTag
 
 import qualified Data.Time.Clock
 import qualified System.Directory
@@ -65,10 +65,10 @@ processAll ::
     IO ()
 processAll ctxmain projfilename custfilenames =
     let xregs = [ ("hax.demoSimplest" =: XdemoSimplest.registerX)
-                , ("hax.demoCfgArgs" =: XdemoCfgArgs.registerX)
-                , ("hax.image" =: Ximage.registerX)
-                , ("hax.links" =: Xlinks.registerX)
-                , ("hax.miniTag" =: XminiTag.registerX)
+                --  , ("hax.demoCfgArgs" =: XdemoCfgArgs.registerX)
+                --  , ("hax.image" =: Ximage.registerX)
+                --  , ("hax.links" =: Xlinks.registerX)
+                --  , ("hax.miniTag" =: XminiTag.registerX)
                 ]
         dirpath = ctxmain~:Files.dirPath
         filenameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name

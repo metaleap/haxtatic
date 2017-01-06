@@ -3,6 +3,7 @@ module X where
 
 import Base
 import qualified Html
+import qualified Tmpl
 import qualified Util
 
 import qualified Data.List
@@ -10,8 +11,9 @@ import qualified Data.Map.Strict
 
 
 
-data Reg =
-    Named {
+data Reg
+    = Nope
+    | Named {
         xname :: String,
         tname :: String,
         cfgFullStr :: String,
@@ -41,17 +43,17 @@ htmlAttsForCfgParseError xreg =
 
 
 parseProjLines linessplits xregisterers =
-    Data.Map.Strict.fromList$ linessplits>~foreach ~|fst~.is
+    Data.Map.Strict.fromList (linessplits>~foreach ~|fst~.is)
     where
     foreach ("|X|":xname:tname:tvals) =
         let xn = Util.trim xname
             tn = Util.trim tname
-        in if null tn then ( "" , id ) else
+        in if null tn then nope else
             case Data.List.lookup xn xregisterers of
                 Nothing -> ( tn , rendererr ("{!X| Specified X-renderer `"++xname++"` not known |!}") )
                 Just regx -> from regx xn tn tvals
     foreach _ =
-        ( "" , id )
+        nope
     from registerx xn tn tvals =
         let cfgstr = Util.trim$ Util.join ":" tvals
         in ( tn , registerx Named { xname = xn,
@@ -59,15 +61,15 @@ parseProjLines linessplits xregisterers =
                                     cfgFullStr = cfgstr,
                                     cfgSplitAll = tvals>~Util.trim,
                                     cfgSplitOnce = Util.both' Util.trim (Util.splitOn1st ':' cfgstr) } )
-    rendererr msg = \_ _ -> msg -- same as `rendererr = const.const` but why befuddle!
+    rendererr msg = \(_,_) -> msg
+    nope = ("" , undefined)
 
 
 
-
-tagResolver xtags tagcontent =
-    let
-        (key , argstr) = Util.splitOn1st ':' tagcontent
-        maybetag = Data.Map.Strict.lookup key xtags
-    in case maybetag of
-        Nothing -> Nothing
-        Just xtag -> Just (xtag undefined (Util.trim argstr))
+tagResolver xtags ctxpage tagcontent =
+        let
+            (key , argstr) = Util.splitOn1st ':' tagcontent
+            maybetag = Data.Map.Strict.lookup key xtags
+        in case maybetag of
+            Nothing -> Nothing
+            Just xtag -> Just (xtag (ctxpage , Util.trim argstr))

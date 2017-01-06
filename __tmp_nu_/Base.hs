@@ -12,10 +12,18 @@ import qualified Text.Read
 
 
 
-is :: Foldable t => t a -> Bool
+is ::
+    (Foldable f)=>
+    f a -> Bool
+
 is = not.null
 
-when :: Bool -> a -> a -> a
+
+
+
+when ::
+    Bool -> a -> a -> a
+
 when True v _ = v
 when False _ v = v
 
@@ -30,14 +38,21 @@ when False _ v = v
 (=:) = (,)
 infix 0 =:
 
---  (=:=) :: Eq eq => (eq, eq) -> Bool
+--  (=:=)  :: Eq eq => (eq, eq) -> Bool
 --  (=:=) = uncurry (==)
 
 
 
-(>~) :: Functor f => f a -> (a -> b) -> f b
+
+(>~) ::
+    (Functor f)=>
+    f a -> (a -> b) -> f b
+
 (>~) = flip fmap
 infix 8 >~
+
+
+
 
 (|~) = filter
 infix 7 |~
@@ -47,37 +62,53 @@ infix 7 ~|
 
 
 
-(>>~) :: (Traversable t, Monad m) => t a -> (a -> m b) -> m (t b)
+
+(>>~) ::
+    (Traversable t, Monad m)=>
+    t a -> (a -> m b) -> m (t b)
+
 (>>~) = Control.Monad.forM
 infix 8 >>~
 
-(>>|) :: Applicative m => [a] -> (a -> m Bool) -> m [a]
+
+
+
+(>>|) ::
+    (Applicative m)=>
+    [a] -> (a -> m Bool) -> m [a]
+
 (>>|) = flip Control.Monad.filterM
 
+
+
+
+(|?) ::
+    Bool -> a -> a -> a
+
+(|?) = when
+infixl 1 |?
 
 
 (|!) = ($)
 infixr 0 |!
 
-(|?) :: Bool -> a -> a -> a
-(|?) = when
-infixl 1 |?
 
 
 
-(#)::
-    [t] -> Int -> t
+(#) ::
+    [a] -> Int -> a
 --  alias for: `!!` ..for these most common cases, no need to `fold`
+infix 9 #
 [] #_ = undefined  --  rids this Careful Coder (TM) of the pesky 'non-exhaustive patterns' warning
 (x:_) #0 = x
 (_:x:_) #1 = x
-(_:_:x:_) #2 = x
-(_:_:_:x:_) #3 = x
-(_:_:_:_:x:_) #4 = x
-(_:_:_:_:_:x:_) #5 = x
-(_:_:_:_:_:_:x:_) #6 = x
-(_:_:_:_:_:_:_:x:_) #7 = x
-(_:_:_:_:_:_:_:_:x:_) #8 = x
-(_:_:_:_:_:_:_:_:_:x:_) #9 = x
+--  (_:_:x:_) #2 = x
+--  (_:_:_:x:_) #3 = x
+--  (_:_:_:_:x:_) #4 = x
+--  (_:_:_:_:_:x:_) #5 = x
+--  (_:_:_:_:_:_:x:_) #6 = x
+--  (_:_:_:_:_:_:_:x:_) #7 = x
+--  (_:_:_:_:_:_:_:_:x:_) #8 = x
+--  (_:_:_:_:_:_:_:_:_:x:_) #9 = x
+--  these above are all branches so release only as necessary
 list #i = (drop i list) #0
-infix 9 #
