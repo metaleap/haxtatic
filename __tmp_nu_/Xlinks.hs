@@ -8,7 +8,6 @@ import qualified Util
 import qualified X
 
 
-
 data Tag =
     Cfg {
         htmlAtts :: Util.StringPairs,
@@ -23,17 +22,19 @@ data Tag =
 
 
 registerX xreg =
-    renderer cfg
-    where
+    let
+    renderer (_ , argstr) =
 
-
-    renderer cfg argstr =
-        cfgitemspre ++ allitems ++ cfgitemspost
+        Just$ cfgitemspre ++ allitems ++ cfgitemspost
         where
+        allitems = htmlout (args~:htmlAtts ++ cfghtmlatts) (args~:items)
         args = Util.tryParse defargs errargs (("Args{"++).(++"}")) argstr where
             defargs = Args { items = [], htmlAtts = [] }
             errargs = Args { items = ["#"=:""], htmlAtts = X.htmlAttsForArgsParseError xreg (Util.excerpt 23 argstr) }
-        allitems = htmlout (args~:htmlAtts ++ cfghtmlatts) (args~:items)
+
+
+    in X.Early renderer
+    where
 
 
     htmlout atts items = concat$ items>~(foreach atts)

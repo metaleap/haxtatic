@@ -16,7 +16,7 @@ data Ctx
         bTags :: String->String->Maybe String,
         cTags :: String->Maybe String,
         tTags :: String->Maybe String,
-        xTags :: CtxPage->String->Maybe String,
+        xTags :: Maybe CtxPage->String->Maybe String,
         processTags :: [String]
     }
     | Template {
@@ -32,13 +32,6 @@ data CtxPage
         blokName :: String,
         pTags :: String->Maybe String
     }
-
-
-
-noPageContext = PageCtx {
-    blokName = "",
-    pTags = const Nothing
-}
 
 
 
@@ -91,7 +84,7 @@ loadTmpl ctxmain ctxproc fileext tmpfile =
     where
     srcfile = Files.fullFrom tmpfile Util.dateTime0 srcpreprocessed
     srcchunks = Util.splitUp [_applychunkbegin] _applychunkend srcpreprocessed
-    srcpreprocessed = processSrcFully ctxproc noPageContext rawsrc
+    srcpreprocessed = processSrcFully ctxproc Nothing rawsrc
     rawsrc = (tmpfile~:Files.content)
 
 
@@ -115,12 +108,17 @@ processSrcJustOnce ctxproc ctxpage src =
             where
             taginner = noesc |? tagcontent |! drop 3 tagcontent
             tagresolver
-                |(tagbegin==tag_B)= (ctxproc~:bTags) (ctxpage~:blokName)
+                |(tagbegin==tag_B)= (ctxproc~:bTags) blokname
                 |(tagbegin==tag_C)= ctxproc~:cTags
                 |(tagbegin==tag_T)= ctxproc~:tTags
                 |(tagbegin==tag_X)= (ctxproc~:xTags) ctxpage
-                |(tagbegin==tag_P)= ctxpage~:pTags
+                |(tagbegin==tag_P)= case ctxpage of
+                                        Nothing -> const Nothing
+                                        Just pagectx -> pagectx~:pTags
                 |(otherwise)= const Nothing
+            (blokname,ptags) = case ctxpage of
+                                Nothing -> ("" , const Nothing)
+                                Just pagectx -> (pagectx~:blokName , pagectx~:pTags)
 
 
 

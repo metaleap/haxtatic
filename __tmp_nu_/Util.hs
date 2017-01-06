@@ -311,7 +311,9 @@ replaceAll replpairs =
     _replaceall
     where
     tonew ((oldval,newval):rest) old =
-        if oldval==old then newval else tonew rest old
+        if old==oldval then newval else tonew rest old
+    tonew _ _ =
+        undefined -- OK to crash here, means a bug in the codebase
     (olds,_) = unzip replpairs
     _replhelper = _replace_helper _replaceall (tonew replpairs)
     _replaceall [] = []

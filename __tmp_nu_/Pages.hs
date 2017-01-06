@@ -46,15 +46,14 @@ processPage ctxmain ctxtmpl tmplfinder outjob =
         System.IO.hFlush System.IO.stdout
         >> loadsrccontent >>= \(mismatches , pagesrc)
         -> let
-            blokname = outjob~:Build.blokName
-            tmpl = tmplfinder$ System.FilePath.takeExtension dstfilepath
-            outsrc = Tmpl.apply tmpl pagesrc
-            tagresolver = tagResolver ctxpage blokname
             ctxpage = Tmpl.PageCtx {
-                            Tmpl.blokName = blokname,
+                            Tmpl.blokName = outjob~:Build.blokName,
                             Tmpl.pTags = tagresolver
                         }
-        in return (Tmpl.processSrcFully ctxtmpl ctxpage outsrc , mismatches)
+            tagresolver = tagResolver ctxpage
+            tmpl = tmplfinder$ System.FilePath.takeExtension dstfilepath
+            outsrc = Tmpl.apply tmpl pagesrc
+        in return (Tmpl.processSrcFully ctxtmpl (Just ctxpage) outsrc , mismatches)
     loadsrccontent =
         let blokindexname = Bloks.blokNameFromIndexPagePath srcfilepath
             blokindextmpl = tmplfinder Defaults.blokIndexPrefix
@@ -65,8 +64,10 @@ processPage ctxmain ctxtmpl tmplfinder outjob =
 
 
 
-tagResolver ctxpage blokname test =
-    if test=="Title" then Just "FOO dere!?!" else Nothing
+tagResolver ctxpage test =
+    if test=="Title"
+        then Just ("FOO "++(ctxpage~:Tmpl.blokName)++" dere!?!")
+        else Nothing
 
 
 

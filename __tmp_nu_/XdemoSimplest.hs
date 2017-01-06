@@ -1,15 +1,15 @@
 {-# OPTIONS_GHC -Wall #-}
 module XdemoSimplest where
 
+import X
 
-import qualified X
-import qualified Tmpl
 
-registerX :: X.Reg -> (Tmpl.CtxPage , String) -> String
+
 registerX _xreg =
-    renderer
-    where
+    let
+    renderer (_maybepagectx , _argstr) =
 
-    renderer :: (Tmpl.CtxPage , String) -> String
-    renderer (pagectx , _argstr) =
-        "<h1>Hello "++(Tmpl.blokName pagectx)++"!</h1>"
+        Just$ "<h1>Hello World!</h1>"
+
+
+    in Early renderer

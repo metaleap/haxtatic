@@ -20,23 +20,22 @@ data Tag =
 
 
 registerX xreg =
-    renderer cfg
-    where
+    let
+    renderer (_ , argstr) =
 
-    renderer cfg argstr =
-        Html.emit tag
+        Just$ Html.emit tag
         where
         tag = if null (cfg~:lnkAtts) then imgtag else lnktag
-
+        imgtag = Html.T "img" (cfgimgatts ++ (atts "src" "alt")) []
+        lnktag = Html.T "a" (cfglnkatts ++ (atts "href" "title")) [imgtag]
         (imgsrc,imgdesc) = (Util.splitOn1stSpace argstr) ~: (Util.both' Util.trim)
-        imgtag = Html.T "img" (cfgimgatts ++ imgatts) []
-        imgatts = myatts "src" "title"
-        lnktag = Html.T "a" (cfglnkatts ++ lnkatts) [imgtag]
-        lnkatts = myatts "href" "title"
-        myatts uriattname descattname =
-            [uriattname =: Html.joinUri cfg_imgrelpath imgsrc,
-                            descattname =: Util.ifNo cfgerrmsg imgdesc ]
+        atts uriattname descattname =
+            [   uriattname =: Html.joinUri cfg_imgrelpath imgsrc,
+                descattname =: Util.ifNo cfgerrmsg imgdesc ]
 
+
+    in X.Early renderer
+    where
 
 
     (cfg_imgrelpath , cfg_parsestr) = xreg~:X.cfgSplitOnce

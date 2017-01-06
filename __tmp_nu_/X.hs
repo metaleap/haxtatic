@@ -22,6 +22,8 @@ data Reg
     }
 
 
+data Render r = NoRender | Early r | WaitForPage r
+
 
 
 _htmlattsfor xreg clarify codemain codemore =
@@ -50,26 +52,42 @@ parseProjLines linessplits xregisterers =
             tn = Util.trim tname
         in if null tn then nope else
             case Data.List.lookup xn xregisterers of
-                Nothing -> ( tn , rendererr ("{!X| Specified X-renderer `"++xname++"` not known |!}") )
+                Nothing -> ( tn , Early (rendererr ("{!X|"++tn++": unknown X-renderer `"++xname++"`, mispelled in your *.haxproj? |!}")) )
                 Just regx -> from regx xn tn tvals
     foreach _ =
         nope
     from registerx xn tn tvals =
         let cfgstr = Util.trim$ Util.join ":" tvals
-        in ( tn , registerx Named { xname = xn,
+            xreg = registerx Named {
+                                    xname = xn,
                                     tname = tn,
                                     cfgFullStr = cfgstr,
                                     cfgSplitAll = tvals>~Util.trim,
-                                    cfgSplitOnce = Util.both' Util.trim (Util.splitOn1st ':' cfgstr) } )
-    rendererr msg = \(_,_) -> msg
-    nope = ("" , undefined)
+                                    cfgSplitOnce = Util.both' Util.trim (Util.splitOn1st ':' cfgstr)
+                                }
+        in ( tn , xreg )
+    rendererr msg = \(_,_) -> Just msg
+    nope = ("" , NoRender)
 
 
 
 tagResolver xtags ctxpage tagcontent =
-        let
-            (key , argstr) = Util.splitOn1st ':' tagcontent
-            maybetag = Data.Map.Strict.lookup key xtags
-        in case maybetag of
+    renderwhen (Data.Map.Strict.lookup key xtags)
+    where
+
+    (key , argstr) = Util.splitOn1st ':' tagcontent
+    renderargs = (ctxpage , Util.trim argstr)
+
+    renderwhen (Just (WaitForPage xrend)) =
+        case ctxpage of
             Nothing -> Nothing
-            Just xtag -> Just (xtag (ctxpage , Util.trim argstr))
+            Just pagectx -> xrend renderargs
+
+    renderwhen (Just (Early xrend)) =
+        xrend renderargs
+
+    renderwhen (Just _) =
+        Nothing
+
+    renderwhen Nothing =
+        Nothing

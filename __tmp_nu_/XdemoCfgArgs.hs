@@ -4,23 +4,26 @@ module XdemoCfgArgs where
 import qualified X
 
 
-
 registerX xreg =
-    renderer
-    where
+    let
+    renderer (_ , argstr) =
 
-    renderer argstr =
-        "<h1>Hello, " ++ greet ++ "!</h1>"
+        Just$ "<h1>Hello, " ++ greet ++ "!</h1>"
         where
         greet = pick1of argstr
                         cfgstr
                         myname
 
-        pick1of trydis trydat giveup =
-            if (not.null) trydis then trydis
-                else if (not.null) trydat then trydat
-                    else giveup
+
+    in X.Early renderer
+    where
 
 
     myname = X.tname xreg
     cfgstr = X.cfgFullStr xreg
+
+
+pick1of trydis trydat giveup
+    |(not.null)trydis=  trydis
+    |(not.null)trydat=  trydat
+    |(otherwise)=       giveup

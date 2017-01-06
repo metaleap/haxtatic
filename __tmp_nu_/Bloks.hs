@@ -105,7 +105,7 @@ tagResolver hashmap curbname str =
     let (fname, bn) = Util.both' Util.trim (Util.splitOn1st ':' str)
         fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
                     ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dtFormat",dtFormat)  ]
-        bname = (null bn) |? curbname |! bn
+        bname = (is bn) |? bn |! curbname
         blok = Data.Map.Strict.findWithDefault NoBlok bname hashmap
     in (null fname) |? Nothing
         |! (fname=="name" && is bname) |? Just bname

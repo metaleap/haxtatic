@@ -8,7 +8,6 @@ import qualified Util
 import qualified X
 
 
-
 data Tag =
     Cfg {
         htmlAtts :: Util.StringPairs
@@ -16,19 +15,18 @@ data Tag =
     deriving (Read)
 
 
-
-
 registerX xreg =
-    renderer cfg
-    where
+    let
+    renderer (_ , argstr) =
 
-    renderer cfg argstr =
-        Html.out cfg_htmltagname
-                    (cfghtmlatts ++ [("" =: innercontent)])
-                        []
+        Just$ Html.out
+                cfg_htmltagname ( cfghtmlatts ++ [("" =: innercontent)] ) []
         where
         innercontent = argstr
 
+
+    in X.Early renderer
+    where
 
 
     (cfg_htmltagname , cfg_parsestr ) = xreg~:X.cfgSplitOnce
