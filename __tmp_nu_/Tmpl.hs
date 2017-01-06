@@ -7,16 +7,17 @@ import qualified Files
 import qualified Util
 
 import qualified Data.List
+import qualified Data.Time.Clock
 import System.FilePath ( (</>) )
 
 
 
 data CtxProc
     = ProcessingContext {
-        bTags :: String->String->Maybe String,
-        cTags :: String->Maybe String,
-        tTags :: String->Maybe String,
-        xTags :: Maybe CtxPage->String->Maybe String,
+        bTagHandler :: String -> String -> Maybe String,
+        cTagHandler :: String -> Maybe String,
+        tTagHandler :: String -> Maybe String,
+        xTagHandler :: Maybe CtxPage -> String -> Maybe String,
         processTags :: [String]
     }
 
@@ -32,8 +33,11 @@ data CtxTmpl
 data CtxPage
     = PageContext {
         blokName :: String,
-        pTags :: String->Maybe String,
+        pTagHandler :: String -> Maybe String,
         pVars :: Util.StringPairs,
+        pDate :: Data.Time.Clock.UTCTime,
+        htmlInners :: String->[String],
+        htmlInner1st :: String->String,
         tmpl :: CtxTmpl
     }
 
@@ -48,10 +52,10 @@ apply ctxtmpl ctxpage pagesrc =
     foreach (":content:" , "{P|") =
         pagesrc
     foreach other@(_ , "{P|") =
-        processTag ptags other
+        processTag ptaghandler other
     foreach (tmplsrc , _) =
         tmplsrc
-    ptags = ctxpage.:pTags
+    ptaghandler = ctxpage.:pTagHandler
 
 
 
@@ -92,7 +96,7 @@ loadTmpl ctxmain ctxproc fileext tmpfile =
             }
     where
     srcfile = Files.fullFrom tmpfile Util.dateTime0 srcpreprocessed
-    srcchunks = Util.splitUp [_applychunkbegin] _applychunkend srcpreprocessed
+    srcchunks = Util.splitUp Util.trim [_applychunkbegin] _applychunkend srcpreprocessed
     srcpreprocessed = processSrcFully ctxproc Nothing rawsrc
     rawsrc = (tmpfile.:Files.content)
 
@@ -105,7 +109,7 @@ processSrcFully ctxproc ctxpage =
                     Nothing -> (ctxproc.:processTags) ~|(/=tag_P)
                     Just _ -> ctxproc.:processTags
     process src =
-        concat$ (Util.splitUp processtags tag_Close src)>~foreach
+        concat$ (Util.splitUp Util.trim processtags tag_Close src)>~foreach
         where
         foreach (srccontent , "") =
             srccontent
@@ -113,11 +117,11 @@ processSrcFully ctxproc ctxpage =
             processTag tagresolver (tagcontent , tagbegin)
             where
             tagresolver
-                |(tagbegin==tag_B)= (ctxproc.:bTags) blokname
-                |(tagbegin==tag_C)= ctxproc.:cTags
-                |(tagbegin==tag_T)= ctxproc.:tTags
-                |(tagbegin==tag_X)= (ctxproc.:xTags) ctxpage
-                |(tagbegin==tag_P)= ctxpage.:(pTags =|- preserveunprocessedtag)
+                |(tagbegin==tag_B)= (ctxproc.:bTagHandler) blokname
+                |(tagbegin==tag_C)= ctxproc.:cTagHandler
+                |(tagbegin==tag_T)= ctxproc.:tTagHandler
+                |(tagbegin==tag_X)= (ctxproc.:xTagHandler) ctxpage
+                |(tagbegin==tag_P)= ctxpage.:(pTagHandler =|- preserveunprocessedtag)
                 |(otherwise)= preserveunprocessedtag
             blokname = ctxpage.:(blokName =|- "")
             preserveunprocessedtag = const Nothing

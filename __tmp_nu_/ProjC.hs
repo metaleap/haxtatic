@@ -111,7 +111,7 @@ parseProjLines linessplits =
     cfgmisc = cfglines2hashmap ""
     cfgdtformats = cfglines2hashmap "dtformat"
     cfgprocs = cfglines2hashmap "process"
-    cfglines2hashmap goalprefix = -- onvalue =
+    cfglines2hashmap goalprefix =
         Data.Map.Strict.fromList$
             linessplits>~foreachline ~|fst~.is where
                 foreachline ("|C|":prefix':next:rest)
@@ -121,9 +121,9 @@ parseProjLines linessplits =
                     = ( prefix ++ ":" ++ next~>Util.trim , foreachvalue$ rest )
                     where prefix = Util.trim prefix'
                 foreachline _ = ( "" , "" )
-                foreachvalue = (Util.join ":") ~.Util.trim -- ~. onvalue
+                foreachvalue = (Util.join ":") ~.Util.trim
 
 
 
-tagResolver cfgmisc key =
+tagHandler cfgmisc key =
     Data.Map.Strict.lookup key cfgmisc

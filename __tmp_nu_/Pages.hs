@@ -6,6 +6,7 @@ import qualified Bloks
 import qualified Build
 import qualified Defaults
 import qualified Files
+import qualified Html
 import qualified Proj
 import qualified ProjC
 import qualified Tmpl
@@ -23,43 +24,30 @@ processAll ctxmain ctxproj buildplan =
     let filenameexts = buildplan.:Build.outPages >~ filenameext
         filenameext = Build.srcFile ~. Files.path ~. System.FilePath.takeExtension
         ctxtmpl = ctxproj.:Proj.setup.:Proj.tmpl
+        cfgproj = ctxproj.:Proj.setup.:Proj.cfg
+
     in Tmpl.loadAll
                 ctxmain
                 ctxtmpl
                 (ctxproj.:Proj.coreFiles)
                 filenameexts
-                (ctxproj.:Proj.setup.:Proj.cfg.:ProjC.htmlEquivExts)
+                (cfgproj.:ProjC.htmlEquivExts)
         >>= \tmplfinder
     -> let foreach buildtask =
-            processPage ctxmain ctxtmpl tmplfinder buildtask
+            processPage ctxmain cfgproj ctxtmpl tmplfinder buildtask
         in buildplan.:Build.outPages >>~ foreach
         >> return ()
 
 
 
-processPage ctxmain ctxtmpl tmplfinder outjob =
+processPage ctxmain cfgproj ctxtmpl tmplfinder outjob =
     Files.writeTo dstfilepath (outjob.:Build.relPath) processcontent
     >>= Tmpl.warnIfTagMismatches ctxmain srcfilepath
+
     where
     dstfilepath = outjob.:Build.outPathBuild
     srcfilepath = outjob.:Build.srcFile.:Files.path
-    processcontent =
-        System.IO.hFlush System.IO.stdout
-        >> loadsrccontent >>= \(mismatches , pagesrc)
-        -> let
-            ctxpage = Tmpl.PageContext {
-                            Tmpl.blokName = outjob.:Build.blokName,
-                            Tmpl.pTags = tagresolver,
-                            Tmpl.pVars = pagevars,
-                            Tmpl.tmpl = tmpl
-                        }
-            (pagevars , pagesrcchunks) = pageVars pagesrc
-            tagresolver = tagResolver ctxpage
-            tmpl = tmplfinder$ System.FilePath.takeExtension dstfilepath
-            pageonlyproc = Tmpl.processSrcFully ctxtmpl (Just ctxpage)
-                            (null pagevars |? pagesrc |! (concat pagesrcchunks))
-            outsrc = Tmpl.apply tmpl ctxpage pageonlyproc
-        in return (outsrc , mismatches)
+
     loadsrccontent =
         let blokindexname = Bloks.blokNameFromIndexPagePath srcfilepath
             blokindextmpl = tmplfinder Defaults.blokIndexPrefix
@@ -68,29 +56,68 @@ processPage ctxmain ctxtmpl tmplfinder outjob =
             else readFile srcfilepath >>= \rawsrc
                     -> return (Tmpl.tagMismatches rawsrc , rawsrc)
 
+    processcontent =
+        loadsrccontent >>= \(mismatches , pagesrc)
+        -> let
+            ctxpage = Tmpl.PageContext {
+                            Tmpl.blokName = outjob.:Build.blokName,
+                            Tmpl.pTagHandler = taghandler,
+                            Tmpl.pVars = pagevars,
+                            Tmpl.pDate = pagedate,
+                            Tmpl.htmlInners = htmlinners,
+                            Tmpl.htmlInner1st = htmlinner1st,
+                            Tmpl.tmpl = tmpl
+                        }
+            (pagevars , pagedate , pagesrcchunks) = pageVars cfgproj pagesrc $outjob.:Build.contentDate
+            taghandler = tagHandler cfgproj ctxpage
+            tmpl = tmplfinder$ System.FilePath.takeExtension dstfilepath
+            pageonlyproc = Tmpl.processSrcFully ctxtmpl (Just ctxpage)
+                            (null pagevars |? pagesrc |! (concat pagesrcchunks))
+            outsrc = Tmpl.apply tmpl ctxpage pageonlyproc
+            htmlinners tagname =
+                Html.innerContentsNoAtts tagname pagesrc
+            htmlinner1st tagname =
+                Util.atOr (htmlinners tagname) 0 ""
+
+        in return (outsrc , mismatches)
 
 
-pageVars pagesrc =
-    (pagevars , pagesrcchunks)
+
+pageVars cfgproj pagesrc contentdate =
+    (pagevars , pagedate , pagesrcchunks)
     where
-    chunks = (Util.splitUp ["{:P|"] "|:}" pagesrc)
     pagevars = chunks >~ foreach ~> Util.unMaybes
+    pagedate = Util.atOr pvardates 0 contentdate
     pagesrcchunks = chunks >~ fst ~|is
+
     foreach (pvarstr , "{:P|") =
-        let nameandval = (Util.splitOn1st '=' pvarstr) ~> (Util.both' Util.trim)
+        let nameandval = (Util.splitOn1st '=' pvarstr) ~> Util.bothTrim
         in Just nameandval
     foreach _ =
         Nothing
 
+    chunks = (Util.splitUp Util.trim ["{:P|"] "|:}" pagesrc)
+    pvardates = chunks >~ maybedate ~> Util.unMaybes
+    maybedate (pvdstr,_) =
+        let (varname , varval) = Util.bothTrim (Util.splitOn1st '=' pvdstr)
+            (dprefix , dtfname) = Util.bothTrim (Util.splitOn1st ':' varname)
+        in if dprefix /= "date" then Nothing
+            else ProjC.dtStr2Utc cfgproj dtfname varval
 
 
-tagResolver ctxpage tagcontent =
-    case Data.List.lookup tagcontent (ctxpage.:Tmpl.pVars) of
-        Just val -> Just$ "--==WOWLOOKSIE::"++val++"::NOICE==--"
-        Nothing ->
-            if tagcontent=="Title"
-                then Just ("==FOO:"++(ctxpage.:Tmpl.blokName)++":DERE==")
-                else Nothing
+
+tagHandler cfgproj ctxpage tagcontent =
+    if tagcontent == "date" then for'date ""
+    else if dtfprefix=="date" then (for'date dtfname)
+    else case Data.List.lookup tagcontent (ctxpage.:Tmpl.pVars) of
+        Just val -> Just val
+        Nothing -> for tagcontent
+    where
+    (dtfprefix,dtfname) = Util.bothTrim (Util.splitOn1st ':' tagcontent)
+    for "title" = Just$ (ctxpage.:Tmpl.htmlInner1st) "h1"
+    for _ = Nothing
+    for'date dtfname =
+        Just$ ProjC.dtUtc2Str cfgproj dtfname (ctxpage.:Tmpl.pDate)
 
 
 

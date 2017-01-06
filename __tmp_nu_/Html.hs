@@ -67,10 +67,11 @@ escape moreescapes =
 
 
 innerContentsNoAtts tagname htmlsrc =
-    let chunks = Util.splitUp ["<"++tagname++">"] ("</"++tagname++">") htmlsrc
-        foreach (_,"") = ""
-        foreach (inner,_) = inner
-    in chunks>~foreach ~|is
+    let chunks = Util.splitUp id ["<"++tagname++">"] ("</"++tagname++">") htmlsrc
+        foreach (inner,tbegin) =
+            if null tbegin then Nothing
+                else Just inner
+    in chunks>~foreach ~> Util.unMaybes
 
 
 

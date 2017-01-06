@@ -100,12 +100,12 @@ parseProjLines linessplits =
 
 
 
-tagResolver hashmap curbname str =
+tagHandler hashmap curbname str =
     let fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
                     ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dtFormat",dtFormat)  ]
         bname = Util.ifNo bn curbname
         blok = Data.Map.Strict.findWithDefault NoBlok bname hashmap
-        (fname, bn) = Util.both' Util.trim (Util.splitOn1st ':' str)
+        (fname, bn) = Util.bothTrim (Util.splitOn1st ':' str)
     in (null fname) |? Nothing
         |! (fname=="name" && is bname) |? Just bname
             |! (blok==NoBlok) |? Nothing

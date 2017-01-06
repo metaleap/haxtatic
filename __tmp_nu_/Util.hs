@@ -37,6 +37,8 @@ bothFsts fn (fst1,_) (fst2,_) =
 bothSnds fn (_,snd1) (_,snd2) =
     fn snd1 snd2
 
+bothTrim = both (trim,trim)
+
 butNot notval defval val
     |(val==notval)= defval
     |(otherwise)= val
@@ -352,10 +354,10 @@ splitOn1stSpace = splitOn1st' Data.Char.isSpace
 
 
 
-splitUp _ _ "" = []
-splitUp _ "" src = [(src,"")]
-splitUp [] _ src = [(src,"")]
-splitUp allbeginners end src =
+splitUp _ _ _ "" = []
+splitUp _ _ "" src = [(src,"")]
+splitUp _ [] _ src = [(src,"")]
+splitUp onmatch allbeginners end src =
     (null beginners) |? [(src,"")] |! _splitup src
     where
     beginners' = allbeginners>~reverse ~|is
@@ -365,7 +367,7 @@ splitUp allbeginners end src =
     lastidx revstr = (beginners>~ (lastIndexOfSub revstr)) ~> maximum
 
     _splitup str =
-        (tolist "" pre) ++ (tolist beginner match) ++ --  only recurse if we have a good reason:
+        (tolist "" pre) ++ (tolist beginner (onmatch match)) ++ --  only recurse if we have a good reason:
             (nomatch && splitat==0 |? (tolist "" rest) |! (_splitup rest))
         where
         pre = str ~> (take$ nomatch |? splitat |! begpos)

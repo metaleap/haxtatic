@@ -65,13 +65,13 @@ parseProjLines linessplits xregisterers =
                                     tname = tn,
                                     cfgFullStr = cfgstr,
                                     cfgSplitAll = tvals>~Util.trim,
-                                    cfgSplitOnce = Util.both' Util.trim (Util.splitOn1st ':' cfgstr)
+                                    cfgSplitOnce = Util.bothTrim (Util.splitOn1st ':' cfgstr)
                                 }
         in ( tn , xreg )
 
 
 
-tagResolver xtags ctxpage tagcontent =
+tagHandler xtags ctxpage tagcontent =
     renderwhen (Data.Map.Strict.lookup key xtags)
     where
 

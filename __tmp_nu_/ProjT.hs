@@ -34,7 +34,7 @@ _parsestr_tclose = "\""
 srcLinesExpandMl rawsrc =
     --  original lines exposing {``|multi-line
     --  fragments|``} collapsed into single-line in-place {T|_hax_multiline_n|} placeholders ..
-    ((mlchunked>~fst) ~> concat ~> lines) ++
+    ((mlchunked>~fst) ~> concat ~> lines >~ Util.trim) ++
         --  .. plus additional `T::_hax_multiline_n:"original-but-\n-escaped-and-quoted"`
         --  lines appended, supplying the original extracted&replaced multi-line fragments
         (mlchunked >~ (snd~.mlwriteln))
@@ -42,7 +42,7 @@ srcLinesExpandMl rawsrc =
     mlwriteln ("",_) = ""
     mlwriteln (k,v) = "|T|:"++k++":"++v
     mlchunked = mlchunks>~forchunk where
-        mlchunks = Util.indexed$ Util.splitUp ["{``|"] "|``}" rawsrc
+        mlchunks = Util.indexed$ Util.splitUp id ["{``|"] "|``}" rawsrc
         --  we splitUp above in order to now turn all {``|multi-line
         --  fragments|``} into single-line "Text.Read-able" ones,
         --  put into new T::key:value lines, with the original
@@ -58,5 +58,5 @@ srcLinesExpandMl rawsrc =
 
 
 
-tagResolver ttags key =
+tagHandler ttags key =
     Data.Map.Strict.lookup key ttags
