@@ -69,7 +69,7 @@ processPage ctxmain cfgproj ctxtmpl tmplfinder outjob =
                             Tmpl.tmpl = tmpl
                         }
             (pagevars , pagedate , pagesrcchunks) = pageVars cfgproj pagesrc $outjob.:Build.contentDate
-            taghandler = tagHandler cfgproj ctxpage outjob
+            taghandler = tagHandler cfgproj ctxpage ctxtmpl outjob
             tmpl = tmplfinder$ System.FilePath.takeExtension dstfilepath
             pageonlyproc = Tmpl.processSrcFully ctxtmpl (Just ctxpage)
                             (null pagevars |? pagesrc |! (concat pagesrcchunks))
@@ -106,15 +106,17 @@ pageVars cfgproj pagesrc contentdate =
 
 
 
-tagHandler cfgproj ctxpage outjob tagcontent =
-    if tagcontent == "date" then fordate "" contentdate
-    else if dtfprefix=="date" then (fordate dtfname contentdate)
+tagHandler cfgproj ctxpage ctxtmpl outjob tagcontent =
+    if Util.startsWith tagcontent "X|"
+    then Just$ Tmpl.processXtagDelayed ctxpage ctxtmpl (drop 2 tagcontent)
+    else if tagcontent == "date" then fordate "" contentdate
+    else let (dtfprefix,dtfname) = Util.bothTrim (Util.splitOn1st ':' tagcontent)
+    in if dtfprefix=="date" then (fordate dtfname contentdate)
     else case Data.List.lookup tagcontent (ctxpage.:Tmpl.pVars) of
         Just val -> Just val
         Nothing -> for tagcontent
     where
     contentdate = ctxpage.:Tmpl.pDate
-    (dtfprefix,dtfname) = Util.bothTrim (Util.splitOn1st ':' tagcontent)
     reldir = Util.butNot "." "" (System.FilePath.takeDirectory$ outjob.:Build.relPath)
     reldir' = Util.butNot "." "" (System.FilePath.takeDirectory$ outjob.:Build.relPathSlashes)
     pvals = [ "title" =: (ctxpage.:Tmpl.htmlInner1st) "h1" ""

@@ -35,7 +35,7 @@ registerX xreg =
             errargs = Args { items = ["#"=:""], htmlAtts = X.htmlAttsForArgsParseError xreg (Util.excerpt 23 argstr) }
 
 
-    in X.Early renderer
+    in X.WaitForPage renderer
     where
 
 

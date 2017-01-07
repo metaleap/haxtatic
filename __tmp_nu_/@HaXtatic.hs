@@ -39,8 +39,7 @@ main ::
     IO ()
 main =
     Data.Time.Clock.getCurrentTime >>= \starttime
-    -> System.IO.hFlush System.IO.stdout -- only because SublimeText2 build-output console is wonky with shell scripts
-    >> putStrLn "\n\n\n==== HAXTATIC ====\n"
+    -> putStrLn "\n\n\n==== HAXTATIC ====\n"
     >> System.Environment.getArgs >>= \cmdargs
     -> System.Directory.getCurrentDirectory >>= \curdir
     -> if null cmdargs
@@ -55,21 +54,28 @@ main =
                                             Files.setupName = Defaults.setupName projfilename,
                                             Files.nowTime=starttime }
         in processAll ctxmain projfilename (drop 2 cmdargs)
-        >> Data.Time.Clock.getCurrentTime >>= \endtime
-        -> let timetaken = Data.Time.Clock.diffUTCTime endtime starttime
-        in putStrLn ("\n\nWell it's been " ++(show timetaken)++ ":\n\n==== Bye now! ====\n\n\n")
-        >> System.IO.hFlush System.IO.stdout -- seems to force SublimeText2 build-output console to scroll down
+        >>= \(timeinitdone , timecopydone , timeprocdone)
+        -> Data.Time.Clock.getCurrentTime >>= \endtime
+        -> let
+            timetaken = Util.duration starttime endtime
+            showtime difftime = let overaminute = difftime > 60
+                                in (overaminute |? (difftime / 60) |! difftime)
+                                ~> (show ~. (Util.cropOn1st '.' 3) ~. (++(overaminute |? "min" |! "sec")))
+        in putStrLn ("\n\nWell it's been " ++(showtime timetaken)++ ":")
+        >> putStrLn ("\t"++(showtime$ Util.duration starttime timeinitdone)++ " initializing, pre-templating, planning")
+        >> putStrLn ("\t"++(showtime$ Util.duration timecopydone timeprocdone)++ " file-processing / sub-templating")
+        >> putStrLn ("\t"++(showtime$ ((Util.duration timeinitdone timecopydone) + (Util.duration timeprocdone endtime)))++ " file-copying")
+        >> putStrLn ("\n\n==== Bye now! ====\n\n\n")
+        >> System.IO.hFlush System.IO.stdout
 
 
 
-processAll ::
-    Files.Ctx-> String-> [String]->
-    IO ()
 processAll ctxmain projfilename custfilenames =
     let dirpath = ctxmain.:Files.dirPath
         filenameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
 
     in putStrLn "\n1/5\tReading essential project files [or (re)creating them..]"
+    >> System.IO.hFlush System.IO.stdout
     >> System.Directory.createDirectoryIfMissing False dirpath
     >> System.Directory.makeAbsolute dirpath >>= \dirfullpath   --  we do this just in case
     -> let projname = System.FilePath.takeBaseName dirfullpath  --  `dirpath` ended in `.` or `..`
@@ -79,6 +85,7 @@ processAll ctxmain projfilename custfilenames =
                 (ctxproj.:Proj.setup.:Proj.tagMismatches)
 
     >> putStrLn "\n2/5\tPlanning the work.."
+    >> System.IO.hFlush System.IO.stdout
     >> Build.plan ctxmain ctxproj >>= \buildplan
     -> let
         numgenpages = buildplan.:Build.outPages~>length
@@ -92,22 +99,24 @@ processAll ctxmain projfilename custfilenames =
     in putStrLn ("\t->\tStatic files: will copy " ++(show numcopyfiles)++ ", skipping " ++(show numskipfiles)++ "")
     >> putStrLn ("\t->\tContent pages: will (re)generate from " ++(show numgenpages)++ ", skipping " ++(show numskippages)++ "")
     >> putStrLn ("\t->\tXML files: will (re)generate from "++(show numxmlfiles)++" feeds, skipping " ++(show$ buildplan.:Build.numSkippedAtoms)++ "\n\t\t           plus "++(show numsitemaps)++" sitemap(s)")
+    >> Data.Time.Clock.getCurrentTime >>= \timeinitdone
 
-    >> putStrLn ("\n3/5\tCopying " ++(show numcopyfiles)++ "/" ++(show$ numcopyfiles+numskipfiles)++ " static file(s) to:\n\t->\t"++dirbuild)
+    -> putStrLn ("\n3/5\tCopying " ++(show numcopyfiles)++ "/" ++(show$ numcopyfiles+numskipfiles)++ " static file(s) to:\n\t->\t"++dirbuild)
+    >> System.IO.hFlush System.IO.stdout
     >> Build.copyStaticFiles buildplan
+    >> Data.Time.Clock.getCurrentTime >>= \timecopydone
 
-    >> putStrLn ("\n4/5\tGenerating " ++(show numgenpages)++ "/" ++(show$ numgenpages+numskippages)++ " page(s) in:\n\t->\t"++dirbuild)
+    -> putStrLn ("\n4/5\tGenerating " ++(show numgenpages)++ "/" ++(show$ numgenpages+numskippages)++ " page(s) in:\n\t->\t"++dirbuild)
+    >> System.IO.hFlush System.IO.stdout
     >> Pages.processAll ctxmain ctxproj buildplan
     >> Pages.writeSitemapXml ctxproj buildplan
+    >> Data.Time.Clock.getCurrentTime >>= \timeprocdone
 
-    --  >> let  dtstr = (Proj.dtUtc2Str (ctxproj.:Proj.setup.:Proj.cfg) "foo" (ctxmain.:Files.nowTime))
-    --          dtutc = Proj.dtStr2UtcOr (ctxproj.:Proj.setup.:Proj.cfg) "foo" dtstr Util.dateTime0
-    --  in print dtstr
-    --  >> print dtutc
-    >> System.IO.hFlush System.IO.stdout -- remove later
-
-    >> let deploymsg = "\n5/5\tCopying only the " ++(show$ numoutfiles)++ " newly (over)written file(s) also to:\n\t->\t"
-    in if null (ctxproj.:Proj.dirPathDeploy) then
-        putStrLn (deploymsg++ "(skipping this step.)") else
-            putStrLn (deploymsg++(ctxproj.:Proj.dirPathDeploy))
-            >> Build.copyAllOutputsToDeploy buildplan
+    -> let
+        deploymsg = "\n5/5\tCopying only the " ++(show$ numoutfiles)++ " newly (over)written file(s) also to:\n\t->\t"
+        doordonot = if null$ ctxproj.:Proj.dirPathDeploy
+                    then putStrLn (deploymsg++ "(skipping this step.)")
+                    else putStrLn (deploymsg++(ctxproj.:Proj.dirPathDeploy))
+                        >> System.IO.hFlush System.IO.stdout
+                        >> Build.copyAllOutputsToDeploy buildplan
+    in Util.via doordonot (timeinitdone , timecopydone , timeprocdone)

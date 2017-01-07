@@ -78,11 +78,13 @@ tagHandler xtags ctxpage tagcontent =
     (key , argstr) = Util.splitOn1st ':' tagcontent
     renderargs = (ctxpage , Util.trim argstr)
 
-    renderwhen (Just (WaitForPage xrend)) =
-        ctxpage~> ((const$ xrend renderargs) =|- Nothing)
-
     renderwhen (Just (Early xrend)) =
         xrend renderargs
+
+    renderwhen (Just (WaitForPage xrend)) =
+        case ctxpage of
+            Nothing -> Just$ "{P|X|"++tagcontent++"|}"
+            Just _ -> xrend renderargs
 
     renderwhen _ =
         Nothing

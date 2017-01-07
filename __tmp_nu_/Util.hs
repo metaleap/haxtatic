@@ -66,6 +66,9 @@ via fn =
     ((>>)fn).return
 
 
+duration =
+    flip Data.Time.Clock.diffUTCTime
+
 
 -- for uses such as `crop` without (directly) taking the `length`
 dropLast 0 = id
@@ -93,6 +96,13 @@ crop start end =
 count _ [] = 0
 count item (this:rest) =
     (if item==this then 1 else 0) + (count item rest)
+
+cropOn1st delim =
+    cropOn1st' (delim==)
+cropOn1st' predicate cropafter list =
+    let (i , rest) = _indexof_droptil' predicate 0 list
+    in if i<0 then list
+        else take (i+cropafter) list
 
 countSub _ [] = 0
 countSub [] _ = 0

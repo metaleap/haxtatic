@@ -80,8 +80,8 @@ loadAll ctxmain ctxproc deffiles filenameexts htmlequivexts =
     -> let
         tmpldef = loadedtemplates#0
         tmplfind "" = tmpldef
-        tmplfind ".htm" = tmpldef
         tmplfind ".html" = tmpldef
+        tmplfind ".htm" = tmpldef
         tmplfind ext =
             elem ext htmlequivexts |? tmpldef |!
                 tmpldef -|= (Data.List.find ((ext==).fileExt) loadedtemplates)
@@ -105,37 +105,44 @@ loadTmpl ctxmain ctxproc fileext tmpfile =
 processSrcFully ctxproc ctxpage =
     Util.repeatedly process
     where
-    processtags = case ctxpage of
-                    Nothing -> (ctxproc.:processTags) ~|(/=tag_P)
-                    Just _ -> ctxproc.:processTags
+    preserveunprocessedtag = const Nothing
+    splitup = Util.splitUp Util.trim whichtags tag_Close
+    whichtags = case ctxpage of
+        Nothing -> (ctxproc.:processTags) ~|(/=tag_P)
+        Just _ -> ctxproc.:processTags
+    _c = ctxproc.:cTagHandler ; _t = ctxproc.:tTagHandler
+    _b = (ctxproc.:bTagHandler) (ctxpage.:(blokName =|- ""))
+    _p = ctxpage.:(pTagHandler =|- preserveunprocessedtag)
+    _x = (ctxproc.:xTagHandler) ctxpage
     process src =
-        concat$ (Util.splitUp Util.trim processtags tag_Close src)>~foreach
+        concat$ (splitup src) >~foreach
         where
         foreach (srccontent , "") =
             srccontent
         foreach (tagcontent , tagbegin) =
-            processTag tagresolver (tagcontent , tagbegin)
+            processTag taghandler (tagcontent , tagbegin)
             where
-            tagresolver
-                |(tagbegin==tag_B)= (ctxproc.:bTagHandler) blokname
-                |(tagbegin==tag_C)= ctxproc.:cTagHandler
-                |(tagbegin==tag_T)= ctxproc.:tTagHandler
-                |(tagbegin==tag_X)= (ctxproc.:xTagHandler) ctxpage
-                |(tagbegin==tag_P)= ctxpage.:(pTagHandler =|- preserveunprocessedtag)
+            taghandler
+                |(tagbegin==tag_B)= _b
+                |(tagbegin==tag_C)= _c
+                |(tagbegin==tag_T)= _t
+                |(tagbegin==tag_X)= _x
+                |(tagbegin==tag_P)= _p
                 |(otherwise)= preserveunprocessedtag
-            blokname = ctxpage.:(blokName =|- "")
-            preserveunprocessedtag = const Nothing
 
 
 
-processTag tagresolver (tagcontent , tagbegin) =
+processTag taghandler (tagcontent , tagbegin) =
     noesc |? result |! (show result) ~> (Util.crop 1 1)
     where
     noesc = not$ Util.startsWith tagcontent "``:"
     taginner = noesc |? tagcontent |! drop 3 tagcontent
-    result = case (tagresolver taginner) of
+    result = case (taghandler taginner) of
         Just output-> output
         Nothing-> tagbegin++tagcontent++tag_Close
+
+processXtagDelayed ctxpage ctxtmpl tagcontent =
+    processTag ((ctxtmpl.:xTagHandler) (Just ctxpage)) (tagcontent , tag_X)
 
 
 
