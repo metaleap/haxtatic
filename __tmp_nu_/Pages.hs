@@ -69,15 +69,15 @@ processPage ctxmain cfgproj ctxtmpl tmplfinder outjob =
                             Tmpl.tmpl = tmpl
                         }
             (pagevars , pagedate , pagesrcchunks) = pageVars cfgproj pagesrc $outjob.:Build.contentDate
-            taghandler = tagHandler cfgproj ctxpage
+            taghandler = tagHandler cfgproj ctxpage outjob
             tmpl = tmplfinder$ System.FilePath.takeExtension dstfilepath
             pageonlyproc = Tmpl.processSrcFully ctxtmpl (Just ctxpage)
                             (null pagevars |? pagesrc |! (concat pagesrcchunks))
             outsrc = Tmpl.apply tmpl ctxpage pageonlyproc
             htmlinners tagname =
-                Html.innerContentsNoAtts tagname pagesrc
-            htmlinner1st tagname =
-                Util.atOr (htmlinners tagname) 0 ""
+                Html.innerContentsNoAtts Util.trim tagname pageonlyproc
+            htmlinner1st tagname defval =
+                Util.atOr (htmlinners tagname) 0 defval
 
         in return (outsrc , mismatches)
 
@@ -106,18 +106,36 @@ pageVars cfgproj pagesrc contentdate =
 
 
 
-tagHandler cfgproj ctxpage tagcontent =
-    if tagcontent == "date" then for'date ""
-    else if dtfprefix=="date" then (for'date dtfname)
+tagHandler cfgproj ctxpage outjob tagcontent =
+    if tagcontent == "date" then fordate "" contentdate
+    else if dtfprefix=="date" then (fordate dtfname contentdate)
     else case Data.List.lookup tagcontent (ctxpage.:Tmpl.pVars) of
         Just val -> Just val
         Nothing -> for tagcontent
     where
+    contentdate = ctxpage.:Tmpl.pDate
     (dtfprefix,dtfname) = Util.bothTrim (Util.splitOn1st ':' tagcontent)
-    for "title" = Just$ (ctxpage.:Tmpl.htmlInner1st) "h1"
-    for _ = Nothing
-    for'date dtfname =
-        Just$ ProjC.dtUtc2Str cfgproj dtfname (ctxpage.:Tmpl.pDate)
+    reldir = Util.butNot "." "" (System.FilePath.takeDirectory$ outjob.:Build.relPath)
+    reldir' = Util.butNot "." "" (System.FilePath.takeDirectory$ outjob.:Build.relPathSlashes)
+    pvals = [ "title" =: (ctxpage.:Tmpl.htmlInner1st) "h1" ""
+            , "filePath" =: outjob.:Build.relPath
+            , "fileUri" =: '/':(outjob.:Build.relPathSlashes)
+            , "fileName" =: (System.FilePath.takeFileName$ outjob.:Build.relPath)
+            , "fileBaseName" =: (System.FilePath.takeBaseName$ outjob.:Build.relPath)
+            , "dirName" =: Util.ifIs reldir System.FilePath.takeFileName
+            , "dirPath" =: Util.ifIs reldir (++[System.FilePath.pathSeparator])
+            , "dirUri" =: '/':(Util.ifIs reldir (++"/"))
+            , "outPathBuild" =: outjob.:Build.outPathBuild
+            , "outPathDeploy" =: outjob.:Build.outPathDeploy
+            , "srcFilePath" =: outjob.:Build.srcFile.:Files.path
+            ]
+    for name =
+        let (dtfp,dtfn) = Util.bothTrim (Util.splitOn1st ':' name)
+        in if dtfp=="srcFileModTime"
+            then fordate dtfn (outjob.:Build.srcFile.:Files.modTime)
+            else Data.List.lookup name pvals
+    fordate dtfname datetime =
+        Just$ ProjC.dtUtc2Str cfgproj dtfname datetime
 
 
 

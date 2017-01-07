@@ -37,7 +37,7 @@ data CtxPage
         pVars :: Util.StringPairs,
         pDate :: Data.Time.Clock.UTCTime,
         htmlInners :: String->[String],
-        htmlInner1st :: String->String,
+        htmlInner1st :: String->String->String,
         tmpl :: CtxTmpl
     }
 
