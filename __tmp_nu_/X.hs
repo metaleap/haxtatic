@@ -44,12 +44,12 @@ htmlAttsForCfgParseError xreg =
 
 
 
-parseProjLines linessplits xregisterers =
-    Data.Map.Strict.fromList (linessplits>~foreach ~|fst~.is)
+parseProjChunks xregisterers chunkssplits =
+    Data.Map.Strict.fromList (chunkssplits>~foreach ~|fst~.is)
     where
     nope = ("" , NoRender)
     rendererr msg (_,_) = Just msg
-    foreach ("|X|":xname:tname:tvals) =
+    foreach (xname:tname:tvals) =
         let xn = Util.trim xname
             tn = Util.trim tname
         in if null tn then nope else

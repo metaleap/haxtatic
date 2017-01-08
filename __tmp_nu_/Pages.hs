@@ -26,13 +26,9 @@ processAll ctxmain ctxproj buildplan =
         ctxtmpl = ctxproj.:Proj.setup.:Proj.tmpl
         cfgproj = ctxproj.:Proj.setup.:Proj.cfg
 
-    in Tmpl.loadAll
-                ctxmain
-                ctxtmpl
-                (ctxproj.:Proj.coreFiles)
-                filenameexts
-                (cfgproj.:ProjC.htmlEquivExts)
-        >>= \tmplfinder
+    in if null$ buildplan.:Build.outPages then return () else
+    Tmpl.loadAll ctxmain ctxtmpl (ctxproj.:Proj.coreFiles)
+                    filenameexts (cfgproj.:ProjC.htmlEquivExts) >>= \tmplfinder
     -> let foreach buildtask =
             processPage ctxmain cfgproj ctxtmpl tmplfinder buildtask
         in buildplan.:Build.outPages >>~ foreach
@@ -106,38 +102,43 @@ pageVars cfgproj pagesrc contentdate =
 
 
 
-tagHandler cfgproj ctxpage ctxtmpl outjob tagcontent =
-    if Util.startsWith tagcontent "X|"
-    then Just$ Tmpl.processXtagDelayed ctxpage ctxtmpl (drop 2 tagcontent)
-    else if tagcontent == "date" then fordate "" contentdate
-    else let (dtfprefix,dtfname) = Util.bothTrim (Util.splitOn1st ':' tagcontent)
-    in if dtfprefix=="date" then (fordate dtfname contentdate)
-    else case Data.List.lookup tagcontent (ctxpage.:Tmpl.pVars) of
-        Just val -> Just val
-        Nothing -> for tagcontent
+tagHandler cfgproj ctxpage ctxtmpl outjob ptagcontent
+    | Util.startsWith ptagcontent "X|"
+        = Just$ Tmpl.processXtagDelayed xtaghandler (drop 2 ptagcontent)
+    | ptagcontent == "date"
+        = fordate "" contentdate
+    | dtfprefix == "date"
+        = fordate dtfname contentdate
+    | otherwise
+        = case Data.List.lookup ptagcontent (ctxpage.:Tmpl.pVars) of
+            Just val -> Just val
+            Nothing -> for ptagcontent
+
     where
+    xtaghandler = (ctxtmpl.:Tmpl.xTagHandler) (Just ctxpage)
     contentdate = ctxpage.:Tmpl.pDate
-    reldir = Util.butNot "." "" (System.FilePath.takeDirectory$ outjob.:Build.relPath)
-    reldir' = Util.butNot "." "" (System.FilePath.takeDirectory$ outjob.:Build.relPathSlashes)
-    pvals = [ "title" =: (ctxpage.:Tmpl.htmlInner1st) "h1" ""
-            , "filePath" =: outjob.:Build.relPath
-            , "fileUri" =: '/':(outjob.:Build.relPathSlashes)
-            , "fileName" =: (System.FilePath.takeFileName$ outjob.:Build.relPath)
-            , "fileBaseName" =: (System.FilePath.takeBaseName$ outjob.:Build.relPath)
-            , "dirName" =: Util.ifIs reldir System.FilePath.takeFileName
-            , "dirPath" =: Util.ifIs reldir (++[System.FilePath.pathSeparator])
-            , "dirUri" =: '/':(Util.ifIs reldir (++"/"))
-            , "outPathBuild" =: outjob.:Build.outPathBuild
-            , "outPathDeploy" =: outjob.:Build.outPathDeploy
-            , "srcFilePath" =: outjob.:Build.srcFile.:Files.path
-            ]
+    (dtfprefix,dtfname) = Util.bothTrim (Util.splitOn1st ':' ptagcontent)
+    fordate dtfn datetime =
+        Just$ ProjC.dtUtc2Str cfgproj dtfn datetime
     for name =
         let (dtfp,dtfn) = Util.bothTrim (Util.splitOn1st ':' name)
-        in if dtfp=="srcFileModTime"
+        in if dtfp=="srcTime"
             then fordate dtfn (outjob.:Build.srcFile.:Files.modTime)
             else Data.List.lookup name pvals
-    fordate dtfname datetime =
-        Just$ ProjC.dtUtc2Str cfgproj dtfname datetime
+    pvals = let reldir = Util.butNot "." "" (System.FilePath.takeDirectory$ outjob.:Build.relPath)
+                reldir' = Util.butNot "." "" (System.FilePath.takeDirectory$ outjob.:Build.relPathSlashes)
+            in  [ "title" =: (ctxpage.:Tmpl.htmlInner1st) "h1" ""
+                , "fileBaseName" =: (System.FilePath.takeBaseName$ outjob.:Build.relPath)
+                , "fileName" =: (System.FilePath.takeFileName$ outjob.:Build.relPath)
+                , "fileUri" =: '/':(outjob.:Build.relPathSlashes)
+                , "filePath" =: outjob.:Build.relPath
+                , "dirName" =: Util.ifIs reldir System.FilePath.takeFileName
+                , "dirUri" =: '/':(Util.ifIs reldir' (++"/"))
+                , "dirPath" =: Util.ifIs reldir (++[System.FilePath.pathSeparator])
+                , "srcPath" =: outjob.:Build.srcFile.:Files.path
+                , "outBuild" =: outjob.:Build.outPathBuild
+                , "outDeploy" =: outjob.:Build.outPathDeploy
+                ]
 
 
 

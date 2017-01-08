@@ -141,8 +141,9 @@ processTag taghandler (tagcontent , tagbegin) =
         Just output-> output
         Nothing-> tagbegin++tagcontent++tag_Close
 
-processXtagDelayed ctxpage ctxtmpl tagcontent =
-    processTag ((ctxtmpl.:xTagHandler) (Just ctxpage)) (tagcontent , tag_X)
+
+processXtagDelayed taghandler tagcontent =
+    processTag taghandler (tagcontent , tag_X)
 
 
 
@@ -153,11 +154,12 @@ tagMismatches src =
 warnIfTagMismatches ctxmain filename (numtagends , numtagbegins) =
     if Util.startsWith filename Defaults.blokIndexPrefix || numtagbegins == numtagends
         then return () else
+
         let drops = (Util.startsWith filename maindirpath) |? (maindirpath~>length + 1) |! 0
             maindirpath = ctxmain.:Files.dirPath
-        in putStrLn ("\t!?\tPotential syntax issue: "++
-                     (show numtagends)++"x `|}` but "++(show numtagbegins)++"x `{*|`"++
-                        "\n\t\tin your `"++(drop drops filename)++"`")
+        in putStrLn ("\t-?\tPotential syntax issue: "++
+                     (show numtagends)++"x `|}` but "++(show numtagbegins)++"x `{*|` (any"++
+                        "\n\t\tone of: "++(Data.List.intersperse ',' "BCPTX")++") in `"++(drop drops filename)++"`")
 
 
 

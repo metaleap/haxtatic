@@ -97,12 +97,10 @@ count _ [] = 0
 count item (this:rest) =
     (if item==this then 1 else 0) + (count item rest)
 
-cropOn1st delim =
-    cropOn1st' (delim==)
-cropOn1st' predicate cropafter list =
-    let (i , rest) = _indexof_droptil' predicate 0 list
+cropOn1st delim cropafter oncrop list =
+    let i = indexOf delim list
     in if i<0 then list
-        else take (i+cropafter) list
+        else oncrop$ take (i+cropafter) list
 
 countSub _ [] = 0
 countSub [] _ = 0

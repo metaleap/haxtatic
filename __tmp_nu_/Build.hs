@@ -21,9 +21,11 @@ data Plan
         outPages :: [Task],
         outStatics :: [Task],
         numOutFilesTotal :: Int,
+        numDynPages :: Int,
         numSkippedStatic :: Int,
         numSkippedPages :: Int,
         numSkippedAtoms :: Int,
+        anyProcessing :: Bool,
         siteMap :: (Task , [Task])
     }
 
@@ -51,7 +53,7 @@ copyAllOutputsToDeploy buildplan =
                 ifexists True =
                     Files.copyTo srcfilepath [builtfile.:outPathDeploy]
                 ifexists False =
-                    putStrLn ("\t!?\tMissing: `" ++srcfilepath++ "`")
+                    putStrLn ("\t-!\tMissing: `" ++srcfilepath++ "`")
             in System.Directory.doesFileExist srcfilepath >>= ifexists
     in (buildplan.:outStatics) >>~ foreach
     >> (buildplan.:outPages) >>~ foreach
@@ -122,29 +124,31 @@ plan ctxmain ctxproj =
                     where almostall = (allpagesfiles_nodate++dynpages) >~ outfileinfopage
         (dynpages,dynatoms) = Bloks.buildPlan (modtimeproj,modtimetmplblok) projcfg
                                                 allpagesfiles_nodate $projsetup.:Proj.bloks
+        sitemaprelpath = projcfg.:ProjC.relPathSiteMap
+        sitemapbuildpath = ctxproj.:Proj.dirPathBuild </> sitemaprelpath
     in _filterOutFiles False allstatics cfgprocstatic >>= \outcopyfiles
     -> _filterOutFiles False allpages cfgprocpages >>= \outpagefiles
+    -> _filterOutFiles False (dynpages >~ outfileinfopage) cfgprocpages >>= \abitwasteful_justtogetanum
     -> _filterOutFiles False allatoms cfgprocposts >>= \outatomfiles
     -> _filterOutFiles True allpages cfgprocpages >>= \sitemapfiles
+    -> System.Directory.doesFileExist sitemapbuildpath >>= \sitemapexists
     -> let
-        sitemaprelpath = projcfg.:ProjC.relPathSiteMap
-        sitemap = ( (null$ sitemaprelpath)
-                        |? NoOutput
-                        |! FileOutput { relPath = sitemaprelpath,
-                                        outPathBuild =
-                                            ctxproj.:Proj.dirPathBuild </> sitemaprelpath,
-                                        outPathDeploy =
-                                            Util.ifIs (ctxproj.:Proj.dirPathDeploy) (</> sitemaprelpath) } ,
-                            sitemapfiles ~|relPath~.(Files.hasAnyFileExt $projcfg.:ProjC.htmlEquivExts) )
+        anyprocessing = outpagefiles~>length > 0
+        sitemapbuild = FileOutput { relPath = sitemaprelpath, outPathBuild = sitemapbuildpath,
+                                    outPathDeploy = Util.ifIs (ctxproj.:Proj.dirPathDeploy) (</> sitemaprelpath) }
+        sitemap = ( (is sitemaprelpath && anyprocessing) || (not sitemapexists) |? sitemapbuild |! NoOutput ,
+                    sitemapfiles ~|relPath~.(Files.hasAnyFileExt $projcfg.:ProjC.htmlEquivExts) )
     in return BuildPlan {
                 outAtoms = outatomfiles,
                 outPages = outpagefiles,
                 outStatics = outcopyfiles,
                 numOutFilesTotal = (sitemap~>fst == NoOutput |? 0 |! 1) +
-                                        outcopyfiles~>length + outpagefiles~>length + outatomfiles~>length,
+                                    outcopyfiles~>length + outpagefiles~>length + outatomfiles~>length,
+                numDynPages = abitwasteful_justtogetanum~>length,
                 numSkippedStatic = allstatics~>length - outcopyfiles~>length,
                 numSkippedPages = allpages~>length - outpagefiles~>length,
                 numSkippedAtoms = allatoms~>length - outatomfiles~>length,
+                anyProcessing = anyprocessing,
                 siteMap = sitemap
             }
 

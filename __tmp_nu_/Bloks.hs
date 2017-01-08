@@ -39,19 +39,20 @@ allBlokPageFiles projcfg allpagesfiles bname =
 
 
 blokNameFromIndexPagePath possiblefakepath =
-    let lenprefix = Defaults.blokIndexPrefix~>length
-    in Defaults.blokIndexPrefix /= possiblefakepath~>(take lenprefix)
-        |? "" |! drop 1 (System.FilePath.takeExtension possiblefakepath)
+    -- possiblefakepath possibly sth like :B|/2016-12-18.tags
+    (not$ Data.List.isPrefixOf Defaults.blokIndexPrefix possiblefakepath)
+        |? "" |! drop 1 (System.FilePath.takeExtension possiblefakepath) -- cringe
 
 
 
 blokNameFromRelPath bloks relpath file =
-    Util.atOr (bloks~>Data.Map.Strict.keys >~ foreach ~|is) 0 "" where
-        foreach bname
-            | isRelPathBlokPage bname relpath
-            = bname
-            | otherwise
-            = blokNameFromIndexPagePath $file.:Files.path
+    Util.atOr (bloks~>Data.Map.Strict.keys >~ foreach) 0 ""
+    where
+    foreach bname
+        | isRelPathBlokPage bname relpath
+        = bname
+        | otherwise
+        = blokNameFromIndexPagePath $file.:Files.path
 
 
 
@@ -82,29 +83,29 @@ isRelPathBlokPage bname relpath =
 
 
 
-parseProjLines linessplits =
-    Data.Map.Strict.fromList$
-    linessplits>~foreach ~|(/=noblok) where
-        noblok = ("" , NoBlok)
-        foreach ("|B|":blokname:bvalsplits) =
-            (bname , Util.tryParse NoBlok errblok id parsestr)
-            where
-            bname = blokname~>Util.trim
-            parsestr = bvalsplits ~> (Util.join ":") ~> Util.trim ~> (toParseStr bname)
-            errblok = Blok { title="{!B| syntax issue near `B::" ++bname++ ":`, couldn't parse `" ++parsestr++ "` |!}",
-                                desc="{!B| Syntax issue in your .haxproj file defining Blok named '" ++bname++
-                                        "'. Thusly couldn't parse Blok settings (incl. title/desc) |!}",
-                                atomFile="", blokIndexPageFile="", inSitemap=False, dtFormat="" }
-        foreach _ =
-            noblok
+parseProjChunks chunkssplits =
+    Data.Map.Strict.fromList$ chunkssplits>~foreach ~|isblok
+    where
+    isblok ("",_) = False ; isblok (_,NoBlok) = False ; isblok _ = True
+    foreach (blokname:bvalsplits) =
+        (bname , Util.tryParse NoBlok errblok id parsestr)
+        where
+        bname = blokname~>Util.trim
+        parsestr = bvalsplits ~> (Util.join ":") ~> Util.trim ~> (toParseStr bname)
+        errblok = Blok { title="{!B| syntax issue near `B::" ++bname++ ":`, couldn't parse `" ++parsestr++ "` |!}",
+                            desc="{!B| Syntax issue in your .haxproj file defining Blok named '" ++bname++
+                                    "'. Thusly couldn't parse Blok settings (incl. title/desc) |!}",
+                            atomFile="", blokIndexPageFile="", inSitemap=False, dtFormat="" }
+    foreach _ =
+        ("" , NoBlok)
 
 
 
-tagHandler hashmap curbname str =
+tagHandler bloks curbname str =
     let fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
                     ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dtFormat",dtFormat)  ]
         bname = Util.ifNo bn curbname
-        blok = Data.Map.Strict.findWithDefault NoBlok bname hashmap
+        blok = Data.Map.Strict.findWithDefault NoBlok bname bloks
         (fname, bn) = Util.bothTrim (Util.splitOn1st ':' str)
     in (null fname) |? Nothing
         |! (fname=="name" && is bname) |? Just bname

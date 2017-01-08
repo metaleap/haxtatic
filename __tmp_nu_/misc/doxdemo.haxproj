@@ -1,0 +1,16 @@
+|T|later:
+		You {X|c:crikey me|} include {T|Hax|} tags in your content sources with a simple notation: often <code>{--!--Prefix|Name|--!--}</code>, sometimes <code>{--!--Prefix|Name: Args|--!--}</code>. (Why curly braces and not &lt;angle brackets&gt;? Easier authoring in all tools and naturally prompter processing.)</p>
+		<p>Example: <code>{--!--P|Date|--!--}</code> includes the current {T|PDate|}: <span class="hd-note">{P|Date|}</span>. Supported "prefixes" or tag types are <b>T, P, B, X</b>:
+
+|T|SiteTitle:	SRC-MOO-Site
+|T|PDate:		wuut-da-pdate
+
+
+|B|tags:
+	title="Tags",
+	desc="Unlike {B|title:basics|}.. but then {B|name:|} isn't like {B|desc:basics|}",
+	atomFile="tax.atom",
+	blokIndexPageFile="tugs\\index.html"
+
+|B|basics:	title="Basics",
+			desc="Unlike {B|title:tags|} which is ''{B|desc:tags|}''"

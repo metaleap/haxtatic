@@ -1,0 +1,40 @@
+|C|process:static:
+	 { skip=[], force=[], dirs=["static1","static2","static3"] }
+|C|process:pages:
+	 { skip=[], force=[""], dirs=[] }
+|C|process:tags:
+|C|dtformat:foo:
+	 FUI %Y-%m-%d HUI
+|C|_hax_domainname:
+	 www.haxtatic.io
+|C|_hax_dir_deploy:
+	 {T|deploytest|}
+|C|_hax_relpath_postatoms:
+	 postatoms
+|C|__hax_relpath_sitemap:
+|C|_hax_htmlequivexts:
+|T|Hax:
+	 MOOO--"MOAAAR"-{T|deploytest|}-OUF-{C|_hax_relpath_postatoms|}-HUAR
+|B|basics:
+	 title="Basics Overwritten", desc="Overwritten basics", atomFile = "basix.atom"
+|T|deploytest:
+	 redist
+
+|X|image:photo:
+	 bla args
+
+|X|hax.miniTag:c:
+	code:
+	 { htmlAtts = [("style","background:blue")] }
+|X|hax.demoSimplest:foo
+|X|hax.demoCfgArgs:hiSaya
+|X|hax.demoCfgArgs:hiHax:
+	 Haxtatic
+|X|hax.demoSimplest:bar:
+	baz:
+|X|hax.image:mypic:
+	 img:
+	 { lnkAtts = [("","")], imgAtts = [] }
+|X|hax.links:mynav:
+	li :
+	 { htmlAtts = [("class","hx-foo")], itemsFirst = [("x","y")], itemsLast = [("a","b")] }

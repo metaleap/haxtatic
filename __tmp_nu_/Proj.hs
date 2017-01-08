@@ -34,8 +34,6 @@ data Ctx
 
 data Setup
     = SetupFromProj {
-        --  srcRaw :: [String],
-        --  srcPre :: [String],
         bloks :: Data.Map.Strict.Map String Bloks.Blok,
         cfg :: ProjC.Config,
         tmpl :: Tmpl.CtxProc,
@@ -66,8 +64,7 @@ loadCtx ctxmain projname xregs defaultfiles =
 
 
 _loadSetup ctxproj xregs =
-    SetupFromProj { -- srcRaw = srclinespost, srcPre = srclinesprep,
-                    bloks = blokspost,
+    SetupFromProj { bloks = blokspost,
                     cfg = cfgpost,
                     tmpl = Tmpl.ProcessingContext {
                             Tmpl.bTagHandler =  Bloks.tagHandler blokspost,
@@ -79,8 +76,7 @@ _loadSetup ctxproj xregs =
                     tagMismatches = Tmpl.tagMismatches rawsrc
                     }
     where
-    setupprep = SetupFromProj { -- srcRaw = [], srcPre = [],
-                                bloks = bloksprep,
+    setupprep = SetupFromProj { bloks = bloksprep,
                                 cfg = cfgprep,
                                 tmpl = Tmpl.ProcessingContext {
                                         Tmpl.bTagHandler =  Bloks.tagHandler bloksprep,
@@ -91,21 +87,49 @@ _loadSetup ctxproj xregs =
                                     },
                                 tagMismatches = (0,0)
                                 }
-    bloksprep = Bloks.parseProjLines preplinessplits
-    blokspost = Bloks.parseProjLines postlinessplits
-    (cfgprep,cfgmiscprep) = ProjC.parseProjLines preplinessplits
-    (cfgpost,cfgmiscpost) = ProjC.parseProjLines postlinessplits
-    ttagsprep = ProjT.parseProjLines preplinessplits False
-    ttagspost = ProjT.parseProjLines postlinessplits True
-    xtagsprep = X.parseProjLines preplinessplits xregs
-    xtagspost = X.parseProjLines postlinessplits xregs
+    bloksprep = Bloks.parseProjChunks (pick prepchunkssplits 'B')
+    blokspost = Bloks.parseProjChunks (pick postchunkssplits 'B')
+    (cfgprep,cfgmiscprep) = ProjC.parseProjChunks (pick prepchunkssplits 'C')
+    (cfgpost,cfgmiscpost) = ProjC.parseProjChunks (pick postchunkssplits 'C')
+    ttagsprep = ProjT.parseProjChunks False (pick prepchunkssplits 'T')
+    ttagspost = ProjT.parseProjChunks True (pick postchunkssplits 'T')
+    xtagsprep = X.parseProjChunks xregs (pick prepchunkssplits 'X')
+    xtagspost = X.parseProjChunks xregs (pick postchunkssplits 'X')
+    pick chunkssplits prefix =
+        (chunkssplits ~|(==prefix).fst) >~ snd
 
-    preplinessplits = srclinesprep>~ _splitc
-    postlinessplits = srclinespost>~ _splitc
-    _splitc = Util.splitOn ':'
+    prepchunkssplits = srcchunksprep >~ splitchunk
+    postchunkssplits = srcchunkspost >~ splitchunk
+    splitchunk (prefix,src) =
+        (prefix , Util.splitOn ':' src)
     rawsrc = _rawsrc ctxproj
-    srclinesprep = ProjT.srcLinesExpandMl rawsrc
-    srclinespost = lines$ Tmpl.processSrcFully (setupprep.:tmpl) Nothing (srclinesprep~>unlines)
+    srcchunksprep = loadChunks rawsrc
+    srcchunkspost = srcchunksprep >~ pretemplatechunk
+    pretemplatechunk (prefix,src) =
+        (prefix , Tmpl.processSrcFully (setupprep.:tmpl) Nothing src)
+
+
+loadChunks rawsrc =
+    paireds >~ rejointochunks
+    where
+    paireds = gatherothers beginners
+    beginners = alllines ~| isbegin
+    others = alllines ~|not.isbegin
+    alllines = Util.indexed$ lines rawsrc
+
+    isbegin (index,'|':cfgprefix:'|':_) =
+        any (cfgprefix==) "BCPTX"
+    isbegin _ =
+        False
+
+    gatherothers ((thisindex,thisline):more) =
+        let belongs i = (i > thisindex) && (null more || i < (fst$ more#0))
+        in (thisline , others ~|belongs.fst) : (null more |? [] |! gatherothers more)
+
+    rejointochunks (beg,subs) =
+        let sublines = subs >~ snd -- (Util.trim . snd) ~|is
+            chunk = (Util.trim . unlines) ( (Util.trim beg):sublines )
+        in (chunk#1 , drop 3 chunk)
 
 
 

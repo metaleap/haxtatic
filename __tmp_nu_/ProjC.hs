@@ -61,7 +61,7 @@ dtPageDateParse cfgproj = dtStr2Utc cfgproj "_hax_dtformat_pagefilenames"
 dtPageDateFormat cfgproj = dtUtc2Str cfgproj "_hax_dtformat_pagefilenames"
 
 
-parseProjLines linessplits =
+parseProjChunks chunkssplits =
     (cfg,cfgmisc)
     where
     cfg = CfgFromProj { dirNameBuild = dirbuild, dirNameDeploy = dirdeploy, domainName = domainname,
@@ -113,14 +113,14 @@ parseProjLines linessplits =
     cfgprocs = cfglines2hashmap "process"
     cfglines2hashmap goalprefix =
         Data.Map.Strict.fromList$
-            linessplits>~foreachline ~|fst~.is where
-                foreachline ("|C|":prefix':next:rest)
+            chunkssplits>~foreachchunk ~|fst~.is where
+                foreachchunk (prefix':next:rest)
                     | null goalprefix
                     = ( prefix , foreachvalue$ (next:rest) )
                     | prefix==goalprefix
                     = ( prefix ++ ":" ++ next~>Util.trim , foreachvalue$ rest )
                     where prefix = Util.trim prefix'
-                foreachline _ = ( "" , "" )
+                foreachchunk _ = ( "" , "" )
                 foreachvalue = (Util.join ":") ~.Util.trim
 
 
