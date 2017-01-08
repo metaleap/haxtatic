@@ -62,7 +62,7 @@ emit tag =
 
 
 escape moreescapes =
-    Util.replaceAll (basicEscapes++moreescapes)
+    Util.replaceSubs (moreescapes++basicEscapes)
 
 
 

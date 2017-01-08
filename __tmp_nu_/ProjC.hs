@@ -25,7 +25,6 @@ data Config
         dtFormat :: String->String,
         processingOfFiles :: Processing,
         processingOfPages :: Processing,
-        processingOfPosts :: Processing,
         tmplTags :: [String]
     }
 
@@ -67,7 +66,7 @@ parseProjChunks chunkssplits =
     cfg = CfgFromProj { dirNameBuild = dirbuild, dirNameDeploy = dirdeploy, domainName = domainname,
                         relPathPostAtoms = relpathpostatoms, relPathSiteMap = relpathsitemap,
                         htmlEquivExts = htmlequivexts, dtFormat = dtformat,
-                        processingOfFiles = procstatic, processingOfPages = procpages, processingOfPosts = procposts,
+                        processingOfFiles = procstatic, processingOfPages = procpages,
                         tmplTags = proctags }
     dtformat name = Data.Map.Strict.findWithDefault
                     Defaults.dateTimeFormat ("dtformat:"++name) cfgdtformats
@@ -87,7 +86,6 @@ parseProjChunks chunkssplits =
         hstr = Data.Map.Strict.findWithDefault "" "_hax_htmlequivexts" cfgmisc
     procstatic = procfind Defaults.dir_Static
     procpages = procfind Defaults.dir_Pages
-    procposts = procfind Defaults.dir_Posts
     procfind name =
         procsane name (Util.tryParseOr (procdef name) procstr) where
             procstr = (null procval) |? procval |! "ProcFromProj "++procval

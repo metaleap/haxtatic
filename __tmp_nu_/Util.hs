@@ -182,6 +182,13 @@ tryParseOr defval =
 
 
 
+maybeJust _ Nothing =
+    Nothing
+maybeJust func (Just sth) =
+    Just$ func sth
+
+
+
 unMaybes list =
     (list ~|(/=Nothing)) >~ foreach where
     foreach (Just val) = val
@@ -311,17 +318,16 @@ lastIndexOfSub revstr revsub
 
 
 
-replace old new str =
-    _replace_helper (replace old new) (const new) (idx,old) str
+-- replaceSub "" _ str = str
+-- replaceSub _ _ "" = ""
+replaceSub old new str =
+    _replace_helper (replaceSub old new) (const new) (idx,old) str
     where
     idx = indexOfSub str old
 
-replaceAny olds tonew str =
-    _replace_helper (replaceAny olds tonew) tonew (indexOfSubs1st olds str) str
-
-replaceAll [] = id
-replaceAll ((old,new):[]) = replace old new
-replaceAll replpairs =
+-- replaceSubs [] = id
+-- replaceSubs ((old,new):[]) = replaceSub old new
+replaceSubs replpairs =
     _replaceall
     where
     tonew ((oldval,newval):rest) old =
@@ -333,6 +339,10 @@ replaceAll replpairs =
     _replaceall [] = []
     _replaceall str =
         _replhelper (indexOfSubs1st olds str) str
+
+replaceVia [] _ str = str
+replaceVia olds tonew str =
+    _replace_helper (replaceVia olds tonew) tonew (indexOfSubs1st olds str) str
 
 _replace_helper recurse tonew (idx,old) str =
     if idx<0 then str else

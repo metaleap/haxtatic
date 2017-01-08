@@ -14,8 +14,7 @@ import qualified System.FilePath
 
 
 data Blok
-    = NoBlok
-    | Blok {
+    = B {
         title :: String,
         desc :: String,
         atomFile :: FilePath,
@@ -46,7 +45,7 @@ blokNameFromIndexPagePath possiblefakepath =
 
 
 blokNameFromRelPath bloks relpath file =
-    Util.atOr (bloks~>Data.Map.Strict.keys >~ foreach) 0 ""
+    Util.atOr (bloks~>Data.Map.Strict.keys >~ foreach ~|is) 0 ""
     where
     foreach bname
         | isRelPathBlokPage bname relpath
@@ -56,24 +55,25 @@ blokNameFromRelPath bloks relpath file =
 
 
 
-buildPlan (modtimeproj,modtimetmplblok) projcfg allpagesfiles bloks =
+buildPlan (modtimeproj,modtimetmpl) projcfg allpagesfiles bloks =
     (dynpages , dynatoms) where
-        dynatoms = mapandfilter (tofileinfo False atomFile modtimeproj)
-        dynpages = mapandfilter (tofileinfo True blokIndexPageFile modtimetmplblok)
+        dynatoms = mapandfilter (tofileinfo atomFile modtimeproj)
+        dynpages = mapandfilter (tofileinfo blokIndexPageFile modtimetmpl)
         mapandfilter fn = isblokpagefile |~ (Data.Map.Strict.elems$ Data.Map.Strict.mapWithKey fn bloks)
         isblokpagefile (relpath,file) = is relpath && file /= Files.NoFile
         _allblokpagefiles = allBlokPageFiles projcfg allpagesfiles
-        tofileinfo ispage bfield modtime bname blok =
-            let virtpath = (isblokpagefile bpage) |? blok.:bfield |! ""
-                (allblokpagefiles , datelatest) = _allblokpagefiles bname
-                bpage@(_,bpagefile) = Util.atOr allblokpagefiles 0 ("" , Files.NoFile)
-            in ( Files.pathSepSlashToSystem virtpath ,
-                (null virtpath) |? Files.NoFile |! Files.FileInfo {
+        tofileinfo bfield modtime bname blok =
+            let fakepath = (isblokpagefile bpage) |? blok.:bfield |! ""
+                (allblokpagefiles , cdatelatest) = _allblokpagefiles bname
+                bpage = Util.atOr allblokpagefiles 0 ("" , Files.NoFile)
+                fdatelatest = maximum (allblokpagefiles >~ snd >~ Files.modTime)
+            in ( Files.pathSepSlashToSystem fakepath ,
+                (null fakepath) |? Files.NoFile |! Files.FileInfo {
                                                     Files.path =
                                                         Defaults.blokIndexPrefix++"/"
-                                                        ++(ProjC.dtPageDateFormat projcfg datelatest)
+                                                        ++(ProjC.dtPageDateFormat projcfg cdatelatest)
                                                         ++"."++bname,
-                                                    Files.modTime = max (Files.modTime bpagefile) modtime } )
+                                                    Files.modTime = max fdatelatest modtime } )
 
 
 
@@ -84,20 +84,22 @@ isRelPathBlokPage bname relpath =
 
 
 parseProjChunks chunkssplits =
-    Data.Map.Strict.fromList$ chunkssplits>~foreach ~|isblok
+    Data.Map.Strict.fromList$ chunkssplits >~ foreach ~> Util.unMaybes
     where
-    isblok ("",_) = False ; isblok (_,NoBlok) = False ; isblok _ = True
     foreach (blokname:bvalsplits) =
-        (bname , Util.tryParse NoBlok errblok id parsestr)
+        case maybeblok of
+            Nothing -> Nothing
+            Just blok -> Just (bname , blok)
         where
+        maybeblok = Util.tryParse Nothing (Just errblok) id ("Just "++parsestr)
         bname = blokname~>Util.trim
         parsestr = bvalsplits ~> (Util.join ":") ~> Util.trim ~> (toParseStr bname)
-        errblok = Blok { title="{!B| syntax issue near `B::" ++bname++ ":`, couldn't parse `" ++parsestr++ "` |!}",
+        errblok = B { title="{!B| syntax issue near `B::" ++bname++ ":`, couldn't parse `" ++parsestr++ "` |!}",
                             desc="{!B| Syntax issue in your .haxproj file defining Blok named '" ++bname++
                                     "'. Thusly couldn't parse Blok settings (incl. title/desc) |!}",
                             atomFile="", blokIndexPageFile="", inSitemap=False, dtFormat="" }
     foreach _ =
-        ("" , NoBlok)
+        Nothing
 
 
 
@@ -105,27 +107,26 @@ tagHandler bloks curbname str =
     let fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
                     ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dtFormat",dtFormat)  ]
         bname = Util.ifNo bn curbname
-        blok = Data.Map.Strict.findWithDefault NoBlok bname bloks
+        maybeblok = Data.Map.Strict.lookup bname bloks
         (fname, bn) = Util.bothTrim (Util.splitOn1st ':' str)
     in (null fname) |? Nothing
         |! (fname=="name" && is bname) |? Just bname
-            |! (blok==NoBlok) |? Nothing
-                |! case Data.List.lookup fname fields of
-                    Just fieldval-> Just $blok.:fieldval
-                    Nothing-> Nothing
+            |! case maybeblok of
+                Nothing -> Nothing
+                Just blok -> case Data.List.lookup fname fields of
+                                Just fieldval-> Just $blok.:fieldval
+                                Nothing-> Nothing
 
 
 
 toParseStr bname projchunkval =
     let
-        parsestr = projchunkval ~> (checkfield "title" "") ~> (checkfield "desc" "") ~>
-                (checkfield "atomFile" "") ~> (checkfield "blokIndexPageFile" (bname++ ".html")) ~>
-                    (checkfield "inSitemap" True) ~> (checkfield "dtFormat" "")
-    in "Blok {" ++parsestr++ "}"
-    where
-    checkfield field defval prjln =
-        any ((Util.contains prjln).(field++)) ( ["=True","=False"]++
-                ["={", " = {", "= {", " ={", "\t=\t{", "=\t{", "\t={"]++
-                    ["=\"", " = \"", "= \"", " =\"", "\t=\t\"", "=\t\"", "\t=\""] )
-        |? prjln -- there was a hint field is already in def-string
-        |! prjln ++ ", " ++ field ++ "=" ++ (show defval) -- user skipped field, append
+        parsestr = projchunkval -- ~> (checkfield "title" "") ~> (checkfield "desc" "") ~>
+                -- (checkfield "atomFile" "") ~> (checkfield "blokIndexPageFile" (bname++ ".html")) ~>
+                --     (checkfield "inSitemap" True) ~> (checkfield "dtFormat" "")
+    in "B {" ++parsestr++ "}"
+    -- where
+    -- checkfield field defval prjchnk =
+    --     any ((Util.contains prjchnk).(field++)) (["=True" , "=False" , "={``:" , "=\""])
+    --     |? prjchnk -- there was a hint field is already in def-string
+    --     |! prjchnk ++ ", " ++ field ++ "=" ++ (show defval) -- user skipped field, append

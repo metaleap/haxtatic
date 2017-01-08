@@ -59,7 +59,7 @@ main =
         -- SHOW TIME!
         in processAll ctxmain projfilename (drop 2 cmdargs)
 
-        >>= \(timeinitdone , timecopydone , timeprocdone)
+        >>= \(timeinitdone , timecopydone , timeprocdone , timexmldone)
         -> Data.Time.Clock.getCurrentTime >>= \endtime
         -> let
             timetaken = Util.duration starttime endtime
@@ -68,7 +68,8 @@ main =
                                 ~> show ~> ( Util.cropOn1st '.' 3 (++(overaminute |? "m" |! "s")) )
         in putStrLn ("\n\nWell it's been " ++(showtime timetaken)++ ":")
         >> putStrLn ("\t"++(showtime$ Util.duration starttime timeinitdone)++ " initializing, pre-templating, planning")
-        >> putStrLn ("\t"++(showtime$ Util.duration timecopydone timeprocdone)++ " source-processing / file generation")
+        >> putStrLn ("\t"++(showtime$ Util.duration timecopydone timeprocdone)++ " source-processing / page generation")
+        >> putStrLn ("\t"++(showtime$ Util.duration timeprocdone timexmldone)++ " XML (atoms, sitemap) file generation")
         >> putStrLn ("\t"++(showtime$ ((Util.duration timeinitdone timecopydone) + (Util.duration timeprocdone endtime)))++ " file-copying")
         >> putStrLn ("\n\n==== Bye now! ====\n\n\n")
         >> System.IO.hFlush System.IO.stdout
@@ -116,11 +117,11 @@ processAll ctxmain projfilename custfilenames =
     -> putStrLn ("\n4/6\tGenerating " ++(show numgenpages)++ "/" ++(show$ numgenpages+numskippages)++ " page(s) in:\n\t->\t"++dirbuild)
     >> System.IO.hFlush System.IO.stdout
     >> Pages.processAll ctxmain ctxproj buildplan
-    >> Pages.writeSitemapXml ctxproj buildplan
-    >> putStrLn ("\n5/6\tGenerating " ++(show numxmlfiles)++ "/" ++(show$ numxmlfiles+numskipposts)++ " Atom feed(s) in:\n\t->\t"++dirbuild)
-    >> Posts.writeAtoms
     >> Data.Time.Clock.getCurrentTime >>= \timeprocdone
-
+    -> Pages.writeSitemapXml ctxproj buildplan
+    >> putStrLn ("\n5/6\tGenerating " ++(show numxmlfiles)++ "/" ++(show$ numxmlfiles+numskipposts)++ " Atom feed(s) in:\n\t->\t"++dirbuild)
+    >> Posts.writeAtoms (ctxproj.:Proj.setup.:Proj.bloks) (ctxproj.:Proj.setup.:Proj.posts) (ctxproj.:Proj.setup.:Proj.cfg) (buildplan.:Build.feedJobs)
+    >> Data.Time.Clock.getCurrentTime >>= \timexmldone
     -> let
         deploymsg = "\n6/6\tCopying only the " ++(show$ numoutfiles)++ " newly (over)written file(s) also to:\n\t->\t"
         doordonot = if null$ ctxproj.:Proj.dirPathDeploy
@@ -128,4 +129,4 @@ processAll ctxmain projfilename custfilenames =
                     else putStrLn (deploymsg++(ctxproj.:Proj.dirPathDeploy))
                         >> System.IO.hFlush System.IO.stdout
                         >> Build.copyAllOutputsToDeploy buildplan
-    in Util.via doordonot (timeinitdone , timecopydone , timeprocdone)
+    in Util.via doordonot (timeinitdone , timecopydone , timeprocdone, timexmldone)

@@ -5,6 +5,7 @@ import Base
 import qualified Bloks
 import qualified Defaults
 import qualified Files
+import qualified Posts
 import qualified Proj
 import qualified ProjC
 import qualified Util
@@ -27,7 +28,8 @@ data Plan
         numSkippedPages :: Int,
         numSkippedAtoms :: Int,
         anyProcessing :: Bool,
-        siteMap :: (Task , [Task])
+        siteMap :: (Task , [Task]),
+        feedJobs :: [Posts.Feed]
     }
 
 
@@ -99,13 +101,12 @@ plan ctxmain ctxproj =
         projcfg = projsetup.:Proj.cfg
         cfgprocstatic = projcfg.:ProjC.processingOfFiles
         cfgprocpages = projcfg.:ProjC.processingOfPages
-        cfgprocposts = projcfg.:ProjC.processingOfPosts
+        cfgprocposts = ProjC.ProcFromProj { ProjC.skip=[], ProjC.force=( (["*"]==(cfgprocpages.:ProjC.force)) |? ["*"] |! [] )}
         listallfiles = Files.listAllFiles $ctxproj.:Proj.dirPath
         modtimeproj = ctxproj.:Proj.coreFiles.:Defaults.projectDefault.:Files.modTime
         modtimetmplmain = ctxproj.:Proj.coreFiles.:Defaults.htmlTemplateMain.:Files.modTime
-        modtimetmplblok = ctxproj.:Proj.coreFiles.:Defaults.htmlTemplateBlok.:Files.modTime
+        modtimetmpl = ctxproj.:Proj.coreFiles.:Defaults.htmlTemplateBlok.:Files.modTime
     in listallfiles (cfgprocstatic.:ProjC.dirs) id >>= \allstaticfiles
-    -> listallfiles (cfgprocposts.:ProjC.dirs) (max modtimeproj) >>= \allpostsfiles
     -> listallfiles (cfgprocpages.:ProjC.dirs) (max modtimetmplmain) >>= \allpagesfiles_orig
     -> _createIndexHtmlIfNoContentPages ctxmain ctxproj (allpagesfiles_orig~>length) >>= \defaultpage
     -> let
@@ -115,15 +116,11 @@ plan ctxmain ctxproj =
         outfileinfobasic = _outFileInfo ctxproj fst id
         outfileinfopage = _outFileInfo ctxproj snd id
         outfileinfoatom filenamer = _outFileInfo ctxproj fst $filenamer.(Files.ensureFileExt True ".atom")
-        outfileinfopost |(rppostatoms==Defaults.dir_PostAtoms_None)= outfileinfoatom (const "")
-                        |(null rppostatoms)= outfileinfoatom id
-                        |(otherwise)= outfileinfoatom (rppostatoms </>)
-                        where rppostatoms = projcfg.:ProjC.relPathPostAtoms
-        allatoms = (allpostsfiles>~outfileinfopost) ++ (dynatoms>~(outfileinfoatom id))
+        allatoms = ((Posts.buildPlan modtimeproj (projcfg.:ProjC.relPathPostAtoms) (projsetup.:Proj.feeds)) ++ dynposts) >~ (outfileinfoatom id)
         allstatics = allstaticfiles >~ outfileinfobasic
         allpages = (defaultpage==NoOutput) |? almostall |! defaultpage:almostall
                     where almostall = (allpagesfiles_nodate++dynpages) >~ outfileinfopage
-        (dynpages,dynatoms) = Bloks.buildPlan (modtimeproj,modtimetmplblok) projcfg
+        (dynpages,dynposts) = Bloks.buildPlan (modtimeproj,modtimetmpl) projcfg
                                                 allpagesfiles_nodate $projsetup.:Proj.bloks
         sitemaprelpath = projcfg.:ProjC.relPathSiteMap
         sitemapbuildpath = ctxproj.:Proj.dirPathBuild </> sitemaprelpath
@@ -139,6 +136,12 @@ plan ctxmain ctxproj =
                                     outPathDeploy = Util.ifIs (ctxproj.:Proj.dirPathDeploy) (</> sitemaprelpath) }
         sitemap = ( (is sitemaprelpath && anyprocessing) || (not sitemapexists) |? sitemapbuild |! NoOutput ,
                     sitemapfiles ~|relPath~.(Files.hasAnyFileExt $projcfg.:ProjC.htmlEquivExts) )
+        feedjob outjob = Posts.Job {
+                                Posts.blokName = outjob.:blokName,
+                                Posts.outPathBuild = outjob.:outPathBuild,
+                                Posts.relPath = outjob.:relPath,
+                                Posts.srcFile = outjob.:srcFile
+                            }
     in return BuildPlan {
                 outAtoms = outatomfiles,
                 outPages = outpagefiles,
@@ -150,7 +153,8 @@ plan ctxmain ctxproj =
                 numSkippedPages = allpages~>length - outpagefiles~>length,
                 numSkippedAtoms = allatoms~>length - outatomfiles~>length,
                 anyProcessing = anyprocessing,
-                siteMap = sitemap
+                siteMap = sitemap,
+                feedJobs = outatomfiles >~ feedjob
             }
 
 
@@ -182,9 +186,9 @@ _filterOutFiles forceforceall fileinfos cfgproc =
             let skipthis = (not skipall) && (matchesany $cfgproc.:ProjC.skip)
                 forcethis = (not forceall) && (matchesany $cfgproc.:ProjC.force)
                 matchesany = Files.simpleFileNameMatchAny $fileinfo.:relPath
-            in forcethis || (forceall && not skipthis) || forceforceall
+            in (forcethis || (forceall && not skipthis) || forceforceall)
             |? return True
-            |! skipthis || (skipall && not forcethis)
+            |! (skipthis || (skipall && not forcethis))
             |? return False
             |! let
                 outfilepath = fileinfo.:outPathBuild

@@ -78,6 +78,7 @@ setupName = System.FilePath.takeBaseName
 
 
 blokIndexPrefix = ":B|" -- don't change length without reviewing at least bloks.hs!
+feedIndexPrefix = ":F|"
 dateTimeFormat = Data.Time.Format.iso8601DateFormat Nothing
 dir_Out = "build"
 dir_Deploy =""

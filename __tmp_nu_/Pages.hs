@@ -157,11 +157,13 @@ writeSitemapXml ctxproj buildplan =
             skip |? "" |!
                 xmlsitemapitem (ctxproj.:Proj.domainName) relpath (pageinfo.:Build.contentDate) priorel
             where
-            skip = (blok/=Bloks.NoBlok) && (not$ blok.:Bloks.inSitemap)
+            maybeblok = Data.Map.Strict.lookup (pageinfo.:Build.blokName) (ctxproj.:Proj.setup.:Proj.bloks)
+            skip = case maybeblok of -- maybeblok~>((not . Bloks.inSitemap) =|- False) -- case maybeblok of
+                    Just blok -> not$ blok.:Bloks.inSitemap
+                    Nothing -> False
             relpath = pageinfo.:Build.relPathSlashes
             priorel = max 0.0 (priobase - priodown)
 
-            blok = Data.Map.Strict.findWithDefault Bloks.NoBlok (pageinfo.:Build.blokName) (ctxproj.:Proj.setup.:Proj.bloks)
             priodown = 0.1 * (fromIntegral$ (Util.count '/' relpath) + (Util.count '.' relpath) - 1) :: Float
             priobase
                 | relpath=="index.html" || relpath=="index.htm"

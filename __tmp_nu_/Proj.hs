@@ -37,6 +37,7 @@ data Setup
     = SetupFromProj {
         tmpDbgSrc :: [(Char,String)],
         bloks :: Data.Map.Strict.Map String Bloks.Blok,
+        feeds :: [String],
         posts :: [Posts.Post],
         cfg :: ProjC.Config,
         tmpl :: Tmpl.CtxProc,
@@ -67,8 +68,8 @@ loadCtx ctxmain projname xregs defaultfiles =
 
 
 _loadSetup ctxproj xregs =
-    SetupFromProj { tmpDbgSrc = srcchunkspost, bloks = blokspost, posts = postspost,
-                    cfg = cfgpost,
+    SetupFromProj { tmpDbgSrc = srcchunkspost, bloks = blokspost,
+                    cfg = cfgpost, posts = postspost, feeds = feedspost,
                     tmpl = Tmpl.ProcessingContext {
                             Tmpl.bTagHandler =  Bloks.tagHandler blokspost,
                             Tmpl.cTagHandler = ProjC.tagHandler cfgmiscpost,
@@ -79,8 +80,8 @@ _loadSetup ctxproj xregs =
                     tagMismatches = Tmpl.tagMismatches rawsrc
                     }
     where
-    setupprep = SetupFromProj { tmpDbgSrc = srcchunksprep, bloks = bloksprep, posts = postsprep,
-                                cfg = cfgprep,
+    setupprep = SetupFromProj { tmpDbgSrc = srcchunksprep, bloks = bloksprep,
+                                cfg = cfgprep, posts = postsprep, feeds = feedsprep,
                                 tmpl = Tmpl.ProcessingContext {
                                         Tmpl.bTagHandler =  Bloks.tagHandler bloksprep,
                                         Tmpl.cTagHandler = ProjC.tagHandler cfgmiscprep,
@@ -94,8 +95,8 @@ _loadSetup ctxproj xregs =
     blokspost = Bloks.parseProjChunks (pick postchunkssplits 'B')
     (cfgprep,cfgmiscprep) = ProjC.parseProjChunks (pick prepchunkssplits 'C')
     (cfgpost,cfgmiscpost) = ProjC.parseProjChunks (pick postchunkssplits 'C')
-    postsprep = Posts.parseProjChunks (pick prepchunkssplits 'P')
-    postspost = Posts.parseProjChunks (pick postchunkssplits 'P')
+    (feedsprep,postsprep) = Posts.parseProjChunks (pick prepchunkssplits 'P')
+    (feedspost,postspost) = Posts.parseProjChunks (pick postchunkssplits 'P')
     ttagsprep = ProjT.parseProjChunks False (pick prepchunkssplits 'T')
     ttagspost = ProjT.parseProjChunks True (pick postchunkssplits 'T')
     xtagsprep = X.parseProjChunks xregs (pick prepchunkssplits 'X')
