@@ -5,6 +5,7 @@ import Base
 import qualified Bloks
 import qualified Defaults
 import qualified Files
+import qualified Posts
 import qualified ProjC
 import qualified ProjT
 import qualified Tmpl
@@ -34,7 +35,9 @@ data Ctx
 
 data Setup
     = SetupFromProj {
+        tmpDbgSrc :: [(Char,String)],
         bloks :: Data.Map.Strict.Map String Bloks.Blok,
+        posts :: [Posts.Post],
         cfg :: ProjC.Config,
         tmpl :: Tmpl.CtxProc,
         tagMismatches :: (Int , Int)
@@ -64,7 +67,7 @@ loadCtx ctxmain projname xregs defaultfiles =
 
 
 _loadSetup ctxproj xregs =
-    SetupFromProj { bloks = blokspost,
+    SetupFromProj { tmpDbgSrc = srcchunkspost, bloks = blokspost, posts = postspost,
                     cfg = cfgpost,
                     tmpl = Tmpl.ProcessingContext {
                             Tmpl.bTagHandler =  Bloks.tagHandler blokspost,
@@ -76,7 +79,7 @@ _loadSetup ctxproj xregs =
                     tagMismatches = Tmpl.tagMismatches rawsrc
                     }
     where
-    setupprep = SetupFromProj { bloks = bloksprep,
+    setupprep = SetupFromProj { tmpDbgSrc = srcchunksprep, bloks = bloksprep, posts = postsprep,
                                 cfg = cfgprep,
                                 tmpl = Tmpl.ProcessingContext {
                                         Tmpl.bTagHandler =  Bloks.tagHandler bloksprep,
@@ -91,6 +94,8 @@ _loadSetup ctxproj xregs =
     blokspost = Bloks.parseProjChunks (pick postchunkssplits 'B')
     (cfgprep,cfgmiscprep) = ProjC.parseProjChunks (pick prepchunkssplits 'C')
     (cfgpost,cfgmiscpost) = ProjC.parseProjChunks (pick postchunkssplits 'C')
+    postsprep = Posts.parseProjChunks (pick prepchunkssplits 'P')
+    postspost = Posts.parseProjChunks (pick postchunkssplits 'P')
     ttagsprep = ProjT.parseProjChunks False (pick prepchunkssplits 'T')
     ttagspost = ProjT.parseProjChunks True (pick postchunkssplits 'T')
     xtagsprep = X.parseProjChunks xregs (pick prepchunkssplits 'X')
@@ -122,6 +127,8 @@ loadChunks rawsrc =
     isbegin _ =
         False
 
+    gatherothers [] =
+        []
     gatherothers ((thisindex,thisline):more) =
         let belongs i = (i > thisindex) && (null more || i < (fst$ more#0))
         in (thisline , others ~|belongs.fst) : (null more |? [] |! gatherothers more)

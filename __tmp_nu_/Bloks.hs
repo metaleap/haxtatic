@@ -116,12 +116,12 @@ tagHandler bloks curbname str =
 
 
 
-toParseStr bname projline =
+toParseStr bname projchunkval =
     let
-        pl = projline ~> (checkfield "title" "") ~> (checkfield "desc" "") ~>
+        parsestr = projchunkval ~> (checkfield "title" "") ~> (checkfield "desc" "") ~>
                 (checkfield "atomFile" "") ~> (checkfield "blokIndexPageFile" (bname++ ".html")) ~>
                     (checkfield "inSitemap" True) ~> (checkfield "dtFormat" "")
-    in "Blok {" ++pl++ "}"
+    in "Blok {" ++parsestr++ "}"
     where
     checkfield field defval prjln =
         any ((Util.contains prjln).(field++)) ( ["=True","=False"]++

@@ -62,23 +62,21 @@ writeDefaultIndexHtml ctxmain projname dirpagesrel dirbuild htmltemplatemain =
         dircur = ctxmain.:Files.curDir
         dirproj = ctxmain.:Files.dirPath
         dirpages = dirproj </> dirpagesrel
-        outfilepath = dirpages </> fileName_IndexHtml
-        outfilerel = dirpagesrel </> fileName_IndexHtml
+        dstfilepath = dirpages </> fileName_IndexHtml
+        dstfpathrel = dirpagesrel </> fileName_IndexHtml
         pathtmpl = htmltemplatemain.:Files.path
         pathfinal = dirbuild </> fileName_IndexHtml
-        outfilecontent = return ( _index_html
-                                    dircur projname dirproj dirpages outfilepath pathtmpl pathfinal, undefined)
-        outfile = Files.FileInfo outfilepath (ctxmain.:Files.nowTime)
-    in
-        Files.writeTo outfilepath outfilerel outfilecontent
-        >> return (outfile , outfilerel , pathfinal)
+        dstfile = Files.FileInfo dstfilepath (ctxmain.:Files.nowTime)
+        filecontent = return ( _index_html
+                                    dircur projname dirproj dirpages dstfilepath pathtmpl pathfinal,
+                                (dstfile , fileName_IndexHtml , pathfinal) )
+    in Files.writeTo dstfilepath dstfpathrel filecontent
 
 
 setupName = System.FilePath.takeBaseName
 
 
 
-blokIndexPrefix :: String
 blokIndexPrefix = ":B|" -- don't change length without reviewing at least bloks.hs!
 dateTimeFormat = Data.Time.Format.iso8601DateFormat Nothing
 dir_Out = "build"
@@ -94,37 +92,37 @@ fileName_Pref = ("default"++)
 
 
 _proj name =
-    "T::SiteTitle: " ++(name >~ Data.Char.toUpper)++ "-Site\n"
+    "|T|SiteTitle:\n\t" ++(name >~ Data.Char.toUpper)++ "-Site"
 
 
 _index_html dircur sitename dirproj dirpages pathpage pathtmpl pathfinal =
-    let l = 1+(length dirproj) ; x s = "{P|%demo_dirpath|}<b>" ++(drop l s)++ "</b>" in
+    let l = 1+(length dirproj) ; x s = "{P|demo_dirpath|}<b>" ++(drop l s)++ "</b>" in
         "<h1>Greetings..</h1>\n\
-            \{P|%demo_hax:<b>HaXtatic</b>|}\n\
-            \{P|%demo_dirpath:" ++dirproj++[System.FilePath.pathSeparator]++ "|}\n\
+            \{%P|demo_hax=<b>HaXtatic</b>|%}\n\
+            \{%P|demo_dirpath=" ++dirproj++[System.FilePath.pathSeparator]++ "|%}\n\
             \<p>Looks like for now I&apos;m the home page of your static site <code>" ++sitename++ "</code>! How did this come about?</p>\n\
-            \<p>When you ran {P|%demo_hax|} from <code>" ++dircur++ "</code>, specifying project-directory <code><b>{P|%demo_dirpath|}</b></code>:</p>\n\
+            \<p>When you ran {P|demo_hax|} from <code>" ++dircur++ "</code>, specifying project-directory <code><b>{P|demo_dirpath|}</b></code>:</p>\n\
             \<ul>\n\
             \    <li>I was generated at <code>" ++(x pathfinal)++ "</code> by</li>\n\
             \    <li>..applying the <code>" ++(x pathtmpl)++ "</code> template (ready for your tinkering)</li>\n\
             \    <li>..to my &apos;<i>content source page</i>&apos; stored at <code>" ++(x pathpage)++ "</code> (dito)</li>\n\
-            \    <li>..which in turn {P|%demo_hax|} pre-created for you just-beforehand &mdash; <b>but <i>only</i></b> because <code>" ++(x dirpages)++[System.FilePath.pathSeparator]++ "</code> was totally devoid of any files: otherwise it won&apos;t ever write to your content source directories.</li>\n\
+            \    <li>..which in turn {P|demo_hax|} pre-created for you just-beforehand &mdash; <b>but <i>only</i></b> because <code>" ++(x dirpages)++[System.FilePath.pathSeparator]++ "</code> was totally devoid of any files: otherwise it won&apos;t ever write to your content source directories.</li>\n\
             \</ul>"
 
 
 _tmpl_html_blok =
-    "<h1>{B|title:_|}</h1>\n\
-    \<p>{B|desc:_|}</p>\n\
+    "<h1>{B|title|}</h1>\n\
+    \<p>{B|desc|}</p>\n\
     \<p>\n\
-    \For a neat overview listing of all your <code>pages/{B|name:|}.*.html</code> (and/or <code>pages/{B|name:|}/*.html</code>)\n\
-    \articles on this page, check out the <code>{X|Listings|}</code> tag type in the HaXtatic docs.\n\
+    \For a neat overview listing of all your <code>pages/{B|name|}.*.html</code> (and/or <code>pages/{B|name|}/*.html</code>)\n\
+    \articles on this page, check out the <code>|X|hax.list:</code> tag type in the HaXtatic docs.\n\
     \</p>"
 
 
 _tmpl_html_main =
     "<!DOCTYPE html><html lang=\"en\"><head>\n\
     \    <meta content=\"text/html;charset=utf-8\" http-equiv=\"Content-Type\" />\n\
-    \    <title>{P|Title|} - {T|SiteTitle|}</title><style type=\"text/css\">\n\
+    \    <title>{P|title|} - {T|SiteTitle|}</title><style type=\"text/css\">\n\
     \        h3 { text-align: center; color: CaptionText; background: ActiveCaption; padding: 0.66em; letter-spacing: 0.33em; font-size: 1.44em; border-radius: 1em; border: 0.123em dotted Background; }\n\
     \        small { display: block; background-color: InfoBackground; color: InfoText; text-align: right; font-style: italic; padding: 0.3em; margin: 0.3em; }\n\
     \        body { font-family: sans-serif; background: ButtonFace; color: ButtonText; line-height: 1.44em; }\n\
@@ -134,8 +132,8 @@ _tmpl_html_main =
     \    </style><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n\
     \</head><body>\n\
     \    <h3>{T|SiteTitle|}</h3>\n\
-    \    <div><!-- begin {P|FileName|} content generated from {P|OrigPath|} -->\n\n\n\
+    \    <div><!-- begin {P|fileUri|} content generated from {P|srcPath|} -->\n\n\n\
     \{P|:content:|}\n\n\
     \    </div><!-- end of generated content -->\n\
-    \    <hr/><small>Generated with <a href=\"http://github.com/HaXtatic\">{P|%demo_hax|}</a> on {P|Date|}</small>\n\
+    \    <hr/><small>Generated with <a href=\"http://github.com/HaXtatic\">{P|demo_hax|}</a> on {P|date|}</small>\n\
     \</body></html>"

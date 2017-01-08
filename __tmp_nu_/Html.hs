@@ -13,7 +13,7 @@ data Tag =
         attribs :: Util.StringPairs,
         subTags :: [Tag]
     }
-    deriving (Eq, Read)
+    deriving (Eq)
 
 
 

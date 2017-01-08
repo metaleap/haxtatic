@@ -82,22 +82,21 @@ processPage ctxmain cfgproj ctxtmpl tmplfinder outjob =
 pageVars cfgproj pagesrc contentdate =
     (pagevars , pagedate , pagesrcchunks)
     where
+    chunks = (Util.splitUp Util.trim ["{%P|"] "|%}" pagesrc)
     pagevars = chunks >~ foreach ~> Util.unMaybes
+    pvardates = pagevars >~ maybedate ~> Util.unMaybes
     pagedate = Util.atOr pvardates 0 contentdate
-    pagesrcchunks = chunks >~ fst ~|is
+    pagesrcchunks = (chunks ~|null.snd) >~ fst ~|is
 
-    foreach (pvarstr , "{:P|") =
+    foreach (pvarstr , "{%P|") =
         let nameandval = (Util.splitOn1st '=' pvarstr) ~> Util.bothTrim
         in Just nameandval
     foreach _ =
         Nothing
 
-    chunks = (Util.splitUp Util.trim ["{:P|"] "|:}" pagesrc)
-    pvardates = chunks >~ maybedate ~> Util.unMaybes
-    maybedate (pvdstr,_) =
-        let (varname , varval) = Util.bothTrim (Util.splitOn1st '=' pvdstr)
-            (dprefix , dtfname) = Util.bothTrim (Util.splitOn1st ':' varname)
-        in if dprefix /= "date" then Nothing
+    maybedate (varname,varval) =
+        let (dtpref , dtfname) = Util.bothTrim (Util.splitOn1st ':' varname)
+        in if dtpref /= "date" then Nothing
             else ProjC.dtStr2Utc cfgproj dtfname varval
 
 

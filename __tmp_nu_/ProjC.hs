@@ -104,7 +104,7 @@ parseProjChunks chunkssplits =
             saneskip = sanitize skip ; saneforce = sanitize force
             sanitize fvals = let them = proc~>fvals >~Util.trim ~|is
                                 in (elem "*" them) |? ["*"] |! them
-    proctags = (is ptags) |? ptags |! Tmpl.tags_All where
+    proctags = (is ptags) |? ptags |! Tmpl.tags_All ~|(/=Tmpl.tag_C) where
         ptags = (pstr~>(Util.splitOn ',') >~ Util.trim ~|is) ~>Util.unique >~(('{':).(++"|"))
         pstr = Util.trim$ Data.Map.Strict.findWithDefault "" ("process:tags") cfgprocs
     dirnameonly = System.FilePath.takeFileName ~. Util.trim

@@ -11,6 +11,7 @@ import qualified Util
 
 import qualified Data.Time.Clock
 import qualified System.Directory
+import qualified System.IO
 import System.FilePath ( (</>) )
 
 
@@ -80,15 +81,15 @@ _createIndexHtmlIfNoContentPages ctxmain ctxproj numpagesrcfiles =
     in putStrLn ("\t->\tNo content-source files whatsoever.. making one for you:")
     >> Defaults.writeDefaultIndexHtml
         ctxmain sitename dirpagesrel dirbuild htmltemplatemain
-    >>= \(outfile , outfilerel , pathfinal)
+    >>= \(srcfile , relpath , outjobpath)
     -> return FileOutput {
-                    relPath = outfilerel,
-                    relPathSlashes = Files.pathSepSystemToSlash outfilerel,
+                    relPath = relpath,
+                    relPathSlashes = Files.pathSepSystemToSlash relpath,
                     blokName = "",
-                    outPathBuild = pathfinal,
-                    outPathDeploy = Util.ifIs (ctxproj.:Proj.dirPathDeploy) (</> outfilerel),
-                    contentDate = outfile.:Files.modTime,
-                    srcFile = outfile
+                    outPathBuild = outjobpath,
+                    outPathDeploy = Util.ifIs (ctxproj.:Proj.dirPathDeploy) (</> relpath),
+                    contentDate = srcfile.:Files.modTime,
+                    srcFile = srcfile
                 }
 
 
@@ -173,8 +174,8 @@ _outFileInfo ctxproj contentdater relpather both@(relpath,file) =
 
 _filterOutFiles forceforceall fileinfos cfgproc =
     fileinfos >>| shouldbuildfile where
-        skipall = ["*"]== cfgproc.:ProjC.skip
-        forceall = ["*"]== cfgproc.:ProjC.force
+        skipall = ["*"]==cfgproc.:ProjC.skip
+        forceall = ["*"]==cfgproc.:ProjC.force
         shouldbuildfile NoOutput =
             return False
         shouldbuildfile fileinfo =

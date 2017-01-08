@@ -2,12 +2,11 @@
 module Util where
 
 import Base
-import qualified Control.Monad
+
 import qualified Data.Char
 import qualified Data.List
 import qualified Data.Time.Calendar
 import qualified Data.Time.Clock
-import Data.Function ( (&) )
 import qualified Text.Read
 
 
