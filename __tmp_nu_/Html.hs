@@ -63,25 +63,42 @@ escape =
         let (idx , rest , repl) = nextidx 0 str
         in if idx<0 then str else
             (take idx str) ++ repl ++ (esc rest)
-            -- concat [take idx str , repl , esc rest]  --  whyyy is concat slower than multiple ++ .....
     nextidx _ [] =
         (minBound::Int , [] , "")
-    nextidx count list@(this:rest)
-        |(this=='\'')= (count , rest , "&apos;")
-        |(this=='\"')= (count , rest , "&quot;")
-        |(this=='<')= (count , rest , "&lt;")
-        |(this=='>')= (count , rest , "&gt;")
-        |(this=='&')= (count , rest , "&amp;")
-        |(otherwise)= nextidx (count + 1) rest
+    nextidx count ('\'':rest) =
+        (count , rest , "&apos;")
+    nextidx count ('\"':rest) =
+        (count , rest , "&quot;")
+    nextidx count ('&':rest) =
+        (count , rest , "&amp;")
+    nextidx count ('<':rest) =
+        (count , rest , "&lt;")
+    nextidx count ('>':rest) =
+        (count , rest , "&gt;")
+    nextidx count (_:rest) =
+        nextidx (count + 1) rest
 
 
 
-innerContentsNoAtts oninner tagname htmlsrc =
-    let chunks = Util.splitUp id ["<"++tagname++">"] ("</"++tagname++">") htmlsrc
-        foreach (inner,tbegin) =
-            if null tbegin then Nothing
-                else Just inner
-    in chunks>~foreach ~> Util.unMaybes >~ oninner
+find1st finder defval htmlsrc =
+    Util.atOr (finder htmlsrc) 0 defval
+
+findInnerContentsNoAtts tagname htmlsrc =
+    let chunks = Util.splitUp id ['<':(tagname++">")] ("</"++tagname++">") htmlsrc
+        foreach (_,"") = Nothing
+        foreach ("",_) = Nothing
+        foreach (inner',_) =
+            let inner = Util.trim inner'
+            in null inner |? Nothing |! Just inner
+    in chunks>~foreach ~> Util.unMaybes
+
+findValuesOfSingleAtt tagname attrname htmlsrc =
+    let chunks = Util.splitUp id ['<':(tagname++" "++attrname++"=\"")] "\" />" htmlsrc
+        foreach (_,"") = Nothing
+        foreach (inner',_) =
+            let (inner,_) = Util.splitOn1st '\"' inner'
+            in null inner |? Nothing |! Just inner
+    in chunks>~foreach ~> Util.unMaybes
 
 
 

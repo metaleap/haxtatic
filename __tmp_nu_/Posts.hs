@@ -7,9 +7,11 @@ import qualified Defaults
 import qualified Files
 import qualified Html
 import qualified ProjC
+import qualified Tmpl
 import qualified Util
 
 import qualified Data.List
+import qualified Data.Map.Strict
 import qualified System.FilePath
 import System.FilePath ( (</>) )
 
@@ -79,34 +81,38 @@ parseProjChunks chunkssplits =
 
 
 
-postsFromBlok projcfg allpagesfiles blokname blok =
-    allblokpages >>~ topost
+postsFromBlok pagerendercache projcfg allpagesfiles blokname blok =
+    allblokpages >~ topost
     where
     (allblokpages , cdatelatest) = Bloks.allBlokPageFiles projcfg allpagesfiles blokname
     topost (relpath,file) =
         let
-            relpageuri = Files.pathSepSystemToSlash relpath
-        in readFile (file.:Files.path) >>= \htmlcontent
-        -> return (htmlcontent , P {
+            relpageuri = '/':(Files.pathSepSystemToSlash relpath)
+            ctxmaybe = Data.Map.Strict.lookup (file.:Files.path) pagerendercache
+            (htmlcontent , htmlinner1st) = case ctxmaybe of
+                Nothing -> ("<h1>Well now..</h1><p>..<i>there&apos;s</i> a bug in your static-site generator!</p>",
+                                const)
+                Just ctxpage -> (ctxpage.:Tmpl.cachedRenderSansTmpl , ctxpage.:Tmpl.htmlInner1st)
+        in (htmlcontent , P {
                 feed = blokname,
                 dt="1234-05-06",
                 cat = blokname,
-                title = relpath,
+                title = htmlinner1st "h1" relpath,
                 link = relpageuri,
-                pic = show (file.:Files.modTime),
-                content = (file.:Files.path)
+                pic = Html.find1st (Html.findValuesOfSingleAtt "img" "src") "" htmlcontent,
+                content = Html.stripMarkup ' ' (htmlinner1st "p" htmlcontent)
             })
 
 
 
-writeAtoms _ _ _ _ [] =
+writeAtoms _ _ _ _ _ [] =
     return ()
-writeAtoms allpagesfiles projbloks projposts projcfg outjobs =
+writeAtoms pagerendercache allpagesfiles projbloks projposts projcfg outjobs =
     outjobs >>~ writeatom >> return ()
     where
 
     domainname = projcfg.:ProjC.domainName
-    postsfromblok = postsFromBlok projcfg allpagesfiles
+    postsfromblok = postsFromBlok pagerendercache projcfg allpagesfiles
 
     writeatom outjob =
         Files.writeTo (outjob.:outPathBuild) relpath xmlatomfull
@@ -116,28 +122,27 @@ writeAtoms allpagesfiles projbloks projposts projcfg outjobs =
         srcpath = outjob.:srcFile.:Files.path
 
         xmlatomfull =
-            getposts >>= \allposts ->
-                let updated = if null allposts
-                                then (ProjC.dtUtc2Str projcfg "" (outjob.:srcFile.:Files.modTime))
-                                else ((snd$ allposts#0).:dt)
-                    xmlintro = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-                                \<feed xmlns=\"http://www.w3.org/2005/Atom\">\n\
-                                \    <link rel=\"self\" type=\"application/rss+xml\" href=\"http://"++domainname++"/"++(urify relpath)++"\" />\n\
-                                \    <title>"++domainname++" "++feedtitle++"</title>\n\
-                                \    <subtitle>"++(is feedname |? (domainname++pageuri) |! desc)++"</subtitle>\n\
-                                \    <id>http://"++domainname++pageuri++"</id>\n\
-                                \    <link href=\"http://"++domainname++pageuri++"\"/>\n\
-                                \    <updated>"++updated++"T00:00:00Z</updated>\n    "
-                in
-                    return (concat$ (xmlintro:(allposts >~ xmlatompost))++["\n</feed>"] , ())
+            let updated = if null allposts
+                            then (ProjC.dtUtc2Str projcfg "" (outjob.:srcFile.:Files.modTime))
+                            else ((snd$ allposts#0).:dt)
+                xmlintro = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+                            \<feed xmlns=\"http://www.w3.org/2005/Atom\">\n\
+                            \    <link rel=\"self\" type=\"application/rss+xml\" href=\"http://"++domainname++"/"++(urify relpath)++"\" />\n\
+                            \    <title>"++domainname++" "++feedtitle++"</title>\n\
+                            \    <subtitle>"++(is feedname |? (domainname++pageuri) |! desc)++"</subtitle>\n\
+                            \    <id>http://"++domainname++pageuri++"</id>\n\
+                            \    <link href=\"http://"++domainname++pageuri++"\"/>\n\
+                            \    <updated>"++updated++"T00:00:00Z</updated>\n    "
+            in
+                return (concat$ (xmlintro:(allposts >~ xmlatompost))++["\n</feed>"] , ())
 
         urify = Files.pathSepSystemToSlash
         blokname = outjob.:blokName
         feedname = is blokname |? "" |!
                     drop 1 (System.FilePath.takeExtension srcpath)
         maybeblok = is blokname |? (Bloks.blokByName projbloks blokname) |! Nothing
-        getposts = case maybeblok of
-                    Nothing -> return ( (projposts ~|(==feedname).feed) >~((,) "") )
+        allposts = case maybeblok of
+                    Nothing -> (projposts ~|(==feedname).feed) >~((,) "")
                     Just blok -> postsfromblok blokname blok
         (pageuri , feedtitle , desc) = case maybeblok of
                     Just blok -> ( '/':(urify (blok.:Bloks.blokIndexPageFile)) , blok.:Bloks.title , blok.:Bloks.desc )
@@ -158,7 +163,7 @@ writeAtoms allpagesfiles projbloks projposts projcfg outjobs =
             in ("<entry>\n\
                 \        <title type=\"html\">"++posttitle++"</title>\n\
                 \        <summary type=\"html\">"++postdesc++"</summary>\n\
-                \        <link href=\""++posturl++"\"/><author><name>"++domainname++"</name></author>\n\
+                \        <link href=\""++(post.:pic)++"\"/><author><name>"++domainname++"</name></author>\n\
                 \        <id>tag:"++domainname++","++postdt++":"++posturl++"</id>\n\
                 \        <updated>"++postdt++"T00:00:00Z</updated>\n\
                 \        <content type=\"html\">"++postfull++"</content>\n\

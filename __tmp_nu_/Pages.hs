@@ -26,19 +26,21 @@ processAll ctxmain ctxproj buildplan =
         ctxtmpl = ctxproj.:Proj.setup.:Proj.tmpl
         cfgproj = ctxproj.:Proj.setup.:Proj.cfg
 
-    in if null$ buildplan.:Build.outPages then return () else
+    in if null$ buildplan.:Build.outPages then return (Data.Map.Strict.empty) else
     Tmpl.loadAll ctxmain ctxtmpl (ctxproj.:Proj.coreFiles)
                     filenameexts (cfgproj.:ProjC.htmlEquivExts) >>= \tmplfinder
-    -> let foreach buildtask =
-            processPage ctxmain cfgproj ctxtmpl tmplfinder buildtask
-        in buildplan.:Build.outPages >>~ foreach
-        >> return ()
+    -> let foreach =
+            processPage ctxmain cfgproj ctxtmpl tmplfinder
+        in (buildplan.:Build.outPages >>~ foreach) >>= \srcpathsandpagerenders
+        -> return (Data.Map.Strict.fromList srcpathsandpagerenders)
 
 
 
 processPage ctxmain cfgproj ctxtmpl tmplfinder outjob =
     Files.writeTo dstfilepath (outjob.:Build.relPath) processcontent
-    >>= Tmpl.warnIfTagMismatches ctxmain srcfilepath
+    >>= \(ctxpage , mismatches)
+    -> Tmpl.warnIfTagMismatches ctxmain srcfilepath mismatches
+    >> return (outjob.:Build.srcFile.:Files.path , ctxpage)
 
     where
     dstfilepath = outjob.:Build.outPathBuild
@@ -62,7 +64,8 @@ processPage ctxmain cfgproj ctxtmpl tmplfinder outjob =
                             Tmpl.pDate = pagedate,
                             Tmpl.htmlInners = htmlinners,
                             Tmpl.htmlInner1st = htmlinner1st,
-                            Tmpl.tmpl = tmpl
+                            Tmpl.tmpl = tmpl,
+                            Tmpl.cachedRenderSansTmpl = pageonlyproc
                         }
             (pagevars , pagedate , pagesrcchunks) = pageVars cfgproj pagesrc $outjob.:Build.contentDate
             taghandler = tagHandler cfgproj ctxpage ctxtmpl outjob
@@ -71,11 +74,11 @@ processPage ctxmain cfgproj ctxtmpl tmplfinder outjob =
                             (null pagevars |? pagesrc |! (concat pagesrcchunks))
             outsrc = Tmpl.apply tmpl ctxpage pageonlyproc
             htmlinners tagname =
-                Html.innerContentsNoAtts Util.trim tagname pageonlyproc
+                Html.findInnerContentsNoAtts tagname pageonlyproc
             htmlinner1st tagname defval =
                 Util.atOr (htmlinners tagname) 0 defval
 
-        in return (outsrc , mismatches)
+        in return (outsrc , (ctxpage , mismatches))
 
 
 

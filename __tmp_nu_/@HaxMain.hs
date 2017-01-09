@@ -116,11 +116,11 @@ processAll ctxmain projfilename custfilenames =
 
     -> putStrLn ("\n4/6\tGenerating " ++(show numgenpages)++ "/" ++(show$ numgenpages+numskippages)++ " page(s) in:\n\t->\t"++dirbuild)
     >> System.IO.hFlush System.IO.stdout
-    >> Pages.processAll ctxmain ctxproj buildplan
-    >> Data.Time.Clock.getCurrentTime >>= \timeprocdone
+    >> Pages.processAll ctxmain ctxproj buildplan >>= \pagerendercache
+    -> Data.Time.Clock.getCurrentTime >>= \timeprocdone
     -> Pages.writeSitemapXml ctxproj buildplan
     >> putStrLn ("\n5/6\tGenerating " ++(show numxmlfiles)++ "/" ++(show$ numxmlfiles+numskipposts)++ " Atom feed(s) in:\n\t->\t"++dirbuild)
-    >> Posts.writeAtoms (buildplan.:Build.allPagesFiles) (ctxproj.:Proj.setup.:Proj.bloks)
+    >> Posts.writeAtoms pagerendercache (buildplan.:Build.allPagesFiles) (ctxproj.:Proj.setup.:Proj.bloks)
                             (ctxproj.:Proj.setup.:Proj.posts) (ctxproj.:Proj.setup.:Proj.cfg) (buildplan.:Build.feedJobs)
     >> Data.Time.Clock.getCurrentTime >>= \timexmldone
     -> let
