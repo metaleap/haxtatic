@@ -83,7 +83,7 @@ escape =
 find1st finder defval htmlsrc =
     Util.atOr (finder htmlsrc) 0 defval
 
-findInnerContentsNoAtts tagname htmlsrc =
+findInnerContentOfNoAttrTags tagname htmlsrc =
     let chunks = Util.splitUp id ['<':(tagname++">")] ("</"++tagname++">") htmlsrc
         foreach (_,"") = Nothing
         foreach ("",_) = Nothing
@@ -92,8 +92,8 @@ findInnerContentsNoAtts tagname htmlsrc =
             in null inner |? Nothing |! Just inner
     in chunks>~foreach ~> Util.unMaybes
 
-findValuesOfSingleAtt tagname attrname htmlsrc =
-    let chunks = Util.splitUp id ['<':(tagname++" "++attrname++"=\"")] "\" />" htmlsrc
+findValuesOfVoidTags1stAttr tagname attrname htmlsrc =
+    let chunks = Util.splitUp id ['<':(tagname++" "++attrname++"=\"")] "/>" htmlsrc
         foreach (_,"") = Nothing
         foreach (inner',_) =
             let (inner,_) = Util.splitOn1st '\"' inner'

@@ -159,6 +159,10 @@ substitute old new
     |(otherwise)= (>~ subst) where
         subst item |(item==old)= new |(otherwise)= item
 
+substitute' olds new =
+    (>~ subst) where
+        subst item |(elem item olds)= new |(otherwise)= item
+
 trim = trim'' Data.Char.isSpace
 trim' [] = id
 trim' dropitems = trim'' (`elem` dropitems)

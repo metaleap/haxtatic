@@ -41,16 +41,15 @@ buildPlan modtimeproj relpathpostatoms feeds =
     feeds >~ tofileinfo
     where
     tofileinfo feedname =
-        let dstfilename = feedname++".atom"
-            dstfilerelpath
-                |(relpathpostatoms==Defaults.dir_PostAtoms_None)= ""
-                |(null relpathpostatoms)= dstfilename
-                |(otherwise)= relpathpostatoms </> dstfilename
-        in ( dstfilerelpath , if null dstfilerelpath then Files.NoFile
-                                else Files.FileInfo {
-                                            Files.path = Defaults.feedIndexPrefix++"/"++"."++feedname,
-                                            Files.modTime = modtimeproj
-                                        } )
+        ( dstfilerelpath , file )
+        where
+        file = if null dstfilerelpath then Files.NoFile else
+                Files.FileInfo { Files.modTime = modtimeproj , Files.path = Defaults.feedIndexPrefix++"/"++"."++feedname }
+        dstfilename = feedname++".atom"
+        dstfilerelpath
+            |(relpathpostatoms==Defaults.dir_PostAtoms_None)= ""
+            |(null relpathpostatoms)= dstfilename
+            |(otherwise)= relpathpostatoms </> dstfilename
 
 
 
@@ -81,7 +80,7 @@ parseProjChunks chunkssplits =
 
 
 
-postsFromBlok pagerendercache projcfg allpagesfiles blokname blok =
+postsFromBlok pagerendercache projcfg allpagesfiles blokname blok getcat =
     allblokpages >~ topost
     where
     (allblokpages , cdatelatest) = Bloks.allBlokPageFiles projcfg allpagesfiles blokname
@@ -93,15 +92,17 @@ postsFromBlok pagerendercache projcfg allpagesfiles blokname blok =
                 Nothing -> ("<h1>Well now..</h1><p>..<i>there&apos;s</i> a bug in your static-site generator!</p>",
                                 const)
                 Just ctxpage -> (ctxpage.:Tmpl.cachedRenderSansTmpl , ctxpage.:Tmpl.htmlInner1st)
-        in (htmlcontent , P {
+            pcat = getcat post
+            post = P {
                 feed = blokname,
-                dt="1234-05-06",
-                cat = blokname,
+                dt = ProjC.dtUtc2Str projcfg "" (ctxmaybe.:(Tmpl.pDate =|- cdatelatest)),
+                cat = pcat,
                 title = htmlinner1st "h1" relpath,
                 link = relpageuri,
-                pic = Html.find1st (Html.findValuesOfSingleAtt "img" "src") "" htmlcontent,
+                pic = Html.find1st (Html.findValuesOfVoidTags1stAttr "img" "src") "" htmlcontent,
                 content = Html.stripMarkup ' ' (htmlinner1st "p" htmlcontent)
-            })
+            }
+        in (htmlcontent , post)
 
 
 
@@ -143,7 +144,7 @@ writeAtoms pagerendercache allpagesfiles projbloks projposts projcfg outjobs =
         maybeblok = is blokname |? (Bloks.blokByName projbloks blokname) |! Nothing
         allposts = case maybeblok of
                     Nothing -> (projposts ~|(==feedname).feed) >~((,) "")
-                    Just blok -> postsfromblok blokname blok
+                    Just blok -> postsfromblok blokname blok (const blokname)
         (pageuri , feedtitle , desc) = case maybeblok of
                     Just blok -> ( '/':(urify (blok.:Bloks.blokIndexPageFile)) , blok.:Bloks.title , blok.:Bloks.desc )
                     Nothing -> ( '/':(feedname++".html") , feedname , "" )
@@ -163,7 +164,7 @@ writeAtoms pagerendercache allpagesfiles projbloks projposts projcfg outjobs =
             in ("<entry>\n\
                 \        <title type=\"html\">"++posttitle++"</title>\n\
                 \        <summary type=\"html\">"++postdesc++"</summary>\n\
-                \        <link href=\""++(post.:pic)++"\"/><author><name>"++domainname++"</name></author>\n\
+                \        <link href=\""++posturl++"\"/><author><name>"++domainname++"</name></author>\n\
                 \        <id>tag:"++domainname++","++postdt++":"++posturl++"</id>\n\
                 \        <updated>"++postdt++"T00:00:00Z</updated>\n\
                 \        <content type=\"html\">"++postfull++"</content>\n\

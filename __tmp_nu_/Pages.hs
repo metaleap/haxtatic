@@ -74,7 +74,7 @@ processPage ctxmain cfgproj ctxtmpl tmplfinder outjob =
                             (null pagevars |? pagesrc |! (concat pagesrcchunks))
             outsrc = Tmpl.apply tmpl ctxpage pageonlyproc
             htmlinners tagname =
-                Html.findInnerContentsNoAtts tagname pageonlyproc
+                Html.findInnerContentOfNoAttrTags tagname pageonlyproc
             htmlinner1st tagname defval =
                 Util.atOr (htmlinners tagname) 0 defval
 

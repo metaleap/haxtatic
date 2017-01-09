@@ -122,7 +122,8 @@ listAllFiles rootdirpath reldirs modtimer =
                     -> (subdirpaths >>~ foreachdir) >>= \recursed
                     -> return (concat [filetuples, concat recursed])
     in allfiles >>= \allfiletuples
-    -> let foreachfiletuple (srcfilepath , modtime) =
+    -> let
+        foreachfiletuple (srcfilepath , modtime) =
             ( Util.atOr relpaths 0 srcfilepath,
                 FileInfo srcfilepath modtime )
             where
@@ -130,7 +131,8 @@ listAllFiles rootdirpath reldirs modtimer =
             foreachsrcdir reldirpath =
                 if Util.startsWith srcfilepath reldirpath
                 then drop (1 + reldirpath~>length) srcfilepath else ""
-        in return$ allfiletuples>~foreachfiletuple
+        newest (_,mt1) (_,mt2) = compare mt2 mt1
+    in return$ (Data.List.sortBy newest allfiletuples)>~foreachfiletuple
 
 
 

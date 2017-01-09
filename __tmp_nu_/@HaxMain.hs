@@ -59,18 +59,21 @@ main =
         -- SHOW TIME!
         in processAll ctxmain projfilename (drop 2 cmdargs)
 
-        >>= \(timeinitdone , timecopydone , timeprocdone , timexmldone)
+        >>= \(buildplan , numxmls , timeinitdone , timecopydone , timeprocdone , timexmldone)
         -> Data.Time.Clock.getCurrentTime >>= \endtime
         -> let
             timetaken = Util.duration starttime endtime
-            showtime difftime = let overaminute = difftime > 60
+            showtime = showtime' 3
+            showtime' numdig difftime = let overaminute = difftime > 60
                                 in (overaminute |? (difftime / 60) |! difftime)
-                                ~> show ~> ( Util.cropOn1st '.' 3 ['0'] (++(overaminute |? "m" |! "s")) )
+                                ~> show ~> ( Util.cropOn1st '.' numdig ['0'] (++(overaminute |? "m" |! "s")) )
+            showavg 0 _ _ = ""
+            showavg l t1 t2 = " (" ++ (show l) ++ "x ~" ++ (showtime' 4 ((Util.duration t1 t2) / (fromIntegral l))) ++ ")"
         in putStrLn ("\n\nWell it's been " ++(showtime timetaken)++ ":")
         >> putStrLn ("\t"++(showtime$ Util.duration starttime timeinitdone)++ " initializing, pre-templating, planning")
-        >> putStrLn ("\t"++(showtime$ Util.duration timecopydone timeprocdone)++ " page templating & generation")
-        >> putStrLn ("\t"++(showtime$ Util.duration timeprocdone timexmldone)++ " XML (atoms, sitemap) file generation")
-        >> putStrLn ("\t"++(showtime$ ((Util.duration timeinitdone timecopydone) + (Util.duration timeprocdone endtime)))++ " file-copying")
+        >> putStrLn ("\t"++(showtime$ Util.duration timecopydone timeprocdone)++ " page templating & generation"++(showavg (buildplan.:Build.outPages~>length) timecopydone timeprocdone)++"")
+        >> putStrLn ("\t"++(showtime$ Util.duration timeprocdone timexmldone)++ " XML file generation"++(showavg numxmls timeprocdone timexmldone)++"")
+        >> putStrLn ("\t"++(showtime$ ((Util.duration timeinitdone timecopydone) + (Util.duration timeprocdone endtime)))++ " file-copying, I/O & misc."++(showavg (buildplan.:Build.outStatics~>length) timeprocdone endtime)++"")
         >> putStrLn ("\n\n==== Bye now! ====\n\n\n")
         >> System.IO.hFlush System.IO.stdout
 
@@ -118,8 +121,9 @@ processAll ctxmain projfilename custfilenames =
     >> System.IO.hFlush System.IO.stdout
     >> Pages.processAll ctxmain ctxproj buildplan >>= \pagerendercache
     -> Data.Time.Clock.getCurrentTime >>= \timeprocdone
-    -> Pages.writeSitemapXml ctxproj buildplan
-    >> putStrLn ("\n5/6\tGenerating " ++(show numxmlfiles)++ "/" ++(show$ numxmlfiles+numskipposts)++ " Atom feed(s) in:\n\t->\t"++dirbuild)
+
+    -> putStrLn ("\n5/6\tGenerating " ++(show (numxmlfiles+numsitemaps))++ "/" ++(show$ numxmlfiles+numsitemaps+numskipposts)++ " XML files in:\n\t->\t"++dirbuild)
+    >> Pages.writeSitemapXml ctxproj buildplan
     >> Posts.writeAtoms pagerendercache (buildplan.:Build.allPagesFiles) (ctxproj.:Proj.setup.:Proj.bloks)
                             (ctxproj.:Proj.setup.:Proj.posts) (ctxproj.:Proj.setup.:Proj.cfg) (buildplan.:Build.feedJobs)
     >> Data.Time.Clock.getCurrentTime >>= \timexmldone
@@ -130,4 +134,4 @@ processAll ctxmain projfilename custfilenames =
                     else putStrLn (deploymsg++(ctxproj.:Proj.dirPathDeploy))
                         >> System.IO.hFlush System.IO.stdout
                         >> Build.copyAllOutputsToDeploy buildplan
-    in Util.via doordonot (timeinitdone , timecopydone , timeprocdone, timexmldone)
+    in Util.via doordonot (buildplan , numxmlfiles+numsitemaps , timeinitdone , timecopydone , timeprocdone, timexmldone)

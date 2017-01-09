@@ -117,19 +117,24 @@ plan ctxmain ctxproj =
         outfileinfobasic = _outFileInfo ctxproj fst id
         outfileinfopage = _outFileInfo ctxproj snd id
         outfileinfoatom filenamer = _outFileInfo ctxproj fst $filenamer.(Files.ensureFileExt True ".atom")
-        allatoms = ((Posts.buildPlan modtimeproj (projcfg.:ProjC.relPathPostAtoms) (projsetup.:Proj.feeds)) ++ dynposts) >~ (outfileinfoatom id)
+        allatoms = ((Posts.buildPlan modtimeproj (projcfg.:ProjC.relPathPostAtoms) (projsetup.:Proj.feeds)) ++ dynfeeds)
+                    >~ (outfileinfoatom id)
         allstatics = allstaticfiles >~ outfileinfobasic
         allpages = (defaultpage==NoOutput) |? almostall |! defaultpage:almostall
                     where almostall = (allpagesfiles_nodate++dynpages) >~ outfileinfopage
-        (dynpages,dynposts) = Bloks.buildPlan (modtimeproj,modtimetmpl) projcfg
+        (dynpages,dynfeeds) = Bloks.buildPlan (modtimeproj,modtimetmpl) projcfg
                                                 allpagesfiles_nodate $projsetup.:Proj.bloks
         sitemaprelpath = projcfg.:ProjC.relPathSiteMap
         sitemapbuildpath = ctxproj.:Proj.dirPathBuild </> sitemaprelpath
-    in _filterOutFiles False allstatics cfgprocstatic >>= \outcopyfiles
-    -> _filterOutFiles False allpages cfgprocpages >>= \outpagefiles
-    -> _filterOutFiles False (dynpages >~ outfileinfopage) cfgprocpages >>= \abitwasteful_justtogetanum
-    -> _filterOutFiles False allatoms cfgprocposts >>= \outatomfiles
-    -> _filterOutFiles True allpages cfgprocpages >>= \sitemapfiles
+    in _filterOutFiles (const False) allstatics cfgprocstatic >>= \outcopyfiles
+    -> _filterOutFiles (const False) allatoms cfgprocposts >>= \outatomfiles
+    -> let shouldforcepage file =
+            shouldfor `any` outatomfiles where
+            shouldfor atomoutjob =
+                file.:blokName == atomoutjob.:blokName
+    in _filterOutFiles shouldforcepage allpages cfgprocpages >>= \outpagefiles
+    -> _filterOutFiles (const False) (dynpages >~ outfileinfopage) cfgprocpages >>= \abitwasteful_justtogetanum
+    -> _filterOutFiles (const True) allpages cfgprocpages >>= \sitemapfiles
     -> System.Directory.doesFileExist sitemapbuildpath >>= \sitemapexists
     -> let
         anyprocessing = outpagefiles~>length > 0
@@ -178,7 +183,7 @@ _outFileInfo ctxproj contentdater relpather both@(relpath,file) =
 
 
 
-_filterOutFiles forceforceall fileinfos cfgproc =
+_filterOutFiles shouldforce fileinfos cfgproc =
     fileinfos >>| shouldbuildfile where
         skipall = ["*"]==cfgproc.:ProjC.skip
         forceall = ["*"]==cfgproc.:ProjC.force
@@ -188,7 +193,7 @@ _filterOutFiles forceforceall fileinfos cfgproc =
             let skipthis = (not skipall) && (matchesany $cfgproc.:ProjC.skip)
                 forcethis = (not forceall) && (matchesany $cfgproc.:ProjC.force)
                 matchesany = Files.simpleFileNameMatchAny $fileinfo.:relPath
-            in (forcethis || (forceall && not skipthis) || forceforceall)
+            in (forcethis || (forceall && not skipthis) || (shouldforce fileinfo))
             |? return True
             |! (skipthis || (skipall && not forcethis))
             |? return False
