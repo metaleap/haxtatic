@@ -96,10 +96,10 @@ count _ [] = 0
 count item (this:rest) =
     (if item==this then 1 else 0) + (count item rest)
 
-cropOn1st delim cropafter oncrop list =
+cropOn1st delim cropafter trimitemsafterdelim oncrop list =
     let i = indexOf delim list
     in if i<0 then list
-        else oncrop$ take (i+cropafter) list
+        else (oncrop . (trimEnd' trimitemsafterdelim) . (take (i+cropafter))) list
 
 countSub _ [] = 0
 countSub [] _ = 0
@@ -160,15 +160,18 @@ substitute old new
         subst item |(item==old)= new |(otherwise)= item
 
 trim = trim'' Data.Char.isSpace
+trim' [] = id
 trim' dropitems = trim'' (`elem` dropitems)
 trim'' fn = (trimStart'' fn) ~. (trimEnd'' fn)
 trimSpaceOr dropitems = trim'' (\c -> Data.Char.isSpace c || elem c dropitems )
 
 trimEnd = trimEnd'' Data.Char.isSpace
+trimEnd' [] = id
 trimEnd' dropitems = trimEnd'' (`elem` dropitems)
 trimEnd'' = Data.List.dropWhileEnd
 
 trimStart = trimStart'' Data.Char.isSpace
+trimStart' [] = id
 trimStart' dropitems = trimStart'' (`elem` dropitems)
 trimStart'' = Data.List.dropWhile
 
@@ -268,14 +271,9 @@ _indexof_droptil' predicate count list@(this:rest) =
     if (predicate this) then (count , list)
         else _indexof_droptil' predicate (count + 1) rest
 
-indexOf1st =
-    indexof1st 0
-    where
-    indexof1st _ [] _ = (_intmin , [])
-    indexof1st _ _ [] = (_intmin , [])
-    indexof1st count items list@(this:rest) =
-        if elem this items then (count , list) else
-            indexof1st (count + 1) items rest
+
+indexOf1st items list =
+    i where (i , _) = _indexof_droptil' (`elem` items) 0 list
 
 indexOfSub [] _ =
     _intmin
@@ -301,14 +299,17 @@ indexOfSubs1st [] _ =
 indexOfSubs1st _ [] =
     (_intmin , "" )
 indexOfSubs1st subs str =
-    let iidxs = isubs >~ (both (id,indexof)) ~|snd~.(>=0)
+    let startchars = unique$ subs>~(#0)
+        (startindex , _haystack) = _indexof_droptil' (`elem` startchars) 0 str
+        iidxs = isubs >~ (both (id,indexof)) ~|snd~.(>=0)
         isubs = indexed subs
         indexof = indexOfSub _haystack
-        (startindex , _haystack) = indexOf1st (subs >~ (#0)) str
         (i,index) = Data.List.minimumBy (bothSnds compare) iidxs
     in if startindex<0 || null iidxs || index<0
         then ( _intmin , "" )
         else ( index+startindex , subs#i )
+
+
 
 lastIndexOfSub revstr revsub
     |(idx<0)= idx
@@ -318,15 +319,15 @@ lastIndexOfSub revstr revsub
 
 
 
--- replaceSub "" _ str = str
--- replaceSub _ _ "" = ""
+replaceSub "" _ str = str
+replaceSub _ _ "" = ""
 replaceSub old new str =
     _replace_helper (replaceSub old new) (const new) (idx,old) str
     where
     idx = indexOfSub str old
 
--- replaceSubs [] = id
--- replaceSubs ((old,new):[]) = replaceSub old new
+replaceSubs [] = id
+replaceSubs ((old,new):[]) = replaceSub old new
 replaceSubs replpairs =
     _replaceall
     where

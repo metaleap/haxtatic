@@ -10,7 +10,6 @@ import qualified ProjC
 import qualified Util
 
 import qualified Data.List
-import qualified Data.Map.Strict
 import qualified System.FilePath
 import System.FilePath ( (</>) )
 
@@ -71,7 +70,8 @@ parseProjChunks chunkssplits =
             post = Util.tryParseOr errpost parsestr
             errpost = P {
                     feed=pfeedcat,dt="9999-12-31", cat="_hax_cat", title="{!| syntax issue, couldn't parse this post |!}",
-                    link="*.haxproj", content = "<pre>" ++ (Html.escape [] parsestr) ++ "</pre>", pic="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Warning_icon.svg/256px-Warning_icon.svg.png"
+                    link="*.haxproj", content = "<pre>" ++ (Html.escape parsestr) ++ "</pre>",
+                    pic="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Warning_icon.svg/256px-Warning_icon.svg.png"
                 }
         in Just post
     foreach _ =
@@ -79,61 +79,87 @@ parseProjChunks chunkssplits =
 
 
 
-writeAtoms _ _ _ [] =
+postsFromBlok projcfg allpagesfiles blokname blok =
+    allblokpages >>~ topost
+    where
+    (allblokpages , cdatelatest) = Bloks.allBlokPageFiles projcfg allpagesfiles blokname
+    topost (relpath,file) =
+        let
+            relpageuri = Files.pathSepSystemToSlash relpath
+        in readFile (file.:Files.path) >>= \htmlcontent
+        -> return (htmlcontent , P {
+                feed = blokname,
+                dt="1234-05-06",
+                cat = blokname,
+                title = relpath,
+                link = relpageuri,
+                pic = show (file.:Files.modTime),
+                content = (file.:Files.path)
+            })
+
+
+
+writeAtoms _ _ _ _ [] =
     return ()
-writeAtoms projbloks projposts projcfg (outjob:more) =
-    --  this recursion would seem wasteful with many 1000s of files, but that's unlikely
-    Files.writeTo (outjob.:outPathBuild) (outjob.:relPath) xmloutput
-    >> writeAtoms projbloks projposts projcfg more
+writeAtoms allpagesfiles projbloks projposts projcfg outjobs =
+    outjobs >>~ writeatom >> return ()
     where
 
-    xmloutput =
-        return (xmlatomfull , undefined)
+    domainname = projcfg.:ProjC.domainName
+    postsfromblok = postsFromBlok projcfg allpagesfiles
 
-    xmlatomfull =
-        let repls = [ "&DOMAIN;" =: projcfg.:ProjC.domainName, "&PAGEURI;" =: pageuri ]
-            updated = if null allposts
-                        then (ProjC.dtUtc2Str projcfg "" (outjob.:srcFile.:Files.modTime))
-                        else ((allposts#0).:dt)
-        in Util.replaceSubs repls ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-            \<feed xmlns=\"http://www.w3.org/2005/Atom\">\n\
-            \    <link rel=\"self\" type=\"application/rss+xml\" href=\"http://&DOMAIN;/"++(urify$ outjob.:relPath)++"\" />\n\
-            \    <title>&DOMAIN; "++feedtitle++"</title>\n\
-            \    <subtitle>"++(is feedname |? "&DOMAIN;/&PAGEURI;" |! desc)++"</subtitle>\n\
-            \    <id>http://&DOMAIN;/&PAGEURI;</id>\n\
-            \    <link href=\"http://&DOMAIN;/&PAGEURI;\"/>\n\
-            \    <updated>"++updated++"T00:00:00Z</updated>\n\
-            \    "++(concat$ allposts >~ xmlatompost)++"\n\
-            \</feed>")
+    writeatom outjob =
+        Files.writeTo (outjob.:outPathBuild) relpath xmlatomfull
+        where
 
-    urify = Files.pathSepSystemToSlash
-    blokname = outjob.:blokName
-    maybeblok = Data.Map.Strict.lookup blokname projbloks
-    feedname = is blokname |? "" |! drop 1 (System.FilePath.takeExtension$ outjob.:srcFile.:Files.path)
-    allposts = if is blokname
-                then [P { feed = blokname, dt="1234-05-06", cat = blokname, title = blokname,
-                            link = blokname, pic = blokname, content = blokname }]
-                else projposts ~|(\p -> (p.:feed)==feedname)
-    pageuri = maybeblok~>((urify . Bloks.blokIndexPageFile) =|- feedname++".html")
-    feedtitle = xmlesc$ maybeblok~>(Bloks.title =|- feedname)
-    desc = xmlesc$ maybeblok~>(Bloks.desc =|- "")
+        relpath = outjob.:relPath
+        srcpath = outjob.:srcFile.:Files.path
 
-    xmlesc = Html.escape []
-    sanitize = Util.replaceSubs [ "<link " =: "<hax_link style=\"display:none\" " , "<script" =: "<!--hax_script" ,
-                "<input " =: "<hax_input style=\"display:none\"" , "</link" =: "</hax_link" ,
-                "</script>" =: "</hax_script-->" , "</input" =: "</hax_input" , " style=\"" =: " hax_style=\""
-                ]
+        xmlatomfull =
+            getposts >>= \allposts ->
+                let updated = if null allposts
+                                then (ProjC.dtUtc2Str projcfg "" (outjob.:srcFile.:Files.modTime))
+                                else ((snd$ allposts#0).:dt)
+                    xmlintro = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+                                \<feed xmlns=\"http://www.w3.org/2005/Atom\">\n\
+                                \    <link rel=\"self\" type=\"application/rss+xml\" href=\"http://"++domainname++"/"++(urify relpath)++"\" />\n\
+                                \    <title>"++domainname++" "++feedtitle++"</title>\n\
+                                \    <subtitle>"++(is feedname |? (domainname++pageuri) |! desc)++"</subtitle>\n\
+                                \    <id>http://"++domainname++pageuri++"</id>\n\
+                                \    <link href=\"http://"++domainname++pageuri++"\"/>\n\
+                                \    <updated>"++updated++"T00:00:00Z</updated>\n    "
+                in
+                    return (concat$ (xmlintro:(allposts >~ xmlatompost))++["\n</feed>"] , ())
 
-    xmlatompost post =
-        let posttitle = xmlesc (post.:title)
-            postdesc = xmlesc (if is blokname then post.:content else post.:cat)
-            postfull = (xmlesc.sanitize) (if is blokname then "html here" else post.:content)
-            repl = [ "&POSTDATE;" =: post.:dt , "&POSTURL;" =: if is blokname then (post.:link) else "/"++pageuri++"#"++(post.:dt) ]
-        in Util.replaceSubs repl ("<entry>\n\
-            \        <title type=\"html\">"++posttitle++"</title>\n\
-            \        <summary type=\"html\">"++postdesc++"</summary>\n\
-            \        <link href=\"&POSTURL;\"/><author><name>"++(post.:cat)++"</name><email>info@&DOMAIN;</email></author>\n\
-            \        <id>tag:&DOMAIN;,&POSTDATE;:&POSTURL;</id>\n\
-            \        <updated>&POSTDATE;T00:00:00Z</updated>\n\
-            \        <content type=\"html\">"++postfull++"</content>\n\
-            \    </entry>")
+        urify = Files.pathSepSystemToSlash
+        blokname = outjob.:blokName
+        feedname = is blokname |? "" |!
+                    drop 1 (System.FilePath.takeExtension srcpath)
+        maybeblok = is blokname |? (Bloks.blokByName projbloks blokname) |! Nothing
+        getposts = case maybeblok of
+                    Nothing -> return ( (projposts ~|(==feedname).feed) >~((,) "") )
+                    Just blok -> postsfromblok blokname blok
+        (pageuri , feedtitle , desc) = case maybeblok of
+                    Just blok -> ( '/':(urify (blok.:Bloks.blokIndexPageFile)) , blok.:Bloks.title , blok.:Bloks.desc )
+                    Nothing -> ( '/':(feedname++".html") , feedname , "" )
+
+        xmlesc = Html.escape
+        sanitize = Util.replaceSubs ["<link " =: "<hax_link style=\"display:none\" " , "<script" =: "<!--hax_script" ,
+                    "<input " =: "<hax_input style=\"display:none\"" , "</link" =: "</hax_link" ,
+                    "</script>" =: "</hax_script-->" , "</input" =: "</hax_input" , " style=\"" =: " hax_style=\""
+                    ]
+
+        xmlatompost (htmlcontent , post) =
+            let posttitle = xmlesc (post.:title)
+                postdesc = xmlesc (post.:(is blokname |? content |! cat))
+                postfull = xmlesc (is blokname |? (sanitize htmlcontent) |! (post.:content))
+                postdt = post.:dt
+                posturl = is blokname |? post.:link |! pageuri++"#"++postdt
+            in ("<entry>\n\
+                \        <title type=\"html\">"++posttitle++"</title>\n\
+                \        <summary type=\"html\">"++postdesc++"</summary>\n\
+                \        <link href=\""++posturl++"\"/><author><name>"++domainname++"</name></author>\n\
+                \        <id>tag:"++domainname++","++postdt++":"++posturl++"</id>\n\
+                \        <updated>"++postdt++"T00:00:00Z</updated>\n\
+                \        <content type=\"html\">"++postfull++"</content>\n\
+                \    </entry>")

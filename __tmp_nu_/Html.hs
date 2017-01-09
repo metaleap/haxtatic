@@ -17,16 +17,10 @@ data Tag =
 
 
 
-basicEscapes ::
-    Util.StringPairs
-basicEscapes = [ "\""=:"&quot;" , "'"=:"&apos;" , ">"=:"&gt;" , "<"=:"&lt;" , "&"=:"&amp;" ]
-
-
-
 attrEscapeVals [] =
     []
 attrEscapeVals ((thisname,thisval):rest) =
-    ( thisname , (null thisname) |? thisval |! escape [] thisval ):(attrEscapeVals rest)
+    ( thisname , (null thisname) |? thisval |! escape thisval ):(attrEscapeVals rest)
 
 
 
@@ -61,8 +55,24 @@ emit tag =
 
 
 
-escape moreescapes =
-    Util.replaceSubs (moreescapes++basicEscapes)
+escape =
+    --  standard Util.replaceSubs was still too slow given that we know *exactly*
+    --  which 5 *Chars* (not even Strings) to look for AND how to replace them
+    esc where
+    esc str =
+        let (idx , rest , repl) = nextidx 0 str
+        in if idx<0 then str else
+            (take idx str) ++ repl ++ (esc rest)
+            -- concat [take idx str , repl , esc rest]  --  whyyy is concat slower than multiple ++ .....
+    nextidx _ [] =
+        (minBound::Int , [] , "")
+    nextidx count list@(this:rest)
+        |(this=='\'')= (count , rest , "&apos;")
+        |(this=='\"')= (count , rest , "&quot;")
+        |(this=='<')= (count , rest , "&lt;")
+        |(this=='>')= (count , rest , "&gt;")
+        |(this=='&')= (count , rest , "&amp;")
+        |(otherwise)= nextidx (count + 1) rest
 
 
 

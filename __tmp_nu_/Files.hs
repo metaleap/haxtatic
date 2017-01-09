@@ -156,7 +156,7 @@ readOrDefault create ctxmain relpath relpath2 defaultcontent =
             | otherwise
             = let file = FileFull filepath (ctxmain.:nowTime) defaultcontent
                 in if not create then return file else
-                    writeTo filepath relpath (return (defaultcontent , undefined))
+                    writeTo filepath relpath (return (defaultcontent , ()))
                     >> return file
 
 

@@ -157,7 +157,7 @@ writeSitemapXml ctxproj buildplan =
             skip |? "" |!
                 xmlsitemapitem (ctxproj.:Proj.domainName) relpath (pageinfo.:Build.contentDate) priorel
             where
-            maybeblok = Data.Map.Strict.lookup (pageinfo.:Build.blokName) (ctxproj.:Proj.setup.:Proj.bloks)
+            maybeblok = Bloks.blokByName (ctxproj.:Proj.setup.:Proj.bloks) (pageinfo.:Build.blokName)
             skip = case maybeblok of -- maybeblok~>((not . Bloks.inSitemap) =|- False) -- case maybeblok of
                     Just blok -> not$ blok.:Bloks.inSitemap
                     Nothing -> False
@@ -174,7 +174,7 @@ writeSitemapXml ctxproj buildplan =
                 = 0.66
         (outjob , pagefileinfos) = buildplan.:Build.siteMap
         xmlitems = (pagefileinfos >~foreach)
-        xmloutput = return (xmlsitemapfull xmlitems , undefined)
+        xmloutput = return (xmlsitemapfull xmlitems , ())
     in if outjob == Build.NoOutput
         then return ()
         else Files.writeTo

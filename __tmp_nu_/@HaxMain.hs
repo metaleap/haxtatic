@@ -65,10 +65,10 @@ main =
             timetaken = Util.duration starttime endtime
             showtime difftime = let overaminute = difftime > 60
                                 in (overaminute |? (difftime / 60) |! difftime)
-                                ~> show ~> ( Util.cropOn1st '.' 3 (++(overaminute |? "m" |! "s")) )
+                                ~> show ~> ( Util.cropOn1st '.' 3 ['0'] (++(overaminute |? "m" |! "s")) )
         in putStrLn ("\n\nWell it's been " ++(showtime timetaken)++ ":")
         >> putStrLn ("\t"++(showtime$ Util.duration starttime timeinitdone)++ " initializing, pre-templating, planning")
-        >> putStrLn ("\t"++(showtime$ Util.duration timecopydone timeprocdone)++ " source-processing / page generation")
+        >> putStrLn ("\t"++(showtime$ Util.duration timecopydone timeprocdone)++ " page templating & generation")
         >> putStrLn ("\t"++(showtime$ Util.duration timeprocdone timexmldone)++ " XML (atoms, sitemap) file generation")
         >> putStrLn ("\t"++(showtime$ ((Util.duration timeinitdone timecopydone) + (Util.duration timeprocdone endtime)))++ " file-copying")
         >> putStrLn ("\n\n==== Bye now! ====\n\n\n")
@@ -120,7 +120,8 @@ processAll ctxmain projfilename custfilenames =
     >> Data.Time.Clock.getCurrentTime >>= \timeprocdone
     -> Pages.writeSitemapXml ctxproj buildplan
     >> putStrLn ("\n5/6\tGenerating " ++(show numxmlfiles)++ "/" ++(show$ numxmlfiles+numskipposts)++ " Atom feed(s) in:\n\t->\t"++dirbuild)
-    >> Posts.writeAtoms (ctxproj.:Proj.setup.:Proj.bloks) (ctxproj.:Proj.setup.:Proj.posts) (ctxproj.:Proj.setup.:Proj.cfg) (buildplan.:Build.feedJobs)
+    >> Posts.writeAtoms (buildplan.:Build.allPagesFiles) (ctxproj.:Proj.setup.:Proj.bloks)
+                            (ctxproj.:Proj.setup.:Proj.posts) (ctxproj.:Proj.setup.:Proj.cfg) (buildplan.:Build.feedJobs)
     >> Data.Time.Clock.getCurrentTime >>= \timexmldone
     -> let
         deploymsg = "\n6/6\tCopying only the " ++(show$ numoutfiles)++ " newly (over)written file(s) also to:\n\t->\t"

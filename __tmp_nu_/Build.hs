@@ -29,6 +29,7 @@ data Plan
         numSkippedAtoms :: Int,
         anyProcessing :: Bool,
         siteMap :: (Task , [Task]),
+        allPagesFiles :: [(FilePath , Files.File)],
         feedJobs :: [Posts.Feed]
     }
 
@@ -154,6 +155,7 @@ plan ctxmain ctxproj =
                 numSkippedAtoms = allatoms~>length - outatomfiles~>length,
                 anyProcessing = anyprocessing,
                 siteMap = sitemap,
+                allPagesFiles = allpagesfiles_nodate,
                 feedJobs = outatomfiles >~ feedjob
             }
 

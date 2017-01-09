@@ -29,7 +29,7 @@ data Render r = NoRender | Early r | WaitForPage r
 _htmlattsfor xreg clarify codemain codemore =
     let (xn,tn) = (xreg.:xname , xreg.:tname) in
     [ "style" =: "background-color: yellow !important; color: red !important; border: solid 0.5em red !important; display: inline-block !important;"
-    , "" =: "{!X| Bad syntax "++clarify++" `"++codemain++": "++ (Html.escape [] codemore)++"` (couldn't parse it) |!}"
+    , "" =: "{!X| Bad syntax "++clarify++" `"++codemain++": "++ (Html.escape codemore)++"` (couldn't parse it) |!}"
     ]
 
 htmlAttsForArgsParseError xreg arghint =

@@ -36,12 +36,14 @@ allBlokPageFiles projcfg allpagesfiles bname =
     in (sortedmatches ,  (null sortedmatches) |? Util.dateTime0 |! pagedate $sortedmatches#0 )
 
 
+blokByName bloks blokname =
+    Data.Map.Strict.lookup blokname bloks
+
 
 blokNameFromIndexPagePath possiblefakepath =
     -- possiblefakepath possibly sth like :B|/2016-12-18.tags
     (not$ Data.List.isPrefixOf Defaults.blokIndexPrefix possiblefakepath)
         |? "" |! drop 1 (System.FilePath.takeExtension possiblefakepath) -- cringe
-
 
 
 blokNameFromRelPath bloks relpath file =
@@ -107,7 +109,7 @@ tagHandler bloks curbname str =
     let fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
                     ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dtFormat",dtFormat)  ]
         bname = Util.ifNo bn curbname
-        maybeblok = Data.Map.Strict.lookup bname bloks
+        maybeblok = blokByName bloks bname
         (fname, bn) = Util.bothTrim (Util.splitOn1st ':' str)
     in (null fname) |? Nothing
         |! (fname=="name" && is bname) |? Just bname
