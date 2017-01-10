@@ -1,7 +1,7 @@
 |C|process:static:
-	 { skip=[], force=[], dirs=["static1","static2","static3"] }
+	 { skip=[], force=["*"], dirs=["static1","static2","static3"] }
 |C|process:pages:
-	 { skip=[], force=[""], dirs=[] }
+	 { skip=[], force=["*"], dirs=[] }
 |C|process:tags:
 |C|dtformat:foo:
 	 FUI %Y-%m-%d HUI

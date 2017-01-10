@@ -43,4 +43,4 @@ registerX xreg =
     (_ , cfglnkatts) = Html.attrClearInner $cfg.:lnkAtts
     cfg = Util.tryParse defcfg errcfg ("Cfg"++) cfg_parsestr where
         defcfg = Cfg { lnkAtts = [], imgAtts = [] }
-        errcfg = Cfg { lnkAtts = [], imgAtts = X.htmlAttsForCfgParseError xreg }
+        errcfg = Cfg { lnkAtts = [], imgAtts = X.htmlErrAttsCfg xreg }

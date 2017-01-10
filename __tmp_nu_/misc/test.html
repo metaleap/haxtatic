@@ -1,0 +1,25 @@
+<html>
+	<head>
+	<script type="text/javascript" language="JavaScript">
+	"use strict";
+
+	var dafunc = function() {
+		var result_now = 1*2*3*4*5*6*7*8*9*10*11;
+		var result_fut = 1+2+3+4+5+6+7+8+9+10+11;
+		dafunc = function() {
+			return result_fut;
+		}
+		return result_now;
+	}
+
+	var btnTest = function () {
+		var fn = dafunc;
+		alert(fn());
+	}
+
+	</script>
+	</head>
+	<body>
+		<button onclick="btnTest();">Test</button>
+	</body>
+</html>

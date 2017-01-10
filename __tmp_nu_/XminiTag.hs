@@ -37,4 +37,4 @@ registerX xreg =
     cfghtmlatts =  cfg.:htmlAtts
     cfg = Util.tryParse defcfg errcfg ("Cfg"++) cfg_parsestr where
         defcfg = Cfg { htmlAtts = [] }
-        errcfg = Cfg { htmlAtts = X.htmlAttsForCfgParseError xreg }
+        errcfg = Cfg { htmlAtts = X.htmlErrAttsCfg xreg }

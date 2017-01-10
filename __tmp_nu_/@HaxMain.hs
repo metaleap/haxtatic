@@ -16,6 +16,7 @@ import qualified Util
 
 import qualified XdemoSimplest
 import qualified XdemoCfgArgs
+import qualified XpageAnchors
 import qualified Ximage
 import qualified Xlinks
 import qualified XminiTag
@@ -30,6 +31,7 @@ import qualified System.IO
 
 xregs = [ ("hax.demoSimplest" =: XdemoSimplest.registerX)
         , ("hax.demoCfgArgs" =: XdemoCfgArgs.registerX)
+        , ("hax.pageAnchors" =: XpageAnchors.registerX)
         , ("hax.image" =: Ximage.registerX)
         , ("hax.links" =: Xlinks.registerX)
         , ("hax.miniTag" =: XminiTag.registerX)
@@ -59,7 +61,7 @@ main =
         -- SHOW TIME!
         in processAll ctxmain projfilename (drop 2 cmdargs)
 
-        >>= \(buildplan , numxmls , timeinitdone , timecopydone , timeprocdone , timexmldone)
+        >>= \(buildplan , numoutfiles , numxmls , timeinitdone , timecopydone , timeprocdone , timexmldone)
         -> Data.Time.Clock.getCurrentTime >>= \endtime
         -> let
             timetaken = Util.duration starttime endtime
@@ -69,7 +71,7 @@ main =
                                 ~> show ~> ( Util.cropOn1st '.' numdig ['0'] (++(overaminute |? "m" |! "s")) )
             showavg 0 _ _ = ""
             showavg l t1 t2 = " (" ++ (show l) ++ "x ~" ++ (showtime' 4 ((Util.duration t1 t2) / (fromIntegral l))) ++ ")"
-        in putStrLn ("\n\nWell it's been " ++(showtime timetaken)++ ":")
+        in putStrLn ("\n\nWrote "++(show numoutfiles)++" files in " ++(showtime timetaken)++ ":")
         >> putStrLn ("\t"++(showtime$ Util.duration starttime timeinitdone)++ " initializing, pre-templating, planning")
         >> putStrLn ("\t"++(showtime$ Util.duration timecopydone timeprocdone)++ " page templating & generation"++(showavg (buildplan.:Build.outPages~>length) timecopydone timeprocdone)++"")
         >> putStrLn ("\t"++(showtime$ Util.duration timeprocdone timexmldone)++ " XML file generation"++(showavg numxmls timeprocdone timexmldone)++"")
@@ -134,4 +136,4 @@ processAll ctxmain projfilename custfilenames =
                     else putStrLn (deploymsg++(ctxproj.:Proj.dirPathDeploy))
                         >> System.IO.hFlush System.IO.stdout
                         >> Build.copyAllOutputsToDeploy buildplan
-    in Util.via doordonot (buildplan , numxmlfiles+numsitemaps , timeinitdone , timecopydone , timeprocdone, timexmldone)
+    in Util.via doordonot (buildplan , numoutfiles , numxmlfiles+numsitemaps , timeinitdone , timecopydone , timeprocdone, timexmldone)

@@ -32,10 +32,10 @@ registerX xreg =
         allitems = htmlout (args.:htmlAtts ++ cfghtmlatts) (args.:items)
         args = Util.tryParse defargs errargs (("Args{"++).(++"}")) argstr where
             defargs = Args { items = [], htmlAtts = [] }
-            errargs = Args { items = ["#"=:""], htmlAtts = X.htmlAttsForArgsParseError xreg (Util.excerpt 23 argstr) }
+            errargs = Args { items = ["#"=:""], htmlAtts = X.htmlErrAttsArgs (xreg , Util.excerpt 23 argstr) }
 
 
-    in X.WaitForPage renderer
+    in X.Early renderer
     where
 
 
@@ -53,5 +53,5 @@ registerX xreg =
     cfg = Util.tryParse defcfg errcfg ("Cfg"++) cfg_parsestr where
         defcfg = Cfg { htmlAtts = [],
                         itemsFirst = [], itemsLast = [] }
-        errcfg = Cfg { htmlAtts = X.htmlAttsForCfgParseError xreg ,
+        errcfg = Cfg { htmlAtts = X.htmlErrAttsCfg xreg ,
                         itemsFirst = ["#"=:""], itemsLast = [] }

@@ -158,9 +158,8 @@ warnIfTagMismatches ctxmain filename (numtagends , numtagbegins) =
 
         let drops = (Util.startsWith filename maindirpath) |? (maindirpath~>length + 1) |! 0
             maindirpath = ctxmain.:Files.dirPath
-        in putStrLn ("\t-?\tPotential syntax issue: "++
-                     (show numtagends)++"x `|}` but "++(show numtagbegins)++"x `{*|` (any"++
-                        "\n\t\tone of: "++(Data.List.intersperse ',' "BCPTX")++") in `"++(drop drops filename)++"`")
+        in putStrLn ("...\t<?\tPotential syntax issue: "++
+                     (show numtagends)++"x `|}` but "++(show numtagbegins)++"x `{*|`\n\t\t\tin `"++(drop drops filename)++"`")
 
 
 

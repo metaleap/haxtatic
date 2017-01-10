@@ -138,8 +138,7 @@ listAllFiles rootdirpath reldirs modtimer =
 
 pathSepSlashToSystem = Util.substitute '/' System.FilePath.pathSeparator
 
-pathSepSystemToSlash = Util.substitute '\\' '/'
-    --  no sys-sep: supports win data on posix
+pathSepSystemToSlash = Util.substitute '\\' '/' -- no sys-sep here: thus covers win data on posix
 
 
 
