@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module Files where
 
 import Base
@@ -55,13 +55,13 @@ copyTo srcfilepath (dstpath:dstmore) =
 customDateFromFileName dateparser (filepath , srcfile) =
     let
         filedir = System.FilePath.takeDirectory filepath
-        filename = System.FilePath.takeFileName $srcfile.:path
+        filename = System.FilePath.takeFileName $srcfile-:path
         (datepart , fnrest) = System.FilePath.splitExtensions filename
     in case (dateparser datepart) of
         Just customdate->
             ( (sanitizeRelPath filedir) </> (Util.trimStart' ['.'] fnrest) , customdate )
         Nothing->
-            ( filepath , srcfile.:modTime )
+            ( filepath , srcfile-:modTime )
 
 
 
@@ -88,7 +88,7 @@ filesInDir dir =
 
 
 fullFrom oldfile cmpmodtime newcontent =
-    FileFull (oldfile.:path) (max cmpmodtime $oldfile.:modTime) newcontent
+    FileFull (oldfile-:path) (max cmpmodtime $oldfile-:modTime) newcontent
 
 
 
@@ -147,7 +147,7 @@ readOrDefault _ _ "" _ _ =
 
 readOrDefault create ctxmain relpath relpath2 defaultcontent =
     System.Directory.doesFileExist filepath >>= fileexists where
-        filepath = System.FilePath.combine (ctxmain.:dirPath) relpath
+        filepath = System.FilePath.combine (ctxmain-:dirPath) relpath
         fileexists True =
             System.Directory.getModificationTime filepath >>= \modtime
             -> readFile filepath >>= (FileFull filepath modtime)~.return
@@ -155,7 +155,7 @@ readOrDefault create ctxmain relpath relpath2 defaultcontent =
             | is relpath2 && relpath2/=relpath
             = readOrDefault create ctxmain relpath2 "" defaultcontent
             | otherwise
-            = let file = FileFull filepath (ctxmain.:nowTime) defaultcontent
+            = let file = FileFull filepath (ctxmain-:nowTime) defaultcontent
                 in if not create then return file else
                     writeTo filepath relpath (return (defaultcontent , ()))
                     >> return file
@@ -204,8 +204,8 @@ writeTo filepath showpath loadcontent =
     System.Directory.createDirectoryIfMissing True (System.FilePath.takeDirectory filepath)
     >> putStr (_fileoutputbeginmsg showpath)
     >> System.IO.hFlush System.IO.stdout
-    >> loadcontent >>= \(content , retval)
-    -> writeFile filepath content
+    >> loadcontent >>= \(loadedcontent , returnvalue)
+    -> writeFile filepath loadedcontent
     >> putStrLn _fileoutputdonemsg
     >> System.IO.hFlush System.IO.stdout
-    >> return retval
+    >> return returnvalue

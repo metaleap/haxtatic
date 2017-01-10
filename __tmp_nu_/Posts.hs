@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module Posts where
 
 import Base
@@ -59,7 +59,7 @@ parseProjChunks chunkssplits =
     feeds = Util.unique (posts>~feed)
     posts = Data.List.sortBy cmpposts (chunkssplits>~foreach ~> Util.unMaybes)
     cmpposts post1 post2 =
-        compare (post2.:dt) (post1.:dt)
+        compare (post2-:dt) (post1-:dt)
     foreach (pfeedcat:pvalsplits) =
         let
             pstr = Util.join ":" pvalsplits ~> Util.trim
@@ -67,7 +67,6 @@ parseProjChunks chunkssplits =
                         if i < 0 then pstr else
                         (take i pstr) ++ "content=" ++ (pstr ~> ((drop$ i+l) ~. Util.trim ~. show))
                         where i = Util.indexOfSub pstr "content::" ; l = 11 -- "content::"~>length
-            tmp = ( pfeedcat ~> Util.trim , pstr )
             post = Util.tryParseOr errpost parsestr
             errpost = P {
                     feed=pfeedcat,dt="9999-12-31", cat="_hax_cat", title="{!| syntax issue, couldn't parse this post |!}",
@@ -80,22 +79,22 @@ parseProjChunks chunkssplits =
 
 
 
-postsFromBlok pagerendercache projcfg allpagesfiles blokname blok getcat =
+postsFromBlok pagerendercache projcfg allpagesfiles blokname getcat =
     allblokpages >~ topost
     where
     (allblokpages , cdatelatest) = Bloks.allBlokPageFiles projcfg allpagesfiles blokname
     topost (relpath,file) =
         let
             relpageuri = '/':(Files.pathSepSystemToSlash relpath)
-            ctxmaybe = Data.Map.Strict.lookup (file.:Files.path) pagerendercache
+            ctxmaybe = Data.Map.Strict.lookup (file-:Files.path) pagerendercache
             (htmlcontent , htmlinner1st) = case ctxmaybe of
                 Nothing -> ("<h1>Well now..</h1><p>..<i>there&apos;s</i> a bug in your static-site generator!</p>",
                                 const)
-                Just ctxpage -> (ctxpage.:Tmpl.cachedRenderSansTmpl , ctxpage.:Tmpl.htmlInner1st)
+                Just ctxpage -> (ctxpage-:Tmpl.cachedRenderSansTmpl , ctxpage-:Tmpl.htmlInner1st)
             pcat = getcat post
             post = P {
                 feed = blokname,
-                dt = ProjC.dtUtc2Str projcfg "" (ctxmaybe.:(Tmpl.pDate =|- cdatelatest)),
+                dt = ProjC.dtUtc2Str projcfg "" (ctxmaybe-:(Tmpl.pDate =|- cdatelatest)),
                 cat = pcat,
                 title = htmlinner1st "h1" relpath,
                 link = relpageuri,
@@ -112,20 +111,20 @@ writeAtoms pagerendercache allpagesfiles projbloks projposts projcfg outjobs =
     outjobs >>~ writeatom >> return ()
     where
 
-    domainname = projcfg.:ProjC.domainName
+    domainname = projcfg-:ProjC.domainName
     postsfromblok = postsFromBlok pagerendercache projcfg allpagesfiles
 
     writeatom outjob =
-        Files.writeTo (outjob.:outPathBuild) relpath xmlatomfull
+        Files.writeTo (outjob-:outPathBuild) relpath xmlatomfull
         where
 
-        relpath = outjob.:relPath
-        srcpath = outjob.:srcFile.:Files.path
+        relpath = outjob-:relPath
+        srcpath = outjob-:srcFile-:Files.path
 
         xmlatomfull =
             let updated = if null allposts
-                            then (ProjC.dtUtc2Str projcfg "" (outjob.:srcFile.:Files.modTime))
-                            else ((snd$ allposts#0).:dt)
+                            then (ProjC.dtUtc2Str projcfg "" (outjob-:srcFile-:Files.modTime))
+                            else ((snd$ allposts#0)-:dt)
                 xmlintro = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
                             \<feed xmlns=\"http://www.w3.org/2005/Atom\">\n\
                             \    <link rel=\"self\" type=\"application/rss+xml\" href=\"http://"++domainname++"/"++(urify relpath)++"\" />\n\
@@ -138,15 +137,15 @@ writeAtoms pagerendercache allpagesfiles projbloks projposts projcfg outjobs =
                 return (concat$ (xmlintro:(allposts >~ xmlatompost))++["\n</feed>"] , ())
 
         urify = Files.pathSepSystemToSlash
-        blokname = outjob.:blokName
+        blokname = outjob-:blokName
         feedname = is blokname |? "" |!
                     drop 1 (System.FilePath.takeExtension srcpath)
         maybeblok = is blokname |? (Bloks.blokByName projbloks blokname) |! Nothing
         allposts = case maybeblok of
                     Nothing -> (projposts ~|(==feedname).feed) >~((,) "")
-                    Just blok -> postsfromblok blokname blok (const blokname)
+                    Just _ -> postsfromblok blokname (const blokname)
         (pageuri , feedtitle , desc) = case maybeblok of
-                    Just blok -> ( '/':(urify (blok.:Bloks.blokIndexPageFile)) , blok.:Bloks.title , blok.:Bloks.desc )
+                    Just blok -> ( '/':(urify (blok-:Bloks.blokIndexPageFile)) , blok-:Bloks.title , blok-:Bloks.desc )
                     Nothing -> ( '/':(feedname++".html") , feedname , "" )
 
         xmlesc = Html.escape
@@ -156,11 +155,11 @@ writeAtoms pagerendercache allpagesfiles projbloks projposts projcfg outjobs =
                     ]
 
         xmlatompost (htmlcontent , post) =
-            let posttitle = xmlesc (post.:title)
-                postdesc = xmlesc (post.:(is blokname |? content |! cat))
-                postfull = xmlesc (is blokname |? (sanitize htmlcontent) |! (post.:content))
-                postdt = post.:dt
-                posturl = is blokname |? post.:link |! pageuri++"#"++postdt
+            let posttitle = xmlesc (post-:title)
+                postdesc = xmlesc (post-:(is blokname |? content |! cat))
+                postfull = xmlesc (is blokname |? (sanitize htmlcontent) |! (post-:content))
+                postdt = post-:dt
+                posturl = is blokname |? post-:link |! pageuri++"#"++postdt
             in ("<entry>\n\
                 \        <title type=\"html\">"++posttitle++"</title>\n\
                 \        <summary type=\"html\">"++postdesc++"</summary>\n\

@@ -1,14 +1,9 @@
-{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module Base where
 
 import qualified Control.Monad
-import qualified Data.Char
-import qualified Data.List
 import qualified Data.Maybe
-import qualified Data.Time.Calendar
-import qualified Data.Time.Clock
 import Data.Function ( (&) )
-import qualified Text.Read
 
 
 
@@ -17,7 +12,6 @@ is ::
     f a -> Bool
 
 is = not.null
-
 
 
 
@@ -34,8 +28,8 @@ infixl ~.
 
 
 
-infixl 9 .:
-(.:) = (&)
+infixl 9 -:
+(-:) = (&)
 
 infixl ~>
 (~>) = (&)

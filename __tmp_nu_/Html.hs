@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module Html where
 
 import Base
@@ -24,9 +24,9 @@ attrEscapeVals ((thisname,thisval):rest) =
 
 
 
-attrClearInner attribs =
-    let inner = Util.lookup "" "" attribs
-    in ( inner , attribs~|fst~.is )
+attrClearInner attrs =
+    let inner = Util.lookup "" "" attrs
+    in ( inner , attrs~|fst~.is )
 
 
 
@@ -47,10 +47,10 @@ emit tag =
     outclose = noinneroutput |? "" |! "</"++tagname++">"
 
     nooutertag = null tagname
-    tagname = tag.:name
-    tagatts = tag.:attribs
+    tagname = tag-:name
+    tagatts = tag-:attribs
     innercontent = Util.lookup "" "" tagatts
-    tchildren = tag.:subTags
+    tchildren = tag-:subTags
     noinneroutput = null tchildren && null innercontent
 
 

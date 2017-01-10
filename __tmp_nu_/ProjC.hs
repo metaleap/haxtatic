@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module ProjC where
 
 import Base
@@ -30,7 +30,7 @@ data Config
 
 
 data Processing
-    = ProcFromProj {
+    = Proc {
         skip :: [String],
         force :: [String],
         dirs :: [String]
@@ -88,13 +88,13 @@ parseProjChunks chunkssplits =
     procpages = procfind Defaults.dir_Pages
     procfind name =
         procsane name (Util.tryParseOr (procdef name) procstr) where
-            procstr = (null procval) |? procval |! "ProcFromProj "++procval
+            procstr = (null procval) |? procval |! "Proc "++procval
             procval = Data.Map.Strict.findWithDefault "" ("process:"++name) cfgprocs
     procdef dirname =
-        ProcFromProj { dirs = [dirname], skip = [], force = [] }
+        Proc { dirs = [dirname], skip = [], force = [] }
     procsane defname proc =
-        ProcFromProj {
-            dirs = Util.ifNo (proc.:dirs >~dirnameonly ~|is) [defname],
+        Proc {
+            dirs = Util.ifNo (proc-:dirs >~dirnameonly ~|is) [defname],
             skip = when saneneither [] saneskip,
             force = when saneneither [] saneforce
         } where

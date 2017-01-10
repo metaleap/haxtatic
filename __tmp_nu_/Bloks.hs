@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module Bloks where
 
 import Base
@@ -53,7 +53,7 @@ blokNameFromRelPath bloks relpath file =
         | isRelPathBlokPage bname relpath
         = bname
         | otherwise
-        = blokNameFromIndexPagePath $file.:Files.path
+        = blokNameFromIndexPagePath $file-:Files.path
 
 
 
@@ -65,7 +65,7 @@ buildPlan (modtimeproj,modtimetmpl) projcfg allpagesfiles bloks =
         isblokpagefile (relpath,file) = is relpath && file /= Files.NoFile
         _allblokpagefiles = allBlokPageFiles projcfg allpagesfiles
         tofileinfo bfield modtime bname blok =
-            let fakepath = (isblokpagefile bpage) |? blok.:bfield |! ""
+            let fakepath = (isblokpagefile bpage) |? blok-:bfield |! ""
                 (allblokpagefiles , cdatelatest) = _allblokpagefiles bname
                 bpage = Util.atOr allblokpagefiles 0 ("" , Files.NoFile)
                 fdatelatest = maximum (allblokpagefiles >~ snd >~ Files.modTime)
@@ -116,12 +116,12 @@ tagHandler bloks curbname str =
             |! case maybeblok of
                 Nothing -> Nothing
                 Just blok -> case Data.List.lookup fname fields of
-                                Just fieldval-> Just $blok.:fieldval
+                                Just fieldval-> Just $blok-:fieldval
                                 Nothing-> Nothing
 
 
 
-toParseStr bname projchunkval =
+toParseStr _bname projchunkval =
     let
         parsestr = projchunkval -- ~> (checkfield "title" "") ~> (checkfield "desc" "") ~>
                 -- (checkfield "atomFile" "") ~> (checkfield "blokIndexPageFile" (bname++ ".html")) ~>

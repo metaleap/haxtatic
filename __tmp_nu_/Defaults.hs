@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module Defaults where
 
 import Base
@@ -24,7 +24,7 @@ data Files
 
 loadOrCreate ctxmain projname projfilename custfilenames =
     let projfiledefcontent = _proj projname
-        setupname = ctxmain.:Files.setupName
+        setupname = ctxmain-:Files.setupName
         relpathtmplmain = "tmpl" </> (setupname++ ".haxtmpl.html")
         relpathtmplmain' = "tmpl" </> (fileName_Pref ".haxtmpl.html")
         relpathtmplblok = "tmpl" </> (setupname++ "-blok.haxtmpl.html")
@@ -41,10 +41,10 @@ loadOrCreate ctxmain projname projfilename custfilenames =
     >>= \custfiles
     -> let
         custmodtime = (null custfiles) |? Util.dateTime0 |! maximum (custfiles>~Files.modTime)
-        cfgmodtime = max custmodtime (projfile.:Files.modTime)
-        tmplmodtime = max cfgmodtime (tmplmainfile.:Files.modTime)
+        cfgmodtime = max custmodtime (projfile-:Files.modTime)
+        tmplmodtime = max cfgmodtime (tmplmainfile-:Files.modTime)
         redated cmpmodtime file
-            = Files.fullFrom file cmpmodtime $file.:Files.content
+            = Files.fullFrom file cmpmodtime $file-:Files.content
         redatedcfg = redated cfgmodtime
         redatedtmpl = redated tmplmodtime
     in return DefaultFiles {
@@ -59,14 +59,14 @@ loadOrCreate ctxmain projname projfilename custfilenames =
 
 writeDefaultIndexHtml ctxmain projname dirpagesrel dirbuild htmltemplatemain =
     let
-        dircur = ctxmain.:Files.curDir
-        dirproj = ctxmain.:Files.dirPath
+        dircur = ctxmain-:Files.curDir
+        dirproj = ctxmain-:Files.dirPath
         dirpages = dirproj </> dirpagesrel
         dstfilepath = dirpages </> fileName_IndexHtml
         dstfpathrel = dirpagesrel </> fileName_IndexHtml
-        pathtmpl = htmltemplatemain.:Files.path
+        pathtmpl = htmltemplatemain-:Files.path
         pathfinal = dirbuild </> fileName_IndexHtml
-        dstfile = Files.FileInfo dstfilepath (ctxmain.:Files.nowTime)
+        dstfile = Files.FileInfo dstfilepath (ctxmain-:Files.nowTime)
         filecontent = return ( _index_html
                                     dircur projname dirproj dirpages dstfilepath pathtmpl pathfinal,
                                 (dstfile , fileName_IndexHtml , pathfinal) )

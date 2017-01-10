@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module ProjT where
 
 import Base
@@ -7,7 +7,7 @@ import qualified Util
 import qualified Data.Map.Strict
 
 
-parseProjChunks canparsestr chunkssplits =
+parseProjChunks chunkssplits =
     Data.Map.Strict.fromList$ chunkssplits>~foreach ~|is.fst where
         foreach (tname:tvalsplits) =
             ( tname ~> Util.trim ,

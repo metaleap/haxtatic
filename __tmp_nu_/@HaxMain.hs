@@ -1,7 +1,7 @@
 #!/usr/bin/env stack
 {-stack --install-ghc runghc
 -}
-{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module Main where
 
 import Base
@@ -26,6 +26,7 @@ import qualified System.Directory
 import qualified System.Environment
 import qualified System.FilePath
 import qualified System.IO
+import qualified Text.Printf
 
 
 
@@ -58,34 +59,43 @@ main =
                                             Files.setupName = Defaults.setupName projfilename,
                                             Files.nowTime=starttime }
 
-        -- SHOW TIME!
+        --  GET TO WORK:
         in processAll ctxmain projfilename (drop 2 cmdargs)
+        --  REMINISCE:
 
         >>= \(buildplan , numoutfiles , numxmls , timeinitdone , timecopydone , timeprocdone , timexmldone)
         -> Data.Time.Clock.getCurrentTime >>= \endtime
         -> let
             timetaken = Util.duration starttime endtime
             showtime = showtime' 3
-            showtime' numdig difftime = let overaminute = difftime > 60
-                                in (overaminute |? (difftime / 60) |! difftime)
-                                ~> show ~> ( Util.cropOn1st '.' numdig ['0'] (++(overaminute |? "m" |! "s")) )
+            showtime' numdig difftime =
+                let overaminute = difftime > 60
+                in (overaminute |? (difftime / 60) |! difftime)
+                    ~> show ~> ( Util.cropOn1st '.' numdig ['0'] (++(overaminute |? "m" |! "s")) )
             showavg 0 _ _ = ""
-            showavg l t1 t2 = " (" ++ (show l) ++ "x ~" ++ (showtime' 4 ((Util.duration t1 t2) / (fromIntegral l))) ++ ")"
-        in putStrLn ("\n\nWrote "++(show numoutfiles)++" files in " ++(showtime timetaken)++ ":")
-        >> putStrLn ("\t"++(showtime$ Util.duration starttime timeinitdone)++ " initializing, pre-templating, planning")
-        >> putStrLn ("\t"++(showtime$ Util.duration timecopydone timeprocdone)++ " page templating & generation"++(showavg (buildplan.:Build.outPages~>length) timecopydone timeprocdone)++"")
-        >> putStrLn ("\t"++(showtime$ Util.duration timeprocdone timexmldone)++ " XML file generation"++(showavg numxmls timeprocdone timexmldone)++"")
-        >> putStrLn ("\t"++(showtime$ ((Util.duration timeinitdone timecopydone) + (Util.duration timeprocdone endtime)))++ " file-copying, I/O & misc."++(showavg (buildplan.:Build.outStatics~>length) timeprocdone endtime)++"")
+            showavg l t1 t2 = Text.Printf.printf " (%ux ~%s)" l (showtime' 4 ((Util.duration t1 t2) / (fromIntegral l)))
+        in Text.Printf.printf "\n\nWrote %u files in %s:" numoutfiles (showtime timetaken)
+        >> Text.Printf.printf "\n\t%s pre-templating & planning"
+                                (showtime$ Util.duration starttime timeinitdone)
+        >> Text.Printf.printf "\n\t%s page templating & generation%s"
+                                (showtime$ Util.duration timecopydone timeprocdone)
+                                (showavg (buildplan-:Build.outPages~>length) timecopydone timeprocdone)
+        >> Text.Printf.printf "\n\t%s XML file generation%s"
+                                (showtime$ Util.duration timeprocdone timexmldone)
+                                (showavg numxmls timeprocdone timexmldone)
+        >> Text.Printf.printf "\n\t%s misc. & file-copying%s"
+                                (showtime$ ((Util.duration timeinitdone timecopydone) + (Util.duration timeprocdone endtime)))
+                                (showavg (buildplan-:Build.outStatics~>length) timeprocdone endtime)
         >> putStrLn ("\n\n==== Bye now! ====\n\n\n")
         >> System.IO.hFlush System.IO.stdout
 
 
 
 processAll ctxmain projfilename custfilenames =
-    let dirpath = ctxmain.:Files.dirPath
+    let dirpath = ctxmain-:Files.dirPath
         filenameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
 
-    in putStrLn "\n1/6\tReading essential project files [or (re)creating them..]"
+    in putStrLn "\n1/6\tReading essential project files (or creating them).."
     >> System.IO.hFlush System.IO.stdout
     >> System.Directory.createDirectoryIfMissing False dirpath
     >> System.Directory.makeAbsolute dirpath >>= \dirfullpath   --  we do this just in case
@@ -93,47 +103,47 @@ processAll ctxmain projfilename custfilenames =
     in Defaults.loadOrCreate ctxmain projname (projfilename~>filenameonly) (custfilenames>~filenameonly)
     >>= Proj.loadCtx ctxmain projname xregs >>= \ctxproj
     -> Tmpl.warnIfTagMismatches ctxmain "*.haxproj"
-                (ctxproj.:Proj.setup.:Proj.tagMismatches)
+                (ctxproj-:Proj.setup-:Proj.tagMismatches)
 
     >> putStrLn ("\n2/6\tPlanning the work..")
     >> System.IO.hFlush System.IO.stdout
     >> Build.plan ctxmain ctxproj >>= \buildplan
     -> let
-        numgenpages = buildplan.:Build.outPages~>length
-        numdynpages = buildplan.:Build.numDynPages
-        numskippages = buildplan.:Build.numSkippedPages
-        numcopyfiles = buildplan.:Build.outStatics~>length
-        numskipfiles = buildplan.:Build.numSkippedStatic
-        numskipposts = buildplan.:Build.numSkippedAtoms
-        numoutfiles = buildplan.:Build.numOutFilesTotal
-        numxmlfiles = buildplan.:Build.outAtoms~>length
-        numsitemaps = ((buildplan.:Build.siteMap~>fst) == Build.NoOutput) |? 0 |! 1
-        dirbuild = ctxproj.:Proj.dirPathBuild
-    in putStrLn ("\t->\tStatic files: will copy " ++(show numcopyfiles)++ ", skipping " ++(show numskipfiles)++ "")
-    >> putStrLn ("\t->\tContent pages: will (re)generate " ++(show$ numgenpages - numdynpages)++"+"++(show numdynpages)++ ", skipping " ++(show numskippages)++ "")
-    >> putStrLn ("\t->\tXML files: will (re)generate from "++(show numxmlfiles)++" feeds, skipping " ++(show numskipposts)++ "\n\t\t           plus "++(show numsitemaps)++" sitemap(s)")
+        numgenpages = buildplan-:Build.outPages~>length
+        numdynpages = buildplan-:Build.numDynPages
+        numskippages = buildplan-:Build.numSkippedPages
+        numcopyfiles = buildplan-:Build.outStatics~>length
+        numskipfiles = buildplan-:Build.numSkippedStatic
+        numskipposts = buildplan-:Build.numSkippedAtoms
+        numoutfiles = buildplan-:Build.numOutFilesTotal
+        numxmlfiles = buildplan-:Build.outAtoms~>length
+        numsitemaps = ((buildplan-:Build.siteMap~>fst) == Build.NoOutput) |? 0 |! 1
+        dirbuild = ctxproj-:Proj.dirPathBuild
+    in Text.Printf.printf "\t->\tStatic files: will copy %u, skipping %u\n" numcopyfiles numskipfiles
+    >> Text.Printf.printf "\t->\tContent pages: will generate %u+%u, skipping %u\n" (numgenpages - numdynpages) numdynpages numskippages
+    >> Text.Printf.printf "\t->\tXML files: will generate %u feeds, skipping %u\n\t\t           plus %u sitemap(s)\n" numxmlfiles numskipposts numsitemaps
     >> Data.Time.Clock.getCurrentTime >>= \timeinitdone
 
-    -> putStrLn ("\n3/6\tCopying " ++(show numcopyfiles)++ "/" ++(show$ numcopyfiles+numskipfiles)++ " static file(s) to:\n\t->\t"++dirbuild)
+    -> Text.Printf.printf "\n3/6\tCopying %u/%u static file(s) to:\n\t->\t%s\n" numcopyfiles (numcopyfiles+numskipfiles) dirbuild
     >> System.IO.hFlush System.IO.stdout
     >> Build.copyStaticFiles buildplan
     >> Data.Time.Clock.getCurrentTime >>= \timecopydone
 
-    -> putStrLn ("\n4/6\tGenerating " ++(show numgenpages)++ "/" ++(show$ numgenpages+numskippages)++ " page(s) in:\n\t->\t"++dirbuild)
+    -> Text.Printf.printf "\n4/6\tGenerating %u/%u page(s) in:\n\t->\t%s\n" numgenpages (numgenpages+numskippages) dirbuild
     >> System.IO.hFlush System.IO.stdout
     >> Pages.processAll ctxmain ctxproj buildplan >>= \pagerendercache
     -> Data.Time.Clock.getCurrentTime >>= \timeprocdone
 
-    -> putStrLn ("\n5/6\tGenerating " ++(show (numxmlfiles+numsitemaps))++ "/" ++(show$ numxmlfiles+numsitemaps+numskipposts)++ " XML files in:\n\t->\t"++dirbuild)
+    -> Text.Printf.printf "\n5/6\tGenerating %u/%u XML files in:\n\t->\t%s\n" (numxmlfiles+numsitemaps) (numxmlfiles+numsitemaps+numskipposts) dirbuild
     >> Pages.writeSitemapXml ctxproj buildplan
-    >> Posts.writeAtoms pagerendercache (buildplan.:Build.allPagesFiles) (ctxproj.:Proj.setup.:Proj.bloks)
-                            (ctxproj.:Proj.setup.:Proj.posts) (ctxproj.:Proj.setup.:Proj.cfg) (buildplan.:Build.feedJobs)
+    >> Posts.writeAtoms pagerendercache (buildplan-:Build.allPagesFiles) (ctxproj-:Proj.setup-:Proj.bloks)
+                            (ctxproj-:Proj.setup-:Proj.posts) (ctxproj-:Proj.setup-:Proj.cfg) (buildplan-:Build.feedJobs)
     >> Data.Time.Clock.getCurrentTime >>= \timexmldone
     -> let
-        deploymsg = "\n6/6\tCopying only the " ++(show$ numoutfiles)++ " newly (over)written file(s) also to:\n\t->\t"
-        doordonot = if null$ ctxproj.:Proj.dirPathDeploy
+        deploymsg = Text.Printf.printf "\n6/6\tCopying only the %u newly (over)written file(s) also to:\n\t->\t" numoutfiles
+        doordonot = if null$ ctxproj-:Proj.dirPathDeploy
                     then putStrLn (deploymsg++ "(skipping this step.)")
-                    else putStrLn (deploymsg++(ctxproj.:Proj.dirPathDeploy))
+                    else putStrLn (deploymsg++(ctxproj-:Proj.dirPathDeploy))
                         >> System.IO.hFlush System.IO.stdout
                         >> Build.copyAllOutputsToDeploy buildplan
     in Util.via doordonot (buildplan , numoutfiles , numxmlfiles+numsitemaps , timeinitdone , timecopydone , timeprocdone, timexmldone)

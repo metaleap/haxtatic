@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module Tmpl where
 
 import Base
@@ -9,6 +9,7 @@ import qualified Util
 import qualified Data.List
 import qualified Data.Time.Clock
 import System.FilePath ( (</>) )
+import qualified Text.Printf
 
 
 
@@ -48,7 +49,7 @@ _applychunkbegin = "{P|"
 _applychunkmid = ":content:"
 _applychunkend = tag_Close
 apply ctxtmpl ctxpage pagesrc =
-    concat$ ctxtmpl.:chunks >~ foreach
+    concat$ ctxtmpl-:chunks >~ foreach
     where
     foreach (":content:" , "{P|") =
         pagesrc
@@ -56,19 +57,19 @@ apply ctxtmpl ctxpage pagesrc =
         processTag ptaghandler other
     foreach (tmplsrc , _) =
         tmplsrc
-    ptaghandler = ctxpage.:pTagHandler
+    ptaghandler = ctxpage-:pTagHandler
 
 
 
 loadAll ctxmain ctxproc deffiles filenameexts htmlequivexts =
     let foreach fileext
             | null fileext
-            = loadTmpl ctxmain ctxproc "" $deffiles.:Defaults.htmlTemplateMain
+            = loadTmpl ctxmain ctxproc "" $deffiles-:Defaults.htmlTemplateMain
             | fileext==Defaults.blokIndexPrefix
-            =  loadTmpl ctxmain ctxproc Defaults.blokIndexPrefix $deffiles.:Defaults.htmlTemplateBlok
+            =  loadTmpl ctxmain ctxproc Defaults.blokIndexPrefix $deffiles-:Defaults.htmlTemplateBlok
             | otherwise
             = let tmplpath name = "tmpl" </> (name $".haxtmpl"++fileext)
-                in Files.readOrDefault False ctxmain (tmplpath ((ctxmain.:Files.setupName)++))
+                in Files.readOrDefault False ctxmain (tmplpath ((ctxmain-:Files.setupName)++))
                     --  fallback path tmpl/default.haxtmpl.<fileext>
                     (tmplpath Defaults.fileName_Pref)
                         --  fallback template content: `{P|:content:|}`
@@ -91,7 +92,7 @@ loadAll ctxmain ctxproc deffiles filenameexts htmlequivexts =
 
 
 loadTmpl ctxmain ctxproc fileext tmpfile =
-    warnIfTagMismatches ctxmain (srcfile.:Files.path) (tagMismatches rawsrc)
+    warnIfTagMismatches ctxmain (srcfile-:Files.path) (tagMismatches rawsrc)
     >> return TemplateContext {
                 fileExt = fileext, srcFile = srcfile, chunks = srcchunks
             }
@@ -99,7 +100,7 @@ loadTmpl ctxmain ctxproc fileext tmpfile =
     srcfile = Files.fullFrom tmpfile Util.dateTime0 srcpreprocessed
     srcchunks = Util.splitUp Util.trim [_applychunkbegin] _applychunkend srcpreprocessed
     srcpreprocessed = processSrcFully ctxproc Nothing rawsrc
-    rawsrc = (tmpfile.:Files.content)
+    rawsrc = (tmpfile-:Files.content)
 
 
 
@@ -109,12 +110,12 @@ processSrcFully ctxproc ctxpage =
     preserveunprocessedtag = const Nothing
     splitup = Util.splitUp Util.trim whichtags tag_Close
     whichtags = case ctxpage of
-        Nothing -> (ctxproc.:processTags) ~|(/=tag_P)
-        Just _ -> ctxproc.:processTags
-    _c = ctxproc.:cTagHandler ; _t = ctxproc.:tTagHandler
-    _b = (ctxproc.:bTagHandler) (ctxpage.:(blokName =|- ""))
-    _p = ctxpage.:(pTagHandler =|- preserveunprocessedtag)
-    _x = (ctxproc.:xTagHandler) ctxpage
+        Nothing -> (ctxproc-:processTags) ~|(/=tag_P)
+        Just _ -> ctxproc-:processTags
+    _c = ctxproc-:cTagHandler ; _t = ctxproc-:tTagHandler
+    _b = (ctxproc-:bTagHandler) (ctxpage-:(blokName =|- ""))
+    _p = ctxpage-:(pTagHandler =|- preserveunprocessedtag)
+    _x = (ctxproc-:xTagHandler) ctxpage
     process src =
         concat$ (splitup src) >~foreach
         where
@@ -154,12 +155,12 @@ tagMismatches src =
 
 warnIfTagMismatches ctxmain filename (numtagends , numtagbegins) =
     if Util.startsWith filename Defaults.blokIndexPrefix || numtagbegins == numtagends
-        then return () else
-
-        let drops = (Util.startsWith filename maindirpath) |? (maindirpath~>length + 1) |! 0
-            maindirpath = ctxmain.:Files.dirPath
-        in putStrLn ("...\t<?\tPotential syntax issue: "++
-                     (show numtagends)++"x `|}` but "++(show numtagbegins)++"x `{*|`\n\t\t\tin `"++(drop drops filename)++"`")
+        then return ()
+        else
+        let maindirpath = ctxmain-:Files.dirPath
+            trim = (Util.startsWith filename maindirpath) |? (drop$ maindirpath~>length + 1) |! id
+        in Text.Printf.printf "...\t<<\tPotential syntax issue: %ux `|}` but %ux `{*|`\n\t\t\tin `%s`\n"
+                                (numtagends::Int) (numtagbegins::Int) (trim filename)
 
 
 

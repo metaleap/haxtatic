@@ -1,9 +1,8 @@
-{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module XminiTag where
 
 import Base
 import qualified Html
-import qualified Tmpl
 import qualified Util
 import qualified X
 
@@ -16,11 +15,9 @@ data Tag =
 
 
 
-
 registerX xreg =
     let
     renderer (_ , argstr) =
-
         Just$ Html.out
                 cfg_htmltagname ( cfghtmlatts ++ [("" =: innercontent)] ) []
         where
@@ -31,10 +28,8 @@ registerX xreg =
     where
 
 
-
-
-    (cfg_htmltagname , cfg_parsestr ) = xreg.:X.cfgSplitOnce
-    cfghtmlatts =  cfg.:htmlAtts
-    cfg = Util.tryParse defcfg errcfg ("Cfg"++) cfg_parsestr where
+    (cfg_htmltagname , cfg_parsestr ) = xreg-:X.cfgSplitOnce
+    cfghtmlatts =  cfg-:htmlAtts
+    cfg = X.tryParseCfg cfg_parsestr (Just defcfg) errcfg where
         defcfg = Cfg { htmlAtts = [] }
         errcfg = Cfg { htmlAtts = X.htmlErrAttsCfg xreg }

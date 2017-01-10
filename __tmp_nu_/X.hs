@@ -1,9 +1,8 @@
-{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module X where
 
 import Base
 import qualified Html
-import qualified Tmpl
 import qualified Util
 
 import qualified Data.List
@@ -27,12 +26,12 @@ data Render r = NoRender | Early r | WaitForPage r
 
 
 clarifyParseArgsError (xreg , arghint) =
-    let (xn,tn) = (xreg.:xname , xreg.:tname)
+    let (xn,tn) = (xreg-:xname , xreg-:tname)
     in ( ("(for `" ++ xn ++"` args) within") , ("{<!---->X|" ++ tn) , arghint )
 
 clarifyParseCfgError xreg =
-    let (xn,tn) = (xreg.:xname , xreg.:tname)
-        hint = Util.ifIs (Util.atOr (xreg.:cfgSplitAll) 0 "") (++": ...")
+    let (xn,tn) = (xreg-:xname , xreg-:tname)
+        hint = Util.ifIs (Util.atOr (xreg-:cfgSplitAll) 0 "") (++": ...")
     in ( ("(in your *.haxproj) following") , ("X|:" ++ xn ++ ":" ++ tn) , (Util.excerpt 23 hint) )
 
 htmlErr (clarify , codemain , codemore) =
@@ -40,8 +39,11 @@ htmlErr (clarify , codemain , codemore) =
 
 htmlErrAtts clarifywithcode =
     [ "" =: htmlErr clarifywithcode
-    , "style" =: "background-color: yellow !important; color: red !important; border: solid 0.5em red !important; display: inline-block !important;"
+    , htmlErrStyle
     ]
+
+htmlErrStyle =
+    "style" =: "background-color: yellow !important; color: red !important; border: solid 0.5em red !important; display: inline-block !important;"
 
 htmlErrAttsCfg =
     htmlErrAtts . clarifyParseCfgError
@@ -57,12 +59,12 @@ parseProjChunks xregisterers chunkssplits =
     where
     nope = ("" , NoRender)
     rendererr msg (_,_) = Just msg
-    foreach (xname:tname:tvals) =
-        let xn = Util.trim xname
-            tn = Util.trim tname
+    foreach (xname':tname':tvals) =
+        let xn = Util.trim xname'
+            tn = Util.trim tname'
         in if null tn then nope else
             case Data.List.lookup xn xregisterers of
-                Nothing -> ( tn , Early (rendererr ("{!X|"++tn++": unknown X-renderer `"++xname++"`, mispelled in your *.haxproj? |!}")) )
+                Nothing -> ( tn , Early (rendererr ("{!X|"++tn++": unknown X-renderer `"++xn++"`, mispelled in your *.haxproj? |!}")) )
                 Just regx -> from regx xn tn tvals
     foreach _ =
         nope
@@ -82,17 +84,22 @@ parseProjChunks xregisterers chunkssplits =
 tagHandler xtags ctxpage tagcontent =
     renderwhen (Data.Map.Strict.lookup key xtags)
     where
-
     (key , argstr) = Util.splitOn1st ':' tagcontent
     renderargs = (ctxpage , Util.trim argstr)
 
     renderwhen (Just (Early xrend)) =
         xrend renderargs
-
     renderwhen (Just (WaitForPage xrend)) =
         case ctxpage of
             Nothing -> Just$ "{P|X|"++tagcontent++"|}"
             Just _ -> xrend renderargs
-
     renderwhen _ =
         Nothing
+
+
+
+tryParseCfg parsestr maybedefcfg errcfg =
+    let parse Nothing e = (Util.tryParseOr e) . wrap
+        parse (Just d) e = Util.tryParse d e wrap
+        wrap = (("Cfg{"++).(++"}"))
+    in parse maybedefcfg errcfg parsestr

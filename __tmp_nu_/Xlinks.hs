@@ -1,9 +1,8 @@
-{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module Xlinks where
 
 import Base
 import qualified Html
-import qualified Tmpl
 import qualified Util
 import qualified X
 
@@ -22,14 +21,12 @@ data Tag =
 
 
 
-
 registerX xreg =
     let
     renderer (_ , argstr) =
-
-        Just$ cfgitemspre ++ allitems ++ cfgitemspost
+        Just$ wrapitems allitems
         where
-        allitems = htmlout (args.:htmlAtts ++ cfghtmlatts) (args.:items)
+        allitems = htmlout (args-:htmlAtts ++ cfghtmlatts) (args-:items)
         args = Util.tryParse defargs errargs (("Args{"++).(++"}")) argstr where
             defargs = Args { items = [], htmlAtts = [] }
             errargs = Args { items = ["#"=:""], htmlAtts = X.htmlErrAttsArgs (xreg , Util.excerpt 23 argstr) }
@@ -39,18 +36,18 @@ registerX xreg =
     where
 
 
-
-
-    htmlout atts items = concat$ items>~(foreach atts)
+    htmlout atts argitems =
+        argitems>~(foreach atts) ~> concat
     foreach attribs (url,text) =
         Html.out cfg_htmltagname attribs [ Html.T "a" ["" =: text , "href" =: url] [] ]
 
-    cfgitemspre = htmlout cfghtmlatts $cfg.:itemsFirst
-    cfgitemspost = htmlout cfghtmlatts $cfg.:itemsLast
+    wrapitems = (cfgitemspre++).(++cfgitemspost)
+    cfgitemspre = htmlout cfghtmlatts $cfg-:itemsFirst
+    cfgitemspost = htmlout cfghtmlatts $cfg-:itemsLast
 
-    (cfg_htmltagname , cfg_parsestr ) = xreg.:X.cfgSplitOnce
-    cfghtmlatts =  cfg.:htmlAtts
-    cfg = Util.tryParse defcfg errcfg ("Cfg"++) cfg_parsestr where
+    (cfg_htmltagname , cfg_parsestr ) = xreg-:X.cfgSplitOnce
+    cfghtmlatts =  cfg-:htmlAtts
+    cfg = X.tryParseCfg cfg_parsestr (Just defcfg) errcfg where
         defcfg = Cfg { htmlAtts = [],
                         itemsFirst = [], itemsLast = [] }
         errcfg = Cfg { htmlAtts = X.htmlErrAttsCfg xreg ,

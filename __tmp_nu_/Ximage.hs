@@ -1,13 +1,11 @@
-{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module Ximage where
 
 import Base
 import qualified Html
-import qualified Pages
 import qualified Util
 import qualified X
 
-import System.FilePath ( (</>) )
 
 
 data Tag =
@@ -15,7 +13,7 @@ data Tag =
         lnkAtts :: Util.StringPairs,
         imgAtts :: Util.StringPairs
     }
-    deriving (Read, Show)
+    deriving (Read)
 
 
 
@@ -25,7 +23,7 @@ registerX xreg =
 
         Just$ Html.emit tag
         where
-        tag = if null (cfg.:lnkAtts) then imgtag else lnktag
+        tag = if null (cfg-:lnkAtts) then imgtag else lnktag
         imgtag = Html.T "img" (cfgimgatts ++ (atts "src" "alt")) []
         lnktag = Html.T "a" (cfglnkatts ++ (atts "href" "title")) [imgtag]
         (imgsrc,imgdesc) = (Util.splitOn1stSpace argstr) ~> Util.bothTrim
@@ -38,9 +36,9 @@ registerX xreg =
     where
 
 
-    (cfg_imgrelpath , cfg_parsestr) = xreg.:X.cfgSplitOnce
-    (cfgerrmsg , cfgimgatts) = Html.attrClearInner $cfg.:imgAtts
-    (_ , cfglnkatts) = Html.attrClearInner $cfg.:lnkAtts
-    cfg = Util.tryParse defcfg errcfg ("Cfg"++) cfg_parsestr where
+    (cfg_imgrelpath , cfg_parsestr) = xreg-:X.cfgSplitOnce
+    (cfgerrmsg , cfgimgatts) = Html.attrClearInner $cfg-:imgAtts
+    (_ , cfglnkatts) = Html.attrClearInner $cfg-:lnkAtts
+    cfg = X.tryParseCfg cfg_parsestr (Just defcfg) errcfg where
         defcfg = Cfg { lnkAtts = [], imgAtts = [] }
         errcfg = Cfg { lnkAtts = [], imgAtts = X.htmlErrAttsCfg xreg }

@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module Proj where
 
 import Base
@@ -8,7 +8,6 @@ import qualified Files
 import qualified Posts
 import qualified ProjC
 import qualified ProjT
-import qualified Tmpl
 import qualified Util
 import qualified X
 
@@ -48,17 +47,17 @@ data Setup
 
 loadCtx ctxmain projname xregs defaultfiles =
     let loadedsetup = _loadSetup ctxproj xregs
-        dirpath = ctxmain.:Files.dirPath
+        dirpath = ctxmain-:Files.dirPath
         dirpathjoin = (dirpath </>)
-        setupname = ctxmain.:Files.setupName
+        setupname = ctxmain-:Files.setupName
         ctxproj = ProjContext {
             projName = projname,
             setupName = setupname,
-            domainName = Util.ifNo (loadedsetup.:cfg.:ProjC.domainName) projname,
+            domainName = Util.ifNo (loadedsetup-:cfg-:ProjC.domainName) projname,
             dirPath = dirpath,
             dirPathBuild = dirpathjoin$
-                setupname ++ "-" ++ loadedsetup.:cfg.:ProjC.dirNameBuild,
-            dirPathDeploy = let dd = loadedsetup.:cfg.:ProjC.dirNameDeploy
+                setupname ++ "-" ++ loadedsetup-:cfg-:ProjC.dirNameBuild,
+            dirPathDeploy = let dd = loadedsetup-:cfg-:ProjC.dirNameDeploy
                             in (null dd) |? "" |! dirpathjoin $setupname++"-"++dd,
             setup = loadedsetup,
             coreFiles = defaultfiles
@@ -75,7 +74,7 @@ _loadSetup ctxproj xregs =
                             Tmpl.cTagHandler = ProjC.tagHandler cfgmiscpost,
                             Tmpl.tTagHandler = ProjT.tagHandler ttagspost,
                             Tmpl.xTagHandler = X.tagHandler xtagspost,
-                            Tmpl.processTags = cfgpost.:ProjC.tmplTags
+                            Tmpl.processTags = cfgpost-:ProjC.tmplTags
                         },
                     tagMismatches = Tmpl.tagMismatches rawsrc
                     }
@@ -87,7 +86,7 @@ _loadSetup ctxproj xregs =
                                         Tmpl.cTagHandler = ProjC.tagHandler cfgmiscprep,
                                         Tmpl.tTagHandler = ProjT.tagHandler ttagsprep,
                                         Tmpl.xTagHandler = X.tagHandler xtagsprep,
-                                        Tmpl.processTags = cfgprep.:ProjC.tmplTags
+                                        Tmpl.processTags = cfgprep-:ProjC.tmplTags
                                     },
                                 tagMismatches = (0,0)
                                 }
@@ -97,8 +96,8 @@ _loadSetup ctxproj xregs =
     (cfgpost,cfgmiscpost) = ProjC.parseProjChunks (pick postchunkssplits 'C')
     (feedsprep,postsprep) = Posts.parseProjChunks (pick prepchunkssplits 'P')
     (feedspost,postspost) = Posts.parseProjChunks (pick postchunkssplits 'P')
-    ttagsprep = ProjT.parseProjChunks False (pick prepchunkssplits 'T')
-    ttagspost = ProjT.parseProjChunks True (pick postchunkssplits 'T')
+    ttagsprep = ProjT.parseProjChunks (pick prepchunkssplits 'T')
+    ttagspost = ProjT.parseProjChunks (pick postchunkssplits 'T')
     xtagsprep = X.parseProjChunks xregs (pick prepchunkssplits 'X')
     xtagspost = X.parseProjChunks xregs (pick postchunkssplits 'X')
     pick chunkssplits prefix =
@@ -112,7 +111,7 @@ _loadSetup ctxproj xregs =
     srcchunksprep = loadChunks rawsrc
     srcchunkspost = srcchunksprep >~ pretemplatechunk
     pretemplatechunk (prefix,src) =
-        (prefix , Tmpl.processSrcFully (setupprep.:tmpl) Nothing src)
+        (prefix , Tmpl.processSrcFully (setupprep-:tmpl) Nothing src)
 
 
 loadChunks rawsrc =
@@ -123,7 +122,7 @@ loadChunks rawsrc =
     others = alllines ~|not.isbegin
     alllines = Util.indexed$ lines rawsrc
 
-    isbegin (index,'|':cfgprefix:'|':_) =
+    isbegin (_ , '|':cfgprefix:'|':_) =
         any (cfgprefix==) "BCPTX"
     isbegin _ =
         False
@@ -143,6 +142,6 @@ loadChunks rawsrc =
 
 _rawsrc ctxproj =
     --  join primary project file with additionally-specified 'overwrites' ones:
-    (ctxproj.:coreFiles.:Defaults.projectDefault.:Files.content) ++
-        let projcusts = ctxproj.:coreFiles.:Defaults.projectOverwrites in
+    (ctxproj-:coreFiles-:Defaults.projectDefault-:Files.content) ++
+        let projcusts = ctxproj-:coreFiles-:Defaults.projectOverwrites in
             concat$ projcusts>~Files.content

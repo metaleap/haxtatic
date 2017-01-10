@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module Util where
 
 import Base
@@ -49,6 +49,8 @@ ifNo val defval =
 ifIs testval op =
     if null testval then [] else op testval
 
+onlyIf val goalval defval =
+    if val==goalval then val else defval
 
 noneOf vals val =
     all (val/=) vals
@@ -120,15 +122,15 @@ countSubVsSubs list (sub,subs) =
     --  equivalent to, but faster than:
     --      (countSub list sub, countAnySubs list subs)
     foldr each (0,0) (Data.List.tails list) where
-    each listtail count =
-        let isprefix sub = Data.List.isPrefixOf sub listtail
+    each listtail counter =
+        let isprefix sublist = Data.List.isPrefixOf sublist listtail
             isp1 = isprefix sub
             isp2 = any isprefix subs
         in if isp1 || isp2
-            then let (c1,c2) = count in
+            then let (c1,c2) = counter in
                     (if isp1 then c1 + 1 else c1,
                     if isp2 then c2 + 1 else c2)
-            else count
+            else counter
 
 
 
@@ -271,9 +273,9 @@ indexOf item (this:rest) =
 _indexof_droptil delim = _indexof_droptil' (delim==)
 _indexof_droptil' _ _ [] =
     (_intmin , [])
-_indexof_droptil' predicate count list@(this:rest) =
-    if (predicate this) then (count , list)
-        else _indexof_droptil' predicate (count + 1) rest
+_indexof_droptil' predicate counter list@(this:rest) =
+    if (predicate this) then (counter , list)
+        else _indexof_droptil' predicate (counter + 1) rest
 
 
 indexOf1st items list =
@@ -382,11 +384,14 @@ splitUp _ [] _ src = [(src,"")]
 splitUp onmatch allbeginners end src =
     (null beginners) |? [(src,"")] |! _splitup src
     where
-    beginners' = allbeginners>~reverse ~|is
-    beg0len = (beginners'#0)~>length
     beginners = beginners' ~| length~.((==)beg0len)
+    beginners' = allbeginners>~reverse ~|is
+    beg0len = beg0~>length
+    beg0 = beginners'#0
 
-    lastidx revstr = (beginners>~ (lastIndexOfSub revstr)) ~> maximum
+    lastidx = (beginners~>length > 1) |? (lastidx'') |! (lastidx')
+    lastidx' revstr = lastIndexOfSub revstr beg0
+    lastidx'' revstr = (beginners>~ (lastIndexOfSub revstr)) ~> maximum
 
     _splitup str =
         (tolist "" pre) ++ (tolist beginner (onmatch match)) ++ --  only recurse if we have a good reason:

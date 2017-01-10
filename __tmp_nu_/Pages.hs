@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module Pages where
 
 import Base
@@ -15,42 +15,40 @@ import qualified Util
 import qualified Data.List
 import qualified Data.Map.Strict
 import qualified System.FilePath
-import System.FilePath ( (</>) )
-import qualified System.IO
 
 
 
 processAll ctxmain ctxproj buildplan =
-    let filenameexts = buildplan.:Build.outPages >~ filenameext
+    let filenameexts = buildplan-:Build.outPages >~ filenameext
         filenameext = Build.srcFile ~. Files.path ~. System.FilePath.takeExtension
-        ctxtmpl = ctxproj.:Proj.setup.:Proj.tmpl
-        cfgproj = ctxproj.:Proj.setup.:Proj.cfg
+        ctxtmpl = ctxproj-:Proj.setup-:Proj.tmpl
+        cfgproj = ctxproj-:Proj.setup-:Proj.cfg
 
-    in if null$ buildplan.:Build.outPages then return (Data.Map.Strict.empty) else
-    Tmpl.loadAll ctxmain ctxtmpl (ctxproj.:Proj.coreFiles)
-                    filenameexts (cfgproj.:ProjC.htmlEquivExts) >>= \tmplfinder
+    in if null$ buildplan-:Build.outPages then return (Data.Map.Strict.empty) else
+    Tmpl.loadAll ctxmain ctxtmpl (ctxproj-:Proj.coreFiles)
+                    filenameexts (cfgproj-:ProjC.htmlEquivExts) >>= \tmplfinder
     -> let foreach =
             processPage ctxmain cfgproj ctxtmpl tmplfinder
-        in (buildplan.:Build.outPages >>~ foreach) >>= \srcpathsandpagerenders
+        in (buildplan-:Build.outPages >>~ foreach) >>= \srcpathsandpagerenders
         -> return (Data.Map.Strict.fromList srcpathsandpagerenders)
 
 
 
 processPage ctxmain cfgproj ctxtmpl tmplfinder outjob =
-    Files.writeTo dstfilepath (outjob.:Build.relPath) processcontent
+    Files.writeTo dstfilepath (outjob-:Build.relPath) processcontent
     >>= \(ctxpage , mismatches)
     -> Tmpl.warnIfTagMismatches ctxmain srcfilepath mismatches
-    >> return (outjob.:Build.srcFile.:Files.path , ctxpage)
+    >> return (outjob-:Build.srcFile-:Files.path , ctxpage)
 
     where
-    dstfilepath = outjob.:Build.outPathBuild
-    srcfilepath = outjob.:Build.srcFile.:Files.path
+    dstfilepath = outjob-:Build.outPathBuild
+    srcfilepath = outjob-:Build.srcFile-:Files.path
 
     loadsrccontent =
         let blokindexname = Bloks.blokNameFromIndexPagePath srcfilepath
             blokindextmpl = tmplfinder Defaults.blokIndexPrefix
         in if is blokindexname
-            then return ((0,0) , blokindextmpl.:Tmpl.srcFile.:Files.content)
+            then return ((0,0) , blokindextmpl-:Tmpl.srcFile-:Files.content)
             else readFile srcfilepath >>= \rawsrc
                     -> return (Tmpl.tagMismatches rawsrc , rawsrc)
 
@@ -58,7 +56,7 @@ processPage ctxmain cfgproj ctxtmpl tmplfinder outjob =
         loadsrccontent >>= \(mismatches , pagesrc)
         -> let
             ctxpage = Tmpl.PageContext {
-                            Tmpl.blokName = outjob.:Build.blokName,
+                            Tmpl.blokName = outjob-:Build.blokName,
                             Tmpl.pTagHandler = taghandler,
                             Tmpl.pVars = pagevars,
                             Tmpl.pDate = pagedate,
@@ -67,7 +65,7 @@ processPage ctxmain cfgproj ctxtmpl tmplfinder outjob =
                             Tmpl.tmpl = tmpl,
                             Tmpl.cachedRenderSansTmpl = pageonlyproc
                         }
-            (pagevars , pagedate , pagesrcchunks) = pageVars cfgproj pagesrc $outjob.:Build.contentDate
+            (pagevars , pagedate , pagesrcchunks) = pageVars cfgproj pagesrc $outjob-:Build.contentDate
             taghandler = tagHandler cfgproj ctxpage ctxtmpl outjob
             tmpl = tmplfinder$ System.FilePath.takeExtension dstfilepath
             pageonlyproc = Tmpl.processSrcFully ctxtmpl (Just ctxpage)
@@ -112,34 +110,34 @@ tagHandler cfgproj ctxpage ctxtmpl outjob ptagcontent
     | dtfprefix == "date"
         = fordate dtfname contentdate
     | otherwise
-        = case Data.List.lookup ptagcontent (ctxpage.:Tmpl.pVars) of
+        = case Data.List.lookup ptagcontent (ctxpage-:Tmpl.pVars) of
             Just val -> Just val
             Nothing -> for ptagcontent
 
     where
-    xtaghandler = (ctxtmpl.:Tmpl.xTagHandler) (Just ctxpage)
-    contentdate = ctxpage.:Tmpl.pDate
+    xtaghandler = (ctxtmpl-:Tmpl.xTagHandler) (Just ctxpage)
+    contentdate = ctxpage-:Tmpl.pDate
     (dtfprefix,dtfname) = Util.bothTrim (Util.splitOn1st ':' ptagcontent)
     fordate dtfn datetime =
         Just$ ProjC.dtUtc2Str cfgproj dtfn datetime
     for name =
         let (dtfp,dtfn) = Util.bothTrim (Util.splitOn1st ':' name)
         in if dtfp=="srcTime"
-            then fordate dtfn (outjob.:Build.srcFile.:Files.modTime)
+            then fordate dtfn (outjob-:Build.srcFile-:Files.modTime)
             else Data.List.lookup name pvals
-    pvals = let reldir = Util.butNot "." "" (System.FilePath.takeDirectory$ outjob.:Build.relPath)
-                reldir' = Util.butNot "." "" (System.FilePath.takeDirectory$ outjob.:Build.relPathSlashes)
-            in  [ "title" =: (ctxpage.:Tmpl.htmlInner1st) "h1" ""
-                , "fileBaseName" =: (System.FilePath.takeBaseName$ outjob.:Build.relPath)
-                , "fileName" =: (System.FilePath.takeFileName$ outjob.:Build.relPath)
-                , "fileUri" =: '/':(outjob.:Build.relPathSlashes)
-                , "filePath" =: outjob.:Build.relPath
+    pvals = let reldir = Util.butNot "." "" (System.FilePath.takeDirectory$ outjob-:Build.relPath)
+                reldir' = Util.butNot "." "" (System.FilePath.takeDirectory$ outjob-:Build.relPathSlashes)
+            in  [ "title" =: (ctxpage-:Tmpl.htmlInner1st) "h1" ""
+                , "fileBaseName" =: (System.FilePath.takeBaseName$ outjob-:Build.relPath)
+                , "fileName" =: (System.FilePath.takeFileName$ outjob-:Build.relPath)
+                , "fileUri" =: '/':(outjob-:Build.relPathSlashes)
+                , "filePath" =: outjob-:Build.relPath
                 , "dirName" =: Util.ifIs reldir System.FilePath.takeFileName
                 , "dirUri" =: '/':(Util.ifIs reldir' (++"/"))
                 , "dirPath" =: Util.ifIs reldir (++[System.FilePath.pathSeparator])
-                , "srcPath" =: outjob.:Build.srcFile.:Files.path
-                , "outBuild" =: outjob.:Build.outPathBuild
-                , "outDeploy" =: outjob.:Build.outPathDeploy
+                , "srcPath" =: outjob-:Build.srcFile-:Files.path
+                , "outBuild" =: outjob-:Build.outPathBuild
+                , "outDeploy" =: outjob-:Build.outPathDeploy
                 ]
 
 
@@ -153,18 +151,18 @@ writeSitemapXml ctxproj buildplan =
         xmlsitemapitem domain relpath moddate priority =
             "<url>\n\
             \        <loc>http://"++domain++"/"++relpath++"</loc>\n\
-            \        <lastmod>"++(ProjC.dtUtc2Str (ctxproj.:Proj.setup.:Proj.cfg) "" moddate)++"</lastmod>\n\
+            \        <lastmod>"++(ProjC.dtUtc2Str (ctxproj-:Proj.setup-:Proj.cfg) "" moddate)++"</lastmod>\n\
             \        <priority>"++(take 3 (show priority))++"</priority>\n\
             \    </url>"
         foreach pageinfo =
             skip |? "" |!
-                xmlsitemapitem (ctxproj.:Proj.domainName) relpath (pageinfo.:Build.contentDate) priorel
+                xmlsitemapitem (ctxproj-:Proj.domainName) relpath (pageinfo-:Build.contentDate) priorel
             where
-            maybeblok = Bloks.blokByName (ctxproj.:Proj.setup.:Proj.bloks) (pageinfo.:Build.blokName)
+            maybeblok = Bloks.blokByName (ctxproj-:Proj.setup-:Proj.bloks) (pageinfo-:Build.blokName)
             skip = case maybeblok of -- maybeblok~>((not . Bloks.inSitemap) =|- False) -- case maybeblok of
-                    Just blok -> not$ blok.:Bloks.inSitemap
+                    Just blok -> not$ blok-:Bloks.inSitemap
                     Nothing -> False
-            relpath = pageinfo.:Build.relPathSlashes
+            relpath = pageinfo-:Build.relPathSlashes
             priorel = max 0.0 (priobase - priodown)
 
             priodown = 0.1 * (fromIntegral$ (Util.count '/' relpath) + (Util.count '.' relpath) - 1) :: Float
@@ -175,13 +173,13 @@ writeSitemapXml ctxproj buildplan =
                 = 0.88
                 | otherwise
                 = 0.66
-        (outjob , pagefileinfos) = buildplan.:Build.siteMap
+        (outjob , pagefileinfos) = buildplan-:Build.siteMap
         xmlitems = (pagefileinfos >~foreach)
         xmloutput = return (xmlsitemapfull xmlitems , ())
     in if outjob == Build.NoOutput
         then return ()
         else Files.writeTo
-                (outjob.:Build.outPathBuild)
-                (outjob.:Build.relPath)
+                (outjob-:Build.outPathBuild)
+                (outjob-:Build.relPath)
                 xmloutput
             >> return ()
