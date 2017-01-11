@@ -15,7 +15,7 @@ data Tag
 
 
 
-registerX xreg =
+registerX _ xreg =
     let
     renderer (_ , argstr) =
         Just$ Html.out

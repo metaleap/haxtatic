@@ -14,6 +14,7 @@ import qualified X
 import qualified Tmpl
 
 import qualified Data.Map.Strict
+import qualified System.FilePath
 import System.FilePath ( (</>) )
 
 
@@ -98,8 +99,8 @@ _loadSetup ctxproj xregs =
     (feedspost,postspost) = Posts.parseProjChunks (pick postchunkssplits 'P')
     ttagsprep = ProjT.parseProjChunks (pick prepchunkssplits 'T')
     ttagspost = ProjT.parseProjChunks (pick postchunkssplits 'T')
-    xtagsprep = X.parseProjChunks xregs (pick prepchunkssplits 'X')
-    xtagspost = X.parseProjChunks xregs (pick postchunkssplits 'X')
+    xtagsprep = X.parseProjChunks ctxproj xregs (pick prepchunkssplits 'X')
+    xtagspost = X.parseProjChunks ctxproj xregs (pick postchunkssplits 'X')
     pick chunkssplits prefix =
         (chunkssplits ~|(==prefix).fst) >~ snd
 
@@ -142,6 +143,14 @@ loadChunks rawsrc =
 
 _rawsrc ctxproj =
     --  join primary project file with additionally-specified 'overwrites' ones:
-    (ctxproj-:coreFiles-:Defaults.projectDefault-:Files.content) ++
-        let projcusts = ctxproj-:coreFiles-:Defaults.projectOverwrites in
-            concat$ projcusts>~Files.content
+    (ctxproj-:coreFiles-:Defaults.projectDefault-:Files.content) ++ "\n" ++
+        (Util.join "\n") (projcusts>~Files.content ++ projsnips>~foreach)
+        where
+        projcusts = ctxproj-:coreFiles-:Defaults.projectOverwrites
+        projsnips = ctxproj-:coreFiles-:Defaults.htmlSnippets
+        foreach snipfile =
+            unlines (headerline:tabbedlines)
+            where
+            basename = (Util.dropLast (".haxsnip.html"~>length)) (System.FilePath.takeFileName $snipfile-:Files.path)
+            headerline = "|X|hax/snippet:"++basename++":"
+            tabbedlines = (lines $snipfile-:Files.content) >~ ("\t"++)

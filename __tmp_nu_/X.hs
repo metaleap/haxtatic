@@ -54,7 +54,7 @@ htmlErrAttsArgs =
 
 
 
-parseProjChunks xregisterers chunkssplits =
+parseProjChunks ctxproj xregisterers chunkssplits =
     Data.Map.Strict.fromList (chunkssplits>~foreach ~|fst~.is)
     where
     nope = ("" , NoRender)
@@ -70,7 +70,7 @@ parseProjChunks xregisterers chunkssplits =
         nope
     from registerx xn tn tvals =
         let cfgstr = Util.trim$ Util.join ":" tvals
-            xreg = registerx Named {
+            xreg = registerx ctxproj Named {
                                     xname = xn,
                                     tname = tn,
                                     cfgFullStr = cfgstr,

@@ -105,10 +105,9 @@ plan ctxmain ctxproj =
                                     ProjC.skip = [], ProjC.dirs = []}
         listallfiles = Files.listAllFiles $ctxproj-:Proj.dirPath
         modtimeproj = ctxproj-:Proj.coreFiles-:Defaults.projectDefault-:Files.modTime
-        modtimetmplmain = ctxproj-:Proj.coreFiles-:Defaults.htmlTemplateMain-:Files.modTime
-        modtimetmpl = ctxproj-:Proj.coreFiles-:Defaults.htmlTemplateBlok-:Files.modTime
+        modtimetmpl = ctxproj-:Proj.coreFiles-:Defaults.htmlTemplateMain-:Files.modTime
     in listallfiles (cfgprocstatic-:ProjC.dirs) id >>= \allstaticfiles
-    -> listallfiles (cfgprocpages-:ProjC.dirs) (max modtimetmplmain) >>= \allpagesfiles_orig
+    -> listallfiles (cfgprocpages-:ProjC.dirs) (max modtimetmpl) >>= \allpagesfiles_orig
     -> _createIndexHtmlIfNoContentPages ctxmain ctxproj (allpagesfiles_orig~>length) >>= \defaultpage
     -> let
         allpagesfiles_nodate = allpagesfiles_orig >~ renamerelpath where

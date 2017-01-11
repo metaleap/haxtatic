@@ -52,7 +52,7 @@ processPage ctxmain cfgproj ctxtmpl tmplfinder outjob =
         let blokindexname = Bloks.blokNameFromIndexPagePath srcfilepath
             blokindextmpl = tmplfinder Defaults.blokIndexPrefix
         in if is blokindexname
-            then return ((0,0) , blokindextmpl-:Tmpl.srcFile-:Files.content)
+            then return ((0,0) , "{X|_hax_blokindex: vars=[(\"bname\",\""++blokindexname++"\")], content=\"\" |}")
             else readFile srcfilepath >>= \rawsrc
                     -> return (Tmpl.tagMismatches rawsrc , rawsrc)
 
@@ -91,7 +91,7 @@ pageVars cfgproj pagesrc contentdate =
     pagevars = chunks >~ foreach ~> Util.unMaybes
     pvardates = pagevars >~ maybedate ~> Util.unMaybes
     pagedate = Util.atOr pvardates 0 contentdate
-    pagesrcchunks = (chunks ~|null.snd) >~ fst ~|is
+    pagesrcchunks = (chunks ~|null.snd) >~ fst -- ~|is
 
     foreach (pvarstr , "{%P|") =
         let nameandval = (Util.splitOn1st '=' pvarstr) ~> Util.bothTrim

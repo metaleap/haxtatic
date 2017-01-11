@@ -5,7 +5,7 @@ import X
 
 
 
-registerX _xreg =
+registerX _ctxproj _xreg =
     let
     renderer (_maybepagectx , _argstr) =
 

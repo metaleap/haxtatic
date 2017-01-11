@@ -19,7 +19,7 @@ data Tag
 
 
 
-registerX xreg =
+registerX _ xreg =
     let
     renderer (Just pagectx , argstr)
         | ((cfg-:considerEmpty) == (maxBound::Int))

@@ -26,7 +26,7 @@ data File
         modTime :: Data.Time.Clock.UTCTime,
         content :: String
     }
-    deriving (Eq)
+    deriving (Eq, Show)
 
 
 data Ctx
@@ -190,7 +190,7 @@ simpleFilePathMatch relpath dumbpattern =
 
 simpleFilePathMatchAny :: FilePath -> [String] -> Bool
 simpleFilePathMatchAny relpath dumbpatterns =
-    or$ dumbpatterns >~ (simpleFilePathMatch relpath)
+    any (simpleFilePathMatch relpath) dumbpatterns
 
 
 

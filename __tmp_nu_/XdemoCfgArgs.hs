@@ -4,7 +4,7 @@ module XdemoCfgArgs where
 import qualified X
 
 
-registerX xreg =
+registerX _ctxproj xreg =
     let
     renderer (_ , argstr) =
 

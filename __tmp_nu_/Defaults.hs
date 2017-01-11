@@ -6,6 +6,7 @@ import qualified Files
 import qualified Util
 
 import qualified Data.Char
+import qualified Data.List
 import qualified Data.Time.Format
 import qualified System.FilePath
 import System.FilePath ( (</>) )
@@ -17,7 +18,7 @@ data Files
         projectDefault :: Files.File,
         projectOverwrites :: [Files.File],
         htmlTemplateMain :: Files.File,
-        htmlTemplateBlok :: Files.File
+        htmlSnippets :: [Files.File]
     }
 
 
@@ -27,20 +28,24 @@ loadOrCreate ctxmain projname projfilename custfilenames =
         setupname = ctxmain-:Files.setupName
         relpathtmplmain = "tmpl" </> (setupname++ ".haxtmpl.html")
         relpathtmplmain' = "tmpl" </> (fileName_Pref ".haxtmpl.html")
-        relpathtmplblok = "tmpl" </> (setupname++ "-blok.haxtmpl.html")
-        relpathtmplblok' = "tmpl" </> (fileName_Pref "-blok.haxtmpl.html")
-        foreach custfilename =
-            Files.readOrDefault False ctxmain custfilename "" ""
+        relpathsnipblok = "tmpl" </> ("_hax_blokindex.haxsnip.html")
+        foreach relfilepath =
+            Files.readOrDefault False ctxmain relfilepath "" ""
     in Files.readOrDefault True ctxmain projfilename fileName_Proj projfiledefcontent
     >>= \projfile
     -> Files.readOrDefault True ctxmain relpathtmplmain relpathtmplmain' _tmpl_html_main
     >>= \tmplmainfile
-    -> Files.readOrDefault True ctxmain relpathtmplblok relpathtmplblok' _tmpl_html_blok
-    >>= \tmplblokfile
+    -> Files.readOrDefault True ctxmain relpathsnipblok "" _tmpl_html_blok
+    >> Files.listAllFiles (ctxmain-:Files.dirPath) ["tmpl"] id >>= \tmplfileinfos
+    -> let
+        snipfileinfos = tmplfileinfos ~|(Data.List.isSuffixOf ".haxsnip.html").fst
+        snipmodtime = maximum$ snipfileinfos>~(snd ~. Files.modTime)
+    in (snipfileinfos>~(("tmpl" </>).fst)   ) >>~ foreach
+    >>= \snipfiles
     -> custfilenames >>~ foreach
     >>= \custfiles
     -> let
-        custmodtime = (null custfiles) |? Util.dateTime0 |! maximum (custfiles>~Files.modTime)
+        custmodtime = (max snipmodtime) ((null custfiles) |? Util.dateTime0 |! maximum (custfiles>~Files.modTime))
         cfgmodtime = max custmodtime (projfile-:Files.modTime)
         tmplmodtime = max cfgmodtime (tmplmainfile-:Files.modTime)
         redated cmpmodtime file
@@ -51,7 +56,7 @@ loadOrCreate ctxmain projname projfilename custfilenames =
         projectDefault = projfile~>redatedcfg,
         projectOverwrites = custfiles>~redatedcfg,
         htmlTemplateMain = tmplmainfile~>redatedtmpl,
-        htmlTemplateBlok = tmplblokfile~>redatedtmpl
+        htmlSnippets = snipfiles>~redatedcfg
     }
 
 
@@ -112,10 +117,12 @@ _index_html dircur sitename dirproj dirpages pathpage pathtmpl pathfinal =
 
 
 _tmpl_html_blok =
-    "<h1>{B|title|}</h1>\n\
-    \<p>{B|desc|}</p>\n\
+    "vars = [(\"bname\",\"\")],\n\
+    \content=>\n\
+    \<h1>{B|title:[|bname|]|}</h1>\n\
+    \<p>{B|desc:[|bname|]|}</p>\n\
     \<p>\n\
-    \For a neat overview listing of all your <code>pages/{B|name|}.*.html</code> (and/or <code>pages/{B|name|}/*.html</code>)\n\
+    \For a neat overview listing of all your <code>pages/[|bname|].*.html</code> (and/or <code>pages/[|bname|]/*.html</code>)\n\
     \articles on this page, check out the <code>|X|hax.list:</code> tag type in the HaXtatic docs.\n\
     \</p>"
 

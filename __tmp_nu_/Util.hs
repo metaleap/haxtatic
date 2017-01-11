@@ -385,7 +385,7 @@ splitOn1stSpace = splitOn1st' Data.Char.isSpace
 splitUp _ _ _ "" = []
 splitUp _ _ "" src = [(src,"")]
 splitUp _ [] _ src = [(src,"")]
-splitUp onmatch allbeginners end src =
+splitUp withmatch allbeginners end src =
     (null beginners) |? [(src,"")] |! _splitup src
     where
     beginners = beginners' ~| length~.((==)beg0len)
@@ -398,7 +398,7 @@ splitUp onmatch allbeginners end src =
     lastidx'' revstr = (beginners>~ (lastIndexOfSub revstr)) ~> maximum
 
     _splitup str =
-        (tolist "" pre) ++ (tolist beginner (onmatch match)) ++ --  only recurse if we have a good reason:
+        (tolist "" pre) ++ (tolist beginner (withmatch match)) ++ --  only recurse if we have a good reason:
             (nomatch && splitat==0 |? (tolist "" rest) |! (_splitup rest))
         where
         pre = str ~> (take$ nomatch |? splitat |! begpos)

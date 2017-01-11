@@ -18,12 +18,12 @@ data Tag
     } deriving (Read)
 
 
-registerX xreg =
+registerX _ xreg =
     let
     renderer (_ , argstr) =
         Just$ Util.replaceSubs (argvars++cfgvars) (cfg-:content)
         where
-        argvars = ("@:content:" , args-:content) : (args-:vars >~ torepl)
+        argvars = ("[:content:]" , args-:content) : (args-:vars >~ torepl)
         args = X.tryParseArgs (Tmpl.fixParseStr "content" argstr) (Just defargs) errargs where
             defargs = Args { vars = [] , content = "" }
             errargs = Args { vars = [] , content = X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr)) }
@@ -32,7 +32,7 @@ registerX xreg =
     where
 
     torepl (k,v) =
-        "@"++k =: v
+        "[|"++k++"|]" =: v
 
     cfgvars = (cfg-:vars) >~ torepl
     cfg_parsestr = Tmpl.fixParseStr "content" (xreg-:X.cfgFullStr)

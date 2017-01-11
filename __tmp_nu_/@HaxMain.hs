@@ -31,14 +31,14 @@ import qualified System.IO
 import qualified Text.Printf
 
 
-xregs = [ "hax.demoSimplest" =: XdemoSimplest.registerX
-        , "hax.demoCfgArgs" =: XdemoCfgArgs.registerX
-        , "hax.pageAnchors" =: XpageAnchors.registerX
-        , "hax.image" =: Ximage.registerX
-        , "hax.links" =: Xlinks.registerX
-        , "hax.repeat" =: Xrepeat.registerX
-        , "hax.snippet" =: Xsnippet.registerX
-        , "hax.miniTag" =: XminiTag.registerX
+xregs = [ "hax/demoSimplest" =: XdemoSimplest.registerX
+        , "hax/demoCfgArgs" =: XdemoCfgArgs.registerX
+        , "hax/pageAnchors" =: XpageAnchors.registerX
+        , "hax/image" =: Ximage.registerX
+        , "hax/links" =: Xlinks.registerX
+        , "hax/repeat" =: Xrepeat.registerX
+        , "hax/snippet" =: Xsnippet.registerX
+        , "hax/miniTag" =: XminiTag.registerX
         ]
 
 
@@ -54,13 +54,12 @@ main =
             \  For existing project: specify path to its current directory.\n\
             \  For a new project: specify path to its intended directory.\n    (I'll create it if missing and its parent isn't.)\n\n"
         else
-        let dirpath = cmdargs~@0
-            projfilename = (Util.atOr cmdargs 1 Defaults.fileName_Proj)
-            ctxmain = Files.AppContext {    Files.curDir = curdir,
+        let projfilename = (Util.atOr cmdargs 1 Defaults.fileName_Proj)
+        in System.Directory.makeAbsolute (cmdargs~@0) >>= \dirpath
+        -> let ctxmain = Files.AppContext { Files.curDir = curdir,
                                             Files.dirPath = dirpath,
                                             Files.setupName = Defaults.setupName projfilename,
                                             Files.nowTime=starttime }
-
         --  GET TO WORK:
         in processAll ctxmain projfilename (drop 2 cmdargs)
         --  REMINISCE:
@@ -96,15 +95,13 @@ main =
 
 
 processAll ctxmain projfilename custfilenames =
-    let dirpath = ctxmain-:Files.dirPath
-        nameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
+    let nameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
 
     in putStrLn "\n1/6\tReading essential project files (or creating them).."
     >> System.IO.hFlush System.IO.stdout
-    >> System.Directory.createDirectoryIfMissing False dirpath
-    >> System.Directory.makeAbsolute dirpath >>= \dirfullpath   --  we do this just in case
-    -> let projname = System.FilePath.takeBaseName dirfullpath  --  `dirpath` ended in `.` or `..`
-    in Defaults.loadOrCreate ctxmain projname (projfilename~>nameonly) (custfilenames>~nameonly)
+    >> let projname = System.FilePath.takeBaseName (ctxmain-:Files.dirPath)
+    in System.Directory.createDirectoryIfMissing False (ctxmain-:Files.dirPath)
+    >> Defaults.loadOrCreate ctxmain projname (projfilename~>nameonly) (custfilenames>~nameonly)
     >>= Proj.loadCtx ctxmain projname xregs >>= \ctxproj
     -> Tmpl.warnIfTagMismatches ctxmain "*.haxproj"
                 (ctxproj-:Proj.setup-:Proj.tagMismatches)

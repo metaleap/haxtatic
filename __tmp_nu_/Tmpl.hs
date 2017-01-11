@@ -66,8 +66,6 @@ loadAll ctxmain ctxproc deffiles filenameexts htmlequivexts =
     let foreach fileext
             | null fileext
             = loadTmpl ctxmain ctxproc "" $deffiles-:Defaults.htmlTemplateMain
-            | fileext==Defaults.blokIndexPrefix
-            =  loadTmpl ctxmain ctxproc Defaults.blokIndexPrefix $deffiles-:Defaults.htmlTemplateBlok
             | otherwise
             = let tmplpath name = "tmpl" </> (name $".haxtmpl"++fileext)
                 in Files.readOrDefault False ctxmain (tmplpath ((ctxmain-:Files.setupName)++))
@@ -76,7 +74,7 @@ loadAll ctxmain ctxproc deffiles filenameexts htmlequivexts =
                         --  fallback template content: `{P|:content:|}`
                         (_applychunkbegin++_applychunkmid++_applychunkend)
                     >>= loadTmpl ctxmain ctxproc fileext
-        fileexts = "":Defaults.blokIndexPrefix:otherexts where
+        fileexts = "":otherexts where
             otherexts = Util.unique$ filenameexts ~| Util.noneOf htmlequivexts
     in fileexts>>~foreach
     >>= \loadedtemplates
