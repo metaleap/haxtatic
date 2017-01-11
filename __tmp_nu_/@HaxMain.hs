@@ -19,6 +19,7 @@ import qualified XdemoCfgArgs
 import qualified XpageAnchors
 import qualified Ximage
 import qualified Xlinks
+import qualified Xrepeat
 import qualified Xsnippet
 import qualified XminiTag
 
@@ -35,6 +36,7 @@ xregs = [ "hax.demoSimplest" =: XdemoSimplest.registerX
         , "hax.pageAnchors" =: XpageAnchors.registerX
         , "hax.image" =: Ximage.registerX
         , "hax.links" =: Xlinks.registerX
+        , "hax.repeat" =: Xrepeat.registerX
         , "hax.snippet" =: Xsnippet.registerX
         , "hax.miniTag" =: XminiTag.registerX
         ]
@@ -84,7 +86,7 @@ main =
                                 (showtime$ Util.duration timeprocdone timexmldone)
                                 (showavg numxmls timeprocdone timexmldone)
         >> Text.Printf.printf "\n\t%s misc. & file-copying%s"
-                                (showtime$ ((Util.duration timeinitdone timecopydone) + (Util.duration timeprocdone endtime)))
+                                (showtime$ ((Util.duration timeinitdone timecopydone) + (Util.duration timexmldone endtime)))
                                 (showavg (buildplan-:Build.outStatics~>length) timeprocdone endtime)
         >> if null warnpages
             then putStrLn ("\n\n==== Bye now! ====\n\n")

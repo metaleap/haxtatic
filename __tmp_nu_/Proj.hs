@@ -123,7 +123,7 @@ loadChunks rawsrc =
     alllines = Util.indexed$ lines rawsrc
 
     isbegin (_ , '|':cfgprefix:'|':_) =
-        any (cfgprefix==) "BCPTX"
+        any (cfgprefix==) ['B','C','P','T','X']
     isbegin _ =
         False
 

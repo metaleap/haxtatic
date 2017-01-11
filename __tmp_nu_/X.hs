@@ -27,7 +27,7 @@ data Render r = NoRender | Early r | WaitForPage r
 
 clarifyParseArgsError (xreg , arghint) =
     let (xn,tn) = (xreg-:xname , xreg-:tname)
-    in ( ("(for `" ++ xn ++"` args) within") , ("{X<!---->|" ++ tn) , arghint )
+    in ( ("(for `" ++ xn ++"` args) near") , ("{X<!---->|" ++ tn) , arghint )
 
 clarifyParseCfgError xreg =
     let (xn,tn) = (xreg-:xname , xreg-:tname)
