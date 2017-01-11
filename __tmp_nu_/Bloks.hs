@@ -33,7 +33,7 @@ allBlokPageFiles projcfg allpagesfiles bname =
             compare (pagedate file2) (pagedate file1)
         pagedate = snd.(Files.customDateFromFileName$ ProjC.dtPageDateParse projcfg)
         sortedmatches = Data.List.sortBy cmpblogpages blokpagematches
-    in (sortedmatches ,  (null sortedmatches) |? Util.dateTime0 |! pagedate $sortedmatches#0 )
+    in (sortedmatches ,  (null sortedmatches) |? Util.dateTime0 |! pagedate $sortedmatches~@0 )
 
 
 blokByName bloks blokname =
@@ -96,8 +96,8 @@ parseProjChunks chunkssplits =
         maybeblok = Util.tryParse Nothing (Just errblok) id ("Just "++parsestr)
         bname = blokname~>Util.trim
         parsestr = bvalsplits ~> (Util.join ":") ~> Util.trim ~> (toParseStr bname)
-        errblok = B { title="{!B| syntax issue near `B::" ++bname++ ":`, couldn't parse `" ++parsestr++ "` |!}",
-                            desc="{!B| Syntax issue in your .haxproj file defining Blok named '" ++bname++
+        errblok = B { title="{!|B| syntax issue near `|B|" ++ bname ++ ":`, couldn't parse `" ++ parsestr ++ "` |!}",
+                            desc="{!|B| Syntax issue in your .haxproj file defining Blok named '" ++ bname ++
                                     "'. Thusly couldn't parse Blok settings (incl. title/desc) |!}",
                             atomFile="", blokIndexPageFile="", inSitemap=False, dtFormat="" }
     foreach _ =

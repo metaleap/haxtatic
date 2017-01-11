@@ -2,6 +2,7 @@
 module XpageAnchors where
 
 import Base
+import qualified Html
 import qualified Tmpl
 import qualified Util
 import qualified X
@@ -22,16 +23,24 @@ registerX xreg =
     let
     renderer (Just pagectx , argstr)
         | ((cfg-:considerEmpty) == (maxBound::Int))
-        || null tagmatches
-        || (tagmatches~>length) <= (cfg-:considerEmpty)
+            || null tagmatches
+            || (tagmatches~>length) <= (cfg-:considerEmpty)
         = Just$ cfg-:htmlIfEmpty
         | otherwise
         = Just$ concat$ tagmatches>~foreach
         where
 
-        foreach tagmatch =
-            "<a href=\"#\">"++tagmatch++"</a>"
         tagmatches = (pagectx-:Tmpl.htmlInners) cfg_gathertagname
+        foreach tagmatch =
+            Html.out args_tagname (args-:htmlAtts)
+                        [Html.T "a" ["" =: tagmatch , "href" =: "#"] []]
+        (args_tagname , args_parsestr) = Util.splitOn1st ':' argstr
+        args = X.tryParseArgs args_parsestr
+                (Just Args { htmlAtts = [] })
+                (Args { htmlAtts = X.htmlErrAttsArgs (xreg , Util.excerpt 23 argstr) })
+
+    renderer _ =
+        Nothing
 
     in X.WaitForPage renderer
     where

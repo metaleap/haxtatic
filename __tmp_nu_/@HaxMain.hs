@@ -19,6 +19,7 @@ import qualified XdemoCfgArgs
 import qualified XpageAnchors
 import qualified Ximage
 import qualified Xlinks
+import qualified Xsnippet
 import qualified XminiTag
 
 import qualified Data.Time.Clock
@@ -29,22 +30,21 @@ import qualified System.IO
 import qualified Text.Printf
 
 
-
-xregs = [ ("hax.demoSimplest" =: XdemoSimplest.registerX)
-        , ("hax.demoCfgArgs" =: XdemoCfgArgs.registerX)
-        , ("hax.pageAnchors" =: XpageAnchors.registerX)
-        , ("hax.image" =: Ximage.registerX)
-        , ("hax.links" =: Xlinks.registerX)
-        , ("hax.miniTag" =: XminiTag.registerX)
+xregs = [ "hax.demoSimplest" =: XdemoSimplest.registerX
+        , "hax.demoCfgArgs" =: XdemoCfgArgs.registerX
+        , "hax.pageAnchors" =: XpageAnchors.registerX
+        , "hax.image" =: Ximage.registerX
+        , "hax.links" =: Xlinks.registerX
+        , "hax.snippet" =: Xsnippet.registerX
+        , "hax.miniTag" =: XminiTag.registerX
         ]
-
 
 
 main ::
     IO ()
 main =
     Data.Time.Clock.getCurrentTime >>= \starttime
-    -> putStrLn "\n\n\n==== HAXTATIC ====\n"
+    -> putStrLn "\n\n==== HAXTATIC ====\n"
     >> System.Environment.getArgs >>= \cmdargs
     -> System.Directory.getCurrentDirectory >>= \curdir
     -> if null cmdargs
@@ -52,7 +52,7 @@ main =
             \  For existing project: specify path to its current directory.\n\
             \  For a new project: specify path to its intended directory.\n    (I'll create it if missing and its parent isn't.)\n\n"
         else
-        let dirpath = cmdargs#0
+        let dirpath = cmdargs~@0
             projfilename = (Util.atOr cmdargs 1 Defaults.fileName_Proj)
             ctxmain = Files.AppContext {    Files.curDir = curdir,
                                             Files.dirPath = dirpath,
@@ -63,7 +63,7 @@ main =
         in processAll ctxmain projfilename (drop 2 cmdargs)
         --  REMINISCE:
 
-        >>= \(buildplan , numoutfiles , numxmls , timeinitdone , timecopydone , timeprocdone , timexmldone)
+        >>= \(buildplan , warnpages , numoutfiles , numxmls , timeinitdone , timecopydone , timeprocdone , timexmldone)
         -> Data.Time.Clock.getCurrentTime >>= \endtime
         -> let
             timetaken = Util.duration starttime endtime
@@ -86,21 +86,23 @@ main =
         >> Text.Printf.printf "\n\t%s misc. & file-copying%s"
                                 (showtime$ ((Util.duration timeinitdone timecopydone) + (Util.duration timeprocdone endtime)))
                                 (showavg (buildplan-:Build.outStatics~>length) timeprocdone endtime)
-        >> putStrLn ("\n\n==== Bye now! ====\n\n\n")
+        >> if null warnpages
+            then putStrLn ("\n\n==== Bye now! ====\n\n")
+            else putStrLn ("\n\n" ++ (Util.join "\n\t!>\t" ("Apparent {!| ERROR MESSAGES |!} were rendered into:":warnpages)) ++ "\n\n")
         >> System.IO.hFlush System.IO.stdout
 
 
 
 processAll ctxmain projfilename custfilenames =
     let dirpath = ctxmain-:Files.dirPath
-        filenameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
+        nameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
 
     in putStrLn "\n1/6\tReading essential project files (or creating them).."
     >> System.IO.hFlush System.IO.stdout
     >> System.Directory.createDirectoryIfMissing False dirpath
     >> System.Directory.makeAbsolute dirpath >>= \dirfullpath   --  we do this just in case
     -> let projname = System.FilePath.takeBaseName dirfullpath  --  `dirpath` ended in `.` or `..`
-    in Defaults.loadOrCreate ctxmain projname (projfilename~>filenameonly) (custfilenames>~filenameonly)
+    in Defaults.loadOrCreate ctxmain projname (projfilename~>nameonly) (custfilenames>~nameonly)
     >>= Proj.loadCtx ctxmain projname xregs >>= \ctxproj
     -> Tmpl.warnIfTagMismatches ctxmain "*.haxproj"
                 (ctxproj-:Proj.setup-:Proj.tagMismatches)
@@ -116,12 +118,13 @@ processAll ctxmain projfilename custfilenames =
         numskipfiles = buildplan-:Build.numSkippedStatic
         numskipposts = buildplan-:Build.numSkippedAtoms
         numoutfiles = buildplan-:Build.numOutFilesTotal
-        numxmlfiles = buildplan-:Build.outAtoms~>length
+        numatoms = buildplan-:Build.outAtoms~>length
         numsitemaps = ((buildplan-:Build.siteMap~>fst) == Build.NoOutput) |? 0 |! 1
+        numxmls = numatoms + numsitemaps
         dirbuild = ctxproj-:Proj.dirPathBuild
     in Text.Printf.printf "\t->\tStatic files: will copy %u, skipping %u\n" numcopyfiles numskipfiles
     >> Text.Printf.printf "\t->\tContent pages: will generate %u+%u, skipping %u\n" (numgenpages - numdynpages) numdynpages numskippages
-    >> Text.Printf.printf "\t->\tXML files: will generate %u feeds, skipping %u\n\t\t           plus %u sitemap(s)\n" numxmlfiles numskipposts numsitemaps
+    >> Text.Printf.printf "\t->\tXML files: will generate %u feeds, skipping %u\n\t\t           plus %u sitemap(s)\n" numatoms numskipposts numsitemaps
     >> Data.Time.Clock.getCurrentTime >>= \timeinitdone
 
     -> Text.Printf.printf "\n3/6\tCopying %u/%u static file(s) to:\n\t->\t%s\n" numcopyfiles (numcopyfiles+numskipfiles) dirbuild
@@ -131,10 +134,10 @@ processAll ctxmain projfilename custfilenames =
 
     -> Text.Printf.printf "\n4/6\tGenerating %u/%u page(s) in:\n\t->\t%s\n" numgenpages (numgenpages+numskippages) dirbuild
     >> System.IO.hFlush System.IO.stdout
-    >> Pages.processAll ctxmain ctxproj buildplan >>= \pagerendercache
+    >> Pages.processAll ctxmain ctxproj buildplan >>= \(warnpages , pagerendercache)
     -> Data.Time.Clock.getCurrentTime >>= \timeprocdone
 
-    -> Text.Printf.printf "\n5/6\tGenerating %u/%u XML files in:\n\t->\t%s\n" (numxmlfiles+numsitemaps) (numxmlfiles+numsitemaps+numskipposts) dirbuild
+    -> Text.Printf.printf "\n5/6\tGenerating %u/%u XML files in:\n\t->\t%s\n" numxmls (numxmls+numskipposts) dirbuild
     >> Pages.writeSitemapXml ctxproj buildplan
     >> Posts.writeAtoms pagerendercache (buildplan-:Build.allPagesFiles) (ctxproj-:Proj.setup-:Proj.bloks)
                             (ctxproj-:Proj.setup-:Proj.posts) (ctxproj-:Proj.setup-:Proj.cfg) (buildplan-:Build.feedJobs)
@@ -146,4 +149,4 @@ processAll ctxmain projfilename custfilenames =
                     else putStrLn (deploymsg++(ctxproj-:Proj.dirPathDeploy))
                         >> System.IO.hFlush System.IO.stdout
                         >> Build.copyAllOutputsToDeploy buildplan
-    in Util.via doordonot (buildplan , numoutfiles , numxmlfiles+numsitemaps , timeinitdone , timecopydone , timeprocdone, timexmldone)
+    in Util.via doordonot (buildplan , warnpages , numoutfiles , numxmls , timeinitdone , timecopydone , timeprocdone, timexmldone)

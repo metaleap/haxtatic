@@ -378,12 +378,10 @@
 			<string>invalid</string>
 			<key>settings</key>
 			<dict>
-				<key>background</key>
-				<string>#FF0000</string>
 				<key>fontStyle</key>
-				<string></string>
+				<string>italic</string>
 				<key>foreground</key>
-				<string>#FFFFFF</string>
+				<string>#D06010</string>
 			</dict>
 		</dict>
 		<dict>

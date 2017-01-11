@@ -24,21 +24,25 @@ processAll ctxmain ctxproj buildplan =
         ctxtmpl = ctxproj-:Proj.setup-:Proj.tmpl
         cfgproj = ctxproj-:Proj.setup-:Proj.cfg
 
-    in if null$ buildplan-:Build.outPages then return (Data.Map.Strict.empty) else
+    in if null$ buildplan-:Build.outPages then return ([] , Data.Map.Strict.empty) else
     Tmpl.loadAll ctxmain ctxtmpl (ctxproj-:Proj.coreFiles)
                     filenameexts (cfgproj-:ProjC.htmlEquivExts) >>= \tmplfinder
     -> let foreach =
             processPage ctxmain cfgproj ctxtmpl tmplfinder
-        in (buildplan-:Build.outPages >>~ foreach) >>= \srcpathsandpagerenders
-        -> return (Data.Map.Strict.fromList srcpathsandpagerenders)
+        in (buildplan-:Build.outPages >>~ foreach)
+        >>= \warnpages_and_srcpaths_and_pagerenders
+        -> return ( warnpages_and_srcpaths_and_pagerenders>~fst ~> Util.unMaybes,
+                    Data.Map.Strict.fromList (warnpages_and_srcpaths_and_pagerenders>~snd) )
 
 
 
 processPage ctxmain cfgproj ctxtmpl tmplfinder outjob =
     Files.writeTo dstfilepath (outjob-:Build.relPath) processcontent
-    >>= \(ctxpage , mismatches)
+    >>= \(outsrc , ctxpage , mismatches)
     -> Tmpl.warnIfTagMismatches ctxmain srcfilepath mismatches
-    >> return (outjob-:Build.srcFile-:Files.path , ctxpage)
+    >> let i1 = Util.indexOfSub outsrc "|!}" ; i2 = Util.indexOfSub outsrc "{!|"
+    in return ( (i2 < 0 || i1 < i2) |? Nothing |! (Just$ outjob-:Build.relPath),
+                (outjob-:Build.srcFile-:Files.path , ctxpage))
 
     where
     dstfilepath = outjob-:Build.outPathBuild
@@ -76,7 +80,7 @@ processPage ctxmain cfgproj ctxtmpl tmplfinder outjob =
             htmlinner1st tagname defval =
                 Util.atOr (htmlinners tagname) 0 defval
 
-        in return (outsrc , (ctxpage , mismatches))
+        in return (outsrc , (outsrc , ctxpage , mismatches))
 
 
 

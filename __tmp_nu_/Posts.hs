@@ -63,14 +63,11 @@ parseProjChunks chunkssplits =
     foreach (pfeedcat:pvalsplits) =
         let
             pstr = Util.join ":" pvalsplits ~> Util.trim
-            parsestr = ((("P {feed = \"" ++ pfeedcat ++ "\", ") ++).(++"}"))$
-                        if i < 0 then pstr else
-                        (take i pstr) ++ "content=" ++ (pstr ~> ((drop$ i+l) ~. Util.trim ~. show))
-                        where i = Util.indexOfSub pstr "content::" ; l = 11 -- "content::"~>length
+            parsestr = ("P {feed = \"" ++ pfeedcat ++ "\", ") ++ (Tmpl.fixParseStr "content" pstr) ++ "}"
             post = Util.tryParseOr errpost parsestr
             errpost = P {
-                    feed=pfeedcat,dt="9999-12-31", cat="_hax_cat", title="{!| syntax issue, couldn't parse this post |!}",
-                    link="*.haxproj", content = "<pre>" ++ (Html.escape parsestr) ++ "</pre>",
+                    feed=pfeedcat,dt="9999-12-31", cat="_hax_cat", title="{!|P| syntax issue, couldn't parse this post |!}",
+                    link="*.haxproj", content = "<pre>" ++ (Html.escape pstr) ++ "</pre>",
                     pic="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Warning_icon.svg/256px-Warning_icon.svg.png"
                 }
         in Just post
@@ -115,7 +112,10 @@ writeAtoms pagerendercache allpagesfiles projbloks projposts projcfg outjobs =
     postsfromblok = postsFromBlok pagerendercache projcfg allpagesfiles
 
     writeatom outjob =
-        Files.writeTo (outjob-:outPathBuild) relpath xmlatomfull
+        Files.writeTo (outjob-:outPathBuild) relpath xmlatomfull >>= \nowarnings
+        -> if nowarnings then return ()
+            else putStrLn ("...\t<<\tProbable {!| ERROR MESSAGES |!} were rendered into `"++relpath++"`")
+
         where
 
         relpath = outjob-:relPath
@@ -124,7 +124,7 @@ writeAtoms pagerendercache allpagesfiles projbloks projposts projcfg outjobs =
         xmlatomfull =
             let updated = if null allposts
                             then (ProjC.dtUtc2Str projcfg "" (outjob-:srcFile-:Files.modTime))
-                            else ((snd$ allposts#0)-:dt)
+                            else ((snd$ allposts~@0)-:dt)
                 xmlintro = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
                             \<feed xmlns=\"http://www.w3.org/2005/Atom\">\n\
                             \    <link rel=\"self\" type=\"application/rss+xml\" href=\"http://"++domainname++"/"++(urify relpath)++"\" />\n\
@@ -133,8 +133,11 @@ writeAtoms pagerendercache allpagesfiles projbloks projposts projcfg outjobs =
                             \    <id>http://"++domainname++pageuri++"</id>\n\
                             \    <link href=\"http://"++domainname++pageuri++"\"/>\n\
                             \    <updated>"++updated++"T00:00:00Z</updated>\n    "
-            in
-                return (concat$ (xmlintro:(allposts >~ xmlatompost))++["\n</feed>"] , ())
+                xmlinner = concat$ allposts >~ xmlatompost
+                nowarn = i1 < 0 || i2 < (i1 + 4) where
+                    i1 = Util.indexOfSub xmlinner "{!|"
+                    i2 = Util.indexOfSub xmlinner "|!}"
+            in return (xmlintro++xmlinner++"\n</feed>" , nowarn)
 
         urify = Files.pathSepSystemToSlash
         blokname = outjob-:blokName

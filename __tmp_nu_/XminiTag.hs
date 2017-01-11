@@ -7,8 +7,8 @@ import qualified Util
 import qualified X
 
 
-data Tag =
-    Cfg {
+data Tag
+    = Cfg {
         htmlAtts :: Util.StringPairs
     }
     deriving (Read)
@@ -23,10 +23,8 @@ registerX xreg =
         where
         innercontent = argstr
 
-
     in X.Early renderer
     where
-
 
     (cfg_htmltagname , cfg_parsestr ) = xreg-:X.cfgSplitOnce
     cfghtmlatts =  cfg-:htmlAtts

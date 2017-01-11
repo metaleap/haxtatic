@@ -67,6 +67,10 @@ via fn =
     ((>>)fn).return
 
 
+clamp minval maxval =
+    (max minval) . (min maxval)
+
+
 duration =
     flip Data.Time.Clock.diffUTCTime
 
@@ -74,13 +78,13 @@ duration =
 -- for uses such as `crop` without (directly) taking the `length`
 dropLast 0 = id
 dropLast 1 = init
-dropLast n = (#n) . reverse . Data.List.inits
+dropLast n = (~@n) . reverse . Data.List.inits
 -- dropLast n l = l~>take (l~>length - n)
 
 
 takeLast 0 = const []
 takeLast 1 = (:[]).last
-takeLast n = (#n) . reverse . Data.List.tails
+takeLast n = (~@n) . reverse . Data.List.tails
 
 
 indexed l =
@@ -241,7 +245,7 @@ atOr (_:x:_) 1 _ = x
 --  atOr (_:_:_:_:_:[]) 5 defval = defval
 --  these above are all branches so release only as necessary
 atOr list index defval
-    |(index > -1 && lengthGt index list)= list#index
+    |(index > -1 && lengthGt index list)= list~@index
     |(otherwise)= defval
 
 
@@ -286,7 +290,7 @@ indexOfSub [] _ =
 indexOfSub _ [] =
     _intmin
 indexOfSub haystack needle =
-    let (startindex , _haystack) = _indexof_droptil (needle#0) 0 haystack
+    let (startindex , _haystack) = _indexof_droptil (needle~@0) 0 haystack
     in if startindex<0 then startindex else
         startindex + indexofsub _haystack needle
         where
@@ -305,7 +309,7 @@ indexOfSubs1st [] _ =
 indexOfSubs1st _ [] =
     (_intmin , "" )
 indexOfSubs1st subs str =
-    let startchars = unique$ subs>~(#0)
+    let startchars = unique$ subs>~(~@0)
         (startindex , _haystack) = _indexof_droptil' (`elem` startchars) 0 str
         iidxs = isubs >~ (both (id,indexof)) ~|snd~.(>=0)
         isubs = indexed subs
@@ -313,7 +317,7 @@ indexOfSubs1st subs str =
         (i,index) = Data.List.minimumBy (bothSnds compare) iidxs
     in if startindex<0 || null iidxs || index<0
         then ( _intmin , "" )
-        else ( index+startindex , subs#i )
+        else ( index+startindex , subs~@i )
 
 
 
@@ -387,7 +391,7 @@ splitUp onmatch allbeginners end src =
     beginners = beginners' ~| length~.((==)beg0len)
     beginners' = allbeginners>~reverse ~|is
     beg0len = beg0~>length
-    beg0 = beginners'#0
+    beg0 = beginners'~@0
 
     lastidx = (beginners~>length > 1) |? (lastidx'') |! (lastidx')
     lastidx' revstr = lastIndexOfSub revstr beg0

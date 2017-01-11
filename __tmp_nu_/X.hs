@@ -18,7 +18,7 @@ data Reg
         cfgFullStr :: String,
         cfgSplitAll :: [String],
         cfgSplitOnce ::  (String,String)
-    }
+    } deriving (Show)
 
 
 data Render r = NoRender | Early r | WaitForPage r
@@ -27,7 +27,7 @@ data Render r = NoRender | Early r | WaitForPage r
 
 clarifyParseArgsError (xreg , arghint) =
     let (xn,tn) = (xreg-:xname , xreg-:tname)
-    in ( ("(for `" ++ xn ++"` args) within") , ("{<!---->X|" ++ tn) , arghint )
+    in ( ("(for `" ++ xn ++"` args) within") , ("{X<!---->|" ++ tn) , arghint )
 
 clarifyParseCfgError xreg =
     let (xn,tn) = (xreg-:xname , xreg-:tname)
@@ -35,7 +35,7 @@ clarifyParseCfgError xreg =
     in ( ("(in your *.haxproj) following") , ("X|:" ++ xn ++ ":" ++ tn) , (Util.excerpt 23 hint) )
 
 htmlErr (clarify , codemain , codemore) =
-    "{!X| Bad syntax "++clarify++" `"++codemain++": "++ (Html.escape codemore)++"` (couldn't parse it) |!}"
+    "{!|X| Bad syntax "++clarify++" `"++codemain++": "++ (Html.escape codemore)++"` (couldn't parse it) |!}"
 
 htmlErrAtts clarifywithcode =
     [ "" =: htmlErr clarifywithcode
@@ -64,7 +64,7 @@ parseProjChunks xregisterers chunkssplits =
             tn = Util.trim tname'
         in if null tn then nope else
             case Data.List.lookup xn xregisterers of
-                Nothing -> ( tn , Early (rendererr ("{!X|"++tn++": unknown X-renderer `"++xn++"`, mispelled in your *.haxproj? |!}")) )
+                Nothing -> ( tn , Early (rendererr ("{!|X|"++tn++": unknown X-renderer `"++xn++"`, mispelled in your *.haxproj? |!}")) )
                 Just regx -> from regx xn tn tvals
     foreach _ =
         nope
@@ -97,6 +97,12 @@ tagHandler xtags ctxpage tagcontent =
         Nothing
 
 
+
+tryParseArgs parsestr maybedefargs errargs =
+    let parse Nothing e = (Util.tryParseOr e) . wrap
+        parse (Just d) e = Util.tryParse d e wrap
+        wrap = (("Args{"++).(++"}"))
+    in parse maybedefargs errargs parsestr
 
 tryParseCfg parsestr maybedefcfg errcfg =
     let parse Nothing e = (Util.tryParseOr e) . wrap

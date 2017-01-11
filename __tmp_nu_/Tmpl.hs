@@ -49,6 +49,7 @@ _applychunkbegin = "{P|"
 _applychunkmid = ":content:"
 _applychunkend = tag_Close
 apply ctxtmpl ctxpage pagesrc =
+    -- concatMap foreach (ctxtmpl-:chunks)
     concat$ ctxtmpl-:chunks >~ foreach
     where
     foreach (":content:" , "{P|") =
@@ -80,7 +81,7 @@ loadAll ctxmain ctxproc deffiles filenameexts htmlequivexts =
     in fileexts>>~foreach
     >>= \loadedtemplates
     -> let
-        tmpldef = loadedtemplates#0
+        tmpldef = loadedtemplates~@0
         tmplfind "" = tmpldef
         tmplfind ".html" = tmpldef
         tmplfind ".htm" = tmpldef
@@ -117,6 +118,7 @@ processSrcFully ctxproc ctxpage =
     _p = ctxpage-:(pTagHandler =|- preserveunprocessedtag)
     _x = (ctxproc-:xTagHandler) ctxpage
     process src =
+        -- concatMap foreach (splitup src)
         concat$ (splitup src) >~foreach
         where
         foreach (srccontent , "") =
@@ -151,6 +153,12 @@ processXtagDelayed taghandler tagcontent =
 
 tagMismatches src =
     Util.countSubVsSubs src (tag_Close , tags_All)
+
+
+fixParseStr fulltextfieldname pstr =
+    if i < 0 then pstr else
+    (take i pstr) ++ fulltextfieldname ++ "=" ++ (pstr ~> ((drop$ i+l) ~. Util.trim ~. show))
+        where i = Util.indexOfSub pstr (fulltextfieldname++"=:") ; l = 2 + fulltextfieldname~>length
 
 
 warnIfTagMismatches ctxmain filename (numtagends , numtagbegins) =
