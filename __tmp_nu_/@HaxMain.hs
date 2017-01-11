@@ -141,6 +141,7 @@ processAll ctxmain projfilename custfilenames =
     >> Posts.writeAtoms pagerendercache (buildplan-:Build.allPagesFiles) (ctxproj-:Proj.setup-:Proj.bloks)
                             (ctxproj-:Proj.setup-:Proj.posts) (ctxproj-:Proj.setup-:Proj.cfg) (buildplan-:Build.feedJobs)
     >> Data.Time.Clock.getCurrentTime >>= \timexmldone
+
     -> let
         deploymsg = Text.Printf.printf "\n6/6\tCopying only the %u newly (over)written file(s) also to:\n\t->\t" numoutfiles
         doordonot = if null$ ctxproj-:Proj.dirPathDeploy

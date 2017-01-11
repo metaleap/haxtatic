@@ -4,7 +4,6 @@ module Pages where
 import Base
 import qualified Bloks
 import qualified Build
-import qualified Defaults
 import qualified Files
 import qualified Html
 import qualified Proj
@@ -50,7 +49,6 @@ processPage ctxmain cfgproj ctxtmpl tmplfinder outjob =
 
     loadsrccontent =
         let blokindexname = Bloks.blokNameFromIndexPagePath srcfilepath
-            blokindextmpl = tmplfinder Defaults.blokIndexPrefix
         in if is blokindexname
             then return ((0,0) , "{X|_hax_blokindex: vars=[(\"bname\",\""++blokindexname++"\")], content=\"\" |}")
             else readFile srcfilepath >>= \rawsrc

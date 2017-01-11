@@ -16,7 +16,8 @@ data Iterate
     = Range Int Int
     | Values [String]
     | Bloks
-    -- | Posts [String]
+    | Feeds
+    | FeedPosts [String]
     deriving (Read)
 
 
@@ -36,6 +37,7 @@ data Tag
     }
     | Args {
         over :: Iterate,
+        wrap :: Maybe (String , String),
         order :: SortOrder
     } deriving (Read)
 
@@ -49,16 +51,22 @@ registerX ctxproj xreg =
         foreach (i,v) =
             Util.replaceSubs ["[:i:]" =: show i , "[:v:]" =: v] (cfg-:content)
         iteratees = Util.indexed$ case args-:over of
-                        Values values -> ordered$ values
-                        Range from to -> ordered$ [from..to] >~ show
-                        Bloks -> ordered$ Data.Map.Strict.keys$ ctxproj-:Proj.setup-:Proj.bloks
-        ordered = o (args-:order) where
-            o Ascending = Data.List.sort
-            o Descending = Data.List.sortBy (flip compare)
-            o _ = id
+                        Values values   -> ordered$ values >~ wrapped
+                        Range from to   -> ordered$ [from..to] >~ show >~ wrapped
+                        Bloks           -> ordered$ (Data.Map.Strict.keys$ ctxproj-:Proj.setup-:Proj.bloks) >~ wrapped
+                        Feeds           -> ordered$
+                                            ((ctxproj-:Proj.setup-:Proj.feeds) ++ (Data.Map.Strict.keys$ ctxproj-:Proj.setup-:Proj.bloks))
+                                            >~ wrapped
+        wrapped = case args-:wrap of
+                    Just (w1,w2) -> (w1++).(++w2)
+                    Nothing      -> id
+        ordered = case args-:order of
+                    Ascending   -> Data.List.sort
+                    Descending  -> Data.List.sortBy (flip compare)
+                    _           -> id
         args = X.tryParseArgs argstr (Just defargs) errargs where
-            defargs = Args { over = Values [], order = None }
-            errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))], order = None }
+            defargs = Args { over = Values [], wrap = Nothing, order = None }
+            errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))], wrap = Nothing, order = None }
 
     in X.Early renderer
     where
