@@ -158,7 +158,7 @@ tagMismatches src =
 fixParseStr fulltextfieldname pstr =
     if i < 0 then pstr else
     (take i pstr) ++ fulltextfieldname ++ "=" ++ (pstr ~> ((drop$ i+l) ~. Util.trim ~. show))
-        where i = Util.indexOfSub pstr (fulltextfieldname++"=:") ; l = 2 + fulltextfieldname~>length
+        where i = Util.indexOfSub pstr (fulltextfieldname++"=>") ; l = 2 + fulltextfieldname~>length
 
 
 warnIfTagMismatches ctxmain filename (numtagends , numtagbegins) =
