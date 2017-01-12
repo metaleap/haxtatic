@@ -7,13 +7,11 @@ import qualified Util
 import qualified X
 
 
-
 data Tag =
     Cfg {
         lnkAtts :: Util.StringPairs,
         imgAtts :: Util.StringPairs
     } deriving (Read)
-
 
 
 registerX _ xreg =

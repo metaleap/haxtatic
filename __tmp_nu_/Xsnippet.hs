@@ -15,7 +15,7 @@ data Tag
     | Args {
         vars :: Util.StringPairs,
         content :: String
-    } deriving (Read)
+    } deriving (Read, Show)
 
 
 registerX _ xreg =

@@ -12,22 +12,6 @@ import qualified Data.List
 import qualified Data.Map.Strict
 
 
-data Iterate
-    = Range Int Int
-    | Values [String]
-    | Bloks
-    | Feeds
-    | FeedPosts [String]
-    deriving (Read)
-
-
-data SortOrder
-    = None
-    | Ascending
-    | Descending
-    deriving (Eq, Read)
-
-
 data Tag
     = Cfg {
         prefix :: String,
@@ -42,6 +26,22 @@ data Tag
     } deriving (Read)
 
 
+data Iterate
+    = Range Int Int
+    | Values [String]
+    | Bloks
+    | Feeds
+    | FeedPosts Posts.Query
+    deriving (Read)
+
+
+data SortOrder
+    = None
+    | Ascending
+    | Descending
+    deriving (Eq, Read)
+
+
 registerX ctxproj xreg =
     let
     renderer (_ , argstr) =
@@ -50,13 +50,22 @@ registerX ctxproj xreg =
         allcontents = Util.join (cfg-:joinwith) (iteratees >~ foreach)
         foreach (i,v) =
             Util.replaceSubs ["[:i:]" =: show i , "[:v:]" =: v] (cfg-:content)
-        iteratees = Util.indexed$ case args-:over of
-                        Values values   -> ordered$ values >~ wrapped
-                        Range from to   -> ordered$ [from..to] >~ show >~ wrapped
-                        Bloks           -> ordered$ (Data.Map.Strict.keys$ ctxproj-:Proj.setup-:Proj.bloks) >~ wrapped
-                        Feeds           -> ordered$
-                                            ((ctxproj-:Proj.setup-:Proj.feeds) ++ (Data.Map.Strict.keys$ ctxproj-:Proj.setup-:Proj.bloks))
-                                            >~ wrapped
+        iteratees = Util.indexed$ (iter $args-:over) where
+            iter (Values values) =
+                ordered$ values >~ wrapped
+            iter (Range from to) =
+                ordered$ [from..to] >~ (show~.wrapped)
+            iter Bloks =
+                ordered$ (Data.Map.Strict.keys$ ctxproj-:Proj.setup-:Proj.bloks) >~ wrapped
+            iter Feeds =
+                ordered$ ((ctxproj-:Proj.setup-:Proj.feeds) ++ (Data.Map.Strict.keys$ ctxproj-:Proj.setup-:Proj.bloks))
+                            >~ wrapped
+            iter (FeedPosts query) =
+                (Posts.feedPosts query) >~ (show.topairs)
+                where
+                topairs post =
+                    [ "feed" =: post-:Posts.feed, "dt" =: post-:Posts.dt, "cat" =: post-:Posts.cat, "title" =: post-:Posts.title
+                    , "link" =: post-:Posts.link, "pic" =: post-:Posts.pic, "content" =: post-:Posts.content ]
         wrapped = case args-:wrap of
                     Just (w1,w2) -> (w1++).(++w2)
                     Nothing      -> id

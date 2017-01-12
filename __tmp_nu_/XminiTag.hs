@@ -10,8 +10,7 @@ import qualified X
 data Tag
     = Cfg {
         htmlAtts :: Util.StringPairs
-    }
-    deriving (Read)
+    } deriving (Read)
 
 
 

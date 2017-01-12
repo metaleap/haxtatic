@@ -25,7 +25,7 @@ data Post
         link :: String,
         pic :: String,
         content :: String
-    } deriving (Eq, Read)
+    } deriving (Eq, Read, Show)
 
 data Feed =
     Job {
@@ -34,6 +34,12 @@ data Feed =
         relPath :: FilePath,
         srcFile :: Files.File
     }
+
+
+data Query =
+    Select {
+        feedNames :: [String]
+    } deriving (Read)
 
 
 
@@ -50,6 +56,19 @@ buildPlan modtimeproj relpathpostatoms feeds =
             |(relpathpostatoms==Defaults.dir_PostAtoms_None)= ""
             |(null relpathpostatoms)= dstfilename
             |(otherwise)= relpathpostatoms </> dstfilename
+
+
+
+feedPosts query =
+    (query-:feedNames) >~ (\fn -> P {
+                                feed = fn,
+                                dt = fn,
+                                cat = fn,
+                                title = fn,
+                                link = fn,
+                                pic = fn,
+                                content = fn
+                            })
 
 
 
