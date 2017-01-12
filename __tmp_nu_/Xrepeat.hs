@@ -74,11 +74,8 @@ registerX ctxproj xreg =
                 fields2pairs post =
                     (Posts.wellKnownFields False) >~ (Util.both (id =: (post-:)))
             ord Ascending = reverse ; ord _ = id
-        ctxbuild = Posts.BuildContext Nothing
-                                        (pagectx-:Tmpl.allPagesFiles)
-                                        projbloks
-                                        projposts
-                                        (ctxproj-:Proj.setup-:Proj.cfg)
+        ctxbuild = Posts.BuildContext (pagectx-:Tmpl.lookupCachedPageRender) (pagectx-:Tmpl.allPagesFiles)
+                                                        projbloks projposts (ctxproj-:Proj.setup-:Proj.cfg)
         wrapped = case args-:wrap of
                     Just (w1,w2) -> (w1++).(++w2)
                     Nothing      -> id

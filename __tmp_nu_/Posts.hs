@@ -18,7 +18,7 @@ import System.FilePath ( (</>) )
 
 data Ctx
     = BuildContext {
-        pageRenderCache :: Maybe (Data.Map.Strict.Map FilePath Tmpl.CtxPage),
+        lookupCachedPageRender :: FilePath->Maybe Tmpl.CtxPage,
         allPagesFiles :: [(FilePath , Files.File)],
         projBloks :: Data.Map.Strict.Map String Bloks.Blok,
         projPosts :: [Posts.Post],
@@ -135,17 +135,15 @@ postsFromBlok ctxbuild blokname getcat =
     topost (relpath,file) =
         let
             relpageuri = '/':(Files.pathSepSystemToSlash relpath)
-            ctxmaybe = case (ctxbuild-:pageRenderCache) of
-                Nothing -> Nothing
-                Just pagerendercache -> Data.Map.Strict.lookup (file-:Files.path) pagerendercache
-            (htmlcontent , htmlinner1st) = case ctxmaybe of
+            maybectxpage = (ctxbuild-:lookupCachedPageRender) (file-:Files.path)
+            (htmlcontent , htmlinner1st) = case maybectxpage of
                 Nothing -> ("<h1>Well now..</h1><p>..<i>there&apos;s</i> a bug in your static-site generator!</p>",
                                 const)
                 Just ctxpage -> (ctxpage-:Tmpl.cachedRenderSansTmpl , ctxpage-:Tmpl.htmlInner1st)
             pcat = getcat post
             post = P {
                 feed = blokname,
-                dt = ProjC.dtUtc2Str (ctxbuild-:projCfg) "" (ctxmaybe-:(Tmpl.pDate =|- cdatelatest)),
+                dt = ProjC.dtUtc2Str (ctxbuild-:projCfg) "" (maybectxpage-:(Tmpl.pDate =|- cdatelatest)),
                 cat = pcat,
                 title = htmlinner1st "h1" relpath,
                 link = relpageuri,

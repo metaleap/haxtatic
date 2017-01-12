@@ -41,6 +41,7 @@ data CtxPage
         htmlInner1st :: String->String->String,
         tmpl :: CtxTmpl,
         cachedRenderSansTmpl :: String,
+        lookupCachedPageRender :: FilePath->Maybe CtxPage,
         allPagesFiles :: [(FilePath , Files.File)]
     }
 

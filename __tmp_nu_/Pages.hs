@@ -13,7 +13,6 @@ import qualified Tmpl
 import qualified Util
 
 import qualified Data.List
-import qualified Data.Map.Strict
 import qualified System.FilePath
 
 
@@ -22,22 +21,22 @@ processAll ctxmain ctxproj buildplan =
     let filenameexts = buildplan-:Build.outPages >~ filenameext
         filenameext = Build.srcFile ~. Files.path ~. System.FilePath.takeExtension
         ctxtmpl = ctxproj-:Proj.setup-:Proj.ctxTmpl
+        ctxbuildinitial = Posts.BuildContext (const Nothing) (buildplan-:Build.allPagesFiles)
+                            (ctxproj-:Proj.setup-:Proj.bloks) (ctxproj-:Proj.setup-:Proj.posts) cfgproj
         cfgproj = ctxproj-:Proj.setup-:Proj.cfg
-        ctxbuild = Posts.BuildContext Nothing
-                                        (buildplan-:Build.allPagesFiles)
-                                        (ctxproj-:Proj.setup-:Proj.bloks)
-                                        (ctxproj-:Proj.setup-:Proj.posts)
-                                        cfgproj
 
-    in if null$ buildplan-:Build.outPages then return ([] , Data.Map.Strict.empty) else
-    Tmpl.loadAll ctxmain ctxtmpl (ctxproj-:Proj.coreFiles)
+    in Tmpl.loadAll ctxmain ctxtmpl (ctxproj-:Proj.coreFiles)
                     filenameexts (cfgproj-:ProjC.htmlEquivExts) >>= \tmplfinder
-    -> let foreach =
-            processPage ctxmain ctxbuild ctxtmpl tmplfinder
-        in (buildplan-:Build.outPages >>~ foreach)
-        >>= \warnpages_and_srcpaths_and_pagerenders
-        -> return ( warnpages_and_srcpaths_and_pagerenders>~fst ~> Util.unMaybes,
-                    Data.Map.Strict.fromList (warnpages_and_srcpaths_and_pagerenders>~snd) )
+    -> let
+        processpage done [] =
+            return done
+        processpage (prevwarns , ctxbuildprev) (thisjob:morejobs) =
+            processPage ctxmain ctxbuildprev ctxtmpl tmplfinder thisjob
+            >>= \(maybewarning , ctxbuildnext)
+            -> let nextwarns = case maybewarning of Nothing -> prevwarns ; Just w -> w:prevwarns
+            in processpage (nextwarns , ctxbuildnext) morejobs
+
+    in processpage ([] , ctxbuildinitial) (buildplan-:Build.outPages)
 
 
 
@@ -45,9 +44,16 @@ processPage ctxmain ctxbuild ctxtmpl tmplfinder outjob =
     Files.writeTo dstfilepath (outjob-:Build.relPath) processcontent
     >>= \(outsrc , ctxpage , mismatches)
     -> Tmpl.warnIfTagMismatches ctxmain srcfilepath mismatches
-    >> let i1 = Util.indexOfSub outsrc "|!}" ; i2 = Util.indexOfSub outsrc "{!|"
+    >> let
+        outjobsrcfilepath = outjob-:Build.srcFile-:Files.path
+        lookupcachedpagerender = ctxbuild-:Posts.lookupCachedPageRender
+        cachelookup filepath
+            |(filepath==outjobsrcfilepath)= Just ctxpage
+            |(otherwise)= lookupcachedpagerender filepath
+        i1 = Util.indexOfSub outsrc "|!}" ; i2 = Util.indexOfSub outsrc "{!|"
     in return ( (i2 < 0 || i1 < i2) |? Nothing |! (Just$ outjob-:Build.relPath),
-                (outjob-:Build.srcFile-:Files.path , ctxpage))
+                    Posts.BuildContext cachelookup (ctxbuild-:Posts.allPagesFiles)
+                            (ctxbuild-:Posts.projBloks) (ctxbuild-:Posts.projPosts) (ctxbuild-:Posts.projCfg) )
 
     where
     dstfilepath = outjob-:Build.outPathBuild
@@ -72,6 +78,7 @@ processPage ctxmain ctxbuild ctxtmpl tmplfinder outjob =
                             Tmpl.htmlInner1st = htmlinner1st,
                             Tmpl.tmpl = tmpl,
                             Tmpl.cachedRenderSansTmpl = pageonlyproc,
+                            Tmpl.lookupCachedPageRender = ctxbuild-:Posts.lookupCachedPageRender,
                             Tmpl.allPagesFiles = ctxbuild-:Posts.allPagesFiles
                         }
             (pagevars , pagedate , pagesrcchunks) = pageVars (ctxbuild-:Posts.projCfg) pagesrc $outjob-:Build.contentDate

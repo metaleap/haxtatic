@@ -133,17 +133,12 @@ processAll ctxmain projfilename custfilenames =
 
     -> Text.Printf.printf "\n4/6\tGenerating %u/%u page(s) in:\n\t->\t%s\n" numgenpages (numgenpages+numskippages) dirbuild
     >> System.IO.hFlush System.IO.stdout
-    >> Pages.processAll ctxmain ctxproj buildplan >>= \(warnpages , pagerendercache)
+    >> Pages.processAll ctxmain ctxproj buildplan >>= \(warnpages , ctxbuild)
     -> Data.Time.Clock.getCurrentTime >>= \timeprocdone
 
     -> Text.Printf.printf "\n5/6\tGenerating %u/%u XML files in:\n\t->\t%s\n" numxmls (numxmls+numskipposts) dirbuild
     >> Pages.writeSitemapXml ctxproj buildplan
-    >> Posts.writeAtoms (Posts.BuildContext (Just pagerendercache)
-                                            (buildplan-:Build.allPagesFiles)
-                                            (ctxproj-:Proj.setup-:Proj.bloks)
-                                            (ctxproj-:Proj.setup-:Proj.posts)
-                                            (ctxproj-:Proj.setup-:Proj.cfg))
-                        (buildplan-:Build.feedJobs)
+    >> Posts.writeAtoms ctxbuild (buildplan-:Build.feedJobs)
     >> Data.Time.Clock.getCurrentTime >>= \timexmldone
 
     -> let
