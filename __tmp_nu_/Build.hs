@@ -10,6 +10,7 @@ import qualified Proj
 import qualified ProjC
 import qualified Util
 
+import qualified Data.List
 import qualified Data.Time.Clock
 import qualified System.Directory
 import System.FilePath ( (</>) )
@@ -110,7 +111,13 @@ plan ctxmain ctxproj =
     -> listallfiles (cfgprocpages-:ProjC.dirs) (max modtimetmpl) >>= \allpagesfiles_orig
     -> _createIndexHtmlIfNoContentPages ctxmain ctxproj (allpagesfiles_orig~>length) >>= \defaultpage
     -> let
-        allpagesfiles_nodate = allpagesfiles_orig >~ renamerelpath where
+        allpagesfiles_nodate = Data.List.sortBy blokpagesfirst (allpagesfiles_orig >~ renamerelpath) where
+            blokpagesfirst (relpath1,file1) (relpath2,file2) =
+                let cmp = compare b2 b1
+                    b1 = Bloks.blokNameFromRelPath (projsetup-:Proj.bloks) relpath1 file1
+                    b2 = Bloks.blokNameFromRelPath (projsetup-:Proj.bloks) relpath2 file2
+                in if cmp /= EQ then cmp else
+                    compare (file2-:Files.modTime) (file1-:Files.modTime)
             renamerelpath both@(_,file) =
                 (fst$ Files.customDateFromFileName (ProjC.dtPageDateParse projcfg) both , file)
         outfileinfobasic = _outFileInfo ctxproj fst id

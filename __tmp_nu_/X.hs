@@ -9,7 +9,6 @@ import qualified Data.List
 import qualified Data.Map.Strict
 
 
-
 data Reg
     = Nope
     | Named {

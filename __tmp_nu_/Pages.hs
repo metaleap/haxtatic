@@ -6,6 +6,7 @@ import qualified Bloks
 import qualified Build
 import qualified Files
 import qualified Html
+import qualified Posts
 import qualified Proj
 import qualified ProjC
 import qualified Tmpl
@@ -20,14 +21,19 @@ import qualified System.FilePath
 processAll ctxmain ctxproj buildplan =
     let filenameexts = buildplan-:Build.outPages >~ filenameext
         filenameext = Build.srcFile ~. Files.path ~. System.FilePath.takeExtension
-        ctxtmpl = ctxproj-:Proj.setup-:Proj.tmpl
+        ctxtmpl = ctxproj-:Proj.setup-:Proj.ctxTmpl
         cfgproj = ctxproj-:Proj.setup-:Proj.cfg
+        ctxbuild = Posts.BuildContext Nothing
+                                        (buildplan-:Build.allPagesFiles)
+                                        (ctxproj-:Proj.setup-:Proj.bloks)
+                                        (ctxproj-:Proj.setup-:Proj.posts)
+                                        cfgproj
 
     in if null$ buildplan-:Build.outPages then return ([] , Data.Map.Strict.empty) else
     Tmpl.loadAll ctxmain ctxtmpl (ctxproj-:Proj.coreFiles)
                     filenameexts (cfgproj-:ProjC.htmlEquivExts) >>= \tmplfinder
     -> let foreach =
-            processPage ctxmain cfgproj ctxtmpl tmplfinder
+            processPage ctxmain ctxbuild ctxtmpl tmplfinder
         in (buildplan-:Build.outPages >>~ foreach)
         >>= \warnpages_and_srcpaths_and_pagerenders
         -> return ( warnpages_and_srcpaths_and_pagerenders>~fst ~> Util.unMaybes,
@@ -35,7 +41,7 @@ processAll ctxmain ctxproj buildplan =
 
 
 
-processPage ctxmain cfgproj ctxtmpl tmplfinder outjob =
+processPage ctxmain ctxbuild ctxtmpl tmplfinder outjob =
     Files.writeTo dstfilepath (outjob-:Build.relPath) processcontent
     >>= \(outsrc , ctxpage , mismatches)
     -> Tmpl.warnIfTagMismatches ctxmain srcfilepath mismatches
@@ -65,10 +71,11 @@ processPage ctxmain cfgproj ctxtmpl tmplfinder outjob =
                             Tmpl.htmlInners = htmlinners,
                             Tmpl.htmlInner1st = htmlinner1st,
                             Tmpl.tmpl = tmpl,
-                            Tmpl.cachedRenderSansTmpl = pageonlyproc
+                            Tmpl.cachedRenderSansTmpl = pageonlyproc,
+                            Tmpl.allPagesFiles = ctxbuild-:Posts.allPagesFiles
                         }
-            (pagevars , pagedate , pagesrcchunks) = pageVars cfgproj pagesrc $outjob-:Build.contentDate
-            taghandler = tagHandler cfgproj ctxpage ctxtmpl outjob
+            (pagevars , pagedate , pagesrcchunks) = pageVars (ctxbuild-:Posts.projCfg) pagesrc $outjob-:Build.contentDate
+            taghandler = tagHandler (ctxbuild-:Posts.projCfg) ctxpage ctxtmpl outjob
             tmpl = tmplfinder$ System.FilePath.takeExtension dstfilepath
             pageonlyproc = Tmpl.processSrcFully ctxtmpl (Just ctxpage)
                             (null pagevars |? pagesrc |! (concat pagesrcchunks))

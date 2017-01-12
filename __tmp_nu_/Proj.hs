@@ -9,9 +9,8 @@ import qualified Posts
 import qualified ProjC
 import qualified ProjT
 import qualified Util
-import qualified X
-
 import qualified Tmpl
+import qualified X
 
 import qualified Data.Map.Strict
 import qualified System.FilePath
@@ -33,6 +32,7 @@ data Ctx
     }
 
 
+
 data Setup
     = SetupFromProj {
         tmpDbgSrc :: [(Char,String)],
@@ -40,7 +40,7 @@ data Setup
         feeds :: [String],
         posts :: [Posts.Post],
         cfg :: ProjC.Config,
-        tmpl :: Tmpl.CtxProc,
+        ctxTmpl :: Tmpl.CtxProc,
         tagMismatches :: (Int , Int)
     }
 
@@ -70,7 +70,7 @@ loadCtx ctxmain projname xregs defaultfiles =
 _loadSetup ctxproj xregs =
     SetupFromProj { tmpDbgSrc = srcchunkspost, bloks = blokspost,
                     cfg = cfgpost, posts = postspost, feeds = feedspost,
-                    tmpl = Tmpl.ProcessingContext {
+                    ctxTmpl = Tmpl.ProcessingContext {
                             Tmpl.bTagHandler =  Bloks.tagHandler blokspost,
                             Tmpl.cTagHandler = ProjC.tagHandler cfgmiscpost,
                             Tmpl.tTagHandler = ProjT.tagHandler ttagspost,
@@ -82,7 +82,7 @@ _loadSetup ctxproj xregs =
     where
     setupprep = SetupFromProj { tmpDbgSrc = srcchunksprep, bloks = bloksprep,
                                 cfg = cfgprep, posts = postsprep, feeds = feedsprep,
-                                tmpl = Tmpl.ProcessingContext {
+                                ctxTmpl = Tmpl.ProcessingContext {
                                         Tmpl.bTagHandler =  Bloks.tagHandler bloksprep,
                                         Tmpl.cTagHandler = ProjC.tagHandler cfgmiscprep,
                                         Tmpl.tTagHandler = ProjT.tagHandler ttagsprep,
@@ -112,7 +112,7 @@ _loadSetup ctxproj xregs =
     srcchunksprep = loadChunks rawsrc
     srcchunkspost = srcchunksprep >~ pretemplatechunk
     pretemplatechunk (prefix,src) =
-        (prefix , Tmpl.processSrcFully (setupprep-:tmpl) Nothing src)
+        (prefix , Tmpl.processSrcFully (setupprep-:ctxTmpl) Nothing src)
 
 
 loadChunks rawsrc =

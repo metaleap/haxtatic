@@ -45,7 +45,7 @@ data SortOrder
 
 registerX ctxproj xreg =
     let
-    renderer (_ , argstr) =
+    renderer (Just pagectx , argstr) =
         Just$ (cfg-:prefix) ++ allcontents ++ (cfg-:suffix)
         where
         allcontents = Util.join (cfg-:joinwith) (iteratees >~ foreach)
@@ -62,17 +62,23 @@ registerX ctxproj xreg =
                 ordered$ (projfeeds ++ (Data.Map.Strict.keys projbloks))
                             >~ wrapped
             iter (FeedGroups maybequery fieldname) =
-                maybefieldfunc~>((Posts.feedGroups projposts projbloks maybequery) =|- [])
+                maybefieldfunc~>((Posts.feedGroups ctxbuild projposts projbloks maybequery) =|- [])
+                    ~> (ord $args-:order) >~ wrapped
                 where
                 maybefieldfunc =
                     Data.List.lookup fieldname (Posts.wellKnownFields True)
             iter (FeedPosts maybequery) =
-                (Posts.feedPosts projposts projbloks (maybequery)) ~>
-                    (ord $args-:order) >~ (fields2pairs ~. show ~. wrapped)
+                (Posts.feedPosts ctxbuild projposts projbloks (maybequery))
+                    ~> (ord $args-:order) >~ (fields2pairs ~. show ~. wrapped)
                 where
-                ord Ascending = reverse ; ord _ = id
                 fields2pairs post =
                     (Posts.wellKnownFields False) >~ (Util.both (id =: (post-:)))
+            ord Ascending = reverse ; ord _ = id
+        ctxbuild = Posts.BuildContext Nothing
+                                        (pagectx-:Tmpl.allPagesFiles)
+                                        projbloks
+                                        projposts
+                                        (ctxproj-:Proj.setup-:Proj.cfg)
         wrapped = case args-:wrap of
                     Just (w1,w2) -> (w1++).(++w2)
                     Nothing      -> id
@@ -84,7 +90,10 @@ registerX ctxproj xreg =
             defargs = Args { over = Values [], wrap = Nothing, order = None }
             errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))], wrap = Nothing, order = None }
 
-    in X.Early renderer
+    renderer _ =
+        Nothing
+
+    in X.WaitForPage renderer
     where
 
     projfeeds = ctxproj-:Proj.setup-:Proj.feeds

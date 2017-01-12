@@ -40,7 +40,8 @@ data CtxPage
         htmlInners :: String->[String],
         htmlInner1st :: String->String->String,
         tmpl :: CtxTmpl,
-        cachedRenderSansTmpl :: String
+        cachedRenderSansTmpl :: String,
+        allPagesFiles :: [(FilePath , Files.File)]
     }
 
 

@@ -16,6 +16,15 @@ import qualified System.FilePath
 import System.FilePath ( (</>) )
 
 
+data Ctx
+    = BuildContext {
+        pageRenderCache :: Maybe (Data.Map.Strict.Map FilePath Tmpl.CtxPage),
+        allPagesFiles :: [(FilePath , Files.File)],
+        projBloks :: Data.Map.Strict.Map String Bloks.Blok,
+        projPosts :: [Posts.Post],
+        projCfg :: ProjC.Config
+    }
+
 data Post
     = P {
         feed :: String,
@@ -66,12 +75,16 @@ dtYear post =
 
 
 
-feedPosts projposts _projbloks maybequery =
+feedPosts ctxbuild projposts projbloks maybequery =
     case maybequery of
         Nothing -> allposts
         Just query -> allposts ~| match query
     where
-    allposts = projposts
+    allposts = projposts ++ (concat$ bloknames>~postsfromblok)
+    postsfromblok blokname = (postsFromBlok ctxbuild blokname (const "getcathere in Posts.feedPosts")) >~ snd
+    bloknames = case maybequery of
+        Nothing -> Data.Map.Strict.keys projbloks
+        Just query -> (Data.Map.Strict.keys projbloks) ~|(`elem` (query-:feeds))
     match (Filter [] [] Nothing) _ =
         True
     match query post =
@@ -85,10 +98,10 @@ feedPosts projposts _projbloks maybequery =
         checkdate _ =
             True
 
-feedGroups projposts _projbloks maybequery postfield =
+feedGroups ctxbuild projposts projbloks maybequery postfield =
     Util.unique (allposts >~ postfield)
     where
-    allposts = feedPosts projposts _projbloks maybequery
+    allposts = feedPosts ctxbuild projposts projbloks maybequery
 
 
 
@@ -115,14 +128,16 @@ parseProjChunks chunkssplits =
 
 
 
-postsFromBlok pagerendercache projcfg allpagesfiles blokname getcat =
+postsFromBlok ctxbuild blokname getcat =
     allblokpages >~ topost
     where
-    (allblokpages , cdatelatest) = Bloks.allBlokPageFiles projcfg allpagesfiles blokname
+    (allblokpages , cdatelatest) = Bloks.allBlokPageFiles (ctxbuild-:projCfg) (ctxbuild-:allPagesFiles) blokname
     topost (relpath,file) =
         let
             relpageuri = '/':(Files.pathSepSystemToSlash relpath)
-            ctxmaybe = Data.Map.Strict.lookup (file-:Files.path) pagerendercache
+            ctxmaybe = case (ctxbuild-:pageRenderCache) of
+                Nothing -> Nothing
+                Just pagerendercache -> Data.Map.Strict.lookup (file-:Files.path) pagerendercache
             (htmlcontent , htmlinner1st) = case ctxmaybe of
                 Nothing -> ("<h1>Well now..</h1><p>..<i>there&apos;s</i> a bug in your static-site generator!</p>",
                                 const)
@@ -130,7 +145,7 @@ postsFromBlok pagerendercache projcfg allpagesfiles blokname getcat =
             pcat = getcat post
             post = P {
                 feed = blokname,
-                dt = ProjC.dtUtc2Str projcfg "" (ctxmaybe-:(Tmpl.pDate =|- cdatelatest)),
+                dt = ProjC.dtUtc2Str (ctxbuild-:projCfg) "" (ctxmaybe-:(Tmpl.pDate =|- cdatelatest)),
                 cat = pcat,
                 title = htmlinner1st "h1" relpath,
                 link = relpageuri,
@@ -149,14 +164,14 @@ wellKnownFields _ =
 
 
 
-writeAtoms _ _ _ _ _ [] =
+writeAtoms _ [] =
     return ()
-writeAtoms pagerendercache allpagesfiles projbloks projposts projcfg outjobs =
+writeAtoms ctxbuild outjobs =
     outjobs >>~ writeatom >> return ()
     where
 
-    domainname = projcfg-:ProjC.domainName
-    postsfromblok = postsFromBlok pagerendercache projcfg allpagesfiles
+    domainname = ctxbuild-:projCfg-:ProjC.domainName
+    postsfromblok = postsFromBlok ctxbuild
 
     writeatom outjob =
         Files.writeTo (outjob-:outPathBuild) relpath xmlatomfull >>= \nowarnings
@@ -170,7 +185,7 @@ writeAtoms pagerendercache allpagesfiles projbloks projposts projcfg outjobs =
 
         xmlatomfull =
             let updated = if null allposts
-                            then (ProjC.dtUtc2Str projcfg "" (outjob-:srcFile-:Files.modTime))
+                            then (ProjC.dtUtc2Str (ctxbuild-:projCfg) "" (outjob-:srcFile-:Files.modTime))
                             else ((snd$ allposts@!0)-:dt)
                 xmlintro = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
                             \<feed xmlns=\"http://www.w3.org/2005/Atom\">\n\
@@ -190,9 +205,9 @@ writeAtoms pagerendercache allpagesfiles projbloks projposts projcfg outjobs =
         blokname = outjob-:blokName
         feedname = is blokname |? "" |!
                     drop 1 (System.FilePath.takeExtension srcpath)
-        maybeblok = is blokname |? (Bloks.blokByName projbloks blokname) |! Nothing
+        maybeblok = is blokname |? (Bloks.blokByName (ctxbuild-:projBloks) blokname) |! Nothing
         allposts = case maybeblok of
-                    Nothing -> (projposts ~|(==feedname).feed) >~((,) "")
+                    Nothing -> ((ctxbuild-:projPosts) ~|(==feedname).feed) >~((,) "")
                     Just _ -> postsfromblok blokname (const blokname)
         (pageuri , feedtitle , desc) = case maybeblok of
                     Just blok -> ( '/':(urify (blok-:Bloks.blokIndexPageFile)) , blok-:Bloks.title , blok-:Bloks.desc )

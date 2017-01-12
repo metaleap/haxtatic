@@ -138,8 +138,12 @@ processAll ctxmain projfilename custfilenames =
 
     -> Text.Printf.printf "\n5/6\tGenerating %u/%u XML files in:\n\t->\t%s\n" numxmls (numxmls+numskipposts) dirbuild
     >> Pages.writeSitemapXml ctxproj buildplan
-    >> Posts.writeAtoms pagerendercache (buildplan-:Build.allPagesFiles) (ctxproj-:Proj.setup-:Proj.bloks)
-                            (ctxproj-:Proj.setup-:Proj.posts) (ctxproj-:Proj.setup-:Proj.cfg) (buildplan-:Build.feedJobs)
+    >> Posts.writeAtoms (Posts.BuildContext (Just pagerendercache)
+                                            (buildplan-:Build.allPagesFiles)
+                                            (ctxproj-:Proj.setup-:Proj.bloks)
+                                            (ctxproj-:Proj.setup-:Proj.posts)
+                                            (ctxproj-:Proj.setup-:Proj.cfg))
+                        (buildplan-:Build.feedJobs)
     >> Data.Time.Clock.getCurrentTime >>= \timexmldone
 
     -> let

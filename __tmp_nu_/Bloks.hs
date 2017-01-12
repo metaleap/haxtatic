@@ -33,7 +33,7 @@ allBlokPageFiles projcfg allpagesfiles bname =
             compare (pagedate file2) (pagedate file1)
         pagedate = snd.(Files.customDateFromFileName$ ProjC.dtPageDateParse projcfg)
         sortedmatches = Data.List.sortBy cmpblogpages blokpagematches
-    in (sortedmatches ,  (null sortedmatches) |? Util.dateTime0 |! pagedate $sortedmatches@!0 )
+    in (sortedmatches , sortedmatches@?0 ~> (pagedate =|- Util.dateTime0))
 
 
 blokByName bloks blokname =
@@ -47,7 +47,7 @@ blokNameFromIndexPagePath possiblefakepath =
 
 
 blokNameFromRelPath bloks relpath file =
-    "" -|= (bloks~>Data.Map.Strict.keys >~ foreach)@?0
+    "" -|= (bloks~>Data.Map.Strict.keys >~ foreach ~|is)@?0 -- yes, is
     where
     foreach bname
         | isRelPathBlokPage bname relpath
