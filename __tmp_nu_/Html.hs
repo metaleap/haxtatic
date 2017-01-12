@@ -81,7 +81,7 @@ escape =
 
 
 find1st finder defval htmlsrc =
-    Util.atOr (finder htmlsrc) 0 defval
+    defval -|= (finder htmlsrc)@?0
 
 findInnerContentOfNoAttrTags tagname htmlsrc =
     let chunks = Util.splitUp id ['<':(tagname++">")] ("</"++tagname++">") htmlsrc

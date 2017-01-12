@@ -77,7 +77,7 @@ _createIndexHtmlIfNoContentPages ctxmain ctxproj numpagesrcfiles =
     if numpagesrcfiles > 0 then return NoOutput
     else let
         sitename = ctxproj-:Proj.projName
-        dirpagesrel = (ctxproj-:Proj.setup-:Proj.cfg-:ProjC.processingOfPages-:ProjC.dirs)~@0
+        dirpagesrel = (ctxproj-:Proj.setup-:Proj.cfg-:ProjC.processingOfPages-:ProjC.dirs)@!0
         dirbuild = ctxproj-:Proj.dirPathBuild
         htmltemplatemain = ctxproj-:Proj.coreFiles-:Defaults.htmlTemplateMain
     in putStrLn ("\t->\tNo content-source files whatsoever.. making one for you:")

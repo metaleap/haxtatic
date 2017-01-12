@@ -33,7 +33,7 @@ allBlokPageFiles projcfg allpagesfiles bname =
             compare (pagedate file2) (pagedate file1)
         pagedate = snd.(Files.customDateFromFileName$ ProjC.dtPageDateParse projcfg)
         sortedmatches = Data.List.sortBy cmpblogpages blokpagematches
-    in (sortedmatches ,  (null sortedmatches) |? Util.dateTime0 |! pagedate $sortedmatches~@0 )
+    in (sortedmatches ,  (null sortedmatches) |? Util.dateTime0 |! pagedate $sortedmatches@!0 )
 
 
 blokByName bloks blokname =
@@ -47,7 +47,7 @@ blokNameFromIndexPagePath possiblefakepath =
 
 
 blokNameFromRelPath bloks relpath file =
-    Util.atOr (bloks~>Data.Map.Strict.keys >~ foreach ~|is) 0 ""
+    "" -|= (bloks~>Data.Map.Strict.keys >~ foreach)@?0
     where
     foreach bname
         | isRelPathBlokPage bname relpath
@@ -67,7 +67,7 @@ buildPlan (modtimeproj,modtimetmpl) projcfg allpagesfiles bloks =
         tofileinfo bfield modtime bname blok =
             let fakepath = (isblokpagefile bpage) |? blok-:bfield |! ""
                 (allblokpagefiles , cdatelatest) = _allblokpagefiles bname
-                bpage = Util.atOr allblokpagefiles 0 ("" , Files.NoFile)
+                bpage = ("",Files.NoFile) -|= allblokpagefiles@?0
                 fdatelatest = maximum (allblokpagefiles >~ snd >~ Files.modTime)
             in ( Files.pathSepSlashToSystem fakepath ,
                 (null fakepath) |? Files.NoFile |! Files.FileInfo {

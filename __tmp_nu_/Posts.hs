@@ -25,7 +25,7 @@ data Post
         link :: String,
         pic :: String,
         content :: String
-    } deriving (Eq, Read, Show)
+    } deriving (Eq, Read)
 
 data Feed =
     Job {
@@ -61,17 +61,23 @@ buildPlan modtimeproj relpathpostatoms feednames =
 
 
 
+dtYear post =
+    take 4 $post-:dt
+
+
+
 feedPosts projposts _projbloks maybequery =
     case maybequery of
         Nothing -> allposts
         Just query -> allposts ~| match query
     where
     allposts = projposts
+    match (Filter [] [] Nothing) _ =
+        True
     match query post =
-        check feed (query-:feeds) && check cat (query-:cats) &&
-            ((checkdate $query-:dates) || (post-:dt) == "9999-12-31")
+        (check feed (query-:feeds) && check cat (query-:cats) && (checkdate $query-:dates))
+            || (post-:cat == "_hax_cat") || (post-:dt) == "9999-12-31"
         where
-            -- 9999-12-31", cat="_hax_cat
         check field criteria =
             null criteria || any ((post-:field)==) criteria
         checkdate (Just (mindate,maxdate)) =
@@ -79,10 +85,10 @@ feedPosts projposts _projbloks maybequery =
         checkdate _ =
             True
 
-feedGroups projposts _projbloks postfield =
+feedGroups projposts _projbloks maybequery postfield =
     Util.unique (allposts >~ postfield)
     where
-    allposts = feedPosts projposts _projbloks Nothing
+    allposts = feedPosts projposts _projbloks maybequery
 
 
 
@@ -135,6 +141,14 @@ postsFromBlok pagerendercache projcfg allpagesfiles blokname getcat =
 
 
 
+wellKnownFields True =
+    ("dt:year"=:dtYear) : (wellKnownFields False)
+
+wellKnownFields _ =
+    [ "feed"=:feed, "dt"=:dt, "cat"=:cat, "title"=:title, "link"=:link, "pic"=:pic, "content"=:content ]
+
+
+
 writeAtoms _ _ _ _ _ [] =
     return ()
 writeAtoms pagerendercache allpagesfiles projbloks projposts projcfg outjobs =
@@ -157,7 +171,7 @@ writeAtoms pagerendercache allpagesfiles projbloks projposts projcfg outjobs =
         xmlatomfull =
             let updated = if null allposts
                             then (ProjC.dtUtc2Str projcfg "" (outjob-:srcFile-:Files.modTime))
-                            else ((snd$ allposts~@0)-:dt)
+                            else ((snd$ allposts@!0)-:dt)
                 xmlintro = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
                             \<feed xmlns=\"http://www.w3.org/2005/Atom\">\n\
                             \    <link rel=\"self\" type=\"application/rss+xml\" href=\"http://"++domainname++"/"++(urify relpath)++"\" />\n\

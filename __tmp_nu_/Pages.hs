@@ -76,7 +76,7 @@ processPage ctxmain cfgproj ctxtmpl tmplfinder outjob =
             htmlinners tagname =
                 Html.findInnerContentOfNoAttrTags tagname pageonlyproc
             htmlinner1st tagname defval =
-                Util.atOr (htmlinners tagname) 0 defval
+                defval -|= (htmlinners tagname)@?0
 
         in return (outsrc , (outsrc , ctxpage , mismatches))
 
@@ -88,7 +88,7 @@ pageVars cfgproj pagesrc contentdate =
     chunks = (Util.splitUp Util.trim ["{%P|"] "|%}" pagesrc)
     pagevars = chunks >~ foreach ~> Util.unMaybes
     pvardates = pagevars >~ maybedate ~> Util.unMaybes
-    pagedate = Util.atOr pvardates 0 contentdate
+    pagedate = contentdate -|= pvardates@?0
     pagesrcchunks = (chunks ~|null.snd) >~ fst -- ~|is
 
     foreach (pvarstr , "{%P|") =

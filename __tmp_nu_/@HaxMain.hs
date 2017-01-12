@@ -54,8 +54,8 @@ main =
             \  For existing project: specify path to its current directory.\n\
             \  For a new project: specify path to its intended directory.\n    (I'll create it if missing and its parent isn't.)\n\n"
         else
-        let projfilename = (Util.atOr cmdargs 1 Defaults.fileName_Proj)
-        in System.Directory.makeAbsolute (cmdargs~@0) >>= \dirpath
+        let projfilename = (Defaults.fileName_Proj -|= cmdargs@?1)
+        in System.Directory.makeAbsolute (cmdargs@!0) >>= \dirpath
         -> let ctxmain = Files.AppContext { Files.curDir = curdir,
                                             Files.dirPath = dirpath,
                                             Files.setupName = Defaults.setupName projfilename,

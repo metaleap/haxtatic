@@ -80,8 +80,7 @@ parseProjChunks chunkssplits =
                     "sitemap.xml" "_hax_relpath_sitemap" cfgmisc
     relpathpostatoms = Files.sanitizeRelPath$ Data.Map.Strict.findWithDefault
                     Defaults.dir_PostAtoms "_hax_relpath_postatoms" cfgmisc
-    htmlequivexts = Util.unique (htmldefexts ++ hexts) where
-        htmldefexts = ["",".html",".htm"]
+    htmlequivexts = Util.unique ("":".html":".htm":hexts) where
         hexts = hstr ~> (Util.splitOn ',') >~ (('.':).(Util.trimSpaceOr ['.']))
         hstr = Data.Map.Strict.findWithDefault "" "_hax_htmlequivexts" cfgmisc
     procstatic = procfind Defaults.dir_Static
@@ -103,7 +102,7 @@ parseProjChunks chunkssplits =
             sanitize fvals = let them = proc~>fvals >~Util.trim ~|is
                                 in (elem "*" them) |? ["*"] |! them
     proctags = (is ptags) |? ptags |! Tmpl.tags_All ~|(/=Tmpl.tag_C) where
-        ptags = (pstr~>(Util.splitOn ',') >~ Util.trim ~|is) ~>Util.unique >~(('{':).(++"|"))
+        ptags = (pstr~>(Util.splitOn ',') >~ Util.trim ~|is) ~> Util.unique >~ (('{':).(++"|"))
         pstr = Util.trim$ Data.Map.Strict.findWithDefault "" ("process:tags") cfgprocs
     dirnameonly = System.FilePath.takeFileName ~. Util.trim
     cfgmisc = cfglines2hashmap ""

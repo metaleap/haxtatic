@@ -131,13 +131,13 @@ loadChunks rawsrc =
     gatherothers [] =
         []
     gatherothers ((thisindex,thisline):more) =
-        let belongs i = (i > thisindex) && (null more || i < (fst$ more~@0))
+        let belongs i = (i > thisindex) && (null more || i < (fst$ more@!0))
         in (thisline , others ~|belongs.fst) : (null more |? [] |! gatherothers more)
 
     rejointochunks (beg,subs) =
         let sublines = subs >~ snd -- (Util.trim . snd) ~|is
             chunk = (Util.trim . unlines) ( (Util.trim beg):sublines )
-        in (chunk~@1 , drop 3 chunk)
+        in (chunk@!1 , drop 3 chunk)
 
 
 

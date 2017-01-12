@@ -100,20 +100,29 @@ infix 0 =|-
 
 
 
-(~@) ::
+(@!) ::
     [a] -> Int -> a
-infixl 9 ~@
+infixl 9 @!
 --  alias for: `!!`
-[] ~@ _ = undefined  --  rids this Careful Coder (TM) of the pesky 'non-exhaustive patterns' warning
-(x:_) ~@ 0 = x
-(_:x:_) ~@ 1 = x
---  (_:_:x:_) ~@ 2 = x
---  (_:_:_:x:_) ~@ 3 = x
---  (_:_:_:_:x:_) ~@ 4 = x
---  (_:_:_:_:_:x:_) ~@ 5 = x
---  (_:_:_:_:_:_:x:_) ~@ 6 = x
---  (_:_:_:_:_:_:_:x:_) ~@ 7 = x
---  (_:_:_:_:_:_:_:_:x:_) ~@ 8 = x
---  (_:_:_:_:_:_:_:_:_:x:_) ~@ 9 = x
+[] @! _ = undefined  --  rids this Careful Coder (TM) of the pesky 'non-exhaustive patterns' warning
+(x:_) @! 0 = x
+(_:x:_) @! 1 = x
+-- (_:_:x:_) @! 2 = x
+-- (_:_:_:x:_) @! 3 = x
+-- (_:_:_:_:x:_) @! 4 = x
 --  these above are all branches so release only as necessary
-list ~@ i = (drop i list) ~@ 0
+list @! i = (drop i list) @! 0
+
+
+
+(@?) ::
+    [a] -> Int -> Maybe a
+infixl 9 @?
+[] @? _ = Nothing
+(x:_) @? 0 = Just x
+(_:x:_) @? 1 = Just x
+-- (_:_:x:_) @? 2 = Just x
+-- (_:_:_:x:_) @? 3 = Just x
+-- (_:_:_:_:x:_) @? 4 = Just x
+--  these above are all branches so release only as necessary
+list @? i = (drop i list) @? 0

@@ -124,7 +124,7 @@ listAllFiles rootdirpath reldirs modtimer =
     in allfiles >>= \allfiletuples
     -> let
         foreachfiletuple (srcfilepath , modtime) =
-            ( Util.atOr relpaths 0 srcfilepath,
+            ( srcfilepath -|= relpaths@?0,
                 FileInfo srcfilepath modtime )
             where
             relpaths = dirpaths>~foreachsrcdir ~|is

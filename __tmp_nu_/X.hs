@@ -31,7 +31,7 @@ clarifyParseArgsError (xreg , arghint) =
 
 clarifyParseCfgError xreg =
     let (xn,tn) = (xreg-:xname , xreg-:tname)
-        hint = Util.ifIs (Util.atOr (xreg-:cfgSplitAll) 0 "") (++": ...")
+        hint = Util.ifIs ("" -|= (xreg-:cfgSplitAll)@?0) (++": ...")
     in ( ("(in your *.haxproj) following") , ("X|:" ++ xn ++ ":" ++ tn) , (Util.excerpt 23 hint) )
 
 htmlErr (clarify , codemain , codemore) =

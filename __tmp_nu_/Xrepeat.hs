@@ -31,7 +31,8 @@ data Iterate
     | Values [String]
     | Bloks
     | Feeds
-    | FeedPosts Posts.Query
+    | FeedGroups (Maybe Posts.Query) String
+    | FeedPosts (Maybe Posts.Query)
     deriving (Read)
 
 
@@ -60,12 +61,18 @@ registerX ctxproj xreg =
             iter Feeds =
                 ordered$ (projfeeds ++ (Data.Map.Strict.keys projbloks))
                             >~ wrapped
-            iter (FeedPosts query) =
-                (Posts.feedPosts projposts projbloks (Just query)) ~> (ord $args-:order) >~ (topairs ~. show ~. wrapped) where
-                    ord Ascending = reverse ; ord _ = id
-                    topairs post =
-                        [ "feed" =: post-:Posts.feed, "dt" =: post-:Posts.dt, "cat" =: post-:Posts.cat, "title" =: post-:Posts.title
-                        , "link" =: post-:Posts.link, "pic" =: post-:Posts.pic, "content" =: post-:Posts.content ]
+            iter (FeedGroups maybequery fieldname) =
+                maybefieldfunc~>((Posts.feedGroups projposts projbloks maybequery) =|- [])
+                where
+                maybefieldfunc =
+                    Data.List.lookup fieldname (Posts.wellKnownFields True)
+            iter (FeedPosts maybequery) =
+                (Posts.feedPosts projposts projbloks (maybequery)) ~>
+                    (ord $args-:order) >~ (fields2pairs ~. show ~. wrapped)
+                where
+                ord Ascending = reverse ; ord _ = id
+                fields2pairs post =
+                    (Posts.wellKnownFields False) >~ (Util.both (id =: (post-:)))
         wrapped = case args-:wrap of
                     Just (w1,w2) -> (w1++).(++w2)
                     Nothing      -> id

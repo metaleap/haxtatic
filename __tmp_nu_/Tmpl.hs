@@ -75,11 +75,11 @@ loadAll ctxmain ctxproc deffiles filenameexts htmlequivexts =
                         (_applychunkbegin++_applychunkmid++_applychunkend)
                     >>= loadTmpl ctxmain ctxproc fileext
         fileexts = "":otherexts where
-            otherexts = Util.unique$ filenameexts ~| Util.noneOf htmlequivexts
+            otherexts = (Util.unique filenameexts) ~| Util.noneOf htmlequivexts
     in fileexts>>~foreach
     >>= \loadedtemplates
     -> let
-        tmpldef = loadedtemplates~@0
+        tmpldef = loadedtemplates@!0
         tmplfind "" = tmpldef
         tmplfind ".html" = tmpldef
         tmplfind ".htm" = tmpldef
@@ -109,7 +109,7 @@ processSrcFully ctxproc ctxpage =
     preserveunprocessedtag = const Nothing
     splitup = Util.splitUp Util.trim whichtags tag_Close
     whichtags = case ctxpage of
-        Nothing -> (ctxproc-:processTags) ~|(/=tag_P)
+        Nothing -> Data.List.delete tag_P (ctxproc-:processTags) -- ~|(/=tag_P)
         Just _ -> ctxproc-:processTags
     _c = ctxproc-:cTagHandler ; _t = ctxproc-:tTagHandler
     _b = (ctxproc-:bTagHandler) (ctxpage-:(blokName =|- ""))

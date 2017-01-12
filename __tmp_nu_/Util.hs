@@ -5,6 +5,7 @@ import Base
 
 import qualified Data.Char
 import qualified Data.List
+import qualified Data.Set
 import qualified Data.Time.Calendar
 import qualified Data.Time.Clock
 import qualified Text.Read
@@ -78,13 +79,13 @@ duration =
 -- for uses such as `crop` without (directly) taking the `length`
 dropLast 0 = id
 dropLast 1 = init
-dropLast n = (~@n) . reverse . Data.List.inits
+dropLast n = (@!n) . reverse . Data.List.inits
 -- dropLast n l = l~>take (l~>length - n)
 
 
 takeLast 0 = const []
 takeLast 1 = (:[]).last
-takeLast n = (~@n) . reverse . Data.List.tails
+takeLast n = (@!n) . reverse . Data.List.tails
 
 
 indexed l =
@@ -209,44 +210,42 @@ unMaybes list =
 
 
 
-unique:: (Eq a)=> [a] -> [a]
-unique = Data.List.nub
+uniqueO:: (Eq a)=> [a] -> [a]
+uniqueO = Data.List.nub
 
-uniqueFst:: (Eq f)=> [(f,s)] -> [(f,s)]
-uniqueFst = Data.List.nubBy (bothFsts (==))
+uniqueU:: (Ord a)=> [a] -> [a]
+-- http://stackoverflow.com/a/16109302
+uniqueU = ((>~ (@!0)) . Data.List.group . Data.List.sort)
 
-uniqueSnd:: (Eq s)=> [(f,s)] -> [(f,s)]
-uniqueSnd = Data.List.nubBy (bothSnds (==))
+unique:: (Ord a)=> [a] -> [a]
+-- http://stackoverflow.com/a/16111081
+unique =
+    halp Data.Set.empty
+    where
+    halp _ [] = []
+    halp set (this:rest) =
+        if Data.Set.member this set
+            then halp set rest
+            else this : (halp (Data.Set.insert this set) rest)
 
+uniqueBy:: (any -> any -> Bool) -> [any] -> [any]
+uniqueBy = Data.List.nubBy
 
-atOr::
-    [t]  ->  Int  ->  t  ->
-    t
---  value in `list` at `index`, or `defval`
-atOr [] _ defval = defval
-atOr (x:_) 0 _ = x
-atOr (_:x:_) 1 _ = x
---  atOr (_:_:x:_) 2 _ = x
---  atOr (_:_:_:x:_) 3 _ = x
---  atOr (_:[]) 1 defval = defval
---  atOr (_:[]) 2 defval = defval
---  atOr (_:[]) 3 defval = defval
---  atOr (_:[]) 4 defval = defval
---  atOr (_:[]) 5 defval = defval
---  atOr (_:_:[]) 2 defval = defval
---  atOr (_:_:[]) 3 defval = defval
---  atOr (_:_:[]) 4 defval = defval
---  atOr (_:_:[]) 5 defval = defval
---  atOr (_:_:_:[]) 3 defval = defval
---  atOr (_:_:_:[]) 4 defval = defval
---  atOr (_:_:_:[]) 5 defval = defval
---  atOr (_:_:_:_:[]) 4 defval = defval
---  atOr (_:_:_:_:[]) 5 defval = defval
---  atOr (_:_:_:_:_:[]) 5 defval = defval
---  these above are all branches so release only as necessary
-atOr list index defval
-    |(index > -1 && lengthGt index list)= list~@index
-    |(otherwise)= defval
+uniqueFst:: (Eq eq)=> [(eq,any)] -> [(eq,any)]
+uniqueFst = uniqueBy (bothFsts (==))
+
+-- uniqueFst:: (Ord ord)=> [(ord,any)] -> [(ord,any)]
+-- uniqueFst =
+--     halp Data.Set.empty
+--     where
+--     halp _ [] = []
+--     halp set (this@(this',_):rest) =
+--         if Data.Set.member this' set
+--             then halp set rest
+--             else this : (halp (Data.Set.insert this' set) rest)
+
+uniqueSnd:: (Eq eq)=> [(any,eq)] -> [(any,eq)]
+uniqueSnd = uniqueBy (bothSnds (==))
 
 
 lengthGEq 0 = const True
@@ -290,7 +289,7 @@ indexOfSub [] _ =
 indexOfSub _ [] =
     _intmin
 indexOfSub haystack needle =
-    let (startindex , _haystack) = _indexof_droptil (needle~@0) 0 haystack
+    let (startindex , _haystack) = _indexof_droptil (needle@!0) 0 haystack
     in if startindex<0 then startindex else
         startindex + indexofsub _haystack needle
         where
@@ -309,7 +308,7 @@ indexOfSubs1st [] _ =
 indexOfSubs1st _ [] =
     (_intmin , "" )
 indexOfSubs1st subs str =
-    let startchars = unique$ subs>~(~@0)
+    let startchars = unique$ subs>~(@!0)
         (startindex , _haystack) = _indexof_droptil' (`elem` startchars) 0 str
         iidxs = isubs >~ (both (id,indexof)) ~|snd~.(>=0)
         isubs = indexed subs
@@ -317,7 +316,7 @@ indexOfSubs1st subs str =
         (i,index) = Data.List.minimumBy (bothSnds compare) iidxs
     in if startindex<0 || null iidxs || index<0
         then ( _intmin , "" )
-        else ( index+startindex , subs~@i )
+        else ( index+startindex , subs@!i )
 
 
 
@@ -391,7 +390,7 @@ splitUp withmatch allbeginners end src =
     beginners = beginners' ~| length~.((==)beg0len)
     beginners' = allbeginners>~reverse ~|is
     beg0len = beg0~>length
-    beg0 = beginners'~@0
+    beg0 = beginners'@!0
 
     lastidx = (beginners~>length > 1) |? (lastidx'') |! (lastidx')
     lastidx' revstr = lastIndexOfSub revstr beg0
