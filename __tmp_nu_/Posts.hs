@@ -37,14 +37,16 @@ data Feed =
 
 
 data Query =
-    Select {
-        feedNames :: [String]
+    Filter {
+        feeds :: [String],
+        cats :: [String],
+        dates :: Maybe (String , String)
     } deriving (Read)
 
 
 
-buildPlan modtimeproj relpathpostatoms feeds =
-    feeds >~ tofileinfo
+buildPlan modtimeproj relpathpostatoms feednames =
+    feednames >~ tofileinfo
     where
     tofileinfo feedname =
         ( dstfilerelpath , file )
@@ -59,23 +61,35 @@ buildPlan modtimeproj relpathpostatoms feeds =
 
 
 
-feedPosts query =
-    (query-:feedNames) >~ (\fn -> P {
-                                feed = fn,
-                                dt = fn,
-                                cat = fn,
-                                title = fn,
-                                link = fn,
-                                pic = fn,
-                                content = fn
-                            })
+feedPosts projposts _projbloks maybequery =
+    case maybequery of
+        Nothing -> allposts
+        Just query -> allposts ~| match query
+    where
+    allposts = projposts
+    match query post =
+        check feed (query-:feeds) && check cat (query-:cats) &&
+            ((checkdate $query-:dates) || (post-:dt) == "9999-12-31")
+        where
+            -- 9999-12-31", cat="_hax_cat
+        check field criteria =
+            null criteria || any ((post-:field)==) criteria
+        checkdate (Just (mindate,maxdate)) =
+            (post-:dt) >= mindate && (post-:dt) <= maxdate
+        checkdate _ =
+            True
+
+feedGroups projposts _projbloks postfield =
+    Util.unique (allposts >~ postfield)
+    where
+    allposts = feedPosts projposts _projbloks Nothing
 
 
 
 parseProjChunks chunkssplits =
-    (feeds , posts)
+    (feednames , posts)
     where
-    feeds = Util.unique (posts>~feed)
+    feednames = Util.unique (posts>~feed)
     posts = Data.List.sortBy cmpposts (chunkssplits>~foreach ~> Util.unMaybes)
     cmpposts post1 post2 =
         compare (post2-:dt) (post1-:dt)

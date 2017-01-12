@@ -56,16 +56,16 @@ registerX ctxproj xreg =
             iter (Range from to) =
                 ordered$ [from..to] >~ (show~.wrapped)
             iter Bloks =
-                ordered$ (Data.Map.Strict.keys$ ctxproj-:Proj.setup-:Proj.bloks) >~ wrapped
+                ordered$ (Data.Map.Strict.keys projbloks) >~ wrapped
             iter Feeds =
-                ordered$ ((ctxproj-:Proj.setup-:Proj.feeds) ++ (Data.Map.Strict.keys$ ctxproj-:Proj.setup-:Proj.bloks))
+                ordered$ (projfeeds ++ (Data.Map.Strict.keys projbloks))
                             >~ wrapped
             iter (FeedPosts query) =
-                (Posts.feedPosts query) >~ (show.topairs)
-                where
-                topairs post =
-                    [ "feed" =: post-:Posts.feed, "dt" =: post-:Posts.dt, "cat" =: post-:Posts.cat, "title" =: post-:Posts.title
-                    , "link" =: post-:Posts.link, "pic" =: post-:Posts.pic, "content" =: post-:Posts.content ]
+                (Posts.feedPosts projposts projbloks (Just query)) ~> (ord $args-:order) >~ (topairs ~. show ~. wrapped) where
+                    ord Ascending = reverse ; ord _ = id
+                    topairs post =
+                        [ "feed" =: post-:Posts.feed, "dt" =: post-:Posts.dt, "cat" =: post-:Posts.cat, "title" =: post-:Posts.title
+                        , "link" =: post-:Posts.link, "pic" =: post-:Posts.pic, "content" =: post-:Posts.content ]
         wrapped = case args-:wrap of
                     Just (w1,w2) -> (w1++).(++w2)
                     Nothing      -> id
@@ -80,6 +80,9 @@ registerX ctxproj xreg =
     in X.Early renderer
     where
 
+    projfeeds = ctxproj-:Proj.setup-:Proj.feeds
+    projposts = ctxproj-:Proj.setup-:Proj.posts
+    projbloks = ctxproj-:Proj.setup-:Proj.bloks
     cfg_parsestr = Tmpl.fixParseStr "content" (xreg-:X.cfgFullStr)
     cfg = X.tryParseCfg cfg_parsestr (Just defcfg) errcfg where
         defcfg = Cfg { prefix = "" , suffix = "" , joinwith = "" , content = "" }
