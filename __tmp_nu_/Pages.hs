@@ -13,6 +13,7 @@ import qualified Tmpl
 import qualified Util
 
 import qualified Data.List
+import qualified Data.Time.Clock
 import qualified System.FilePath
 
 
@@ -67,8 +68,12 @@ processPage ctxmain ctxbuild ctxtmpl tmplfinder outjob =
                     -> return (Tmpl.tagMismatches rawsrc , rawsrc)
 
     processcontent =
-        loadsrccontent >>= \(mismatches , pagesrc)
+        Data.Time.Clock.getCurrentTime >>= \nowtime
+        -> loadsrccontent >>= \(mismatches , pagesrc)
         -> let
+            randseed' = (Util.dtInts nowtime)
+                            ++ (Util.dtInts $outjob-:Build.srcFile-:Files.modTime)
+                                ++ [ length $ctxbuild-:Posts.allPagesFiles , pagesrc~>length ]
             ctxpage = Tmpl.PageContext {
                             Tmpl.blokName = outjob-:Build.blokName,
                             Tmpl.pTagHandler = taghandler,
@@ -79,7 +84,8 @@ processPage ctxmain ctxbuild ctxtmpl tmplfinder outjob =
                             Tmpl.tmpl = tmpl,
                             Tmpl.cachedRenderSansTmpl = pageonlyproc,
                             Tmpl.lookupCachedPageRender = ctxbuild-:Posts.lookupCachedPageRender,
-                            Tmpl.allPagesFiles = ctxbuild-:Posts.allPagesFiles
+                            Tmpl.allPagesFiles = ctxbuild-:Posts.allPagesFiles,
+                            Tmpl.randSeed = randseed' >~ ((+) (pagesrc~>length * randseed'@!1))
                         }
             (pagevars , pagedate , pagesrcchunks) = pageVars (ctxbuild-:Posts.projCfg) pagesrc $outjob-:Build.contentDate
             taghandler = tagHandler (ctxbuild-:Posts.projCfg) ctxpage ctxtmpl outjob

@@ -59,12 +59,12 @@ main =
         let projfilename = (Defaults.fileName_Proj -|= cmdargs@?1)
         in System.Directory.makeAbsolute (cmdargs@!0) >>= \dirpath
         -> let
-            seeds = (curdir~>length) : (dirpath~>length) : (projfilename~>length) : (Util.dtInts starttime)
+            randseed' = (Util.dtInts starttime) ++ [curdir~>length , dirpath~>length , projfilename~>length]
             ctxmain = Files.AppContext {    Files.curDir = curdir,
                                             Files.dirPath = dirpath,
                                             Files.setupName = Defaults.setupName projfilename,
                                             Files.nowTime=starttime,
-                                            Files.seed = sum seeds }
+                                            Files.randSeed = randseed' >~ (+(randseed'@!1)) }
         --  GET TO WORK:
         in processAll ctxmain projfilename (drop 2 cmdargs)
         --  REMINISCE:
@@ -96,6 +96,7 @@ main =
             then putStrLn ("\n\n==== Bye now! ====\n\n")
             else putStrLn ("\n\n" ++ (Util.join "\n\t!>\t" ("Apparent {!| ERROR MESSAGES |!} were rendered into:":warnpages)) ++ "\n\n")
         >> System.IO.hFlush System.IO.stdout
+
 
 
 

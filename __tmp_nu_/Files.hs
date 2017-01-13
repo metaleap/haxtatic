@@ -35,7 +35,7 @@ data Ctx
         dirPath :: FilePath,
         setupName :: String,
         nowTime :: Data.Time.Clock.UTCTime,
-        seed :: Int
+        randSeed :: [Int]
     }
 
 

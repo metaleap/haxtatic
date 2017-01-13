@@ -107,6 +107,40 @@ takeLast n = (@!n) . reverse . Data.List.tails
 indexed l =
     zip [0 .. ] l
 
+reOrdered [] l = l
+reOrdered _ [] = []
+reOrdered newordering l =
+    newordering >~ (l@!)
+
+
+shiftLeft [] = []
+shiftLeft (start:rest) =
+    rest ++ [start]
+
+
+shuffleBasic [] list = list
+shuffleBasic _ [] = []
+shuffleBasic (rnd:rnds) list
+    | (null left) = shuffleBasic rnds right
+    | (otherwise) = (last left) : (shuffleBasic rnds ((init left) ++ right))
+    where (left , right) = splitAt (rnd `mod` list~>length) list
+
+shuffleExtra rnds@(_:_:_) list@(_:_:_) =
+    let shiftby = (rnds@!1) `mod` (list~>length - 1)
+        rev = if 0 == (shiftby `mod` 2) then reverse else id
+        shuffled = shuffleBasic rnds list
+        shifted = times shiftby shiftLeft shuffled
+    in rev shifted
+shuffleExtra rnds list =
+    shuffleBasic rnds list
+
+
+times 0 _ l =
+    l
+times n f l =
+    times (n - 1) f (f l)
+
+
 crop 0 0 = id
 crop 0 1 = dropLast 1
 crop 0 end = dropLast end

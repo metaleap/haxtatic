@@ -42,7 +42,8 @@ data CtxPage
         tmpl :: CtxTmpl,
         cachedRenderSansTmpl :: String,
         lookupCachedPageRender :: FilePath->Maybe CtxPage,
-        allPagesFiles :: [(FilePath , Files.File)]
+        allPagesFiles :: [(FilePath , Files.File)],
+        randSeed :: [Int]
     }
 
 
@@ -61,6 +62,13 @@ apply ctxtmpl ctxpage pagesrc =
     foreach (tmplsrc , _) =
         tmplsrc
     ptaghandler = ctxpage-:pTagHandler
+
+
+
+fixParseStr fulltextfieldname pstr =
+    if i < 0 then pstr else
+    (take i pstr) ++ fulltextfieldname ++ "=" ++ (pstr ~> ((drop$ i+l) ~. Util.trim ~. show))
+        where i = Util.indexOfSub pstr (fulltextfieldname++"=>") ; l = 2 + fulltextfieldname~>length
 
 
 
@@ -153,13 +161,6 @@ processXtagDelayed taghandler tagcontent =
 
 tagMismatches src =
     Util.countSubVsSubs src (tag_Close , tags_All)
-
-
-fixParseStr fulltextfieldname pstr =
-    if i < 0 then pstr else
-    (take i pstr) ++ fulltextfieldname ++ "=" ++ (pstr ~> ((drop$ i+l) ~. Util.trim ~. show))
-        where i = Util.indexOfSub pstr (fulltextfieldname++"=>") ; l = 2 + fulltextfieldname~>length
-
 
 warnIfTagMismatches ctxmain filename (numtagends , numtagbegins) =
     if Util.startsWith filename Defaults.blokIndexPrefix || numtagbegins == numtagends

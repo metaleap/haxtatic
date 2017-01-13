@@ -41,13 +41,14 @@ data Setup
         posts :: [Posts.Post],
         cfg :: ProjC.Config,
         ctxTmpl :: Tmpl.CtxProc,
-        tagMismatches :: (Int , Int)
+        tagMismatches :: (Int , Int),
+        randSeed :: [Int]
     }
 
 
 
 loadCtx ctxmain projname xregs defaultfiles =
-    let loadedsetup = _loadSetup ctxproj xregs
+    let loadedsetup = _loadSetup ctxmain ctxproj xregs defaultfiles
         dirpath = ctxmain-:Files.dirPath
         dirpathjoin = (dirpath </>)
         setupname = ctxmain-:Files.setupName
@@ -67,30 +68,33 @@ loadCtx ctxmain projname xregs defaultfiles =
 
 
 
-_loadSetup ctxproj xregs =
-    SetupFromProj { tmpDbgSrc = srcchunkspost, bloks = blokspost,
-                    cfg = cfgpost, posts = postspost, feeds = feedspost,
-                    ctxTmpl = Tmpl.ProcessingContext {
-                            Tmpl.bTagHandler =  Bloks.tagHandler blokspost,
-                            Tmpl.cTagHandler = ProjC.tagHandler cfgmiscpost,
-                            Tmpl.tTagHandler = ProjT.tagHandler ttagspost,
-                            Tmpl.xTagHandler = X.tagHandler xtagspost,
-                            Tmpl.processTags = cfgpost-:ProjC.tmplTags
-                        },
-                    tagMismatches = Tmpl.tagMismatches rawsrc
-                    }
+_loadSetup ctxmain ctxproj xregs defaultfiles =
+    SetupFromProj {
+            tmpDbgSrc = srcchunkspost, bloks = blokspost,
+            cfg = cfgpost, posts = postspost, feeds = feedspost,
+            ctxTmpl = Tmpl.ProcessingContext {
+                    Tmpl.bTagHandler =  Bloks.tagHandler blokspost,
+                    Tmpl.cTagHandler = ProjC.tagHandler cfgmiscpost,
+                    Tmpl.tTagHandler = ProjT.tagHandler ttagspost,
+                    Tmpl.xTagHandler = X.tagHandler xtagspost,
+                    Tmpl.processTags = cfgpost-:ProjC.tmplTags
+                },
+            tagMismatches = Tmpl.tagMismatches rawsrc,
+            randSeed = (rawsrc~>length) : (length $defaultfiles-:Defaults.htmlSnippets)
+                        : ((ctxmain-:Files.randSeed) ++ (Util.dtInts $defaultfiles-:Defaults.projectDefault-:Files.modTime))
+        }
     where
-    setupprep = SetupFromProj { tmpDbgSrc = srcchunksprep, bloks = bloksprep,
-                                cfg = cfgprep, posts = postsprep, feeds = feedsprep,
-                                ctxTmpl = Tmpl.ProcessingContext {
-                                        Tmpl.bTagHandler =  Bloks.tagHandler bloksprep,
-                                        Tmpl.cTagHandler = ProjC.tagHandler cfgmiscprep,
-                                        Tmpl.tTagHandler = ProjT.tagHandler ttagsprep,
-                                        Tmpl.xTagHandler = X.tagHandler xtagsprep,
-                                        Tmpl.processTags = cfgprep-:ProjC.tmplTags
-                                    },
-                                tagMismatches = (0,0)
-                                }
+    setupprep = SetupFromProj {
+            tmpDbgSrc = srcchunksprep, bloks = bloksprep, cfg = cfgprep, posts = postsprep, feeds = feedsprep,
+            ctxTmpl = Tmpl.ProcessingContext {
+                    Tmpl.bTagHandler =  Bloks.tagHandler bloksprep,
+                    Tmpl.cTagHandler = ProjC.tagHandler cfgmiscprep,
+                    Tmpl.tTagHandler = ProjT.tagHandler ttagsprep,
+                    Tmpl.xTagHandler = X.tagHandler xtagsprep,
+                    Tmpl.processTags = cfgprep-:ProjC.tmplTags
+                },
+            tagMismatches = (0,0), randSeed = []
+        }
     bloksprep = Bloks.parseProjChunks (pick prepchunkssplits 'B')
     blokspost = Bloks.parseProjChunks (pick postchunkssplits 'B')
     (cfgprep,cfgmiscprep) = ProjC.parseProjChunks (pick prepchunkssplits 'C')

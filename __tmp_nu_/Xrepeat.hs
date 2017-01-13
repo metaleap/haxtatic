@@ -66,7 +66,7 @@ registerX ctxproj xreg =
                 ordered$ (projfeeds ++ projbloknames)
                             >~ wrapped
             iter (FeedGroups maybequery fieldname) =
-                maybefieldfunc~>((Posts.feedGroups ctxbuild projposts projbloks maybequery) =|- [])
+                ordered$ maybefieldfunc~>((Posts.feedGroups ctxbuild projposts projbloks maybequery) =|- [])
                     ~> (ord $args-:order) >~ wrapped
                 where
                 maybefieldfunc =
@@ -87,25 +87,31 @@ registerX ctxproj xreg =
                     Just (w1,w2) -> (w1++).(++w2)
                     Nothing      -> id
         ordered = case args-:order of
-                    Ascending   -> Data.List.sort
-                    Descending  -> Data.List.sortBy (flip compare)
-                    _           -> id
+                    Ascending       -> Data.List.sort
+                    Descending      -> Data.List.sortBy (flip compare)
+                    Random perpage  -> Util.shuffleExtra (randseeds maybectxpage perpage)
+                    _               -> id
         args = X.tryParseArgs argstr (Just defargs) errargs where
             defargs = Args { over = Values [], wrap = Nothing, order = None }
             errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))], wrap = Nothing, order = None }
 
+        randseeds (Just pagectx) True =
+            (pagectx-:Tmpl.randSeed) ++ (randseeds Nothing False)
+        randseeds _ _ =
+            ctxproj-:Proj.setup-:Proj.randSeed
+
         waitforpage =
-            ((needctxpage4ord $args-:order) || (needctxpage4iter $args-:over))
+            ((needpage4ord $args-:order) || (needpage4iter $args-:over))
                 && (not$ hasctxpage maybectxpage)
             where
             hasctxpage Nothing = False ; hasctxpage (Just _) = True
-            needctxpage4ord (Random b) = b ; needctxpage4ord _ = False
-            needctxpage4iter (FeedGroups q _) = needctxpage4query q
-            needctxpage4iter (FeedPosts q) = needctxpage4query q
-            needctxpage4iter _ = False
-            needctxpage4query (Just (Posts.Filter feednames@(_:_) _ _)) =
+            needpage4ord (Random b) = b ; needpage4ord _ = False
+            needpage4iter (FeedGroups q _) = needpage4query q
+            needpage4iter (FeedPosts q) = needpage4query q
+            needpage4iter _ = False
+            needpage4query (Just (Posts.Filter feednames@(_:_) _ _)) =
                 is projbloknames && any (`elem` projbloknames) feednames
-            needctxpage4query _ =
+            needpage4query _ =
                 is projbloknames
 
     in X.EarlyOrWait renderer
