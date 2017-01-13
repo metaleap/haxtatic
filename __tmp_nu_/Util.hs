@@ -155,8 +155,8 @@ count item (this:rest) =
 
 cropOn1st delim cropafter trimitemsafterdelim oncrop list =
     let i = indexOf delim list
-    in if i<0 then list
-        else (oncrop . (trimEnd' trimitemsafterdelim) . (take (i+cropafter))) list
+    in if i < 0 then list else
+        (oncrop . (trimEnd' trimitemsafterdelim) . (take (i+cropafter))) list
 
 countSub _ [] = 0
 countSub [] _ = 0

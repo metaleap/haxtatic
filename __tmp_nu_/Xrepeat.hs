@@ -22,7 +22,9 @@ data Tag
     | Args {
         over :: Iterate,
         wrap :: Maybe (String , String),
-        order :: SortOrder
+        order :: SortOrder,
+        skip :: Int,
+        limit :: Int
     } deriving (Read)
 
 
@@ -40,7 +42,7 @@ data SortOrder
     = None
     | Ascending
     | Descending
-    | Random Bool
+    | Shuffle Bool
     deriving (Eq, Read)
 
 
@@ -55,7 +57,7 @@ registerX ctxproj xreg =
         allcontents = Util.join (cfg-:joinwith) (iteratees >~ foreach)
         foreach (i,v) =
             Util.replaceSubs ["[:i:]" =: show i , "[:v:]" =: v] (cfg-:content)
-        iteratees = Util.indexed$ (iter $args-:over) where
+        iteratees = Util.indexed (droptake (args-:skip) (args-:limit) (iter $args-:over)) where
             iter (Values values) =
                 ordered$ values >~ wrapped
             iter (Range from to) =
@@ -66,18 +68,20 @@ registerX ctxproj xreg =
                 ordered$ (projfeeds ++ projbloknames)
                             >~ wrapped
             iter (FeedGroups maybequery fieldname) =
-                ordered$ maybefieldfunc~>((Posts.feedGroups ctxbuild projposts projbloks maybequery) =|- [])
-                    ~> (ord $args-:order) >~ wrapped
+                maybefieldfunc~>((Posts.feedGroups ctxbuild projposts projbloks maybequery) =|- [])
+                    ~> (feedord $args-:order) >~ wrapped
                 where
                 maybefieldfunc =
                     Data.List.lookup fieldname (Posts.wellKnownFields True)
             iter (FeedPosts maybequery) =
                 (Posts.feedPosts ctxbuild projposts projbloks (maybequery))
-                    ~> (ord $args-:order) >~ (fields2pairs ~. show ~. wrapped)
+                    ~> (feedord $args-:order) >~ (fields2pairs ~. show ~. wrapped)
                 where
                 fields2pairs post =
                     (Posts.wellKnownFields False) >~ (Util.both (id =: (post-:)))
-            ord Ascending = reverse ; ord _ = id
+            feedord Ascending = reverse
+            feedord (Shuffle perpage) = shuffle perpage
+            feedord _ = id
         ctxbuild = case maybectxpage of
                     Nothing -> Posts.NoContext
                     Just ctxpage -> Posts.BuildContext
@@ -86,15 +90,20 @@ registerX ctxproj xreg =
         wrapped = case args-:wrap of
                     Just (w1,w2) -> (w1++).(++w2)
                     Nothing      -> id
+        droptake 0 0 = id
+        droptake 0 t = (take t)
+        droptake d 0 = (drop d)
+        droptake d t = (drop d) ~. (take t)
         ordered = case args-:order of
                     Ascending       -> Data.List.sort
                     Descending      -> Data.List.sortBy (flip compare)
-                    Random perpage  -> Util.shuffleExtra (randseeds maybectxpage perpage)
+                    Shuffle perpage  -> shuffle perpage
                     _               -> id
         args = X.tryParseArgs argstr (Just defargs) errargs where
-            defargs = Args { over = Values [], wrap = Nothing, order = None }
-            errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))], wrap = Nothing, order = None }
+            defargs = Args { over = Values [], wrap = Nothing, order = None, skip = 0, limit = 0 }
+            errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))], wrap = Nothing, order = None, skip = 0, limit = 0 }
 
+        shuffle perpage = Util.shuffleExtra (randseeds maybectxpage perpage)
         randseeds (Just pagectx) True =
             (pagectx-:Tmpl.randSeed) ++ (randseeds Nothing False)
         randseeds _ _ =
@@ -105,7 +114,7 @@ registerX ctxproj xreg =
                 && (not$ hasctxpage maybectxpage)
             where
             hasctxpage Nothing = False ; hasctxpage (Just _) = True
-            needpage4ord (Random b) = b ; needpage4ord _ = False
+            needpage4ord (Shuffle b) = b ; needpage4ord _ = False
             needpage4iter (FeedGroups q _) = needpage4query q
             needpage4iter (FeedPosts q) = needpage4query q
             needpage4iter _ = False

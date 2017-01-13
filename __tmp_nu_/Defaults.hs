@@ -39,13 +39,13 @@ loadOrCreate ctxmain projname projfilename custfilenames =
     >> Files.listAllFiles (ctxmain-:Files.dirPath) ["tmpl"] id >>= \tmplfileinfos
     -> let
         snipfileinfos = tmplfileinfos ~|(Data.List.isSuffixOf ".haxsnip.html").fst
-        snipmodtime = maximum$ snipfileinfos>~(snd ~. Files.modTime)
+        snipmodtime = (null snipfileinfos) |? Util.dateTime0 |! (maximum$ snipfileinfos>~(snd ~. Files.modTime))
     in (snipfileinfos>~(("tmpl" </>).fst)   ) >>~ foreach
     >>= \snipfiles
     -> custfilenames >>~ foreach
     >>= \custfiles
     -> let
-        custmodtime = (max snipmodtime) ((null custfiles) |? Util.dateTime0 |! maximum (custfiles>~Files.modTime))
+        custmodtime = max snipmodtime ((null custfiles) |? Util.dateTime0 |! (maximum $custfiles>~Files.modTime))
         cfgmodtime = max custmodtime (projfile-:Files.modTime)
         tmplmodtime = max cfgmodtime (tmplmainfile-:Files.modTime)
         redated cmpmodtime file
@@ -143,5 +143,5 @@ _tmpl_html_main =
     \    <div><!-- begin {P|fileUri|} content generated from {P|srcPath|} -->\n\n\n\
     \{P|:content:|}\n\n\
     \    </div><!-- end of generated content -->\n\
-    \    <hr/><small>Generated with <a href=\"http://github.com/HaXtatic\">{P|demo_hax|}</a> on {P|date|}</small>\n\
+    \    <hr/><small>Generated with <a href=\"http://metaleap.github.io/HaXtatic\">{P|demo_hax|}</a> on {P|date|}</small>\n\
     \</body></html>"

@@ -155,7 +155,7 @@ plan ctxmain ctxproj =
                                 Posts.relPath = outjob-:relPath,
                                 Posts.srcFile = outjob-:srcFile
                             }
-    in return BuildPlan {
+    in print (outpagefiles~>length) >> return BuildPlan {
                 outAtoms = outatomfiles,
                 outPages = outpagefiles,
                 outStatics = outcopyfiles,
@@ -197,7 +197,8 @@ _filterOutFiles shouldforce fileinfos cfgproc =
         shouldbuildfile NoOutput =
             return False
         shouldbuildfile fileinfo =
-            let skipthis = (not skipall) && (matchesany $cfgproc-:ProjC.skip)
+            let outfilepath = fileinfo-:outPathBuild
+                skipthis = (not skipall) && (matchesany $cfgproc-:ProjC.skip)
                 forcethis = (not forceall) && (matchesany $cfgproc-:ProjC.force)
                 matchesany = Files.simpleFileNameMatchAny $fileinfo-:relPath
             in (forcethis || (forceall && not skipthis) || (shouldforce fileinfo))
@@ -205,7 +206,6 @@ _filterOutFiles shouldforce fileinfos cfgproc =
             |! (skipthis || (skipall && not forcethis))
             |? return False
             |! let
-                outfilepath = fileinfo-:outPathBuild
                 ifexists False =
                     return True
                 ifexists True =
