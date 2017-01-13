@@ -34,7 +34,8 @@ data Ctx
         curDir :: FilePath,
         dirPath :: FilePath,
         setupName :: String,
-        nowTime :: Data.Time.Clock.UTCTime
+        nowTime :: Data.Time.Clock.UTCTime,
+        seed :: Int
     }
 
 

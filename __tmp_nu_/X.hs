@@ -20,7 +20,7 @@ data Reg
     } deriving (Show)
 
 
-data Render r = NoRender | Early r | WaitForPage r
+data Render r = NoRender | Early r | EarlyOrWait r | WaitForPage r
 
 
 
@@ -81,10 +81,10 @@ parseProjChunks ctxproj xregisterers chunkssplits =
 
 
 tagHandler xtags ctxpage tagcontent =
-    renderwhen (Data.Map.Strict.lookup key xtags)
+    renderwhen (Data.Map.Strict.lookup xtagname xtags)
     where
-    (key , argstr) = Util.splitOn1st ':' tagcontent
     renderargs = (ctxpage , Util.trim argstr)
+    (xtagname , argstr) = Util.splitOn1st ':' tagcontent
 
     renderwhen (Just (Early xrend)) =
         xrend renderargs
@@ -92,6 +92,8 @@ tagHandler xtags ctxpage tagcontent =
         case ctxpage of
             Nothing -> Just$ "{P|X|"++tagcontent++"|}"
             Just _ -> xrend renderargs
+    renderwhen (Just (EarlyOrWait xrend)) =
+        Just$ ("{P|X|"++tagcontent++"|}") -|= (xrend renderargs)
     renderwhen _ =
         Nothing
 

@@ -31,6 +31,7 @@ import qualified System.IO
 import qualified Text.Printf
 
 
+
 xregs = [ "hax/demoSimplest" =: XdemoSimplest.registerX
         , "hax/demoCfgArgs" =: XdemoCfgArgs.registerX
         , "hax/pageAnchors" =: XpageAnchors.registerX
@@ -40,6 +41,7 @@ xregs = [ "hax/demoSimplest" =: XdemoSimplest.registerX
         , "hax/snippet" =: Xsnippet.registerX
         , "hax/miniTag" =: XminiTag.registerX
         ]
+
 
 
 main ::
@@ -56,10 +58,13 @@ main =
         else
         let projfilename = (Defaults.fileName_Proj -|= cmdargs@?1)
         in System.Directory.makeAbsolute (cmdargs@!0) >>= \dirpath
-        -> let ctxmain = Files.AppContext { Files.curDir = curdir,
+        -> let
+            seeds = (curdir~>length) : (dirpath~>length) : (projfilename~>length) : (Util.dtInts starttime)
+            ctxmain = Files.AppContext {    Files.curDir = curdir,
                                             Files.dirPath = dirpath,
                                             Files.setupName = Defaults.setupName projfilename,
-                                            Files.nowTime=starttime }
+                                            Files.nowTime=starttime,
+                                            Files.seed = sum seeds }
         --  GET TO WORK:
         in processAll ctxmain projfilename (drop 2 cmdargs)
         --  REMINISCE:

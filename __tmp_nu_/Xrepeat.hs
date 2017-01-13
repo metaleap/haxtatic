@@ -40,13 +40,17 @@ data SortOrder
     = None
     | Ascending
     | Descending
+    | Random Bool
     deriving (Eq, Read)
 
 
 registerX ctxproj xreg =
     let
-    renderer (Just pagectx , argstr) =
-        Just$ (cfg-:prefix) ++ allcontents ++ (cfg-:suffix)
+
+    renderer (maybectxpage , argstr) =
+        if waitforpage
+            then Nothing
+            else Just$ (cfg-:prefix) ++ allcontents ++ (cfg-:suffix)
         where
         allcontents = Util.join (cfg-:joinwith) (iteratees >~ foreach)
         foreach (i,v) =
@@ -57,9 +61,9 @@ registerX ctxproj xreg =
             iter (Range from to) =
                 ordered$ [from..to] >~ (show~.wrapped)
             iter Bloks =
-                ordered$ (Data.Map.Strict.keys projbloks) >~ wrapped
+                ordered$ projbloknames >~ wrapped
             iter Feeds =
-                ordered$ (projfeeds ++ (Data.Map.Strict.keys projbloks))
+                ordered$ (projfeeds ++ projbloknames)
                             >~ wrapped
             iter (FeedGroups maybequery fieldname) =
                 maybefieldfunc~>((Posts.feedGroups ctxbuild projposts projbloks maybequery) =|- [])
@@ -74,8 +78,11 @@ registerX ctxproj xreg =
                 fields2pairs post =
                     (Posts.wellKnownFields False) >~ (Util.both (id =: (post-:)))
             ord Ascending = reverse ; ord _ = id
-        ctxbuild = Posts.BuildContext (pagectx-:Tmpl.lookupCachedPageRender) (pagectx-:Tmpl.allPagesFiles)
-                                                        projbloks projposts (ctxproj-:Proj.setup-:Proj.cfg)
+        ctxbuild = case maybectxpage of
+                    Nothing -> Posts.NoContext
+                    Just ctxpage -> Posts.BuildContext
+                                        (ctxpage-:Tmpl.lookupCachedPageRender) (ctxpage-:Tmpl.allPagesFiles)
+                                                            projbloks projposts (ctxproj-:Proj.setup-:Proj.cfg)
         wrapped = case args-:wrap of
                     Just (w1,w2) -> (w1++).(++w2)
                     Nothing      -> id
@@ -87,15 +94,27 @@ registerX ctxproj xreg =
             defargs = Args { over = Values [], wrap = Nothing, order = None }
             errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))], wrap = Nothing, order = None }
 
-    renderer _ =
-        Nothing
+        waitforpage =
+            ((needctxpage4ord $args-:order) || (needctxpage4iter $args-:over))
+                && (not$ hasctxpage maybectxpage)
+            where
+            hasctxpage Nothing = False ; hasctxpage (Just _) = True
+            needctxpage4ord (Random b) = b ; needctxpage4ord _ = False
+            needctxpage4iter (FeedGroups q _) = needctxpage4query q
+            needctxpage4iter (FeedPosts q) = needctxpage4query q
+            needctxpage4iter _ = False
+            needctxpage4query (Just (Posts.Filter feednames@(_:_) _ _)) =
+                is projbloknames && any (`elem` projbloknames) feednames
+            needctxpage4query _ =
+                is projbloknames
 
-    in X.WaitForPage renderer
+    in X.EarlyOrWait renderer
     where
 
     projfeeds = ctxproj-:Proj.setup-:Proj.feeds
     projposts = ctxproj-:Proj.setup-:Proj.posts
     projbloks = ctxproj-:Proj.setup-:Proj.bloks
+    projbloknames = Data.Map.Strict.keys projbloks
     cfg_parsestr = Tmpl.fixParseStr "content" (xreg-:X.cfgFullStr)
     cfg = X.tryParseCfg cfg_parsestr (Just defcfg) errcfg where
         defcfg = Cfg { prefix = "" , suffix = "" , joinwith = "" , content = "" }

@@ -5,6 +5,7 @@ import Base
 
 import qualified Data.Char
 import qualified Data.List
+import qualified Data.Ratio
 import qualified Data.Set
 import qualified Data.Time.Calendar
 import qualified Data.Time.Clock
@@ -16,13 +17,28 @@ type StringPairs = [(String , String)]
 
 
 
+_intmin = minBound::Int
 dateTime0 = Data.Time.Clock.UTCTime {
                 Data.Time.Clock.utctDay = Data.Time.Calendar.ModifiedJulianDay {
                                             Data.Time.Calendar.toModifiedJulianDay = 0 },
                 Data.Time.Clock.utctDayTime = 0
             }
-_intmin = minBound::Int
 
+
+
+dtInts :: Data.Time.Clock.UTCTime -> [Int]
+dtInts utctime =
+    [ modifiedjulianday , daytimenum , daytimedenom ]
+    where
+    modifiedjulianday = fromInteger$ Data.Time.Calendar.toModifiedJulianDay (Data.Time.Clock.utctDay utctime)
+    daytimenum = fromInteger$ Data.Ratio.numerator daytime
+    daytimedenom = fromInteger$ Data.Ratio.denominator daytime
+    daytime = toRational (Data.Time.Clock.utctDayTime utctime)
+
+
+facF n = foldr (*) 1 [1..n]
+facR 0 = 1
+facR n = n * facR (n - 1)
 
 
 both (fun1,fun2) (tfst,tsnd) =

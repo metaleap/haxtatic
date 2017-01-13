@@ -17,7 +17,8 @@ import System.FilePath ( (</>) )
 
 
 data Ctx
-    = BuildContext {
+    = NoContext
+    | BuildContext {
         lookupCachedPageRender :: FilePath->Maybe Tmpl.CtxPage,
         allPagesFiles :: [(FilePath , Files.File)],
         projBloks :: Data.Map.Strict.Map String Bloks.Blok,
@@ -137,8 +138,9 @@ postsFromBlok ctxbuild blokname getcat =
             relpageuri = '/':(Files.pathSepSystemToSlash relpath)
             maybectxpage = (ctxbuild-:lookupCachedPageRender) (file-:Files.path)
             (htmlcontent , htmlinner1st) = case maybectxpage of
-                Nothing -> ("<h1>Well now..</h1><p>..<i>there&apos;s</i> a bug in your static-site generator!</p>",
-                                const)
+                Nothing -> ( "<p>HaXtatic&apos;s fault: currently can&apos;t embed the requested content here unless `"
+                                ++ relpath ++ "` is included in your build.</p>",
+                                    \_ _ -> "Include " ++ relpath ++ " in your rebuild" )
                 Just ctxpage -> (ctxpage-:Tmpl.cachedRenderSansTmpl , ctxpage-:Tmpl.htmlInner1st)
             pcat = getcat post
             post = P {
