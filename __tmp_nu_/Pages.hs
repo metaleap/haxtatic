@@ -97,7 +97,7 @@ processPage ctxmain ctxbuild ctxtmpl tmplfinder outjob =
             --  now that we did only-the-page-src AND the so-far unprocessed {P|'s in tmpl, so once more with feeling:
             outsrc = Tmpl.processSrcFully ctxtmpl (Just ctxpage) applied
             htmlinners tagname =
-                Html.findInnerContentOfNoAttrTags tagname pageonlyproc
+                Html.findInnerContentOfTags tagname pageonlyproc
             htmlinner1st tagname defval =
                 defval -|= (htmlinners tagname)@?0
 

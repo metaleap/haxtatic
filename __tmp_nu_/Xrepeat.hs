@@ -108,17 +108,17 @@ registerX ctxproj xreg =
             ctxproj-:Proj.setup-:Proj.randSeed
 
         waitforpage =
-            ((needpage4ord $args-:order) || (needpage4iter $args-:over))
-                && (not$ hasctxpage maybectxpage)
+            (not$ hasctxpage maybectxpage)
+                && ((needpage4ord $args-:order) || (needpage4iter $args-:over))
             where
-            hasctxpage Nothing = False ; hasctxpage (Just _) = True
+            hasctxpage Nothing = False ; hasctxpage _ = True
             needpage4ord (Shuffle b) = b ; needpage4ord _ = False
-            needpage4iter (FeedGroups q _) = needpage4query q
-            needpage4iter (FeedPosts q) = needpage4query q
+            needpage4iter (FeedGroups query _) = needpage4feed query
+            needpage4iter (FeedPosts query) = needpage4feed query
             needpage4iter _ = False
-            needpage4query (Just (Posts.Filter feednames@(_:_) _ _)) =
+            needpage4feed (Just (Posts.Filter feednames@(_:_) _ _)) =
                 is projbloknames && any (`elem` projbloknames) feednames
-            needpage4query _ =
+            needpage4feed _ =
                 is projbloknames
 
     in X.EarlyOrWait renderer

@@ -83,12 +83,14 @@ escape =
 find1st finder defval htmlsrc =
     defval -|= (finder htmlsrc)@?0
 
-findInnerContentOfNoAttrTags tagname htmlsrc =
-    let chunks = Util.splitUp id ['<':(tagname++">")] ("</"++tagname++">") htmlsrc
+findInnerContentOfTags tagname htmlsrc =
+    let lookfor = ['<':(tagname++">") , '<':(tagname++" ")] -- ,'<':(tagname++"\t"),'<':(tagname++"\n")] ..?! let's not overdo this
+        chunks = Util.splitUp id lookfor ("</"++tagname++">") htmlsrc
         foreach (_,"") = Nothing
         foreach ("",_) = Nothing
-        foreach (inner',_) =
-            let inner = Util.trim inner'
+        foreach (inner'' , tagbegin) =
+            let inner' = if tagbegin == lookfor@!0 then inner'' else snd$ Util.splitOn1st '>' inner''
+                inner = Util.trim inner'
             in null inner |? Nothing |! Just inner
     in chunks>~foreach ~> Util.unMaybes
 

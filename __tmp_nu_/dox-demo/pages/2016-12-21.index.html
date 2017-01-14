@@ -1,0 +1,25 @@
+<h1>Overview</h1>
+<p>These are the user docs on HaXtatic:</p>
+<ul>
+	<li>neither the first, nor the last .. neither the most powerful, nor the most minimalist .. simply just, wait for it ..</li>
+	<li>yet-another <b>static site generator</b>! You heard that right.</li>
+	<li>Step aside into obscurity, Macromedia Dreamweaver and Microsoft FrontPage: it's the mid-2010s at last and we're all command-line jocks now.</li>
+</ul>
+<p>
+	Hacked-together for hacking fine sites together the (mostly imagined) "old-school way" &mdash; and probably more compelling (for users other than me, compared to other such tools) only in case you wish to command some awfully-intricate-templating powers and know to code up at least simple short pieces of <a href="http://haskell.org">Haskell</a> (such as <a href="https://github.com/metaleap/HaXtatic/blob/master/src/xmarkup.hs">this 2-liner</a> or <a href="https://github.com/metaleap/HaXtatic/blob/master/src/xsnippets.hs">this 5-liner</a>) in a pinch: because I wrote it from the ground up with easy-speedy, "done-and-done" future extensibility chiefly in mind.
+</p>
+<p>To be fair though: it <i>does</i> actually accomplish quite a lot without you ever needing to touch its codebase &mdash; alas you'll have to run-from-source (or compile from scratch) no less.</p>
+{X|h: Quick start |}
+<ol>
+	<li>Fetch from <a href="http://github.com/metaleap/HaXtatic">Github</a></li>
+	<li>
+		Run with <a href="https://www.haskell.org/downloads#stack">Haskell Stack</a> (with <a href="https://hackage.haskell.org/package/MissingH">MissingH</a> already present)
+		<ul>
+			<li>first via: <code><span>~/haxtatic/src$ </span>stack runghc ./main.hs</code>* to see a note on how to <i>really</i> run this.</li>
+			<li>(* unless of course you prefer another way of building-running Haskell programs)</li>
+			<li>now run: <code><span>~/haxtatic/src$ </span>stack runghc ./main.hs <i>~/where/ever/</i>mydemosite.foo/</code></li>
+		</ul>
+	</li>
+	<li>Dig into the freshly generated and populated <code>mydemosite.foo</code> project-directory to grasp the bare essentials from the pre-created default single-page site in there.</li>
+	<li>Dig into the project-directory (<code>src-docs</code> folder inside <a href="http://github.com/metaleap/HaXtatic/tree/master/docs">docs</a>) for this very Docs site to figure out most-of-the-rest.</li>
+</ol>

@@ -18,15 +18,17 @@ registerX _ xreg =
     let
     renderer (_ , argstr) =
         Just$ Html.out
-                cfg_htmltagname ( cfghtmlatts ++ [("" =: innercontent)] ) []
+                cfg_htmltagname ([("" =: innercontent)] ++ cfghtmlatts ++ (dynatts innercontent)) []
         where
         innercontent = argstr
+        dynatts inn = cfgdynatts >~ \name -> (name , inn)
 
     in X.Early renderer
     where
 
     (cfg_htmltagname , cfg_parsestr ) = xreg-:X.cfgSplitOnce
-    cfghtmlatts =  cfg-:htmlAtts
+    cfghtmlatts = cfg-:htmlAtts ~| ("[:content:]"/=).snd
+    cfgdynatts = (cfg-:htmlAtts ~| ("[:content:]"==).snd) >~ fst
     cfg = X.tryParseCfg cfg_parsestr (Just defcfg) errcfg where
         defcfg = Cfg { htmlAtts = [] }
         errcfg = Cfg { htmlAtts = X.htmlErrAttsCfg xreg }

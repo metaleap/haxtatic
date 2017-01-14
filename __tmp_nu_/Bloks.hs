@@ -5,6 +5,7 @@ import Base
 import qualified Defaults
 import qualified Files
 import qualified ProjC
+import qualified Tmpl
 import qualified Util
 
 import qualified Data.List
@@ -16,11 +17,11 @@ import qualified System.FilePath
 data Blok
     = B {
         title :: String,
-        desc :: String,
         atomFile :: FilePath,
         blokIndexPageFile :: FilePath,
         inSitemap :: Bool,
-        dtFormat :: String
+        dtFormat :: String,
+        desc :: String
     }
     deriving (Eq, Read)
 
@@ -123,12 +124,5 @@ tagHandler bloks curbname str =
 
 toParseStr _bname projchunkval =
     let
-        parsestr = projchunkval -- ~> (checkfield "title" "") ~> (checkfield "desc" "") ~>
-                -- (checkfield "atomFile" "") ~> (checkfield "blokIndexPageFile" (bname++ ".html")) ~>
-                --     (checkfield "inSitemap" True) ~> (checkfield "dtFormat" "")
-    in "B {" ++parsestr++ "}"
-    -- where
-    -- checkfield field defval prjchnk =
-    --     any ((Util.contains prjchnk).(field++)) (["=True" , "=False" , "={``:" , "=\""])
-    --     |? prjchnk -- there was a hint field is already in def-string
-    --     |! prjchnk ++ ", " ++ field ++ "=" ++ (show defval) -- user skipped field, append
+        parsestr = Tmpl.fixParseStr "desc" projchunkval
+    in "B {" ++ parsestr ++ "}"
