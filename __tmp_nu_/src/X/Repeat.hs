@@ -1,5 +1,5 @@
 {-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
-module Xrepeat where
+module X.Repeat where
 
 import Base
 import qualified Posts

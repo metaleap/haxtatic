@@ -436,9 +436,11 @@ splitUp _ _ _ "" = []
 splitUp _ _ "" src = [(src,"")]
 splitUp _ [] _ src = [(src,"")]
 splitUp withmatch allbeginners end src =
-    (nomatchpossible || null beginners) |? [(src,"")] |! _splitup src
+    if nomatchpossible || null beginners
+        then [(src,"")]
+        else _splitup src
     where
-    nomatchpossible = not$ Data.List.isInfixOf end src -- oddly enough this extra work does speed things up!
+    nomatchpossible = not$ Data.List.isInfixOf end src -- oddly enough this extra work does pay off perf-wise
     beginners = beginners' ~| length~.((==)beg0len)
     beginners' = allbeginners>~reverse ~|is
     beg0len = beg0~>length

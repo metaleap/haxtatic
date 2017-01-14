@@ -1,5 +1,5 @@
 {-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
-module Xsnippet where
+module X.Snippet where
 
 import Base
 import qualified Tmpl

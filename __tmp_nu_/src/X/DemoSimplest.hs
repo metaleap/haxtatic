@@ -1,5 +1,5 @@
 {-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
-module XdemoSimplest where
+module X.DemoSimplest where
 
 import X
 

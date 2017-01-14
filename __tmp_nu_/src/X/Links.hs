@@ -1,5 +1,5 @@
 {-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
-module Xlinks where
+module X.Links where
 
 import Base
 import qualified Html

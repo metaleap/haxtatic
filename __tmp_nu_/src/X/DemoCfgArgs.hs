@@ -1,5 +1,5 @@
 {-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
-module XdemoCfgArgs where
+module X.DemoCfgArgs where
 
 import qualified X
 

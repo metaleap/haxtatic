@@ -11,14 +11,14 @@ import qualified Proj
 import qualified Tmpl
 import qualified Util
 
-import qualified XdemoSimplest (registerX)
-import qualified XdemoCfgArgs (registerX)
-import qualified XpageAnchors (registerX)
-import qualified Ximage (registerX)
-import qualified Xlinks (registerX)
-import qualified Xrepeat (registerX)
-import qualified Xsnippet (registerX)
-import qualified XminiTag (registerX)
+import qualified X.DemoSimplest (registerX)
+import qualified X.DemoCfgArgs (registerX)
+import qualified X.PageAnchors (registerX)
+import qualified X.Image (registerX)
+import qualified X.Links (registerX)
+import qualified X.Repeat (registerX)
+import qualified X.Snippet (registerX)
+import qualified X.MiniTag (registerX)
 
 import qualified Data.Time.Clock
 import qualified System.Directory
@@ -27,14 +27,14 @@ import qualified System.IO
 import qualified Text.Printf
 
 
-xregs = [ "hax/demoSimplest" =: XdemoSimplest.registerX
-        , "hax/demoCfgArgs" =: XdemoCfgArgs.registerX
-        , "hax/pageAnchors" =: XpageAnchors.registerX
-        , "hax/image" =: Ximage.registerX
-        , "hax/links" =: Xlinks.registerX
-        , "hax/repeat" =: Xrepeat.registerX
-        , "hax/snippet" =: Xsnippet.registerX
-        , "hax/miniTag" =: XminiTag.registerX
+xregs = [ "hax/demoSimplest" =: X.DemoSimplest.registerX
+        , "hax/demoCfgArgs" =: X.DemoCfgArgs.registerX
+        , "hax/pageAnchors" =: X.PageAnchors.registerX
+        , "hax/image" =: X.Image.registerX
+        , "hax/links" =: X.Links.registerX
+        , "hax/repeat" =: X.Repeat.registerX
+        , "hax/snippet" =: X.Snippet.registerX
+        , "hax/miniTag" =: X.MiniTag.registerX
         ]
 
 

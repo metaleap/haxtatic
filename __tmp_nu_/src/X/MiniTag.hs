@@ -1,5 +1,5 @@
 {-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
-module XminiTag where
+module X.MiniTag where
 
 import Base
 import qualified Html
