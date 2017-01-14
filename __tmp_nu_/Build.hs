@@ -155,7 +155,7 @@ plan ctxmain ctxproj =
                                 Posts.relPath = outjob-:relPath,
                                 Posts.srcFile = outjob-:srcFile
                             }
-    in print (outpagefiles~>length) >> return BuildPlan {
+    in return BuildPlan {
                 outAtoms = outatomfiles,
                 outPages = outpagefiles,
                 outStatics = outcopyfiles,

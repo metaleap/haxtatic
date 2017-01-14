@@ -92,7 +92,9 @@ processPage ctxmain ctxbuild ctxtmpl tmplfinder outjob =
             tmpl = tmplfinder$ System.FilePath.takeExtension dstfilepath
             pageonlyproc = Tmpl.processSrcFully ctxtmpl (Just ctxpage)
                             (null pagevars |? pagesrc |! (concat pagesrcchunks))
-            outsrc = Tmpl.apply tmpl ctxpage pageonlyproc
+            applied = Tmpl.apply tmpl ctxpage pageonlyproc
+            outsrc = Tmpl.processSrcFully ctxtmpl (Just ctxpage) applied
+                        --  sadly thanks to nested-nestings there may *still* be stray tags..
             htmlinners tagname =
                 Html.findInnerContentOfNoAttrTags tagname pageonlyproc
             htmlinner1st tagname defval =
@@ -142,6 +144,10 @@ tagHandler cfgproj ctxpage ctxtmpl outjob ptagcontent
     (dtfprefix,dtfname) = Util.bothTrim (Util.splitOn1st ':' ptagcontent)
     fordate dtfn datetime =
         Just$ ProjC.dtUtc2Str cfgproj dtfn datetime
+    for ('/':path) =
+        let newrelpath = take (Util.count '/' (outjob-:Build.relPathSlashes)) infinity
+            infinity = iterate (++ "../") "../"
+        in Just$ ( null newrelpath |? path |! ((last newrelpath) ++ path) )
     for name =
         let (dtfp,dtfn) = Util.bothTrim (Util.splitOn1st ':' name)
         in if dtfp=="srcTime"

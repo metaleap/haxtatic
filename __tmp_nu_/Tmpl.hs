@@ -118,9 +118,9 @@ processSrcFully ctxproc ctxpage =
     where
     preserveunprocessedtag = const Nothing
     splitup = Util.splitUp Util.trim whichtags tag_Close
-    whichtags = case ctxpage of
-        Nothing -> Data.List.delete tag_P (ctxproc-:processTags) -- ~|(/=tag_P)
-        Just _ -> ctxproc-:processTags
+    whichtags = ctxproc-:processTags -- case ctxpage of
+        -- Nothing -> Data.List.delete tag_P (ctxproc-:processTags) -- ~|(/=tag_P)
+        -- Just _ -> ctxproc-:processTags
     _c = ctxproc-:cTagHandler ; _t = ctxproc-:tTagHandler
     _b = (ctxproc-:bTagHandler) (ctxpage-:(blokName =|- ""))
     _p = ctxpage-:(pTagHandler =|- preserveunprocessedtag)
