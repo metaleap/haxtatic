@@ -25,7 +25,8 @@ data Tag
         order :: SortOrder,
         skip :: Int,
         limit :: Int
-    } deriving (Read)
+    }
+    deriving Read
 
 
 data Iterate
@@ -35,7 +36,7 @@ data Iterate
     | Feeds
     | FeedGroups (Maybe Posts.Query) String
     | FeedPosts (Maybe Posts.Query)
-    deriving (Read)
+    deriving Read
 
 
 data SortOrder

@@ -13,7 +13,7 @@ data Tag =
         attribs :: Util.StringPairs,
         subTags :: [Tag]
     }
-    deriving (Eq)
+    deriving Eq
 
 
 
@@ -84,7 +84,7 @@ find1st finder defval htmlsrc =
     defval -|= (finder htmlsrc)@?0
 
 findInnerContentOfTags tagname htmlsrc =
-    let lookfor = ['<':(tagname++">") , '<':(tagname++" ")] -- ,'<':(tagname++"\t"),'<':(tagname++"\n")] ..?! let's not overdo this
+    let lookfor = ['<':(tagname++">") , '<':(tagname++" ")] -- remember all need same length for single splitUp call!!!  -- ,'<':(tagname++"\t"),'<':(tagname++"\n")] ..?! let's not overdo this
         chunks = Util.splitUp id lookfor ("</"++tagname++">") htmlsrc
         foreach (_,"") = Nothing
         foreach ("",_) = Nothing

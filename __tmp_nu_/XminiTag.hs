@@ -10,7 +10,8 @@ import qualified X
 data Tag
     = Cfg {
         htmlAtts :: Util.StringPairs
-    } deriving (Read)
+    }
+    deriving Read
 
 
 
@@ -21,7 +22,7 @@ registerX _ xreg =
                 cfg_htmltagname ([("" =: innercontent)] ++ cfghtmlatts ++ (dynatts innercontent)) []
         where
         innercontent = argstr
-        dynatts inn = cfgdynatts >~ \name -> (name , inn)
+        dynatts inn = cfgdynatts >~ \name -> (name , Html.escape inn)
 
     in X.Early renderer
     where

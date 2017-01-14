@@ -35,7 +35,8 @@ data Post
         link :: String,
         pic :: String,
         content :: String
-    } deriving (Eq, Read)
+    }
+    deriving (Eq, Read)
 
 data Feed =
     Job {
@@ -51,7 +52,8 @@ data Query =
         feeds :: [String],
         cats :: [String],
         dates :: Maybe (String , String)
-    } deriving (Read)
+    }
+    deriving Read
 
 
 

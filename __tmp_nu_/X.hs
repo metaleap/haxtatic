@@ -17,7 +17,7 @@ data Reg
         cfgFullStr :: String,
         cfgSplitAll :: [String],
         cfgSplitOnce ::  (String,String)
-    } deriving (Show)
+    }
 
 
 data Render r = NoRender | Early r | EarlyOrWait r | WaitForPage r

@@ -26,7 +26,7 @@ data File
         modTime :: Data.Time.Clock.UTCTime,
         content :: String
     }
-    deriving (Eq)
+    deriving Eq
 
 
 data Ctx

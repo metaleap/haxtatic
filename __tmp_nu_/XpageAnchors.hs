@@ -15,7 +15,8 @@ data Tag
     }
     | Args {
         htmlAtts :: Util.StringPairs
-    } deriving (Read)
+    }
+    deriving Read
 
 
 

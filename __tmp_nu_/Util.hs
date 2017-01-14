@@ -317,6 +317,7 @@ fuseElems is2fuse fusion (this:next:more) =
 fuseElems _ _ l = l
 
 
+
 indexOf _ [] =
     _intmin
 indexOf item (this:rest) =
@@ -435,14 +436,15 @@ splitUp _ _ _ "" = []
 splitUp _ _ "" src = [(src,"")]
 splitUp _ [] _ src = [(src,"")]
 splitUp withmatch allbeginners end src =
-    (null beginners) |? [(src,"")] |! _splitup src
+    (nomatchpossible || null beginners) |? [(src,"")] |! _splitup src
     where
+    nomatchpossible = not$ Data.List.isInfixOf end src -- oddly enough this extra work does speed things up!
     beginners = beginners' ~| length~.((==)beg0len)
     beginners' = allbeginners>~reverse ~|is
     beg0len = beg0~>length
     beg0 = beginners'@!0
 
-    lastidx = (beginners~>length > 1) |? (lastidx'') |! (lastidx')
+    lastidx = (beginners~>length == 1) |? (lastidx') |! (lastidx'')
     lastidx' revstr = lastIndexOfSub revstr beg0
     lastidx'' revstr = (beginners>~ (lastIndexOfSub revstr)) ~> maximum
 

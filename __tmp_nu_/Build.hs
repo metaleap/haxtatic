@@ -45,7 +45,7 @@ data Task
         contentDate :: Data.Time.Clock.UTCTime,
         srcFile :: Files.File
     }
-    deriving (Eq)
+    deriving Eq
 
 
 

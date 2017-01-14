@@ -69,39 +69,41 @@ processPage ctxmain ctxbuild ctxtmpl tmplfinder outjob =
 
     processcontent =
         Data.Time.Clock.getCurrentTime >>= \nowtime
-        -> loadsrccontent >>= \(mismatches , pagesrc)
+        -> loadsrccontent >>= \(mismatches , pagesrcraw)
         -> let
             randseed' = (Util.dtInts nowtime)
                             ++ (Util.dtInts $outjob-:Build.srcFile-:Files.modTime)
-                                ++ [ length $ctxbuild-:Posts.allPagesFiles , pagesrc~>length ]
-            ctxpage = Tmpl.PageContext {
-                            Tmpl.blokName = outjob-:Build.blokName,
-                            Tmpl.pTagHandler = taghandler,
-                            Tmpl.pVars = pagevars,
-                            Tmpl.pDate = pagedate,
-                            Tmpl.htmlInners = htmlinners,
-                            Tmpl.htmlInner1st = htmlinner1st,
-                            Tmpl.tmpl = tmpl,
-                            Tmpl.cachedRenderSansTmpl = pageonlyproc,
-                            Tmpl.lookupCachedPageRender = ctxbuild-:Posts.lookupCachedPageRender,
-                            Tmpl.allPagesFiles = ctxbuild-:Posts.allPagesFiles,
-                            Tmpl.randSeed = randseed' >~ ((+) (pagesrc~>length * randseed'@!1))
-                        }
-            (pagevars , pagedate , pagesrcchunks) = pageVars (ctxbuild-:Posts.projCfg) pagesrc $outjob-:Build.contentDate
-            taghandler = tagHandler (ctxbuild-:Posts.projCfg) ctxpage ctxtmpl outjob
+                                ++ [ length $ctxbuild-:Posts.allPagesFiles , pagesrcraw~>length ]
+            ctxpage htmlsrc thandler = Tmpl.PageContext {
+                                            Tmpl.blokName = outjob-:Build.blokName,
+                                            Tmpl.pTagHandler = thandler,
+                                            Tmpl.pVars = pagevars,
+                                            Tmpl.pDate = pagedate,
+                                            Tmpl.htmlInners = htmlinners htmlsrc,
+                                            Tmpl.htmlInner1st = htmlinner1st htmlsrc,
+                                            Tmpl.tmpl = tmpl,
+                                            Tmpl.cachedRenderSansTmpl = pagesrcproc,
+                                            Tmpl.lookupCachedPageRender = ctxbuild-:Posts.lookupCachedPageRender,
+                                            Tmpl.allPagesFiles = ctxbuild-:Posts.allPagesFiles,
+                                            Tmpl.randSeed = randseed' >~ ((+) (pagesrcraw~>length * randseed'@!1))
+                                        }
+            ctxpageprep = ctxpage pagesrcraw (taghandler ctxpageprep)
+            ctxpageproc = ctxpage pagesrcproc (taghandler ctxpageproc)
+            (pagevars , pagedate , pagesrcchunks) = pageVars (ctxbuild-:Posts.projCfg) pagesrcraw $outjob-:Build.contentDate
+            taghandler pagectx = tagHandler (ctxbuild-:Posts.projCfg) pagectx ctxtmpl outjob
             tmpl = tmplfinder$ System.FilePath.takeExtension dstfilepath
-            pageonlyproc = Tmpl.processSrcFully ctxtmpl (Just ctxpage)
-                            (null pagevars |? pagesrc |! (concat pagesrcchunks))
-            applied = Tmpl.apply tmpl ctxpage pageonlyproc
+            pagesrcproc = Tmpl.processSrcFully ctxtmpl (Just ctxpageprep)
+                            (null pagevars |? pagesrcraw |! (concat pagesrcchunks))
+            applied = Tmpl.apply tmpl ctxpageproc pagesrcproc
             --  annoyingly, thanks to nested-nestings there may *still* be fresh/pending haXtags,
             --  now that we did only-the-page-src AND the so-far unprocessed {P|'s in tmpl, so once more with feeling:
-            outsrc = Tmpl.processSrcFully ctxtmpl (Just ctxpage) applied
-            htmlinners tagname =
-                Html.findInnerContentOfTags tagname pageonlyproc
-            htmlinner1st tagname defval =
-                defval -|= (htmlinners tagname)@?0
+            outsrc = Tmpl.processSrcFully ctxtmpl (Just ctxpageproc) applied
+            htmlinners htmlsrc tagname =
+                Html.findInnerContentOfTags tagname htmlsrc
+            htmlinner1st htmlsrc tagname defval =
+                defval -|= (htmlinners htmlsrc tagname)@?0
 
-        in return (outsrc , (outsrc , ctxpage , mismatches))
+        in return (outsrc , (outsrc , ctxpageproc , mismatches))
 
 
 

@@ -11,7 +11,8 @@ data Tag =
     Cfg {
         lnkAtts :: Util.StringPairs,
         imgAtts :: Util.StringPairs
-    } deriving (Read)
+    }
+    deriving Read
 
 
 registerX _ xreg =

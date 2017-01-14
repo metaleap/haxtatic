@@ -11,14 +11,14 @@ import qualified Proj
 import qualified Tmpl
 import qualified Util
 
-import qualified XdemoSimplest
-import qualified XdemoCfgArgs
-import qualified XpageAnchors
-import qualified Ximage
-import qualified Xlinks
-import qualified Xrepeat
-import qualified Xsnippet
-import qualified XminiTag
+import qualified XdemoSimplest (registerX)
+import qualified XdemoCfgArgs (registerX)
+import qualified XpageAnchors (registerX)
+import qualified Ximage (registerX)
+import qualified Xlinks (registerX)
+import qualified Xrepeat (registerX)
+import qualified Xsnippet (registerX)
+import qualified XminiTag (registerX)
 
 import qualified Data.Time.Clock
 import qualified System.Directory

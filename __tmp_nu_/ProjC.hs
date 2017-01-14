@@ -35,7 +35,7 @@ data Processing
         force :: [String],
         dirs :: [String]
     }
-    deriving (Read)
+    deriving Read
 
 
 
