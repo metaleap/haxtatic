@@ -11,7 +11,8 @@ data Tag =
     Cfg {
         htmlAtts :: Util.StringPairs,
         itemsFirst :: Util.StringPairs,
-        itemsLast :: Util.StringPairs
+        itemsLast :: Util.StringPairs,
+        wrapHref :: (String , String)
     }
     | Args {
         items :: Util.StringPairs,
@@ -38,16 +39,16 @@ registerX _ xreg =
     htmlout atts argitems =
         argitems>~(foreach atts) ~> concat
     foreach attribs (url,text) =
-        Html.out cfg_htmltagname attribs [ Html.T "a" ["" =: text , "href" =: url] [] ]
+        Html.out cfg_htmltagname attribs [ Html.T "a" ["" =: text , "href" =: cfgwraphref url] [] ]
 
     wrapitems = (cfgitemspre++).(++cfgitemspost)
     cfgitemspre = htmlout cfghtmlatts $cfg-:itemsFirst
     cfgitemspost = htmlout cfghtmlatts $cfg-:itemsLast
 
-    (cfg_htmltagname , cfg_parsestr ) = xreg-:X.cfgSplitOnce
+    (cfg_htmltagname , cfg_parsestr) = xreg-:X.cfgSplitOnce
     cfghtmlatts =  cfg-:htmlAtts
+    cfgwraphref = cfg-:wrapHref ~> \(w1,w2) -> (w1++).(++w2)
     cfg = X.tryParseCfg cfg_parsestr (Just defcfg) errcfg where
-        defcfg = Cfg { htmlAtts = [],
-                        itemsFirst = [], itemsLast = [] }
+        defcfg = Cfg { htmlAtts = [], itemsFirst = [], itemsLast = [], wrapHref = ("","") }
         errcfg = Cfg { htmlAtts = X.htmlErrAttsCfg xreg ,
-                        itemsFirst = ["#"=:""], itemsLast = [] }
+                        itemsFirst = ["#"=:""], itemsLast = [], wrapHref = ("","") }

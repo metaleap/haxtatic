@@ -93,8 +93,9 @@ processPage ctxmain ctxbuild ctxtmpl tmplfinder outjob =
             pageonlyproc = Tmpl.processSrcFully ctxtmpl (Just ctxpage)
                             (null pagevars |? pagesrc |! (concat pagesrcchunks))
             applied = Tmpl.apply tmpl ctxpage pageonlyproc
+            --  annoyingly, thanks to nested-nestings there may *still* be fresh/pending haXtags,
+            --  now that we did only-the-page-src AND the so-far unprocessed {P|'s in tmpl, so once more with feeling:
             outsrc = Tmpl.processSrcFully ctxtmpl (Just ctxpage) applied
-                        --  sadly thanks to nested-nestings there may *still* be stray tags..
             htmlinners tagname =
                 Html.findInnerContentOfNoAttrTags tagname pageonlyproc
             htmlinner1st tagname defval =
