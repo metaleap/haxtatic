@@ -2,7 +2,9 @@
 module X.Links where
 
 import Base
+import qualified Files
 import qualified Html
+import qualified Tmpl
 import qualified Util
 import qualified X
 
@@ -24,28 +26,51 @@ data Tag =
 
 registerX _ xreg =
     let
-    renderer (_ , argstr) =
-        Just$ wrapitems allitems
+    renderer (maybectxpage , argstr) =
+        if waitforpage
+            then Nothing
+            else Just$ combine allitems
         where
         allitems = htmlout (args-:htmlAtts ++ cfghtmlatts) (args-:items)
         args = Util.tryParse defargs errargs (("Args{"++).(++"}")) argstr where
             defargs = Args { items = [], htmlAtts = [] }
             errargs = Args { items = ["#"=:""], htmlAtts = X.htmlErrAttsArgs (xreg , Util.excerpt 23 argstr) }
 
+        htmlout atts argitems =
+            argitems>~(foreach atts) ~> concat
+        foreach attribs (url,text) =
+            Html.out cfg_htmltagname
+                        (Util.unMaybes$ attribs >~ (outattr maybectxpage))
+                            [ Html.T "a" ["" =: text , "href" =: cfgwraphref url] [] ]
+            where
+            outattr (Just ctxpage) (('/':name) , value) =
+                if pathmatch then Just (name , value) else Nothing
+                where
+                pathmatch = (curdir == dstdir)
+                curdir = Files.sanitizeUriRelPathForJoin url
+                dstdir = ((ctxpage-:Tmpl.pTagHandler) "dirUri") ~> (Files.sanitizeUriRelPathForJoin =|- "")
+            outattr _ other =
+                Just other
 
-    in X.Early renderer
+        combine = (cfgitemspre++).(++cfgitemspost)
+        cfgitemspre = htmlout cfghtmlatts $cfg-:itemsFirst
+        cfgitemspost = htmlout cfghtmlatts $cfg-:itemsLast
+
+        waitforpage =
+            (not$ hasctxpage maybectxpage) && (needpage4cfg || needpage4args)
+            where
+            hasctxpage Nothing = False ; hasctxpage _ = True
+            needpage4args = needpage $args-:htmlAtts
+
+    in X.EarlyOrWait renderer
     where
 
 
-    htmlout atts argitems =
-        argitems>~(foreach atts) ~> concat
-    foreach attribs (url,text) =
-        Html.out cfg_htmltagname attribs [ Html.T "a" ["" =: text , "href" =: cfgwraphref url] [] ]
-
-    wrapitems = (cfgitemspre++).(++cfgitemspost)
-    cfgitemspre = htmlout cfghtmlatts $cfg-:itemsFirst
-    cfgitemspost = htmlout cfghtmlatts $cfg-:itemsLast
-
+    needpage =
+        any isconditional where
+        isconditional (('/':_),_) = True
+        isconditional _ = False
+    needpage4cfg = needpage cfghtmlatts
     (cfg_htmltagname , cfg_parsestr) = xreg-:X.cfgSplitOnce
     cfghtmlatts =  cfg-:htmlAtts
     cfgwraphref = cfg-:wrapHref ~> \(w1,w2) -> (w1++).(++w2)

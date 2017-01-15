@@ -1,19 +1,19 @@
 <h1>P-tags: per-page values (date, title, custom..)</h1>
-<p><code>{P{..}}</code> tags include (built-in and custom) values specific to the current page.</p>
+<p><code>{P<!---->|..|<!---->}</code> tags include (built-in and custom) values specific to the current page.</p>
 {X|h: Built-in |}
 <ul>
-	<li><code>{\P{Title}}</code> &rarr; current page's first single-line <code>&lt;h1&gt;</code>'s entire inner markup<br/>&mdash; eg. for this page: <span class="hd-note">{P{Title}}</span></li>
-	<li><code>{\P{Body}}</code> &rarr; current page's entire (mostly already processed) markup source (only usable in {T{ThemeHtmlLink}})</li>
-	<li><code>{\P{FileName}}</code> &rarr; the current page's output file name<br/>&mdash; eg. for this page: <span class="hd-note">{P{FileName}}</span></li>
-	<li><code>{\P{OrigPath}}</code> &rarr; the current page's (relative local) source path<br/>&mdash; eg. for this page: <span class="hd-note">{P{OrigPath}}</span></li>
-	<li><code>{\P{BaseName}}</code> &rarr; the current page's name minus file extension and section prefix:<br/>&mdash; eg. for this page named <i>{P{FileName}}</i>: <span class="hd-note">{P{BaseName}}</span></li>
-	<li><code>{\P{Date}}</code> and <code>{\P{Date<i>MyFormat</i>}}</code> &rarr; current {T{PDate}} <br/>&mdash; eg. for this page: <span class="hd-note">{P{Date}}</span></li>
-	<li><code>{\P{PostText}}</code> &rarr; current {T{HaxBlokPage}}'s first single-line <code>&lt;p&gt;</code>'s entire inner text<br/>&mdash; eg. for this page: <span class="hd-note">{P{PostText}}</span></li>
+	<li><code>{P<!---->|title|<!---->}</code> &rarr; current page's first single-line <code>&lt;h1&gt;</code>'s entire inner markup<br/>&mdash; eg. for this page: <span class="hd-note">{P|title|}</span></li>
+	<li><code>{P<!---->|:content:|<!---->}</code> &rarr; current page's entire (mostly already processed) markup source (only usable in {T|ThemeHtmlLink|})</li>
+	<li><code>{P<!---->|FileName|<!---->}</code> &rarr; the current page's output file name<br/>&mdash; eg. for this page: <span class="hd-note">{P|FileName|}</span></li>
+	<li><code>{P<!---->|OrigPath|<!---->}</code> &rarr; the current page's (relative local) source path<br/>&mdash; eg. for this page: <span class="hd-note">{P|OrigPath|}</span></li>
+	<li><code>{P<!---->|BaseName|<!---->}</code> &rarr; the current page's name minus file extension and section prefix:<br/>&mdash; eg. for this page named <i>{P|FileName|}</i>: <span class="hd-note">{P|BaseName|}</span></li>
+	<li><code>{P<!---->|Date|<!---->}</code> and <code>{P<!---->|Date<i>MyFormat</i>|<!---->}</code> &rarr; current {T|PDate|} <br/>&mdash; eg. for this page: <span class="hd-note">{P|Date|}</span></li>
+	<li><code>{P<!---->|PostText|<!---->}</code> &rarr; current {T|HaxBlokPage|}'s first single-line <code>&lt;p&gt;</code>'s entire inner text<br/>&mdash; eg. for this page: <span class="hd-note">{P|PostText|}</span></li>
 </ul>
 {X|h: Custom |}
 <p>
-	Define those like <code>{P{%<i>name</i>:<i>value</i>}}</code> in a page; then while that page is being processed, this <code><i>value</i></code> will (stripped of leading / trailing white-space) replace all encounters of <code>{P{%<i>name</i>}}</code> <i>anywhere</i> in the output (whether from page, {T{ThemeHtmlLink}} or {T{BlogHtmlLink}} sources), including occurrences produced by {T{HaxTTag}}s or originating from other settings in {T{HaxConfLink}}.
+	Define those like <code>{P<!---->|%<i>name</i>:<i>value</i>|<!---->}</code> in a page; then while that page is being processed, this <code><i>value</i></code> will (stripped of leading / trailing white-space) replace all encounters of <code>{P<!---->|%<i>name</i>|<!---->}</code> <i>anywhere</i> in the output (whether from page, {T|ThemeHtmlLink|} or {T|BlogHtmlLink|} sources), including occurrences produced by {T|HaxTTag|}s or originating from other settings in {T|HaxConfLink|}.
 </p>
 <p>
-	Any characters are acceptable for the <i>name</i> in between <code>{P{%</code> and <code>&nbsp;:</code>, as well as the <i>value</i> in between <code>&nbsp;:</code> and <code>&nbsp;}}</code>.
+	Any characters are acceptable for the <i>name</i> in between <code>{P<!---->|%</code> and <code>&nbsp;:</code>, as well as the <i>value</i> in between <code>&nbsp;:</code> and <code>&nbsp;|<!---->}</code>.
 </p>

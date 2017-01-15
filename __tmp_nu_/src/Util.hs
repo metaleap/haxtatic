@@ -253,11 +253,9 @@ maybeJust func (Just sth) =
 
 
 
-unMaybes list =
-    (list ~|(/=Nothing)) >~ foreach where
-    foreach (Just val) = val
-    foreach _ = undefined
-
+unMaybes [] = []
+unMaybes (Nothing:more) = unMaybes more
+unMaybes ((Just val):more) = val : (unMaybes more)
 
 
 uniqueO:: (Eq a)=> [a] -> [a]
@@ -284,18 +282,20 @@ uniqueBy = Data.List.nubBy
 uniqueFst:: (Eq eq)=> [(eq,any)] -> [(eq,any)]
 uniqueFst = uniqueBy (bothFsts (==))
 
--- uniqueFst:: (Ord ord)=> [(ord,any)] -> [(ord,any)]
--- uniqueFst =
---     halp Data.Set.empty
---     where
---     halp _ [] = []
---     halp set (this@(this',_):rest) =
---         if Data.Set.member this' set
---             then halp set rest
---             else this : (halp (Data.Set.insert this' set) rest)
-
 uniqueSnd:: (Eq eq)=> [(any,eq)] -> [(any,eq)]
 uniqueSnd = uniqueBy (bothSnds (==))
+
+
+
+mergeDuplFsts isduplicate mergevalues =
+    mergeduplfsts where
+    mergeduplfsts [] = []
+    mergeduplfsts ((dispair@(disname,disval)):morepairs) =
+        let (duplpairs , otherpairs) = morepairs ~> (Data.List.partition $(isduplicate disname).fst)
+        in if null duplpairs
+            then dispair : (mergeduplfsts morepairs)
+            else (disname , mergevalues$ disval:(duplpairs>~snd)) : (mergeduplfsts otherpairs)
+
 
 
 lengthGEq 0 = const True

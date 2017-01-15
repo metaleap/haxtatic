@@ -66,7 +66,7 @@ registerX ctxproj xreg =
             iter Bloks =
                 ordered$ projbloknames >~ wrapped
             iter Feeds =
-                ordered$ (projfeeds ++ projbloknames)
+                ordered$ (projfeednames ++ projbloknames)
                             >~ wrapped
             iter (FeedGroups maybequery fieldname) =
                 maybefieldfunc~>((Posts.feedGroups ctxbuild projposts projbloks maybequery) =|- [])
@@ -110,22 +110,25 @@ registerX ctxproj xreg =
 
         waitforpage =
             (not$ hasctxpage maybectxpage)
-                && ((needpage4ord $args-:order) || (needpage4iter $args-:over))
+                && ( (needpage4iter $args-:over) || (needpage4ord $args-:order) )
             where
             hasctxpage Nothing = False ; hasctxpage _ = True
-            needpage4ord (Shuffle b) = b ; needpage4ord _ = False
+            needpage4ord (Shuffle perpage) = perpage ; needpage4ord _ = False
             needpage4iter (FeedGroups query _) = needpage4feed query
             needpage4iter (FeedPosts query) = needpage4feed query
             needpage4iter _ = False
             needpage4feed (Just (Posts.Filter feednames@(_:_) _ _)) =
-                is projbloknames && any (`elem` projbloknames) feednames
+                not$ any (`elem` projfeednames) feednames -- not known yet (or other placeholder), so postpone til page
             needpage4feed _ =
                 is projbloknames
+            _likelyinsnippet =
+                let i1 = Util.indexOfSub argstr "[|" ; i2 = Util.indexOfSub argstr "|]"
+                in i1 >= 0 && i2 > i1
 
     in X.EarlyOrWait renderer
     where
 
-    projfeeds = ctxproj-:Proj.setup-:Proj.feeds
+    projfeednames = ctxproj-:Proj.setup-:Proj.feeds
     projposts = ctxproj-:Proj.setup-:Proj.posts
     projbloks = ctxproj-:Proj.setup-:Proj.bloks
     projbloknames = Data.Map.Strict.keys projbloks
