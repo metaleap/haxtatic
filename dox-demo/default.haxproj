@@ -1,0 +1,55 @@
+|C|process:pages:
+	 { skip=[], force=["*"], dirs=[] }
+
+
+|B|tags:
+	title="haXtags", atomFile="", blokIndexPageFile="tags/index.html", inSitemap = True, dtFormat="", desc=>
+
+	<p>Embed {T|Hax|} tags anywhere in source contents, templates, snippets or {T|HaxConfLink|} files with a simple notation:
+	<code>{<i>Prefix</i>|<i>Name</i>|<!-- -->}</code> or <code>{<i>Prefix</i>|<i>Name</i>: <i>Args</i>|<!---->}</code>.</p>
+	<p>Example: <code>{P<!---->|date|<!---->}</code> outputs in-place the currently set {T|PDate|} during processing:
+	<span class="hd-note">{P|date|}</span>.</p>
+	<ul><li>All unprocessable haXtags (mispelled etc.) simply remain in the output to aid swift detection.</li>
+	<li>Any haXtags may embed (or output) any other haXtags freely but <ul><li>cyclic references will hang (or eventually
+	prematurely abort) the entire generating process</li><li>an otherwise-correct outer tag will typically not render with an
+	unprocessed inner tag (a "known non-issue")</li></ul></li>
+	<li>Available "prefixes" (or <i>haxTag types</i>) are (in order of simplicity) <b>T</b>, <b>B</b>, <b>P</b> and <b>X</b>:</li></ul>
+
+|B|basics:
+	title="Basics", atomFile="", blokIndexPageFile="basics/index.html", inSitemap = True, dtFormat="",
+	desc=>
+	<p>The basics........</p>
+
+
+|X|hax/miniTag:c:code
+|X|hax/miniTag:h:h2: htmlAtts=[("id","[:content:]")]
+
+|X|hax/links:doxtopnav:li:
+	 htmlAtts = [("class","hd-nav"),("/class","hd-nav-sel")],
+	 itemsFirst = [("" , "Overview")],
+	 itemsLast = [("x/" , "X-renderers")],
+	 wrapHref = ("{P|/" , "index.html|}")
+
+|X|hax/pageAnchors:doxpagetoc:h2:
+	considerEmpty = 1, htmlIfEmpty = "<style type='text/css'>.hd-toc { display: none; }</style>"
+
+|X|hax/repeat:doxindex:
+	prefix = "<ul class=\"hd-feed\"><li>{", suffix = "}</li></ul>", joinwith = "}</li><li>{",
+	content=""
+
+
+
+|T|Hax: haXtatic
+|T|SiteTitle: {T|Hax|} Docs
+|T|Briefly: In a nutshell
+|T|HaxConf: *.haxproj
+|T|HaxConfi: <i>{T|HaxConf|}</i>
+|T|HaxConfLink: <a href="#">{T|HaxConf|}</a>
+|T|HaxBlokPage: <a href="#">blok-post page</a>
+|T|HaxBlokLink: <a href="#">blok</a>
+|T|HaxBlok: <i>blok</i>
+|T|HaxXSnippets: <a href="#">{X(Snippets)}</a>
+|T|HaxX: <a href="#">X-renderers</a>
+|T|HaxTTag: <a href="tags.t.html">T-tag</a>
+|T|HaxPTag: <a href="{P|/tags/p.html|}#Custom">custom P-tag</a>
+|T|PDate: <a href='#'>'page date'</a>

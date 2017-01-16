@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="en"><head>
+    <title>The project directory | haXtatic Docs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../haxtatic.css" rel="stylesheet" />
+	<!--	basics\projdir.html
+			generated on 2016-12-21
+			from D:\dev\hs\hax2\dox-demo\pages\basics\2016-12-21.projdir.html	-->
+</head><body>
+    <h4>haXtatic Docs</h4>
+	<ul class="hd-nav">
+<li class="hd-nav"><a href="../index.html">Overview</a></li><li class="hd-nav hd-nav-sel"><a href="../basics/index.html">Basics</a></li><li class="hd-nav"><a href="../tags/index.html">haXtags</a></li><li class="hd-nav"><a href="../x/index.html">X-renderers</a></li>
+	</ul>
+	<div class="hd-toc">
+		<input type="checkbox" checked="checked" id="chk_showtoc"/>
+		<label for="chk_showtoc">On this page:</label>
+		<ul>
+<li><a href="#Get started">Get started</a></li><li><a href="#4 standard folders">4 standard folders</a></li><li><a href="#4 standard files">4 standard files</a></li>
+		</ul>
+	</div>
+
+
+<!-- begins content source page -->
+<h1>The project directory</h1>
+<p class="up">Any project resides in its own project-directory with a predefined (auto-generated) minimal-structure of 4 specific files plus these 4 folders:</p>
+<ul class="up"><li><b>default-build</b> (generated output)</li><li><b>pages</b> (all authored content source pages: likely-mostly-unstyled/unthemed/inner-body-only HTML files)</li><li><b>static</b> (raw files to batch-copy unprocessed straight into <b>default-build</b>)</li><li><b>tmpl</b> (templates and snippets)</li></ul>
+<h2>Get started</h2>
+<p>Run HaXtatic specifying "the project-directory to process" and any missing parts from the above essentials will be (re)created in-place.</p>
+<p>Example, to create a new site project named <b>mydemosite.foo</b> (inside the existing <i>~/dev/</i> directory in this case) <ul><li>just run from inside the haXtatic code-base's <i>src</i> directory:<br/><code><a href="https://www.haskell.org/downloads#stack">stack</a> runghc ./@HaxMain.hs ~/dev/mydemosite.foo</code></li><li>or with a compiled executable binary (eg. for extra speed if so inclined), of course<br/><code>haxtatic ~/dev/mydemosite.foo</code> works equally</li></ul> and the following is generated:</p>
+<p><img src="../img/fresh-project-directory.png" /></p>
+<p>The on-screen output will be something like:</p>
+<pre>
+==== HAXTATIC ====
+
+
+1/6     Reading essential project files (or creating them)..
+        &gt;&gt;      default.haxproj [ OK ]
+        &gt;&gt;      tmpl\default.haxtmpl.html [ OK ]
+        &gt;&gt;      tmpl\_hax_blokindex.haxsnip.html [ OK ]
+
+2/6     Planning the work..
+        -&gt;      No content-source files whatsoever.. making one for you:
+        &gt;&gt;      pages\index.html [ OK ]
+        -&gt;      Static files: will copy 0, skipping 0
+        -&gt;      Content pages: will generate 1+0, skipping 0
+        -&gt;      XML files: will generate 0 feeds, skipping 0
+                           plus 1 sitemap(s)
+
+3/6     Copying 0/0 file(s) to:
+        -&gt;      D:\dev\mydemosite.foo\default-build
+
+4/6     Generating 1/1 file(s) in:
+        -&gt;      D:\dev\mydemosite.foo\default-build
+        &gt;&gt;      index.html [ OK ]
+
+5/6     Writing 1/1 XML file(s) to:
+        -&gt;      D:\dev\mydemosite.foo\default-build
+        &gt;&gt;      sitemap.xml [ OK ]
+
+6/6     Copying only the 2 newly (over)written file(s) also to:
+        -&gt;      (skipping this step.)
+
+
+Wrote 2 files in 0.07s:
+        0.01s pre-templating &amp; planning
+        0.03s page templating &amp; generation (1x ~0.036s)
+        0.01s XML file generation (1x ~0.01s)
+        0s misc. &amp; file-copying
+
+==== Bye now! ====
+</pre>
+<p>
+	Now just proceed creating/modifying contents/templates/settings/etc. within this directory structure and then simply run the same command-line again to refresh <b>default-build</b> with any changes made since the last run.
+</p>
+<p>Of note: <i>haXtatic</i> <b>never deletes</b> any files whatsoever, and <b>never writes</b> any files outside the designated <i>build</i> folder(s) &mdash; except to re-create the few default folders/files described here, if missing.</p>
+<h2>4 standard folders</h2>
+<h3>Directory <i>default-build</i>:</h3>
+<p>Contains the complete generated site after a successful run. (Technically, contains all outputs from all previous runs ever since the directory was created or last cleaned up manually.)</p>
+<h3>Directory <i>static</i>:</h3>
+<p>All (changed or new) files and folders (if any) will just be batch-copied over straight into <b>default-build</b> (with no processing) as the first step.</p>
+<h3>Directory <i>pages</i>:</h3>
+<p>All (changed or new) files and folders in here will then be processed by applying a <a href="#">template</a> and the resulting corresponding output file goes into <b>default-build</b>; if <b>pages</b> has <i>no files at all</i>, only then a default <code>index.html</code> will be created once (to get new projects started with).</p>
+<h3>Directory <i>tmpl</i>:</h3>
+<p>Contains the auto-generated default <a href="#">templates</a> and <a href="">snippets</a> plus any custom ones, used during processing of the content source files from <b>pages</b>.</p>
+<h2>4 standard files</h2>
+<h3>Always created if missing:</h3>
+<ul>
+	<li><b>default.haxproj</b> &mdash; initially near-empty file (and may well be completely empty) that will over time contain all sorts of custom project-specific definitions used in the project's content source pages, snippets or templates.</li>
+	<li><b>tmpl/default.haxtmpl.html</b> &mdash; contains the complete outer HTML scaffolding markup that every generated HTML page will embed its own unique (processed) contents into. If empty, all generated output HTML pages will be empty. Needs at least the <code>{P<!---->|:content:|<!---->}</code> <a href="../tags/p.html">haxTag</a> for output pages to contain their source pages' processed contents.</li>
+	<li><b>tmpl/_hax_blokindex.haxsnip.html</b> &mdash; unused in the initial minimum default structure and can be empty; used when auto-generating index/archive/article-listing pages for <a href="#">bloks</a>.</li>
+</ul>
+<h3>Only created in new projects:</h3>
+<ul>
+	<li><b>pages/index.html</b> &mdash; <i>only</i> created <i>whenever</i> the <b>pages</b> directory is totally devoid of any files, as a handy example content source page to get started with.</li>
+</ul>
+
+<!-- end of content source page -->
+
+
+</body></html>

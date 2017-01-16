@@ -1,0 +1,15 @@
+vars = [
+		("title" , ""),
+		("link" , ""),
+		("content" , "")
+	],
+content=>
+<!--
+	other possible `vars` that can be added above and used below:
+		("feed" , ""),
+		("dt" , ""),
+		("cat" , ""),
+		("pic" , ""),
+-->
+<a class="hd-feed-title" href="{P|/[|link|]|}">[|title|]</a>
+<blockquote class="hd-feed-desc">[|content|]</blockquote>
