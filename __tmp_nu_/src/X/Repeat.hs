@@ -55,9 +55,11 @@ registerX ctxproj xreg =
             then Nothing
             else Just$ (cfg-:prefix) ++ allcontents ++ (cfg-:suffix)
         where
-        allcontents = Util.join (cfg-:joinwith) (iteratees >~ foreach)
-        foreach (i,v) =
-            Util.replaceSubs ["[:i:]" =: show i , "[:v:]" =: v] (cfg-:content)
+        allcontents = Util.join (cfg-:joinwith) (iteratees >~ (foreach $cfg-:content))
+
+        foreach "" (_,v) = v ; foreach "[:v:]" (_,v) = v ; foreach "[:i:]" (i,_) = show i
+        foreach cfgcontent (i,v) = Util.replaceSubs ["[:i:]" =: show i , "[:v:]" =: v] cfgcontent
+
         iteratees = Util.indexed (droptake (args-:skip) (args-:limit) (iter $args-:over)) where
             iter (Values values) =
                 ordered$ values >~ wrapped
