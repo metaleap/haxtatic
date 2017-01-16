@@ -137,7 +137,7 @@ postsFromBlok ctxbuild blokname getcat =
     (allblokpages , cdatelatest) = Bloks.allBlokPageFiles (ctxbuild-:projCfg) (ctxbuild-:allPagesFiles) blokname
     topost (relpath,file) =
         let
-            relpageuri = '/':(Files.pathSepSystemToSlash relpath)
+            relpageuri = Files.sanitizeUriRelPathForJoin relpath
             maybectxpage = (ctxbuild-:lookupCachedPageRender) (file-:Files.path)
             (htmlcontent , htmlinner1st) = case maybectxpage of
                 Nothing -> ( "<p>HaXtatic&apos;s fault: currently can&apos;t embed the requested content here unless `"

@@ -32,7 +32,7 @@ main =
             \  For a new project: specify path to its intended directory.\n    (I'll create it if missing and its parent isn't.)\n\n"
         else
         let projfilename = (Defaults.fileName_Proj -|= cmdargs@?1)
-        in System.Directory.makeAbsolute (cmdargs@!0) >>= \dirpath
+        in System.Directory.canonicalizePath (cmdargs@!0) >>= \dirpath
         -> let
             randseed' = (Util.dtInts starttime) ++ [curdir~>length , dirpath~>length , projfilename~>length]
             ctxmain = Files.AppContext {    Files.curDir = curdir,

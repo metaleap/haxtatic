@@ -12,6 +12,7 @@ import qualified ProjC
 import qualified Tmpl
 import qualified Util
 
+import Control.Applicative ( (<|>) )
 import qualified Data.List
 import qualified Data.Time.Clock
 import qualified System.FilePath
@@ -137,9 +138,7 @@ tagHandler cfgproj ctxpage ctxtmpl outjob ptagcontent
     | dtfprefix == "date"
         = fordate dtfname contentdate
     | otherwise
-        = case Data.List.lookup ptagcontent (ctxpage-:Tmpl.pVars) of
-            Just val -> Just val
-            Nothing -> for ptagcontent
+        = (Data.List.lookup ptagcontent (ctxpage-:Tmpl.pVars)) <|> (for ptagcontent)
 
     where
     xtaghandler = (ctxtmpl-:Tmpl.xTagHandler) (Just ctxpage)

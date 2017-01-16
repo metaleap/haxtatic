@@ -67,9 +67,9 @@ registerX _ xreg =
 
 
     needpage =
-        any isconditional where
-        isconditional (('/':_),_) = True
-        isconditional _ = False
+        any ispathconditional where
+        ispathconditional (('/':_),_) = True
+        ispathconditional _ = False
     needpage4cfg = needpage cfghtmlatts
     (cfg_htmltagname , cfg_parsestr) = xreg-:X.cfgSplitOnce
     cfghtmlatts =  cfg-:htmlAtts
