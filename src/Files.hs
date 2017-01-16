@@ -128,10 +128,10 @@ listAllFiles rootdirpath reldirs modtimer =
             ( srcfilepath -|= relpaths@?0,
                 FileInfo srcfilepath modtime )
             where
-            relpaths = dirpaths>~foreachsrcdir ~|is
+            relpaths = dirpaths>=~foreachsrcdir
             foreachsrcdir reldirpath =
                 if Util.startsWith srcfilepath reldirpath
-                then drop (1 + reldirpath~>length) srcfilepath else ""
+                then Just$ drop (1 + reldirpath~>length) srcfilepath else Nothing
         newest (_,mt1) (_,mt2) = compare mt2 mt1
     in return$ (Data.List.sortBy newest allfiletuples)>~foreachfiletuple
 
@@ -153,10 +153,10 @@ readOrDefault create ctxmain relpath relpath2 defaultcontent =
             System.Directory.getModificationTime filepath >>= \modtime
             -> readFile filepath >>= (FileFull filepath modtime)~.return
         fileexists False =
-            if is relpath2 && relpath2/=relpath
+            if has relpath2 && relpath2/=relpath
             then readOrDefault create ctxmain relpath2 "" defaultcontent else
             let file = FileFull filepath filetime defaultcontent
-                filetime = if create || is defaultcontent then (ctxmain-:nowTime) else Util.dateTime0
+                filetime = if create || has defaultcontent then (ctxmain-:nowTime) else Util.dateTime0
             in if not create then return file else
                 writeTo filepath relpath (return (defaultcontent , ()))
                 >> return file

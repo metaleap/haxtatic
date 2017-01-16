@@ -110,7 +110,7 @@ parseProjChunks chunkssplits =
     (feednames , posts)
     where
     feednames = Util.unique (posts>~feed)
-    posts = Data.List.sortBy cmpposts (chunkssplits>~foreach ~> Util.unMaybes)
+    posts = Data.List.sortBy cmpposts (chunkssplits>=~foreach)
     cmpposts post1 post2 =
         compare (post2-:dt) (post1-:dt)
     foreach (pfeedcat:pvalsplits) =
@@ -192,7 +192,7 @@ writeAtoms ctxbuild domainname outjobs =
                             \<feed xmlns=\"http://www.w3.org/2005/Atom\">\n\
                             \    <link rel=\"self\" type=\"application/rss+xml\" href=\"http://"++domainname++"/"++(urify relpath)++"\" />\n\
                             \    <title>"++domainname++" "++feedtitle++"</title>\n\
-                            \    <subtitle>"++(is feedname |? (domainname++pageuri) |! (Util.trim$ Html.stripMarkup ' ' feeddesc))++"</subtitle>\n\
+                            \    <subtitle>"++(has feedname |? (domainname++pageuri) |! (Util.trim$ Html.stripMarkup ' ' feeddesc))++"</subtitle>\n\
                             \    <id>http://"++domainname++pageuri++"</id>\n\
                             \    <link href=\"http://"++domainname++pageuri++"\"/>\n\
                             \    <updated>"++updated++"T00:00:00Z</updated>\n    "
@@ -204,7 +204,7 @@ writeAtoms ctxbuild domainname outjobs =
 
         urify = Files.pathSepSystemToSlash
         blokname = outjob-:blokName
-        feedname = is blokname |? "" |!
+        feedname = has blokname |? "" |!
                     drop 1 (System.FilePath.takeExtension srcpath)
         maybeblok = Bloks.blokByName (ctxbuild-:projBloks) blokname
         allposts = case maybeblok of
@@ -222,10 +222,10 @@ writeAtoms ctxbuild domainname outjobs =
 
         xmlatompost (htmlcontent , post) =
             let posttitle = xmlesc (post-:title)
-                postdesc = xmlesc (post-:(is blokname |? content |! cat))
-                postfull = xmlesc (is blokname |? (sanitize htmlcontent) |! (post-:content))
+                postdesc = xmlesc (post-:(has blokname |? content |! cat))
+                postfull = xmlesc (has blokname |? (sanitize htmlcontent) |! (post-:content))
                 postdt = post-:dt
-                posturl = is blokname |? post-:link |! pageuri++"#"++postdt
+                posturl = has blokname |? post-:link |! pageuri++"#"++postdt
             in ("<entry>\n\
                 \        <title type=\"html\">"++posttitle++"</title>\n\
                 \        <summary type=\"html\">"++postdesc++"</summary>\n\

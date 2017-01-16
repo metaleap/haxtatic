@@ -26,7 +26,7 @@ attrEscapeVals ((thisname,thisval):rest) =
 
 attrClearInner attrs =
     let inner = Util.lookup "" "" attrs
-    in ( inner , attrs~|fst~.is )
+    in ( inner , Util.noNilFsts attrs )
 
 
 
@@ -92,7 +92,7 @@ findInnerContentOfTags tagname htmlsrc =
             let inner' = if tagbegin == lookfor@!0 then inner'' else snd$ Util.splitOn1st '>' inner''
                 inner = Util.trim inner'
             in null inner |? Nothing |! Just inner
-    in chunks>~foreach ~> Util.unMaybes
+    in chunks>=~foreach
 
 findValuesOfVoidTags1stAttr tagname attrname htmlsrc =
     let chunks = Util.splitUp id ['<':(tagname++" "++attrname++"=\"")] "/>" htmlsrc
@@ -100,7 +100,7 @@ findValuesOfVoidTags1stAttr tagname attrname htmlsrc =
         foreach (inner',_) =
             let (inner,_) = Util.splitOn1st '\"' inner'
             in null inner |? Nothing |! Just inner
-    in chunks>~foreach ~> Util.unMaybes
+    in chunks>=~foreach
 
 
 

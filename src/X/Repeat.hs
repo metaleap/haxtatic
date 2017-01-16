@@ -120,7 +120,7 @@ registerX ctxproj xreg =
             needpage4feed (Just (Posts.Filter feednames@(_:_) _ _)) =
                 not$ any (`elem` projfeednames) feednames -- not known yet (or other placeholder), so postpone til page
             needpage4feed _ =
-                is projbloknames
+                has projbloknames
             _likelyinsnippet =
                 let i1 = Util.indexOfSub argstr "{%" ; i2 = Util.indexOfSub argstr "%}"
                 in i1 >= 0 && i2 > i1

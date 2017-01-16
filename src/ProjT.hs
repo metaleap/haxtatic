@@ -8,7 +8,7 @@ import qualified Data.Map.Strict
 
 
 parseProjChunks chunkssplits =
-    Data.Map.Strict.fromList$ chunkssplits>~foreach ~|is.fst where
+    Data.Map.Strict.fromList$ chunkssplits ~> Util.keepNoNilFsts foreach where
         foreach (tname:tvalsplits) =
             ( tname ~> Util.trim ,
                 tvalsplits ~> (Util.join ":") ~> Util.trim )

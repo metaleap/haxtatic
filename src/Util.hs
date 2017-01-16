@@ -246,9 +246,36 @@ tryParseOr defval =
 
 
 
-unMaybes [] = []
-unMaybes ((Just val):more) = val : (unMaybes more)
-unMaybes (_:more) = unMaybes more
+noMaybes [] = []
+noMaybes ((Just val):more) = val:(noMaybes more)
+noMaybes (_:more) = noMaybes more
+
+noNils [] = []
+noNils ([]:more) = noNils more
+noNils (item:more) = item:(noNils more)
+
+noNilFsts [] = []
+noNilFsts (([],_):more) = noNilFsts more
+noNilFsts (item:more) = item:(noNilFsts more)
+
+forNoNils _ [] = []
+forNoNils func ([]:more) = forNoNils func more
+forNoNils func (item:more) = (func item):(forNoNils func more)
+
+keepNoNils _ [] = []
+-- keepNoNils func ([]:more) = keepNoNils func more
+keepNoNils func (item:more)
+    | (has val) = val:(keepNoNils func more)
+    | (otherwise) = keepNoNils func more
+    where val = func item
+
+keepNoNilFsts _ [] = []
+-- keepNoNilFsts func (([],_):more) = keepNoNilFsts func more
+keepNoNilFsts func (item:more)
+    | (has f) = (f,s):(keepNoNilFsts func more)
+    | (otherwise) = keepNoNilFsts func more
+    where (f,s) = func item
+
 
 
 uniqueO:: (Eq a)=> [a] -> [a]
@@ -292,10 +319,10 @@ mergeDuplFsts isduplicate mergevalues =
 
 
 lengthGEq 0 = const True
-lengthGEq n = is . drop (n - 1)
+lengthGEq n = has . drop (n - 1)
 
-lengthGt 0 = is
-lengthGt n = is . drop n
+lengthGt 0 = has
+lengthGt n = has . drop n
 
 excerpt maxlen str =
     if s==str then s else (s++"...")
@@ -435,7 +462,7 @@ splitUp withmatch allbeginners end src =
     where
     nomatchpossible = not$ Data.List.isInfixOf end src -- oddly enough this extra work does pay off perf-wise
     beginners = beginners' ~| length~.((==)beg0len)
-    beginners' = allbeginners>~reverse ~|is
+    beginners' = allbeginners ~> forNoNils reverse
     beg0len = beg0~>length
     beg0 = beginners'@!0
 

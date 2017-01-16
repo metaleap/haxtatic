@@ -39,7 +39,7 @@ registerX _ xreg =
             argitems>~(foreach atts) ~> concat
         foreach attribs (url,text) =
             Html.out cfg_htmltagname
-                        (Util.unMaybes$ attribs >~ (outattr maybectxpage))
+                        (attribs >=~ (outattr maybectxpage))
                             [ Html.T "a" ["" =: text , "href" =: cfgwraphref url] [] ]
             where
             outattr (Just ctxpage) (('/':name) , value) =

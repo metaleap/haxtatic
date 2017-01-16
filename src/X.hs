@@ -53,7 +53,7 @@ htmlErrAttsArgs =
 
 
 parseProjChunks ctxproj xregisterers chunkssplits =
-    Data.Map.Strict.fromList (chunkssplits>~foreach ~> Util.unMaybes)
+    Data.Map.Strict.fromList (chunkssplits>=~foreach)
     where
     rendererr msg (_,_) = Just msg
     foreach (xname':tname':tvals) =

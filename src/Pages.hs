@@ -63,7 +63,7 @@ processPage ctxmain ctxbuild ctxtmpl tmplfinder outjob =
 
     loadsrccontent =
         let blokindexname = Bloks.blokNameFromIndexPagePath srcfilepath
-        in if is blokindexname
+        in if has blokindexname
             then return ((0,0) , "{X|_hax_blokindex: vars=[(\"bname\",\""++blokindexname++"\")], content=\"\" |}")
             else readFile srcfilepath >>= \rawsrc
                     -> return (Tmpl.tagMismatches rawsrc , rawsrc)
@@ -112,8 +112,8 @@ pageVars cfgproj pagesrc contentdate =
     (pagevars , pagedate , pagesrcchunks)
     where
     chunks = (Util.splitUp Util.trim ["{%P|"] "|%}" pagesrc)
-    pagevars = chunks >~ foreach ~> Util.unMaybes
-    pvardates = pagevars >~ maybedate ~> Util.unMaybes
+    pagevars = chunks>=~foreach
+    pvardates = pagevars>=~maybedate
     pagedate = contentdate -|= pvardates@?0
     pagesrcchunks = (chunks ~|null.snd) >~ fst -- ~|is
 

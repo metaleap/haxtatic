@@ -7,13 +7,16 @@ import Data.Function ( (&) )
 
 
 
-is ::
+has ::
     (Foldable f)=>
     f a -> Bool
 
-is = not.null
+has = not.null
 
-
+-- is ::
+--     (Foldable f)=>
+--     f a -> Bool
+-- is = noNil
 
 when ::
     Bool -> a -> a -> a
@@ -63,6 +66,16 @@ infixl 9 =>=
     Nothing
 (=>=) (Just sth) func =
     func sth
+
+
+
+infixl 9 >=~
+(>=~) [] _ = []
+(>=~) (item:more) func =
+    keepjustsdiscardnothings (func item) where
+    keepjustsdiscardnothings (Just sth) = sth:(more>=~func)
+    keepjustsdiscardnothings _ = more>=~func
+
 
 
 infixr 7 |~

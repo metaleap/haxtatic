@@ -50,7 +50,7 @@ blokNameFromIndexPagePath possiblefakepath =
 
 
 blokNameFromRelPath bloks relpath file =
-    "" -|= (bloks~>Data.Map.Strict.keys >~ foreach ~|is)@?0 -- yes, is
+    "" -|= (bloks~>Data.Map.Strict.keys ~> Util.keepNoNils foreach)@?0
     where
     foreach bname
         | isRelPathBlokPage bname relpath
@@ -66,7 +66,7 @@ buildPlan (modtimeproj,modtimetmpl) projcfg allpagesfiles bloks =
         pagestogenerate = files2gen (tofileinfo blokIndexPageFile modtimetmpl)
         files2gen blok2file = (Data.Map.Strict.elems (Data.Map.Strict.mapWithKey blok2file bloks))
                                 ~| isblokpagefile
-        isblokpagefile (relpath,file) = is relpath && file /= Files.NoFile
+        isblokpagefile (relpath,file) = has relpath && file /= Files.NoFile
         _allblokpagefiles = allBlokPageFiles projcfg allpagesfiles
         tofileinfo bfield modtime bname blok =
             let fakepath = (isblokpagefile bpage) |? blok-:bfield |! ""
@@ -90,7 +90,7 @@ isRelPathBlokPage bname relpath =
 
 
 parseProjChunks chunkssplits =
-    Data.Map.Strict.fromList$ chunkssplits >~ foreach ~> Util.unMaybes
+    Data.Map.Strict.fromList$ chunkssplits>=~foreach
     where
     foreach (blokname:bvalsplits) =
         maybeblok =>- \blok -> (bname , blok)
@@ -124,7 +124,7 @@ tagHandler bloks curbname str =
         bname = Util.ifNo bn curbname
         (fname, bn) = Util.bothTrim (Util.splitOn1st ':' str)
     in (null fname) |? Nothing
-        |! (fname=="name" && is bname) |? Just bname
+        |! (fname=="name" && has bname) |? Just bname
             |! (blokByName bloks bname) =>= \blok ->
                 (Data.List.lookup fname fields) =>- \fieldval -> blok-:fieldval
 
