@@ -127,18 +127,18 @@ shuffleBasic (rnd:rnds) list
 
 shuffleExtra rnds@(_:_:_) list@(_:_:_) =
     let shiftby = (rnds@!1) `mod` (list~>length - 1)
-        rev = if 0 == (shiftby `mod` 2) then reverse else id
+        reverseordont = if 0 == (shiftby `mod` 2) then reverse else id
         shuffled = shuffleBasic rnds list
         shifted = times shiftby shiftLeft shuffled
-    in rev shifted
+    in reverseordont shifted
 shuffleExtra rnds list =
     shuffleBasic rnds list
 
 
-times 0 _ l =
-    l
-times n f l =
-    times (n - 1) f (f l)
+times 0 _ =
+    id
+times n func =
+    (times (n - 1) func) . func
 
 
 crop 0 0 = id
@@ -213,11 +213,11 @@ subAt start len =
 
 substitute old new
     |(old==new)= id
-    |(otherwise)= (>~ subst) where
+    |(otherwise)= fmap subst where
         subst item |(item==old)= new |(otherwise)= item
 
 substitute' olds new =
-    (>~ subst) where
+    fmap subst where
         subst item |(elem item olds)= new |(otherwise)= item
 
 trim = trim'' Data.Char.isSpace
@@ -246,16 +246,9 @@ tryParseOr defval =
 
 
 
-maybeJust _ Nothing =
-    Nothing
-maybeJust func (Just sth) =
-    Just$ func sth
-
-
-
 unMaybes [] = []
-unMaybes (Nothing:more) = unMaybes more
 unMaybes ((Just val):more) = val : (unMaybes more)
+unMaybes (_:more) = unMaybes more
 
 
 uniqueO:: (Eq a)=> [a] -> [a]
@@ -263,7 +256,7 @@ uniqueO = Data.List.nub
 
 uniqueU:: (Ord a)=> [a] -> [a]
 -- http://stackoverflow.com/a/16109302
-uniqueU = ((>~ (@!0)) . Data.List.group . Data.List.sort)
+uniqueU = ((fmap (@!0)) . Data.List.group . Data.List.sort)
 
 unique:: (Ord a)=> [a] -> [a]
 -- http://stackoverflow.com/a/16111081
@@ -361,7 +354,7 @@ indexOfSubs1st _ [] =
 indexOfSubs1st subs str =
     let startchars = unique$ subs>~(@!0)
         (startindex , _haystack) = _indexof_droptil' (`elem` startchars) 0 str
-        iidxs = isubs >~ (both (id,indexof)) ~|snd~.(>=0)
+        iidxs = isubs >~ (both (id,indexof)) ~|(>=0).snd
         isubs = indexed subs
         indexof = indexOfSub _haystack
         (i,index) = Data.List.minimumBy (bothSnds compare) iidxs

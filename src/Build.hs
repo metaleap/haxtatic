@@ -151,7 +151,7 @@ plan ctxmain ctxproj =
                                     relPathSlashes = "", blokName = "", contentDate = Util.dateTime0 , srcFile = Files.NoFile }
         sitemap = ( (is sitemaprelpath && anyprocessing) || (not sitemapexists) |? sitemapbuild |! NoOutput ,
                     sitemapfiles ~|relPath~.(Files.hasAnyFileExt $projcfg-:ProjC.htmlEquivExts) )
-        feedjob outjob = Posts.Job {
+        feedjob outjob = Posts.BuildTask {
                                 Posts.blokName = outjob-:blokName,
                                 Posts.outPathBuild = outjob-:outPathBuild,
                                 Posts.relPath = outjob-:relPath,

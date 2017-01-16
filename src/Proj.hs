@@ -12,6 +12,7 @@ import qualified Util
 import qualified Tmpl
 import qualified X
 
+import qualified Data.List
 import qualified Data.Map.Strict
 import qualified System.FilePath
 import System.FilePath ( (</>) )
@@ -38,7 +39,7 @@ data Setup
         tmpDbgSrc :: [(Char,String)],
         bloks :: Data.Map.Strict.Map String Bloks.Blok,
         feeds :: [String],
-        posts :: [Posts.Post],
+        posts :: [Posts.Item],
         cfg :: ProjC.Config,
         ctxTmpl :: Tmpl.CtxProc,
         tagMismatches :: (Int , Int),
@@ -77,7 +78,8 @@ _loadSetup ctxmain ctxproj xregs defaultfiles =
                     Tmpl.cTagHandler = ProjC.tagHandler cfgmiscpost,
                     Tmpl.tTagHandler = ProjT.tagHandler ttagspost,
                     Tmpl.xTagHandler = X.tagHandler xtagspost,
-                    Tmpl.processTags = cfgpost-:ProjC.tmplTags
+                    Tmpl.processTagsOnPage = cfgpost-:ProjC.tmplTags,
+                    Tmpl.processTagsNoPage = Data.List.delete Tmpl.tag_P (cfgpost-:ProjC.tmplTags)
                 },
             tagMismatches = Tmpl.tagMismatches rawsrc,
             randSeed = (rawsrc~>length) : (length $defaultfiles-:Defaults.htmlSnippets)
@@ -91,7 +93,8 @@ _loadSetup ctxmain ctxproj xregs defaultfiles =
                     Tmpl.cTagHandler = ProjC.tagHandler cfgmiscprep,
                     Tmpl.tTagHandler = ProjT.tagHandler ttagsprep,
                     Tmpl.xTagHandler = X.tagHandler xtagsprep,
-                    Tmpl.processTags = cfgprep-:ProjC.tmplTags
+                    Tmpl.processTagsOnPage = cfgprep-:ProjC.tmplTags,
+                    Tmpl.processTagsNoPage = Data.List.delete Tmpl.tag_P (cfgprep-:ProjC.tmplTags)
                 },
             tagMismatches = (0,0), randSeed = []
         }

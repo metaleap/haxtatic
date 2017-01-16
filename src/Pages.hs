@@ -189,7 +189,7 @@ writeSitemapXml ctxproj buildplan =
                 xmlsitemapitem (ctxproj-:Proj.domainName) relpath (pageinfo-:Build.contentDate) priorel
             where
             maybeblok = Bloks.blokByName (ctxproj-:Proj.setup-:Proj.bloks) (pageinfo-:Build.blokName)
-            skip = case maybeblok of -- maybeblok~>((not . Bloks.inSitemap) =|- False) -- case maybeblok of
+            skip = case maybeblok of
                     Just blok -> not$ blok-:Bloks.inSitemap
                     Nothing -> False
             relpath = pageinfo-:Build.relPathSlashes

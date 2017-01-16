@@ -19,7 +19,8 @@ data CtxProc
         cTagHandler :: String -> Maybe String,
         tTagHandler :: String -> Maybe String,
         xTagHandler :: Maybe CtxPage -> String -> Maybe String,
-        processTags :: [String]
+        processTagsOnPage :: [String],
+        processTagsNoPage :: [String]
     }
 
 data CtxTmpl
@@ -48,7 +49,7 @@ data CtxPage
 
 
 
-_applychunkbegin = "{P|"
+_applychunkbegin = tag_P
 _applychunkmid = ":content:"
 _applychunkend = tag_Close
 apply ctxtmpl ctxpage pagesrc =
@@ -117,10 +118,9 @@ processSrcFully ctxproc ctxpage =
     Util.repeatedly process
     where
     preserveunprocessedtag = const Nothing
-    splitup = Util.splitUp Util.trim whichtags tag_Close
-    whichtags = case ctxpage of
-        Nothing -> Data.List.delete tag_P (ctxproc-:processTags) -- ~|(/=tag_P)
-        Just _ -> ctxproc-:processTags
+    splitup = Util.splitUp Util.trim (whichtags ctxpage) tag_Close
+    whichtags Nothing = ctxproc-:processTagsNoPage
+    whichtags _ = ctxproc-:processTagsOnPage
     _c = ctxproc-:cTagHandler ; _t = ctxproc-:tTagHandler
     _b = (ctxproc-:bTagHandler) (ctxpage-:(blokName =|- ""))
     _p = ctxpage-:(pTagHandler =|- preserveunprocessedtag)
@@ -135,11 +135,11 @@ processSrcFully ctxproc ctxpage =
             processTag taghandler (tagcontent , tagbegin)
             where
             taghandler
-                |(tagbegin==tag_B)= _b
-                |(tagbegin==tag_C)= _c
                 |(tagbegin==tag_T)= _t
                 |(tagbegin==tag_X)= _x
+                |(tagbegin==tag_B)= _b
                 |(tagbegin==tag_P)= _p
+                |(tagbegin==tag_C)= _c
                 |(otherwise)= preserveunprocessedtag
 
 
@@ -168,7 +168,7 @@ warnIfTagMismatches ctxmain filename (numtagends , numtagbegins) =
         else
         let maindirpath = ctxmain-:Files.dirPath
             trim = (Util.startsWith filename maindirpath) |? (drop$ maindirpath~>length + 1) |! id
-        in Text.Printf.printf "...\t<<\tPotential syntax issue: %ux `|}` but %ux `{*|`\n\t\t\tin `%s`\n"
+        in Text.Printf.printf "...\t<~\tPotential syntax issue: %ux `|}` but %ux `{*|`\n\t\t\tin `%s`\n"
                                 (numtagends::Int) (numtagbegins::Int) (trim filename)
 
 

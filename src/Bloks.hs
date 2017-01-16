@@ -15,7 +15,7 @@ import qualified System.FilePath
 
 
 data Blok
-    = B {
+    = From {
         title :: String,
         atomFile :: FilePath,
         blokIndexPageFile :: FilePath,
@@ -37,6 +37,8 @@ allBlokPageFiles projcfg allpagesfiles bname =
     in (sortedmatches , sortedmatches@?0 ~> (pagedate =|- Util.dateTime0))
 
 
+blokByName _ "" =
+    Nothing
 blokByName bloks blokname =
     Data.Map.Strict.lookup blokname bloks
 
@@ -59,10 +61,11 @@ blokNameFromRelPath bloks relpath file =
 
 
 buildPlan (modtimeproj,modtimetmpl) projcfg allpagesfiles bloks =
-    (dynpages , dynatoms) where
-        dynatoms = mapandfilter (tofileinfo atomFile modtimeproj)
-        dynpages = mapandfilter (tofileinfo blokIndexPageFile modtimetmpl)
-        mapandfilter fn = isblokpagefile |~ (Data.Map.Strict.elems$ Data.Map.Strict.mapWithKey fn bloks)
+    (pagestogenerate , atomstogenerate) where
+        atomstogenerate = files2gen (tofileinfo atomFile modtimeproj)
+        pagestogenerate = files2gen (tofileinfo blokIndexPageFile modtimetmpl)
+        files2gen blok2file = (Data.Map.Strict.elems (Data.Map.Strict.mapWithKey blok2file bloks))
+                                ~| isblokpagefile
         isblokpagefile (relpath,file) = is relpath && file /= Files.NoFile
         _allblokpagefiles = allBlokPageFiles projcfg allpagesfiles
         tofileinfo bfield modtime bname blok =
@@ -90,14 +93,12 @@ parseProjChunks chunkssplits =
     Data.Map.Strict.fromList$ chunkssplits >~ foreach ~> Util.unMaybes
     where
     foreach (blokname:bvalsplits) =
-        case maybeblok of
-            Nothing -> Nothing
-            Just blok -> Just (bname , blok)
+        maybeblok =>- \blok -> (bname , blok)
         where
         maybeblok = Util.tryParse Nothing (Just errblok) id ("Just "++parsestr)
         bname = blokname~>Util.trim
         parsestr = bvalsplits ~> (Util.join ":") ~> Util.trim ~> (toParseStr bname)
-        errblok = B { title="{!|B| syntax issue near `|B|" ++ bname ++ ":`, couldn't parse `" ++ parsestr ++ "` |!}",
+        errblok = From { title="{!|B| syntax issue near `|B|" ++ bname ++ ":`, couldn't parse `" ++ parsestr ++ "` |!}",
                             desc="{!|B| Syntax issue in your .haxproj file defining Blok named '" ++ bname ++
                                     "'. Thusly couldn't parse Blok settings (incl. title/desc) |!}",
                             atomFile="", blokIndexPageFile="", inSitemap=False, dtFormat="" }
@@ -112,8 +113,8 @@ preferredRelPath bloks (outpagerelpath , file) =
         Nothing -> outpagerelpath
         Just blok ->
             if (null $blok-:blokIndexPageFile) || (blok-:blokIndexPageFile) /= (bname++".html")
-                    then outpagerelpath
-                    else Util.substitute System.FilePath.pathSeparator '.' outpagerelpath
+                then outpagerelpath
+                else Util.substitute System.FilePath.pathSeparator '.' outpagerelpath
 
 
 
@@ -121,19 +122,15 @@ tagHandler bloks curbname str =
     let fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
                     ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dtFormat",dtFormat)  ]
         bname = Util.ifNo bn curbname
-        maybeblok = blokByName bloks bname
         (fname, bn) = Util.bothTrim (Util.splitOn1st ':' str)
     in (null fname) |? Nothing
         |! (fname=="name" && is bname) |? Just bname
-            |! case maybeblok of
-                Nothing -> Nothing
-                Just blok -> case Data.List.lookup fname fields of
-                                Just fieldval-> Just $blok-:fieldval
-                                Nothing-> Nothing
+            |! (blokByName bloks bname) =>= \blok ->
+                (Data.List.lookup fname fields) =>- \fieldval -> blok-:fieldval
 
 
 
 toParseStr _bname projchunkval =
     let
         parsestr = Tmpl.fixParseStr "desc" projchunkval
-    in "B {" ++ parsestr ++ "}"
+    in "From {" ++ parsestr ++ "}"

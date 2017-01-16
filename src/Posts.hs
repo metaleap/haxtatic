@@ -17,17 +17,16 @@ import System.FilePath ( (</>) )
 
 
 data Ctx
-    = NoContext
-    | BuildContext {
+    = BuildContext {
         lookupCachedPageRender :: FilePath->Maybe Tmpl.CtxPage,
         allPagesFiles :: [(FilePath , Files.File)],
         projBloks :: Data.Map.Strict.Map String Bloks.Blok,
-        projPosts :: [Posts.Post],
+        projPosts :: [Item],
         projCfg :: ProjC.Config
     }
 
-data Post
-    = P {
+data Item
+    = From {
         feed :: String,
         dt :: String,
         cat :: String,
@@ -39,7 +38,7 @@ data Post
     deriving (Eq, Read)
 
 data Feed =
-    Job {
+    BuildTask {
         blokName :: String,
         outPathBuild :: FilePath,
         relPath :: FilePath,
@@ -78,18 +77,17 @@ dtYear post =
 
 
 
-feedPosts ctxbuild projposts projbloks maybequery =
+feedPosts maybectxbuild projposts projbloks maybequery =
     case maybequery of
         Nothing -> allposts
+        Just (Filter [] [] Nothing) -> allposts
         Just query -> allposts ~| match query
     where
     allposts = projposts ++ (concat$ bloknames>~postsfromblok)
-    postsfromblok blokname = (postsFromBlok ctxbuild blokname (const "getcathere in Posts.feedPosts")) >~ snd
+    postsfromblok blokname = (postsFromBlok maybectxbuild blokname (const "getcathere in Posts.feedPosts")) >~ snd
     bloknames = case maybequery of
         Nothing -> Data.Map.Strict.keys projbloks
         Just query -> (Data.Map.Strict.keys projbloks) ~|(`elem` (query-:feeds))
-    match (Filter [] [] Nothing) _ =
-        True
     match query post =
         (check feed (query-:feeds) && check cat (query-:cats) && (checkdate $query-:dates))
             || (post-:cat == "_hax_cat") || (post-:dt) == "9999-12-31"
@@ -101,10 +99,10 @@ feedPosts ctxbuild projposts projbloks maybequery =
         checkdate _ =
             True
 
-feedGroups ctxbuild projposts projbloks maybequery postfield =
+feedGroups maybectxbuild projposts projbloks maybequery postfield =
     Util.unique (allposts >~ postfield)
     where
-    allposts = feedPosts ctxbuild projposts projbloks maybequery
+    allposts = feedPosts maybectxbuild projposts projbloks maybequery
 
 
 
@@ -120,7 +118,7 @@ parseProjChunks chunkssplits =
             pstr = Util.join ":" pvalsplits ~> Util.trim
             parsestr = ("P {feed = \"" ++ pfeedcat ++ "\", ") ++ (Tmpl.fixParseStr "content" pstr) ++ "}"
             post = Util.tryParseOr errpost parsestr
-            errpost = P {
+            errpost = From {
                     feed=pfeedcat,dt="9999-12-31", cat="_hax_cat", title="{!|P| syntax issue, couldn't parse this post |!}",
                     link="*.haxproj", content = "<pre>" ++ (Html.escape pstr) ++ "</pre>",
                     pic="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Warning_icon.svg/256px-Warning_icon.svg.png"
@@ -131,7 +129,7 @@ parseProjChunks chunkssplits =
 
 
 
-postsFromBlok ctxbuild blokname getcat =
+postsFromBlok (Just ctxbuild) blokname getcat =
     allblokpages >~ topost
     where
     (allblokpages , cdatelatest) = Bloks.allBlokPageFiles (ctxbuild-:projCfg) (ctxbuild-:allPagesFiles) blokname
@@ -145,7 +143,7 @@ postsFromBlok ctxbuild blokname getcat =
                                     \_ _ -> "Include " ++ relpath ++ " in your rebuild" )
                 Just ctxpage -> (ctxpage-:Tmpl.cachedRenderSansTmpl , ctxpage-:Tmpl.htmlInner1st)
             pcat = getcat post
-            post = P {
+            post = From {
                 feed = blokname,
                 dt = ProjC.dtUtc2Str (ctxbuild-:projCfg) "" (maybectxpage-:(Tmpl.pDate =|- cdatelatest)),
                 cat = pcat,
@@ -156,6 +154,8 @@ postsFromBlok ctxbuild blokname getcat =
             }
         in (htmlcontent , post)
 
+postsFromBlok _ _ _ =
+    []
 
 
 wellKnownFields True =
@@ -172,12 +172,12 @@ writeAtoms ctxbuild domainname outjobs =
     outjobs >>~ writeatom >> return ()
     where
 
-    postsfromblok = postsFromBlok ctxbuild
+    postsfromblok = postsFromBlok (Just ctxbuild)
 
     writeatom outjob =
         Files.writeTo (outjob-:outPathBuild) relpath xmlatomfull >>= \nowarnings
         -> if nowarnings then return ()
-            else putStrLn ("...\t<<\tProbable {!| ERROR MESSAGES |!} were rendered into `"++relpath++"`")
+            else putStrLn ("...\t<~\tProbable {!| ERROR MESSAGES |!} were rendered into `"++relpath++"`")
 
         where
 
@@ -192,7 +192,7 @@ writeAtoms ctxbuild domainname outjobs =
                             \<feed xmlns=\"http://www.w3.org/2005/Atom\">\n\
                             \    <link rel=\"self\" type=\"application/rss+xml\" href=\"http://"++domainname++"/"++(urify relpath)++"\" />\n\
                             \    <title>"++domainname++" "++feedtitle++"</title>\n\
-                            \    <subtitle>"++(is feedname |? (domainname++pageuri) |! (Util.trim$ Html.stripMarkup ' ' desc))++"</subtitle>\n\
+                            \    <subtitle>"++(is feedname |? (domainname++pageuri) |! (Util.trim$ Html.stripMarkup ' ' feeddesc))++"</subtitle>\n\
                             \    <id>http://"++domainname++pageuri++"</id>\n\
                             \    <link href=\"http://"++domainname++pageuri++"\"/>\n\
                             \    <updated>"++updated++"T00:00:00Z</updated>\n    "
@@ -206,11 +206,11 @@ writeAtoms ctxbuild domainname outjobs =
         blokname = outjob-:blokName
         feedname = is blokname |? "" |!
                     drop 1 (System.FilePath.takeExtension srcpath)
-        maybeblok = is blokname |? (Bloks.blokByName (ctxbuild-:projBloks) blokname) |! Nothing
+        maybeblok = Bloks.blokByName (ctxbuild-:projBloks) blokname
         allposts = case maybeblok of
                     Nothing -> ((ctxbuild-:projPosts) ~|(==feedname).feed) >~((,) "")
                     Just _ -> postsfromblok blokname (const blokname)
-        (pageuri , feedtitle , desc) = case maybeblok of
+        (pageuri , feedtitle , feeddesc) = case maybeblok of
                     Just blok -> ( '/':(urify (blok-:Bloks.blokIndexPageFile)) , blok-:Bloks.title , blok-:Bloks.desc )
                     Nothing -> ( '/':(feedname++".html") , feedname , "" )
 

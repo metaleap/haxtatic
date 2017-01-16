@@ -27,8 +27,7 @@ data Tag =
 registerX _ xreg =
     let
     renderer (maybectxpage , argstr) =
-        if waitforpage
-            then Nothing
+        if waitforpage then Nothing
             else Just$ combine allitems
         where
         allitems = htmlout (args-:htmlAtts ++ cfghtmlatts) (args-:items)

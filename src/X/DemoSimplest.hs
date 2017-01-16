@@ -9,7 +9,7 @@ registerX _ctxproj _xreg =
     let
     renderer (_maybepagectx , _argstr) =
 
-        Just$ "<h1>Hello World!</h1>"
+        Just "<h1>Hello World!</h1>"
 
 
     in Early renderer

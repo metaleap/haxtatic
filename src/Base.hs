@@ -44,14 +44,25 @@ infix 0 =:
 
 
 
-
 (>~) ::
     (Functor f)=>
     f a -> (a -> b) -> f b
 infixl 9 >~
 (>~) = flip fmap
 
+(=>-) ::
+    (Functor f)=>
+    f a -> (a -> b) -> f b
+infixl 9 =>-
+(=>-) = flip fmap
 
+
+
+infixl 9 =>=
+(=>=) Nothing _ =
+    Nothing
+(=>=) (Just sth) func =
+    func sth
 
 
 infixr 7 |~

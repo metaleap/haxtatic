@@ -6,6 +6,9 @@ import qualified Html
 import qualified Util
 import qualified X
 
+import qualified Data.List
+
+
 
 data Tag
     = Cfg {
@@ -19,17 +22,16 @@ registerX _ xreg =
     let
     renderer (_ , argstr) =
         Just$ Html.out
-                cfg_htmltagname ([("" =: innercontent)] ++ cfghtmlatts ++ (dynatts innercontent)) []
+                cfg_htmltagname (cfghtmlatts ++ [("" =: innercontent)] ++ (dynatts innercontent)) []
         where
         innercontent = argstr
-        dynatts inn = cfgdynatts >~ \name -> (name , Html.escape inn)
+        dynatts inn = cfgdynatts >~ \(name , _) -> (name , Html.escape inn)
 
     in X.Early renderer
     where
 
     (cfg_htmltagname , cfg_parsestr ) = xreg-:X.cfgSplitOnce
-    cfghtmlatts = cfg-:htmlAtts ~| ("[:content:]"/=).snd
-    cfgdynatts = (cfg-:htmlAtts ~| ("[:content:]"==).snd) >~ fst
+    (cfgdynatts , cfghtmlatts) = (cfg-:htmlAtts) ~> (Data.List.partition $("{%:content:%}"==).snd)
     cfg = X.tryParseCfg cfg_parsestr (Just defcfg) errcfg where
         defcfg = Cfg { htmlAtts = [] }
         errcfg = Cfg { htmlAtts = X.htmlErrAttsCfg xreg }

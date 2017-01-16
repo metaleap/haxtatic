@@ -10,8 +10,7 @@ import qualified Data.Map.Strict
 
 
 data Reg
-    = Nope
-    | Named {
+    = Named {
         xname :: String,
         tname :: String,
         cfgFullStr :: String,
@@ -20,7 +19,7 @@ data Reg
     }
 
 
-data Render r = NoRender | Early r | EarlyOrWait r | WaitForPage r
+data Render r = Early r | EarlyOrWait r | WaitForPage r
 
 
 
@@ -42,7 +41,7 @@ htmlErrAtts clarifywithcode =
     ]
 
 htmlErrStyle =
-    "style" =: "background-color: yellow !important; color: red !important; border: solid 0.5em red !important; display: inline-block !important;"
+    "style" =: "background-color: yellow !important; color: red !important; border: solid 0.123em red !important; display: inline-block !important;"
 
 htmlErrAttsCfg =
     htmlErrAtts . clarifyParseCfgError
@@ -54,34 +53,31 @@ htmlErrAttsArgs =
 
 
 parseProjChunks ctxproj xregisterers chunkssplits =
-    Data.Map.Strict.fromList (chunkssplits>~foreach ~|fst~.is)
+    Data.Map.Strict.fromList (chunkssplits>~foreach ~> Util.unMaybes)
     where
-    nope = ("" , NoRender)
     rendererr msg (_,_) = Just msg
     foreach (xname':tname':tvals) =
         let xn = Util.trim xname'
             tn = Util.trim tname'
-        in if null tn then nope else
-            case Data.List.lookup xn xregisterers of
-                Nothing -> ( tn , Early (rendererr ("{!|X|"++tn++": unknown X-renderer `"++xn++"`, mispelled in your *.haxproj? |!}")) )
-                Just regx -> from regx xn tn tvals
+        in if null tn then Nothing else
+        Just$ case Data.List.lookup xn xregisterers of
+            Nothing -> ( tn , Early (rendererr ("{!|X|"++tn++": unknown X-renderer `"++xn++"`, mispelled in your *.haxproj? |!}")) )
+            Just regx -> from regx xn tn tvals
     foreach _ =
-        nope
+        Nothing
     from registerx xn tn tvals =
-        let cfgstr = Util.trim$ Util.join ":" tvals
-            xreg = registerx ctxproj Named {
-                                    xname = xn,
-                                    tname = tn,
-                                    cfgFullStr = cfgstr,
-                                    cfgSplitAll = tvals>~Util.trim,
-                                    cfgSplitOnce = Util.bothTrim (Util.splitOn1st ':' cfgstr)
-                                }
-        in ( tn , xreg )
+        ( tn , reg ) where
+        reg = registerx ctxproj Named { xname = xn,
+                                        tname = tn,
+                                        cfgFullStr = cfgstr,
+                                        cfgSplitAll = tvals>~Util.trim,
+                                        cfgSplitOnce = Util.bothTrim (Util.splitOn1st ':' cfgstr) }
+        cfgstr = Util.trim$ Util.join ":" tvals
 
 
 
 tagHandler xtags ctxpage tagcontent =
-    renderwhen (Data.Map.Strict.lookup xtagname xtags)
+    renderwhen$ Data.Map.Strict.lookup xtagname xtags
     where
     renderargs = (ctxpage , Util.trim argstr)
     (xtagname , argstr) = Util.splitOn1st ':' tagcontent
@@ -99,14 +95,14 @@ tagHandler xtags ctxpage tagcontent =
 
 
 
-tryParseArgs parsestr maybedefargs errargs =
-    let parse Nothing e = (Util.tryParseOr e) . wrap
-        parse (Just d) e = Util.tryParse d e wrap
-        wrap = (("Args{"++).(++"}"))
-    in parse maybedefargs errargs parsestr
+tryParseArgs parsestr =
+    _tryparse "Args" parsestr
 
-tryParseCfg parsestr maybedefcfg errcfg =
-    let parse Nothing e = (Util.tryParseOr e) . wrap
-        parse (Just d) e = Util.tryParse d e wrap
-        wrap = (("Cfg{"++).(++"}"))
-    in parse maybedefcfg errcfg parsestr
+tryParseCfg parsestr =
+    _tryparse "Cfg" parsestr
+
+_tryparse ctorname parsestr maybedefval errval =
+    let wrap = (((ctorname++"{")++).(++"}"))
+        try (Just defval) = Util.tryParse defval errval wrap
+        try _ = (Util.tryParseOr errval) . wrap
+    in try maybedefval parsestr

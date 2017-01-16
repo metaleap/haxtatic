@@ -70,23 +70,23 @@ processAll ctxmain projfilename custfilenames =
     >> Text.Printf.printf "\t->\tXML files: will generate %u feeds, skipping %u\n\t\t           plus %u sitemap(s)\n" numatoms numskipposts numsitemaps
     >> Data.Time.Clock.getCurrentTime >>= \timeinitdone
 
-    -> Text.Printf.printf "\n3/6\tCopying %u/%u file(s) to:\n\t->\t%s\n" numcopyfiles (numcopyfiles+numskipfiles) dirbuild
+    -> Text.Printf.printf "\n3/6\tCopying %u/%u file(s) to:\n\t~>\t%s\n" numcopyfiles (numcopyfiles+numskipfiles) dirbuild
     >> System.IO.hFlush System.IO.stdout
     >> Build.copyStaticFiles buildplan
     >> Data.Time.Clock.getCurrentTime >>= \timecopydone
 
-    -> Text.Printf.printf "\n4/6\tGenerating %u/%u file(s) in:\n\t->\t%s\n" numgenpages (numgenpages+numskippages) dirbuild
+    -> Text.Printf.printf "\n4/6\tGenerating %u/%u file(s) in:\n\t~>\t%s\n" numgenpages (numgenpages+numskippages) dirbuild
     >> System.IO.hFlush System.IO.stdout
     >> Pages.processAll ctxmain ctxproj buildplan >>= \(warnpages , ctxbuild)
     -> Data.Time.Clock.getCurrentTime >>= \timeprocdone
 
-    -> Text.Printf.printf "\n5/6\tWriting %u/%u XML file(s) to:\n\t->\t%s\n" numxmls (numxmls+numskipposts) dirbuild
+    -> Text.Printf.printf "\n5/6\tWriting %u/%u XML file(s) to:\n\t~>\t%s\n" numxmls (numxmls+numskipposts) dirbuild
     >> Pages.writeSitemapXml ctxproj buildplan
     >> Posts.writeAtoms ctxbuild (ctxproj-:Proj.domainName) (buildplan-:Build.feedJobs)
     >> Data.Time.Clock.getCurrentTime >>= \timexmldone
 
     -> let
-        deploymsg = Text.Printf.printf "\n6/6\tCopying only the %u newly (over)written file(s) also to:\n\t->\t" numoutfiles
+        deploymsg = Text.Printf.printf "\n6/6\tCopying only the %u newly (over)written file(s) also to:\n\t~>\t" numoutfiles
         doordonot = if null$ ctxproj-:Proj.dirPathDeploy
                     then putStrLn (deploymsg++ "(skipping this step.)")
                     else putStrLn (deploymsg++(ctxproj-:Proj.dirPathDeploy))
