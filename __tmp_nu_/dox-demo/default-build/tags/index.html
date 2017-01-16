@@ -8,7 +8,7 @@
 </head><body>
     <h4>haXtatic Docs</h4>
 	<ul class="hd-nav">
-<li class="hd-nav"><a href="../index.html">Overview</a></li><li class="hd-nav"><a href="../basics/index.html">Basics</a></li><li class="hd-nav hd-nav-sel"><a href="../tags/index.html">haXtags</a></li><li class="hd-nav"><a href="../x/index.html">X built-ins</a></li>
+<li class="hd-nav"><a href="../index.html">Overview</a></li><li class="hd-nav"><a href="../basics/index.html">Basics</a></li><li class="hd-nav hd-nav-sel"><a href="../tags/index.html">haXtags</a></li><li class="hd-nav"><a href="../x/index.html">X-renderers</a></li>
 	</ul>
 	<div class="hd-toc">
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
@@ -21,13 +21,49 @@
 
 <!-- begins content source page -->
 <h1>haXtags</h1>
-	<p>Include haXtatic tags in source contents with a simple notation: <code>{<i>Prefix</i>|<i>Name</i>|<!-- -->}</code>
-	or <code>{<i>Prefix</i>|<i>Name</i>: <i>Args</i>|<!---->}</code>.</p>
-	Example: <code>{P<!---->|date|<!---->}</code> includes the currently set <a href='#'>'page date'</a>:
-	<span class='hd-note'>2016-12-18</span>. Known 'prefixes' or tag types are:</p>
-	foo tags
+	<p>Embed haXtatic tags anywhere in source contents, templates, snippets or <a href="#">*.haxproj</a> files with a simple notation:
+	<code>{<i>Prefix</i>|<i>Name</i>|<!-- -->}</code> or <code>{<i>Prefix</i>|<i>Name</i>: <i>Args</i>|<!---->}</code>.</p>
+	<p>Example: <code>{P<!---->|date|<!---->}</code> outputs in-place the currently set <a href='#'>'page date'</a> during processing:
+	<span class="hd-note">2016-12-18</span>.</p>
+	<p>All unprocessable haXtags (mispelled etc.) simply remain in the output to aid swift detection. Any haXtags may embed
+	(or output) any other haXtags freely but &rArr; cyclic references will hang (or eventually prematurely abort) the
+	entire generating process &rArr; an otherwise-correct outer tag will typically not render with an unprocessed inner
+	tag (a"known non-issue").</p>
+	<p>Available "prefixes" (or <i>haxTag types</i>) are (in order of simplicity) <b>T</b>, <b>B</b>, <b>P</b> and <b>X</b>:</p>
 	<hr/>
-	<ul><li><u>#0</u> sez: <b>vars=[("feed","tags"),("dt","2016-12-18"),("cat","getcathere in Posts.feedPosts"),("title","T-tags: named plain text/markup snippets"),("link","/tags/t.html"),("pic",""),("content","      {       T|..|       }        tags directly include named text values that you defined once in your             default.haxproj     and then reuse wherever needed.")], content=""</b></li><li><u>#1</u> sez: <b>vars=[("feed","tags"),("dt","2016-12-17"),("cat","getcathere in Posts.feedPosts"),("title","P-tags: per-page values (date, title, custom..)"),("link","/tags/p.html"),("pic",""),("content","      {P       |..|       }        tags include (built-in and custom) values specific to the current page.")], content=""</b></li><li><u>#2</u> sez: <b>vars=[("feed","tags"),("dt","2016-12-16"),("cat","getcathere in Posts.feedPosts"),("title","B-tags: blok info (name, title, desc)"),("link","/tags/b.html"),("pic",""),("content","      {B       |..|       }        tags include (named or current)             blok     properties.")], content=""</b></li><li><u>#3</u> sez: <b>vars=[("feed","tags"),("dt","2016-12-15"),("cat","getcathere in Posts.feedPosts"),("title","X-tags: custom renderers"),("link","/tags/x.html"),("pic",""),("content","{X       | .. |       } tags include a variety of configurable programmatic renderers.")], content=""</b></li></ul>
+	<ul class="hd-blokindex"><li><!--
+		other possible `vars` that can be added above and used below:
+			("feed" , ""),
+			("dt" , ""),
+			("cat" , ""),
+			("pic" , ""),
+	-->
+	<a href="../tags/t.html">T-tags: named plain text/markup snippets</a>
+	<p><i>      {T       | .. |       }        tags directly output named textual contents defined in a             *.haxproj     file.</i></p></li><li><!--
+		other possible `vars` that can be added above and used below:
+			("feed" , ""),
+			("dt" , ""),
+			("cat" , ""),
+			("pic" , ""),
+	-->
+	<a href="../tags/p.html">P-tags: page-specific outputs</a>
+	<p><i>      {P       | .. |       }        tags refer to the current page context during rendering; outputting pre-computed values (page title, page date, etc.), custom per-page variables, or correct relative paths from the current location.</i></p></li><li><!--
+		other possible `vars` that can be added above and used below:
+			("feed" , ""),
+			("dt" , ""),
+			("cat" , ""),
+			("pic" , ""),
+	-->
+	<a href="../tags/b.html">B-tags: blok info (name, title, desc)</a>
+	<p><i>A       {B       | .. |       }        tag outputs a property of the (named or current)             blok    .</i></p></li><li><!--
+		other possible `vars` that can be added above and used below:
+			("feed" , ""),
+			("dt" , ""),
+			("cat" , ""),
+			("pic" , ""),
+	-->
+	<a href="../tags/x.html">X-tags: dynamic renderers</a>
+	<p><i>An       {X       |    ..     |       }        tag invokes a programmatic output renderer.</i></p></li></ul>
 <!-- end of content source page -->
 
 

@@ -1,7 +1,6 @@
 vars = [("bname","")],
 content=>
 <h1>{B|title:[|bname|]|}</h1>
-<p>{B|desc:[|bname|]|}</p>
-foo [|bname|]
+{B|desc:[|bname|]|}
 <hr/>
-{X|doxindex: over = FeedPosts (Just Filter {feeds=["[|bname|]"], cats=[], dates=Nothing}) , wrap = ("vars=" , ", content=\"\""), order = None, skip = 0, limit = 0 |}
+{X|doxindex: over = FeedPosts (Just Filter {feeds=["[|bname|]"], cats=[], dates=Nothing}) , wrap = ("X|_hax_blokitem: vars=" , ", content=\"\" |"), order = None, skip = 0, limit = 0 |}

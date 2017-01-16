@@ -1,43 +1,64 @@
 <!DOCTYPE html><html lang="en"><head>
-    <title>P-tags: per-page values (date, title, custom..) | haXtatic Docs</title>
+    <title>P-tags: page-specific outputs | haXtatic Docs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../haxtatic.css" rel="stylesheet" />
 	<!--	tags\p.html
 			generated on 2016-12-17
-			from D:\dev\hs\hax2\src\..\dox-demo\pages\tags\2016-12-17.p.html	-->
+			from D:\dev\hs\hax2\dox-demo\pages\tags\2016-12-17.p.html	-->
 </head><body>
     <h4>haXtatic Docs</h4>
 	<ul class="hd-nav">
-<li class="hd-nav"><a href="../index.html">Overview</a></li><li class="hd-nav"><a href="../basics/index.html">Basics</a></li><li class="hd-nav hd-nav-sel"><a href="../tags/index.html">haXtags</a></li><li class="hd-nav"><a href="../x/index.html">X built-ins</a></li>
+<li class="hd-nav"><a href="../index.html">Overview</a></li><li class="hd-nav"><a href="../basics/index.html">Basics</a></li><li class="hd-nav hd-nav-sel"><a href="../tags/index.html">haXtags</a></li><li class="hd-nav"><a href="../x/index.html">X-renderers</a></li>
 	</ul>
 	<div class="hd-toc">
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
 		<label for="chk_showtoc">On this page:</label>
 		<ul>
-<li><a href="#Built-in">Built-in</a></li><li><a href="#Custom">Custom</a></li>
+<li><a href="#Built-in">Built-in</a></li><li><a href="#Custom">Custom</a></li><li><a href="#Page-relative URLs">Page-relative URLs</a></li><li><a href="#Delaying X-renderers">Delaying X-renderers</a></li>
 		</ul>
 	</div>
 
 
 <!-- begins content source page -->
-<h1>P-tags: per-page values (date, title, custom..)</h1>
-<p><code>{P<!---->|..|<!---->}</code> tags include (built-in and custom) values specific to the current page.</p>
+<h1>P-tags: page-specific outputs</h1>
+<p class="up"><code>{P<!---->| .. |<!---->}</code> tags refer to the current page context during rendering; outputting pre-computed values (page title, page date, etc.), custom per-page variables, or correct relative paths from the current location.</p>
 <h2 id="Built-in">Built-in</h2>
 <ul>
-	<li><code>{P<!---->|title|<!---->}</code> &rarr; current page's first single-line <code>&lt;h1&gt;</code>'s entire inner markup<br/>&mdash; eg. for this page: <span class="hd-note">P-tags: per-page values (date, title, custom..)</span></li>
-	<li><code>{P<!---->|:content:|<!---->}</code> &rarr; current page's entire (mostly already processed) markup source (only usable in <a href="#">theme.tmpl.html</a>)</li>
-	<li><code>{P<!---->|FileName|<!---->}</code> &rarr; the current page's output file name<br/>&mdash; eg. for this page: <span class="hd-note">{P|FileName|}</span></li>
-	<li><code>{P<!---->|OrigPath|<!---->}</code> &rarr; the current page's (relative local) source path<br/>&mdash; eg. for this page: <span class="hd-note">{P|OrigPath|}</span></li>
-	<li><code>{P<!---->|BaseName|<!---->}</code> &rarr; the current page's name minus file extension and section prefix:<br/>&mdash; eg. for this page named <i>{P|FileName|}</i>: <span class="hd-note">{P|BaseName|}</span></li>
-	<li><code>{P<!---->|Date|<!---->}</code> and <code>{P<!---->|Date<i>MyFormat</i>|<!---->}</code> &rarr; current <a href='#'>'page date'</a> <br/>&mdash; eg. for this page: <span class="hd-note">{P|Date|}</span></li>
-	<li><code>{P<!---->|PostText|<!---->}</code> &rarr; current <a href="#">blok-post page</a>'s first single-line <code>&lt;p&gt;</code>'s entire inner text<br/>&mdash; eg. for this page: <span class="hd-note">{P|PostText|}</span></li>
+	<li><code>{P<!---->|title|<!---->}</code> &rarr; current page's first <code>&lt;h1&gt;</code>'s entire inner markup (if any)<br/>&mdash; eg. for this page: <span class="hd-note">P-tags: page-specific outputs</span></li>
+	<li><code>{P<!---->|:content:|<!---->}</code> &rarr; current page's entire content source markup (only works in your <a href="#">*.haxtmpl.*</a> files)</li>
+	<li><code>{P<!---->|date|<!---->}</code> and <code>{P<!---->|date:<i>mydtformatname</i>|<!---->}</code> &rarr; current <a href='#'>'page date'</a> <br/>&mdash; eg. for this page: <span class="hd-note">2016-12-17</span></li>
+	<li><code>{P<!---->|fileBaseName|<!---->}</code> &rarr; the current page's output file name without extension<br/>&mdash; eg. for this page: <span class="hd-note">p</span></li>
+	<li><code>{P<!---->|fileName|<!---->}</code> &rarr; the current page's output file name<br/>&mdash; eg. for this page: <span class="hd-note">p.html</span></li>
+	<li><code>{P<!---->|fileUri|<!---->}</code> &rarr; the current page's URI path relative to root<br/>&mdash; eg. for this page: <span class="hd-note">/tags/p.html</span></li>
+	<li><code>{P<!---->|filePath|<!---->}</code> &rarr; the current page's file path relative to the output directory<br/>&mdash; eg. for this page: <span class="hd-note">tags\p.html</span></li>
+	<li><code>{P<!---->|dirName|<!---->}</code> &rarr; name of the current page's directory<br/>&mdash; eg. for this page: <span class="hd-note">tags</span></li>
+	<li><code>{P<!---->|dirUri|<!---->}</code> &rarr; URI path (relative to root) for the the current page's directory<br/>&mdash; eg. for this page: <span class="hd-note">/tags/</span></li>
+	<li><code>{P<!---->|dirPath|<!---->}</code> &rarr; relative path of the current page's directory<br/>&mdash; eg. for this page: <span class="hd-note">tags\</span></li>
+	<li><code>{P<!---->|srcPath|<!---->}</code> &rarr; full path to the content source of the current page<br/>&mdash; eg. for this page: <span class="hd-note">D:\dev\hs\hax2\dox-demo\pages\tags\2016-12-17.p.html</span></li>
+	<li><code>{P<!---->|outBuild|<!---->}</code> &rarr; full path to the current page's output file<br/>&mdash; eg. for this page: <span class="hd-note">D:\dev\hs\hax2\dox-demo\default-build\tags\p.html</span></li>
+	<li><code>{P<!---->|outDeploy|<!---->}</code> &rarr; full path to the current page's output file in the secondary output directory, if any</li>
+	<li><code>{P<!---->|srcTime|<!---->}</code> and <code>{P<!---->|srcTime:<i>mydtformatname</i>|<!---->}</code> &rarr; the current page source's <i>actual</i> modification date/time (which may differ from the <a href="#">page date</a> if that was set explicitly)<br/>&mdash; eg. for this page: <span class="hd-note">2017-01-16</span></li>
 </ul>
 <h2 id="Custom">Custom</h2>
 <p>
-	Define those like <code>{P<!---->|%<i>name</i>:<i>value</i>|<!---->}</code> in a page; then while that page is being processed, this <code><i>value</i></code> will (stripped of leading / trailing white-space) replace all encounters of <code>{P<!---->|%<i>name</i>|<!---->}</code> <i>anywhere</i> in the output (whether from page, <a href="#">theme.tmpl.html</a> or <a href="#">blog.tmpl.html</a> sources), including occurrences produced by <a href="tags.t.html">T-tag</a>s or originating from other settings in <a href="#">default.haxproj</a>.
+	Define those like <code>{%P<!---->|<i>name</i>=<i>value</i>|%<!---->}</code> in a page; then while that page is being processed, this <code><i>value</i></code> will replace all encounters of <code>{P<!---->|<i>name</i>|<!---->}</code> <i>anywhere</i> in the page output.
 </p>
 <p>
-	Any characters are acceptable for the <i>name</i> in between <code>{P<!---->|%</code> and <code>&nbsp;:</code>, as well as the <i>value</i> in between <code>&nbsp;:</code> and <code>&nbsp;|<!---->}</code>.
+	Any characters are acceptable for the <i>name</i> in between <code>{%P<!---->|</code> and <code>&nbsp;=</code>, as well as the <i>value</i> in between <code>&nbsp;=</code> and <code>&nbsp;|%<!---->}</code>. Name and value will each be stripped of all leading and trailing white-space. Later re-defines of an already defined variable are ignored.
+</p>
+<p>
+	Of note: you <b>can</b> overwrite all the built-ins listed above with this feature! Possibly useful for setting page title / date that way, probably useless otherwise &mdash; but possible.
+</p>
+<h2 id="Page-relative URLs">Page-relative URLs</h2>
+<p>
+	Useful when your machine isn't running a local web server / HTTP daemon: use <code>{P<!---->|/ <i>your/uri/here</i> |<!---->}</code> to rewrite that root-relative path such that it will correctly point to the destination from the current page <i>without</i> a leading <code>&nbsp;/</code>.<br/>&mdash; eg. linking to <span class="hd-note">/index.html</span> and <span class="hd-note">/basics/index.html</span> from this page via <code>{P<!---->|/<i>index.html</i>|<!---->}</code> and <code>{P<!---->|/<i>basics/index.html</i>|<!---->}</code> respectively outputs in-place: <span class="hd-note">../index.html</span> and <span class="hd-note">../basics/index.html</span>.
+</p>
+<p>
+	If all pages exist next at the root level anyway (micro-sites etc.), this isn't of course even needed.
+</p>
+<h2 id="Delaying X-renderers">Delaying X-renderers</h2>
+<p>
+	By default, the built-in <a href="#">X-renderers</a> readily detect and decide autonomously whether to process an <a href="#">X-tag</a> only once a page context is current, or as early as possible. However, any <a>X-tag</a> can be forced to delay rendering until page time by wrapping its contents inside a P-tag, ie. turning <code>{X<!---->|<i> .. tag content .. </i>|<!---->}</code> into <code>{P<!---->|X|<i> .. tag content .. </i>|<!---->}</code> &mdash; not particularly fruitful unless troubleshooting a particular X-tag or X-renderer.
 </p>
 
 <!-- end of content source page -->

@@ -1,24 +1,13 @@
 <h1>T-tags: named plain text/markup snippets</h1>
-<p><code>{<!---->T|..|<!---->}</code> tags directly include named text values that you defined once in your {T|HaxConfLink|} and then reuse wherever needed.</p>
+<p class="up"><code>{T<!---->| .. |<!---->}</code> tags directly output named textual contents defined in a {T|HaxConfLink|} file.</p>
 {X|h: {T|Briefly|} |}
 <ul>
-	<li>Single-line definitions in {T|HaxConfLink|}:<br/><code>T:AuthBlurb: The author is a serial amateur dabbling in role-playing on XingedIn.</code></li>
-	<li>Usage anywhere: <code>{T|AuthBlurb|}</code></li>
+	<li>Definitions in {T|HaxConfLink|}:<br/><code>|T|<i>AuthBlurb</i>:<i> The author is a serial enthusiast<br/>role-playing &lt;a&gt;on XingedIn&lt;/a&gt;.</i></code></li>
+	<li>Usage anywhere: <code>{T<!---->|<i>AuthBlurb</i>|<!---->}</code></li>
+	<li>Leading/trailing white-space is stripped of both the <i>name</i> and the <i>value</i>.</li>
 </ul>
-{X|h: Definition in {T|HaxConfi|} |}
-<p>A single line beginning with with <code>T:<i>yourtextname</i>:</code> followed by any text value in {T|HaxConfLink|} defines a named text.</p>
-<p class="hd-note">Example: this very site in its {T|HaxConfLink|} contains this line:<br/><code>T:SiteTitle: {T|SiteTitle|}</code><br/>(the white-space isn't strictly required) &mdash; indeed you'll find this named text value included in the browser/tab title of every page within this site.</p>
-<p>Names can contain any characters except colons.</p>
-<p>Values can contain any characters but will be stripped of all leading and trailing white-space.</p>
-{X|h: Embed in any markup |}
-<p>Just use <code>{T<!---->|<i>yourtextname</i>|<!---->}</code> anywhere you author your content to include your named text value right in-place during site generation &mdash; content source pages, templates, posts, even your {T|HaxConfLink|} itself will work.</p>
-<p>Undefined text-value names will not be replaced and so remain in the output.</p>
-<p class="hd-note">
-	Here's how the <code>&lt;body&gt;</code> of this site's {T|ThemeHtmlLink|} (and thus that of every single output page) begins:
-	<br/><code>&lt;h4&gt;{T<!---->|SiteTitle|<!---->}&lt;/h4&gt;</code><br/>
-</p>
 {X|h: See also |}
 <ul>
-	<li>A more versatile equivalent of this functionality is offered by the {T|HaxXSnippets|} X-tag, which let's you pass variable substitutions with all your named-text inclusions.</li>
-	<li>To define named text values on a <i>per-page</i> basis (reuse within a single page but unknown outside it), use custom {T|HaxPTag|}s.</li>
+	<li>To define page-specific / unique-per-page values (still just as referable from outside the page ie. in templates, snippets and other {T|HaxConfLink|} definitions), use custom {T|HaxPTag|}s.</li>
+	<li>For more versatile parameterized snippets with custom variable substitutions, use <a href="#">X-tags of type <b>hax/snippet</b></a> instead.</li>
 </ul>
