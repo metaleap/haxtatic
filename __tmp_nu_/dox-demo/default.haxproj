@@ -9,14 +9,14 @@
 	<code>{<i>Prefix</i>|<i>Name</i>|<!-- -->}</code> or <code>{<i>Prefix</i>|<i>Name</i>: <i>Args</i>|<!---->}</code>.</p>
 	<p>Example: <code>{P<!---->|date|<!---->}</code> outputs in-place the currently set {T|PDate|} during processing:
 	<span class="hd-note">{P|date|}</span>.</p>
-	<p>All unprocessable haXtags (mispelled etc.) simply remain in the output to aid swift detection. Any haXtags may embed
-	(or output) any other haXtags freely but &rArr; cyclic references will hang (or eventually prematurely abort) the
-	entire generating process &rArr; an otherwise-correct outer tag will typically not render with an unprocessed inner
-	tag (a"known non-issue").</p>
-	<p>Available "prefixes" (or <i>haxTag types</i>) are (in order of simplicity) <b>T</b>, <b>B</b>, <b>P</b> and <b>X</b>:</p>
+	<ul><li>All unprocessable haXtags (mispelled etc.) simply remain in the output to aid swift detection.</li>
+	<li>Any haXtags may embed (or output) any other haXtags freely but <ul><li>cyclic references will hang (or eventually
+	prematurely abort) the entire generating process</li><li>an otherwise-correct outer tag will typically not render with an
+	unprocessed inner tag (a "known non-issue")</li></ul></li>
+	<li>Available "prefixes" (or <i>haxTag types</i>) are (in order of simplicity) <b>T</b>, <b>B</b>, <b>P</b> and <b>X</b>:</li></ul>
 
 |B|basics:
-	title="Basics", atomFile="", blokIndexPageFile="basics/index.html", inSitemap = True, dtFormat="",
+	title="Basics", atomFile="", blokIndexPageFile="basics.html", inSitemap = True, dtFormat="",
 	desc=>
 	<p>The basics........</p>
 
@@ -34,8 +34,8 @@
 	considerEmpty = 1, htmlIfEmpty = "<style type='text/css'>.hd-toc { display: none; }</style>"
 
 |X|hax/repeat:doxindex:
-	prefix = "<ul class=\"hd-blokindex\"><li>", suffix = "</li></ul>", joinwith = "</li><li>",
-	content="{[:v:]}"
+	prefix = "<ul><li>{", suffix = "}</li></ul>", joinwith = "}</li><li>{",
+	content=""
 
 
 

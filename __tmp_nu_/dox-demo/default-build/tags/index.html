@@ -25,13 +25,13 @@
 	<code>{<i>Prefix</i>|<i>Name</i>|<!-- -->}</code> or <code>{<i>Prefix</i>|<i>Name</i>: <i>Args</i>|<!---->}</code>.</p>
 	<p>Example: <code>{P<!---->|date|<!---->}</code> outputs in-place the currently set <a href='#'>'page date'</a> during processing:
 	<span class="hd-note">2016-12-18</span>.</p>
-	<p>All unprocessable haXtags (mispelled etc.) simply remain in the output to aid swift detection. Any haXtags may embed
-	(or output) any other haXtags freely but &rArr; cyclic references will hang (or eventually prematurely abort) the
-	entire generating process &rArr; an otherwise-correct outer tag will typically not render with an unprocessed inner
-	tag (a"known non-issue").</p>
-	<p>Available "prefixes" (or <i>haxTag types</i>) are (in order of simplicity) <b>T</b>, <b>B</b>, <b>P</b> and <b>X</b>:</p>
+	<ul><li>All unprocessable haXtags (mispelled etc.) simply remain in the output to aid swift detection.</li>
+	<li>Any haXtags may embed (or output) any other haXtags freely but <ul><li>cyclic references will hang (or eventually
+	prematurely abort) the entire generating process</li><li>an otherwise-correct outer tag will typically not render with an
+	unprocessed inner tag (a "known non-issue")</li></ul></li>
+	<li>Available "prefixes" (or <i>haxTag types</i>) are (in order of simplicity) <b>T</b>, <b>B</b>, <b>P</b> and <b>X</b>:</li></ul>
 	<hr/>
-	<ul class="hd-blokindex"><li><!--
+	<ul><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
 			("dt" , ""),
@@ -55,7 +55,7 @@
 			("pic" , ""),
 	-->
 	<a href="../tags/b.html">B-tags: blok info (name, title, desc)</a>
-	<p><i>A       {B       | .. |       }        tag outputs a property of the (named or current)             blok    .</i></p></li><li><!--
+	<p><i>A       {B       | .. |       }        tag outputs a property of the (named or current)             blok    , as defined in a    *.haxproj     file.</i></p></li><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
 			("dt" , ""),
