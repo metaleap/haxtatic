@@ -38,6 +38,9 @@ code, pre {
 	border-radius: 0.22em;
 	display: inline-block;
 }
+pre {
+	white-space: pre-wrap;
+}
 code {
 	padding: 0 0.22em 0 2.22em;
 	text-indent: -2em;

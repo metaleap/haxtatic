@@ -8,7 +8,7 @@
 	<p>Embed {T|Hax|} tags anywhere in source contents, templates, snippets or {T|HaxConfLink|} files with a simple notation:
 	<code>{<i>Prefix</i>|<i>Name</i>|<!-- -->}</code> or <code>{<i>Prefix</i>|<i>Name</i>: <i>Args</i>|<!---->}</code>.</p>
 	<p>Example: <code>{P<!---->|date|<!---->}</code> outputs in-place the currently set {T|PDate|} during processing:
-	<span class="hd-note">{P|date|}</span>.</p>
+	{X|note:{P|date|}|}.</p>
 	<ul><li>All unprocessable haXtags (mispelled etc.) simply remain in the output to aid swift detection.</li>
 	<li>Any haXtags may embed (or output) any other haXtags freely but <ul><li>cyclic references will hang (or eventually
 	prematurely abort) the entire generating process</li><li>an otherwise-correct outer tag will typically not render with an
@@ -22,7 +22,8 @@
 
 
 |X|hax/miniTag:c:code
-|X|hax/miniTag:h:h2: htmlAtts=[("id","{%:content:%}")]
+|X|hax/miniTag:h:h2: htmlAtts=[("id" , "{%:content:%}")]
+|X|hax/miniTag:note:span: htmlAtts=[("class" , "hd-note")]
 
 |X|hax/links:doxtopnav:li:
 	 htmlAtts = [("class","hd-nav"),("/class","hd-nav-sel")],

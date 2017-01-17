@@ -14,7 +14,7 @@
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
 		<label for="chk_showtoc">On this page:</label>
 		<ul>
-<li><a href="#Directives">Directives</a></li><li><a href="#|T| directives: for text">|T| directives: for text</a></li><li><a href="#|B| directives: for &quot;bloks&quot;">|B| directives: for "bloks"</a></li><li><a href="#|X| directives: for renderers">|X| directives: for renderers</a></li><li><a href="#|P| directives: for &quot;posts&quot;">|P| directives: for "posts"</a></li><li><a href="#|C| directives: for control">|C| directives: for control</a></li><li><a href="#Syntactic rules for some">Syntactic rules for some</a></li>
+<li><a href="#Directives">Directives</a></li><li><a href="#|T| directives: for text values">|T| directives: for text values</a></li><li><a href="#|B| directives: for &quot;bloks&quot;">|B| directives: for "bloks"</a></li><li><a href="#|X| directives: for rendering">|X| directives: for rendering</a></li><li><a href="#|P| directives: for &quot;postings&quot;">|P| directives: for "postings"</a></li><li><a href="#|C| directives: more control">|C| directives: more control</a></li><li><a href="#Syntactic rules (for some)">Syntactic rules (for some)</a></li>
 		</ul>
 	</div>
 
@@ -31,7 +31,7 @@
 <p class="up">
 	A "directive" begins with a line starting precisely with one of <code>|T|</code>, <code>|B|</code>, <code>|X|</code>, <code>|P|</code>, or <code>|C|</code>, and spans all subsequent lines <i>until</i> the one that begins the next directive. Best practice (for readability and avoiding subtle glitches) is to indent all subsequent lines still "belonging" to such a directive! But this isn't strictly required. Everything before the first directive is ignored, everything after necessarily belongs to some directive or other.
 </p>
-<h2 id="|T| directives: for text">|T| directives: for text</h2>
+<h2 id="|T| directives: for text values">|T| directives: for text values</h2>
 <ul>
 	<li>Define named plain-text/simple-markup snippets like so:<br/><code>|T|<i>AuthBlurb</i>:<i> The author is a serial enthusiast<br/>role-playing &lt;a&gt;on XingedIn&lt;/a&gt;.</i></code></li>
 	<li>Embed as <a href="../tags/t.html">T-tags</a> anywhere: <code>{T<!---->|<i>AuthBlurb</i>|<!---->}</code></li>
@@ -39,7 +39,7 @@
 </ul>
 <h2 id="|B| directives: for &quot;bloks&quot;">|B| directives: for "bloks"</h2>
 <p>
-	Just as <a href="#">|T| directives</a> consist of a <i>name</i> connected via a <code>&nbsp;:</code> to their <i>value</i>, so each and every <b>|B| directive</b> defines a "blok" <span class="hd-note">(a section-of-related-pages, or indeed a simple "poor-man's blog-of-sorts")</span> by connecting via a <code>&nbsp;:</code> that blok's <i>name</i> to its properties &mdash; eg. here's how this site's current <a href="../basics/index.html">Basics</a> section (just a <a href="#">"blok"</a>) is defined:
+	Just as <a href="#">|T| directives</a> consist of a <i>name</i> connected via a <code>&nbsp;:</code> to their <i>value</i>, so each and every <b>|B| directive</b> defines a <a href="#">blok</a> <span class="hd-note">(a section-of-related-pages, or indeed a simple "poor-man's blog-of-sorts")</span> by connecting via a <code>&nbsp;:</code> that blok's <i>name</i> to its properties &mdash; eg. here's how this site's current <a href="../basics/index.html">Basics</a> section (also just a "blok") is defined:
 </p>
 <pre>
 |B|<i>basics</i>:
@@ -48,10 +48,10 @@
     blokIndexPageFile="<i>basics/index.html</i>",
     inSitemap = True,
     dtFormat="",
-    desc=>
+    desc=&gt;
     <i>&lt;p&gt;The basics........&lt;/p&gt;</i>
 </pre>
-<p><a href="#">Stringent syntactic rules</a> apply here! The properties in detail:
+<p><a href="#Syntactic rules (for some)">Stringent syntactic rules</a> apply here! The properties in detail:</p>
 <ul>
 	<li><code>title</code> and <code>desc</code> &mdash; self-explanatory, and used (for one) in the associated generated files, if any:</li>
 	<li><code>atomFile</code> and <code>blokIndexPageFile</code> both describe a root-relative (aka. <i>build</i>-directory-relative) file path and if empty, these files will not be generated.</li>
@@ -59,7 +59,7 @@
 	<li><code>dtFormat</code> &mdash; a hint as to the name of the preferred <a href="#">date-time format</a> that <a href="#">X-renderers</a> / <a href="#">snippets</a> should ideally use for contents associated with this blok</li>
 </ul>
 <p class="hd-note">The values set for the above properties can be output anywhere via <a href="#">B-tags</a> &mdash; so in essence each <b>|B|</b> directive automatically defines 6 uniquely distinct B-tags.</p>
-<h2 id="|X| directives: for renderers">|X| directives: for renderers</h2>
+<h2 id="|X| directives: for rendering">|X| directives: for rendering</h2>
 <p>
 	Just as a <a href="#">|T| directive</a> in essence defines a uniquely distinct <a href="#">T-tag</a> each that can be embedded many times anywhere (to effect in-place text substitution), so each and every <b>|X| directive</b> in essence defines a uniquely distinct <a href="#">X-tag</a> that can be embedded many times anywhere (to effect in-place output rendering by some custom logic).
 </p>
@@ -80,29 +80,126 @@
 <p>
 	No particular <i>extra</i> effort here for all the individual content pages: these simply contain their chapter headings not as plain <code>&lt;h2&gt;</code> HTML tags but as <code>{X<!---->|h: Chapter Heading Here|<!---->}</code> X-tags instead (2 quick "find&amp;replace-in-folder" commands in any minimally capable text editor). Meanwhile just the <a href="#">default.haxtmpl.html</a> employs a single <code>{X<!---->|doxpagetoc:li: htmlAtts = [] |<!---->}</code> X-tag to generate these desired <code>&lt;li&gt;&lt;a href=&quot;#...</code> outputs on all pages.
 </p>
-<p><b>To recapitulate</b> what becomes immediately apparent from just this example:</p>
+<h3>To recapitulate</h3>
+<p>what becomes immediately apparent from just this example:</p>
 <ol>
 	<li>Specify first the X-renderer type (here <code>hax/miniTag</code> and <code>hax/pageAnchors</code>)</li>
 	<li>followed by a <code>&nbsp;:</code> and a <i>custom (X-)tag name</i> (here <code>&nbsp;h</code> and <code>doxpagetoc</code>) and another <code>&nbsp;:</code></li>
 	<li>followed by some individually-varying X-renderer-specific settings notation that each X-renderer defines and <a href="#">documents</a> separately.</li>
-	<li>In turn, use of any X-tag embedded anywhere begins with the very <i>custom tag name</i> from 2. (again, here <code>&nbsp;h</code> and <code>doxpagetoc</code>) pointing to the associated |X| directive, followed by a <code>&nbsp;:</code> and then possibly some further individually-varying X-renderer-specific per-instance settings notation (if any).</li>
-	<li>For the built-in X-renderers, both the per-tag settings (aka. tag config) and per-instantiation settings (aka. tag args) notation is usually a mix of first, colon-separated "flags" (such as <code>:h2:</code> and <code>:li:</code> above) and next, <code>name=<i>value</i></code>-structured properties (just like in |B| directives) to which <a href="#">these stringent syntactic rules</a> strictly apply.</li>
+	<li>In turn, usage of any <code>{X<!---->|</code> tag embedded anywhere begins with the very <i>custom tag name</i> from 2. (again, here <code>&nbsp;h</code> and <code>doxpagetoc</code>) pointing to the associated |X| directive, followed by a <code>&nbsp;:</code> and then possibly some further individually-varying X-renderer-specific per-instance settings notation (if any).</li>
+	<li>For the built-in X-renderers, both the per-tag settings (aka. tag config) and per-instantiation settings (aka. tag args) notation is (either one or the other but) usually a combination of:<ul><li>first, 1 or 2 colon-separated "flags" (such as <code>:h2:</code> and <code>:li:</code> above) and</li><li>next, the already familiar <code>name=<i>value</i>, ..</code> named properties, to which <a href="#Syntactic rules (for some)">these stringent syntactic rules</a> strictly apply.</li></ul></li>
 </ol>
-<h2 id="|P| directives: for &quot;posts&quot;">|P| directives: for "posts"</h2>
+<h2 id="|P| directives: for &quot;postings&quot;">|P| directives: for "postings"</h2>
 <p>
-	define and categorize "posts" (micro-contents)
+	Create "micro-content records" with <b>|P|</b> directives. All such "posts" are categorized first into "feed names" (or think arbitrary "primary category", really) and a further sub-level of "cat"(egory). The general format is as the following 2 examples illustrate:
 </p>
-<h2 id="|C| directives: for control">|C| directives: for control</h2>
+<pre>
+|P|<i>quotes</i>:
+    dt = "<i>2016-01-23</i>",
+    cat="<i>Programming</i>",
+    title="<i>Brian Beckman</i>",
+    link="<i>https://youtu.be/ZhuHCtR3xq8?t=1003</i>",
+    pic="<i>https://i.ytimg.com/vi/ZhuHCtR3xq8/hqdefault.jpg</i>",
+    content=&gt;
+    <i>As software gets ever more complicated, we need better control over the complexity. [...]
+    &lt;i&gt;The&lt;/i&gt; way to control complexity is compositionality.</i>
+
+|P|<i>quotes</i>:
+    dt = "<i>2016-03-21</i>",
+    cat="<i>Programming</i>",
+    title="<i>John Carmack</i>",
+    link="<i>http://number-none.com/blow/john_carmack_on_inlined_code.html</i>",
+    pic="<i>http://1morecastle.com/wp-content/uploads/2013/02/commander-keen.png</i>",
+    content=&gt;
+    <i>I have gotten much more bullish about pure functional programming.</i>
+</pre>
+<p><a href="#Syntactic rules (for some)">Stringent syntactic rules</a> apply here! The property names should be self-explanatory. The above example constitutes:</p>
+<ul><li>1 "feed" (aka. arbitrary primary category) named <code>quotes</code></li><li>made up of 2 "posts" (aka. micro-content records),</li><li>both in the "cat"(egory) of <code>Programming</code>.</li></ul>
+<h3>Usage</h3>
 <p>
-	program configuration
+	Such "feeds" can be output as <i>*.atom</i> XML files (just add a <a href="#">|C|_hax_relpath_postatoms</a> directive) but other than that no separate pages or other files will be auto-generated from them. To embed such micro-contents in the project's generated output pages in versatile ways (<i>without</i> coding up a custom X-renderer from scratch), use the "feed"-related iterators of the built-in <a href="#">hax/repeat</a> X-renderer (those, incidentally, treat |P| "feeds" and bloks as (for their purposes) functionally equivalent types of content sources, allowing for some neat mixing-and-mashing).
 </p>
-<h2 id="Syntactic rules for some">Syntactic rules for some</h2>
+<h2 id="|C| directives: more control">|C| directives: more control</h2>
+<p>
+	All quite unnecessary at first, and only promising some relief for increasingly extensive projects on the verge of becoming unwiedly.
+</p>
+<h3>Processing of source directories:</h3>
+<p>Examples:</p>
+<pre>
+|C|process:static:
+    skip=[<i>"*_thumb.jpg"</i>], force=[],
+    dirs=[<i>"static1","static2","static3"</i>]
+
+|C|process:pages:
+    skip=[], force=[<i>"*"</i>], dirs=[]
+</pre>
+<p>Implicit factory defaults:</p>
+<pre>
+|C|process:static:
+    skip=[], force=[],
+    dirs=[<i>"static"</i>]
+
+|C|process:pages:
+    skip=[], force=[],
+    dirs=[<i>"pages"</i>]
+</pre>
+<p>For any such <code>|C|process:</code> directive:</p>
+<ul>
+	<li><code>dirs</code> to specify the list of <i>names</i> (not patterns or paths) of all direct sub-directories (situated inside the project directory) to source contents from. If empty <code>&nbsp;[]</code>, defaults to <i>pages</i> for <code>|C|process:pages:</code> (all dynamically processed files to be templated-and-generated) and to <i>static</i> for <code>|C|process:static:</code> (all raw files to be batch-copied unprocessed).</li>
+	<li><code>skip</code> to specify a list of "simpleton file name (not path) patterns" designating which files to <b>always-skip</b> during processing, regardless of current file modification timestamps. <span class="hd-note">(A "simpleton" pattern either begins with, or ends with, or both, or is devoid of, or consists entirely of an <code>&nbsp;*</code> and interprets no other wildcards or wildcard placements.)</span></li>
+	<li><code>force</code> to specify a list of "simpleton file name (not path) patterns" designating which files to <b>always force</b> processing for, regardless of current file modification timestamps.</li>
+	<li><code>skip = ["*"]</code> force-skips all <i>except</i> what's forced by <code>force</code>. If the <code>skip = [ .. ]</code> list contains a single <code>"*"</code> among other values, this is interpreted as simply <code>skip = ["*"]</code>.</li>
+	<li><code>force = ["*"]</code> force-processes all <i>except</i> what's excluded by <code>skip</code>. If the <code>force = [ .. ]</code> list contains a single <code>"*"</code> among other values, this is interpreted as simply <code>force = ["*"]</code>.</li>
+	<li>If both <code>skip = ["*"]</code> <i>and</i> <code>force = ["*"]</code> end up as effectively present in the same directive, both cancel each other and the default combination <code>skip=[], force=[]</code> is thusly assumed for both.</li>
+</ul>
+<h3>|C|dtformat:</h3>
+<p>Defines a custom date-time format.</p>
+<p>Example:</p>
+<pre>
+|C|dtformat:<i>slang</i>:
+    <i>Way back on </i>%Y-%m-%d<i> it was!</i>
+</pre>
+<p>
+Format strings are parsed <a href="https://downloads.haskell.org/ghc/8.0.2/docs/html/libraries/time-1.6.0.1/Data-Time-Format.html#v:formatTime">as documented here</a>.
+</p>
+<h3>|C| .. (miscellaneous)</h3>
+<p>Choose by example what might be needed from:</p>
+<pre>
+|C|_hax_domainname: <i>www.haxtatic.foo</i>
+|C|_hax_dir_build: <i>g&eacute;n&eacute;r&eacute;</i>
+|C|_hax_dir_deploy: <i>redistribuer</i>
+|C|_hax_relpath_postatoms: <i>xml/posts/</i>
+|C|_hax_relpath_sitemap: <i>xml/sitemap.xml</i>
+|C|_hax_htmlequivexts: <i>php,shtml,xhtml</i>
+|C|process:tags: <i>T,P,C</i>
+</pre>
+<p>Implicit factory defaults are:</p>
+<pre>
+|C|_hax_domainname: <i>&lt;name-of-project-directory&gt;</i>
+|C|_hax_dir_build: <i>build</i>
+|C|_hax_dir_deploy: <i></i>
+|C|_hax_relpath_postatoms: <i></i>
+|C|_hax_relpath_sitemap: <i>sitemap.xml</i>
+|C|_hax_htmlequivexts: <i></i>
+|C|process:tags: <i>T,P,B,X</i>
+</pre>
+<p>To elaborate accordingly:</p>
+<ul>
+	<li><code>_hax_domainname</code> is used in <i>sitemap.xml</i> and all generated *.atom XML feed files</li>
+	<li><code>_hax_relpath_sitemap</code> &mdash; the default generation of <i>/sitemap.xml</i> can be disabled by setting this directive without a value</li>
+	<li><code>_hax_relpath_postatoms</code> &mdash; generation of *.atom XML files for |P| feeds can be enabled by setting this directive with a root-relative (aka build-output-directory-relative) directory path to store them in; by default, such files are not generated</li>
+	<li><code>_hax_htmlequivexts</code> &mdash; file extensions <i>other</i> than the built-in always-on <code>.html</code>, <code>.htm</code> and <code>&nbsp;</code> (no file extension) can be designated to also be processed via the applicable <a href="#">*.haxtmpl.html</a> template</li>
+	<li><code>process:tags:</code> &mdash; haXtags that will never be embedded anywhere in the project output can be disabled to marginally, minimally speed up processing (perhaps noticable with vast amounts of contents)</li>
+	<li><code>_hax_dir_deploy</code> sets a secondary build-output directory (name, not path) where by default there is none.</li>
+	<li>Both the <code>_hax_dir_build</code> and <code>_hax_dir_deploy</code> directory names are each at runtime being combined (via a <code>&nbsp;-</code> dash) with the current <a href="#">setup name</a> for the final <i>actual</i> build-output directory name: hence in new projects the default value for <code>_hax_dir_build</code>, namely <code>build</code>, results in an <i>actual</i> build-output directory name of <code>default-build</code>.
+</ul>
+<h2 id="Syntactic rules (for some)">Syntactic rules (for some)</h2>
 A number of directives (in <i>*.haxproj</i> and <i>*.haxsnip.html</i> files) and haXtags (anywhere including <i>*.haxproj</i> files), specifically:
 <ul>
 	<li>all <a href="#|B| directives: for &quot;bloks&quot;">|B| directives</a> (following the blok name)</li>
-	<li>all <a href="#|P| directives: for &quot;posts&quot;">|P| directives</a> (following the feed name)</li>
-	<li>some <a href="#|C| directives: for control">|C| directives</a> (only <code>process:</code>)</li>
-	<li>most <a href="#|X| directives: for renderers">|X| directives</a> (except 2 demo X-renderers for coders)</li>
+	<li>all <a href="#|P| directives: for &quot;postings&quot;">|P| directives</a> (following the feed name)</li>
+	<li>the <a href="#|C| directives: more control">|C| directives</a> <code>process:static:</code> and <code>process:pages:</code></li>
+	<li>most <a href="#|X| directives: for rendering">|X| directives</a> (except 2 demo X-renderers for coders)</li>
 	<li>most <a href="../tags/x.html">X-tags</a> (except those invoking <code>hax/image</code> or <code>hax/miniTag</code>)</li>
 </ul>
 <p>
@@ -113,7 +210,7 @@ A number of directives (in <i>*.haxproj</i> and <i>*.haxsnip.html</i> files) and
 	<li>..and in <i>that</i> very order!</li>
 	<li>Text values to be enclosed in quotation marks (standard escape sequences work, but not required just to effect line-breaks or tabs)</li>
 	<li>Properties shown exemplarily as set (without quotation marks) to <code>True</code> or <code>False</code> may all be set (dito) to only one of exactly either <code>True</code> or <code>False</code></li>
-	<li>Text-value properties shown exemplarily without quotation marks and with <code>=&gt;</code> connector are in each and every instance<ul><li>the <i>only</i> text-value property in the directive/haXtag that may omit the enclosing quotation marks (and that hence extend until the very end of the directive/haXtag)</li><li>but <i>only</i> if that property's name is followed <i>immediately</i> (no spaces) by exactly <code>=&gt;</code></li> in place of the usual <code>&nbsp;=</code></ul></li>
+	<li>Text-value properties shown exemplarily without quotation marks and with <code>&nbsp;=&gt;</code> connector are in each and every instance<ul><li>the <i>only</i> text-value property in the directive/haXtag that may omit the enclosing quotation marks (and that hence extend until the very end of the directive/haXtag)</li><li>but <i>only</i> if that property's name is followed <i>immediately</i> (no spaces) by exactly <code>=&gt;</code></li> in place of the usual <code>&nbsp;=</code></ul></li>
 </ul>
 
 <!-- end of content source page -->

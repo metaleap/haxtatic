@@ -19,8 +19,7 @@ data CtxProc
         cTagHandler :: String -> Maybe String,
         tTagHandler :: String -> Maybe String,
         xTagHandler :: Maybe CtxPage -> String -> Maybe String,
-        processTagsOnPage :: [String],
-        processTagsNoPage :: [String]
+        processTags :: [String]
     }
 
 data CtxTmpl
@@ -118,9 +117,7 @@ processSrcFully ctxproc ctxpage =
     Util.repeatedly process
     where
     preserveunprocessedtag = const Nothing
-    splitup = Util.splitUp Util.trim (whichtags ctxpage) tag_Close
-    whichtags Nothing = ctxproc-:processTagsNoPage
-    whichtags _ = ctxproc-:processTagsOnPage
+    splitup = Util.splitUp Util.trim (ctxproc-:processTags) tag_Close
     _c = ctxproc-:cTagHandler ; _t = ctxproc-:tTagHandler
     _b = (ctxproc-:bTagHandler) (ctxpage-:(blokName =|- ""))
     _p = ctxpage-:(pTagHandler =|- preserveunprocessedtag)

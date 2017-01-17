@@ -12,7 +12,6 @@ import qualified Util
 import qualified Tmpl
 import qualified X
 
-import qualified Data.List
 import qualified Data.Map.Strict
 import qualified System.FilePath
 import System.FilePath ( (</>) )
@@ -78,8 +77,7 @@ _loadSetup ctxmain ctxproj xregs defaultfiles =
                     Tmpl.cTagHandler = ProjC.tagHandler cfgmiscpost,
                     Tmpl.tTagHandler = ProjT.tagHandler ttagspost,
                     Tmpl.xTagHandler = X.tagHandler xtagspost,
-                    Tmpl.processTagsOnPage = cfgpost-:ProjC.tmplTags,
-                    Tmpl.processTagsNoPage = Data.List.delete Tmpl.tag_P (cfgpost-:ProjC.tmplTags)
+                    Tmpl.processTags = cfgpost-:ProjC.tmplTags
                 },
             tagMismatches = Tmpl.tagMismatches rawsrc,
             randSeed = (rawsrc~>length) : (length $defaultfiles-:Defaults.htmlSnippets)
@@ -93,8 +91,7 @@ _loadSetup ctxmain ctxproj xregs defaultfiles =
                     Tmpl.cTagHandler = ProjC.tagHandler cfgmiscprep,
                     Tmpl.tTagHandler = ProjT.tagHandler ttagsprep,
                     Tmpl.xTagHandler = X.tagHandler xtagsprep,
-                    Tmpl.processTagsOnPage = cfgprep-:ProjC.tmplTags,
-                    Tmpl.processTagsNoPage = Data.List.delete Tmpl.tag_P (cfgprep-:ProjC.tmplTags)
+                    Tmpl.processTags = cfgprep-:ProjC.tmplTags
                 },
             tagMismatches = (0,0), randSeed = []
         }
