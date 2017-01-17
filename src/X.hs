@@ -67,10 +67,8 @@ parseProjChunks ctxproj xregisterers chunkssplits =
         Nothing
     from registerx xn tn tvals =
         ( tn , reg ) where
-        reg = registerx ctxproj Named { xname = xn,
-                                        tname = tn,
-                                        cfgFullStr = cfgstr,
-                                        cfgSplitAll = tvals>~Util.trim,
+        reg = registerx ctxproj Named { xname = xn, tname = tn,
+                                        cfgFullStr = cfgstr, cfgSplitAll = tvals>~Util.trim,
                                         cfgSplitOnce = Util.bothTrim (Util.splitOn1st ':' cfgstr) }
         cfgstr = Util.trim$ Util.join ":" tvals
 

@@ -119,8 +119,8 @@ parseProjChunks chunkssplits =
             parsestr = ("P {feed = \"" ++ pfeedcat ++ "\", ") ++ (Tmpl.fixParseStr "content" pstr) ++ "}"
             post = Util.tryParseOr errpost parsestr
             errpost = From {
-                    feed=pfeedcat,dt="9999-12-31", cat="_hax_cat", title="{!|P| syntax issue, couldn't parse this post |!}",
-                    link="*.haxproj", content = "<pre>" ++ (Html.escape pstr) ++ "</pre>",
+                    feed=pfeedcat, dt="9999-12-31", cat="_hax_cat", link="*.haxproj",
+                    title="{!|P| syntax issue, couldn't parse this post |!}", content = "<pre>" ++ (Html.escape pstr) ++ "</pre>",
                     pic="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Warning_icon.svg/256px-Warning_icon.svg.png"
                 }
         in Just post

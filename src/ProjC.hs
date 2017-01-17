@@ -94,8 +94,8 @@ parseProjChunks chunkssplits =
     procsane defname proc =
         Proc {
             dirs = Util.ifNo (proc-:dirs >/~ dirnameonly) [defname],
-            skip = when saneneither [] saneskip,
-            force = when saneneither [] saneforce
+            skip = saneneither |? [] |! saneskip,
+            force = saneneither |? [] |! saneforce
         } where
             saneneither = saneskip==saneforce
             saneskip = sanitize skip ; saneforce = sanitize force

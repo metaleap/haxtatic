@@ -1,3 +1,37 @@
+Typed REST
+http://bobkonf.de/2016/loeh-servant.html
+
+Lenses, Folds, and Traversals
+https://www.youtube.com/watch?v=cefnmjtAolY&feature=youtu.be&hd=1
+https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation
+
+Monad transformer stacks / MTL
+https://www.youtube.com/watch?v=GZPup5Iuaqw&feature=youtu.be
+https://www.youtube.com/watch?v=pzouxmWiemg
+
+STG
+https://www.youtube.com/watch?v=-MFk7PIKYsg&t=1s
+
+https://github.com/ChrisPenner/Advent-Of-Code-Polyglot/tree/master/2016
+
+https://hackhands.com/lazy-evaluation-works-haskell/
+https://bartoszmilewski.com/2011/03/14/monads-for-the-curious-programmer-part-2/
+https://channel9.msdn.com/Blogs/Charles/Brian-Beckman-Monads-Monoids-and-Mort
+
+frp-cuboid
+https://www.youtube.com/watch?v=-IpE0CyHK7Q&feature=youtu.be
+
+data modeling
+https://www.youtube.com/watch?v=p-NBJm0kIYU
+
+https://www.reddit.com/r/haskell/comments/5ksagy/what_was_the_topmost_thing_you_learned_about/
+
+
+
+http://www.flexboxpatterns.com/
+
+
+
 --  reminder list comp:
 
 let nums = [1,2,3,4,5]

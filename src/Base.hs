@@ -10,19 +10,7 @@ import Data.Function ( (&) )
 has ::
     (Foldable f)=>
     f a -> Bool
-
 has = not.null
-
--- is ::
---     (Foldable f)=>
---     f a -> Bool
--- is = noNil
-
-when ::
-    Bool -> a -> a -> a
-
-when True v _ = v
-when False _ v = v
 
 
 
@@ -115,14 +103,14 @@ infixl >>|
 
 
 
-(|?) ::
-    Bool -> a -> a -> a
+(|?) :: Bool -> a -> a -> a
 infix 1 |?
-(|?) = when
-
+(|?) True yay _ = yay
+(|?) False _ nay = nay
 
 infixr 0 |!
 (|!) = ($)
+
 
 
 infix 1 -|=

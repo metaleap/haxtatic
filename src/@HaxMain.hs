@@ -38,7 +38,7 @@ main =
             ctxmain = Files.AppContext {    Files.curDir = curdir,
                                             Files.dirPath = dirpath,
                                             Files.setupName = Defaults.setupName projfilename,
-                                            Files.nowTime=starttime,
+                                            Files.nowTime = starttime,
                                             Files.randSeed = randseed' >~ (+(randseed'@!1)) }
         --  GET TO WORK:
         in App.processAll ctxmain projfilename (drop 2 cmdargs)
