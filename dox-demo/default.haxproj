@@ -22,7 +22,7 @@
 
 
 |X|hax/miniTag:c:code
-|X|hax/miniTag:h:h2: htmlAtts=[("id","[:content:]")]
+|X|hax/miniTag:h:h2: htmlAtts=[("id","{%:content:%}")]
 
 |X|hax/links:doxtopnav:li:
 	 htmlAtts = [("class","hd-nav"),("/class","hd-nav-sel")],

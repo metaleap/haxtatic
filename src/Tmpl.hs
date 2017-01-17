@@ -107,7 +107,7 @@ loadTmpl ctxmain ctxproc fileext tmpfile =
                 fileExt = fileext, srcFile = srcfile, chunks = srcchunks
             }
     where
-    srcfile = Files.fullFrom tmpfile Util.dateTime0 srcpreprocessed
+    srcfile = tmpfile { Files.content = srcpreprocessed }
     srcchunks = Util.splitUp Util.trim [_applychunkbegin] _applychunkend srcpreprocessed
     srcpreprocessed = processSrcFully ctxproc Nothing rawsrc
     rawsrc = (tmpfile-:Files.content)

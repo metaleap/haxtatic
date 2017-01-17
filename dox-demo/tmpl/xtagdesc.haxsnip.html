@@ -5,12 +5,12 @@ vars = [
 		("usage", "")
 	],
 content=>
-{X|h: [|xname|]|}
-[:content:]
+{X|h: {%xname%}|}
+{%:content:%}
 <ol>
 	<li>
-		<a href="#">Declaration</a> of an <code>|X|hax/[|xname|]:<i>myXtag</i>[|declmore|]</code> X-tag in a {T|HaxConfi|} file,
-		<ul><li>further configuring: [|cfgmore|]</li></ul>
+		<a href="#">Declaration</a> of an <code>|X|hax/{%xname%}:<i>myXtag</i>{%declmore%}</code> X-tag in a {T|HaxConfi|} file,
+		<ul><li>further configuring: {%cfgmore%}</li></ul>
 	</li>
-	<li>Usage anywhere: <code>{X<!---->|<i>myXtag</i>[|usage|] |<!---->}</code></li>
+	<li>Usage anywhere: <code>{X<!---->|<i>myXtag</i>{%usage%} |<!---->}</code></li>
 </ol>

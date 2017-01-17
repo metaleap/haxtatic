@@ -93,16 +93,16 @@ parseProjChunks chunkssplits =
         Proc { dirs = [dirname], skip = [], force = [] }
     procsane defname proc =
         Proc {
-            dirs = Util.ifNo (proc-:dirs ~> Util.keepNoNils dirnameonly) [defname],
+            dirs = Util.ifNo (proc-:dirs >/~ dirnameonly) [defname],
             skip = when saneneither [] saneskip,
             force = when saneneither [] saneforce
         } where
             saneneither = saneskip==saneforce
             saneskip = sanitize skip ; saneforce = sanitize force
-            sanitize fvals = let them = proc~>fvals ~> Util.keepNoNils Util.trim
+            sanitize fvals = let them = proc~>fvals >/~ Util.trim
                                 in (elem "*" them) |? ["*"] |! them
     proctags = (has ptags) |? ptags |! Tmpl.tags_All ~|(/=Tmpl.tag_C) where
-        ptags = (pstr~>(Util.splitOn ',') ~> Util.keepNoNils Util.trim) ~> Util.unique >~ (('{':).(++"|"))
+        ptags = (pstr~>(Util.splitOn ',') >/~ Util.trim) ~> Util.unique >~ (('{':).(++"|"))
         pstr = Util.trim$ Data.Map.Strict.findWithDefault "" ("process:tags") cfgprocs
     dirnameonly = System.FilePath.takeFileName ~. Util.trim
     cfgmisc = cfglines2hashmap ""

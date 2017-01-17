@@ -262,13 +262,6 @@ forNoNils _ [] = []
 forNoNils func ([]:more) = forNoNils func more
 forNoNils func (item:more) = (func item):(forNoNils func more)
 
-keepNoNils _ [] = []
--- keepNoNils func ([]:more) = keepNoNils func more
-keepNoNils func (item:more)
-    | (has val) = val:(keepNoNils func more)
-    | (otherwise) = keepNoNils func more
-    where val = func item
-
 keepNoNilFsts _ [] = []
 -- keepNoNilFsts func (([],_):more) = keepNoNilFsts func more
 keepNoNilFsts func (item:more)

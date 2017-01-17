@@ -78,6 +78,15 @@ infixl 9 >=~
 
 
 
+infixl 9 >/~
+(>/~) [] _ = []
+(>/~) (item:more) func =
+    discardnil (func item) where
+    discardnil [] = more >/~ func
+    discardnil val = val:(more >/~ func)
+
+
+
 infixr 7 |~
 (|~) = filter
 

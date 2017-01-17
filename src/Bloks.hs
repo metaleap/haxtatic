@@ -50,7 +50,7 @@ blokNameFromIndexPagePath possiblefakepath =
 
 
 blokNameFromRelPath bloks relpath file =
-    "" -|= (bloks~>Data.Map.Strict.keys ~> Util.keepNoNils foreach)@?0
+    "" -|= (bloks~>Data.Map.Strict.keys >/~ foreach)@?0
     where
     foreach bname
         | isRelPathBlokPage bname relpath

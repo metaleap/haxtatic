@@ -150,6 +150,8 @@ tagHandler cfgproj ctxpage ctxtmpl outjob ptagcontent
         let newrelpath = take (Util.count '/' (outjob-:Build.relPathSlashes)) infinity
             infinity = iterate (++ "../") "../"
         in Just$ ( null newrelpath |? path |! ((last newrelpath) ++ path) )
+    for ('1':'s':'t':':':htmltagname) =
+        Just$ (ctxpage-:Tmpl.htmlInner1st) htmltagname ""
     for name =
         let (dtfp,dtfn) = Util.bothTrim (Util.splitOn1st ':' name)
         in if dtfp=="srcTime"

@@ -87,12 +87,6 @@ filesInDir dir =
 
 
 
-
-fullFrom oldfile cmpmodtime newcontent =
-    FileFull (oldfile-:path) (max cmpmodtime $oldfile-:modTime) newcontent
-
-
-
 hasAnyFileExt exts filename =
     any ((==) (System.FilePath.takeExtension filename)) exts
 

@@ -49,7 +49,7 @@ loadOrCreate ctxmain projname projfilename custfilenames =
         cfgmodtime = max custmodtime (projfile-:Files.modTime)
         tmplmodtime = max cfgmodtime (tmplmainfile-:Files.modTime)
         redated cmpmodtime file
-            = Files.fullFrom file cmpmodtime $file-:Files.content
+            = file { Files.modTime = max cmpmodtime $file-:Files.modTime }
         redatedcfg = redated cfgmodtime
         redatedtmpl = redated tmplmodtime
     in return DefaultFiles {

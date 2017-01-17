@@ -1,8 +1,9 @@
 <h1>P-tags: page-specific outputs</h1>
-<p class="up"><code>{P<!---->| .. |<!---->}</code> tags refer to the current page context during rendering; outputting pre-computed values (page title, page date, etc.), custom per-page variables, or correct relative paths from the current location.</p>
+<p class="up"><code>{P<!---->| .. |<!---->}</code> tags refer to the <b>current page context</b> during rendering; outputting pre-computed values (page title, page date, etc.), custom per-page variables, or correct relative paths from the current location.</p>
 {X|h: Built-in |}
 <ul>
-	<li><code>{P<!---->|title|<!---->}</code> &rarr; current page's first <code>&lt;h1&gt;</code>'s entire inner markup (if any)<br/>&mdash; eg. for this page: <span class="hd-note">{P|title|}</span></li>
+	<li><code>{P<!---->|title|<!---->}</code> &rarr; current page content source's first <code>&lt;h1&gt;</code>'s entire inner markup (if any)<br/>&mdash; eg. for this page: <span class="hd-note">{P|title|}</span></li>
+	<li><code>{P<!---->|1st:<i>htmltagname</i>|<!---->}</code> &rarr; current page content source's first <code>&lt;<i>htmltagname</i>&gt;</code>'s entire inner markup (if any)<br/>&mdash; eg. for this page for <code><i>{P<!---->|1st:</i>b<i>|<!---->}</i></code>: <span class="hd-note">{P|1st:b|}</span></li>
 	<li><code>{P<!---->|:content:|<!---->}</code> &rarr; current page's entire content source markup (only works in your <a href="#">*.haxtmpl.*</a> files)</li>
 	<li><code>{P<!---->|date|<!---->}</code> and <code>{P<!---->|date:<i>mydtformatname</i>|<!---->}</code> &rarr; current {T|PDate|} <br/>&mdash; eg. for this page: <span class="hd-note">{P|date|}</span></li>
 	<li><code>{P<!---->|fileBaseName|<!---->}</code> &rarr; the current page's output file name without extension<br/>&mdash; eg. for this page: <span class="hd-note">{P|fileBaseName|}</span></li>
