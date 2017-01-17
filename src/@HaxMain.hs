@@ -44,7 +44,7 @@ main =
         in App.processAll ctxmain projfilename (drop 2 cmdargs)
         --  REMINISCE:
 
-        >>= \(buildplan , warnpages , numoutfiles , numxmls , timeinitdone , timecopydone , timeprocdone , timexmldone)
+        >>= \(buildplan , warnpages , hintpages , numoutfiles , numxmls , timeinitdone , timecopydone , timeprocdone , timexmldone)
         -> Data.Time.Clock.getCurrentTime >>= \endtime
         -> let
             timetaken = Util.duration starttime endtime
@@ -67,7 +67,9 @@ main =
         >> Text.Printf.printf "\n\t%s misc. & file-copying%s"
                                 (showtime$ ((Util.duration timeinitdone timecopydone) + (Util.duration timexmldone endtime)))
                                 (showavg (buildplan-:Build.outStatics~>length) timeprocdone endtime)
-        >> if null warnpages
-            then putStrLn ("\n\n==== Bye now! ====\n\n")
-            else putStrLn ("\n\n" ++ (Util.join "\n\t!>\t" ("Apparent {!| ERROR MESSAGES |!} were rendered into:":warnpages)) ++ "\n\n")
+        >> if has warnpages
+            then putStrLn ("\n\n" ++ (Util.join "\n\t!>\t" ("Apparent {!| ERROR MESSAGES |!} were rendered into:":warnpages)) ++ "\n\n")
+            else if has hintpages
+            then putStrLn ("\n\n" ++ (Util.join "\n\t?>\t" ("Don't miss the (potentially critical) notices above for:":hintpages)) ++ "\n\n")
+            else putStrLn ("\n\n==== Bye now! ====\n\n")
         >> System.IO.hFlush System.IO.stdout

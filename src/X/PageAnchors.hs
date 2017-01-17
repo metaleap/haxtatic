@@ -34,7 +34,7 @@ registerX _ xreg =
         tagmatches = (pagectx-:Tmpl.htmlInners) cfg_gathertagname
         foreach tagmatch =
             Html.out args_tagname (args-:htmlAtts)
-                        [Html.T "a" ["" =: tagmatch , "href" =: "#"++tagmatch] []]
+                        [Html.T "a" ["" =: tagmatch , "href" =: "#"++(Html.escape tagmatch)] []]
         (args_tagname , args_parsestr) = Util.splitOn1st ':' argstr
         args = X.tryParseArgs args_parsestr
                 (Just Args { htmlAtts = [] })

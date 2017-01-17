@@ -77,7 +77,7 @@ processAll ctxmain projfilename custfilenames =
 
     -> Text.Printf.printf "\n4/6\tGenerating %u/%u file(s) in:\n\t~>\t%s\n" numgenpages (numgenpages+numskippages) dirbuild
     >> System.IO.hFlush System.IO.stdout
-    >> Pages.processAll ctxmain ctxproj buildplan >>= \(warnpages , ctxbuild)
+    >> Pages.processAll ctxmain ctxproj buildplan >>= \(warnpages , hintpages , ctxbuild)
     -> Data.Time.Clock.getCurrentTime >>= \timeprocdone
 
     -> Text.Printf.printf "\n5/6\tWriting %u/%u XML file(s) to:\n\t~>\t%s\n" numxmls (numxmls+numskipposts) dirbuild
@@ -92,4 +92,4 @@ processAll ctxmain projfilename custfilenames =
                     else putStrLn (deploymsg++(ctxproj-:Proj.dirPathDeploy))
                         >> System.IO.hFlush System.IO.stdout
                         >> Build.copyAllOutputsToDeploy buildplan
-    in Util.via doordonot (buildplan , warnpages , numoutfiles , numxmls , timeinitdone , timecopydone , timeprocdone, timexmldone)
+    in Util.via doordonot (buildplan , warnpages , hintpages , numoutfiles , numxmls , timeinitdone , timecopydone , timeprocdone, timexmldone)

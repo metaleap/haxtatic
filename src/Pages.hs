@@ -32,13 +32,14 @@ processAll ctxmain ctxproj buildplan =
     -> let
         processpage done [] =
             return done
-        processpage (prevwarns , ctxbuildprev) (thisjob:morejobs) =
+        processpage (prevwarns , prevhints , ctxbuildprev) (thisjob:morejobs) =
             processPage ctxmain ctxbuildprev ctxtmpl tmplfinder thisjob
-            >>= \(maybewarning , ctxbuildnext)
-            -> let nextwarns = case maybewarning of Nothing -> prevwarns ; Just w -> w:prevwarns
-            in processpage (nextwarns , ctxbuildnext) morejobs
+            >>= \(maybewarning , maybehint , ctxbuildnext) -> let
+                nextwarns = maybewarning~>((:prevwarns) =|- prevwarns)
+                nexthints = maybehint~>((:prevhints) =|- prevhints)
+            in processpage (nextwarns , nexthints , ctxbuildnext) morejobs
 
-    in processpage ([] , ctxbuildinitial) (buildplan-:Build.outPages)
+    in processpage ([] , [] , ctxbuildinitial) (buildplan-:Build.outPages)
 
 
 
@@ -54,8 +55,8 @@ processPage ctxmain ctxbuild ctxtmpl tmplfinder outjob =
             |(otherwise)= lookupcachedpagerender filepath
         i1 = Util.indexOfSub outsrc "|!}" ; i2 = Util.indexOfSub outsrc "{!|"
     in return ( (i2 < 0 || i1 < i2) |? Nothing |! (Just$ outjob-:Build.relPath),
-                    Posts.BuildContext cachelookup (ctxbuild-:Posts.allPagesFiles)
-                            (ctxbuild-:Posts.projBloks) (ctxbuild-:Posts.projPosts) (ctxbuild-:Posts.projCfg) )
+                (mismatches~>fst == mismatches~>snd) |? Nothing |! (Just$ outjob-:Build.relPath),
+                ctxbuild { Posts.lookupCachedPageRender = cachelookup} )
 
     where
     dstfilepath = outjob-:Build.outPathBuild
@@ -151,7 +152,7 @@ tagHandler cfgproj ctxpage ctxtmpl outjob ptagcontent
             infinity = iterate (++ "../") "../"
         in Just$ ( null newrelpath |? path |! ((last newrelpath) ++ path) )
     for ('1':'s':'t':':':htmltagname) =
-        Just$ (ctxpage-:Tmpl.htmlInner1st) htmltagname ""
+        Just$ (ctxpage-:Tmpl.htmlInner1st) (Util.trim htmltagname) ""
     for name =
         let (dtfp,dtfn) = Util.bothTrim (Util.splitOn1st ':' name)
         in if dtfp=="srcTime"

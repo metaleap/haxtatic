@@ -87,7 +87,7 @@ parseProjChunks chunkssplits =
     procpages = procfind Defaults.dir_Pages
     procfind name =
         procsane name (Util.tryParseOr (procdef name) procstr) where
-            procstr = (null procval) |? procval |! "Proc "++procval
+            procstr = (null procval) |? procval |! ("Proc {"++procval++"}")
             procval = Data.Map.Strict.findWithDefault "" ("process:"++name) cfgprocs
     procdef dirname =
         Proc { dirs = [dirname], skip = [], force = [] }

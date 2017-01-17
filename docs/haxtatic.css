@@ -9,7 +9,7 @@ h1 {
 	margin-right: 4em;
 }
 p.up, ul.up {
-	margin-right: 8.22em;
+	margin-right: 9em;
 }
 h3 {
 	color: ThreeDDarkShadow;
@@ -42,7 +42,7 @@ code {
 	padding: 0 0.22em 0 2.22em;
 	text-indent: -2em;
 }
-code i, code span {
+code i, code span, pre i {
 	font-weight: normal;
 }
 
@@ -53,6 +53,7 @@ code i, code span {
 	border-radius: 0.22em;
 	border: solid 0.066em ThreeDLightShadow;
 	padding: 0.1em 0.2em;
+	font-size: 0.9em;
 }
 span.hd-note {
 	font-style: italic;
@@ -85,7 +86,8 @@ li.hd-nav-sel a {
 }
 
 .hd-toc {
-	background-color: InfoBackground;
+	background-color: ActiveCaption;
+	color: CaptionText;
 	overflow: hidden;
 	width: 7.77em;
 	right: 0.5em;
