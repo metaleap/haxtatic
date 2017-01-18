@@ -1,0 +1,54 @@
+<!DOCTYPE html><html lang="en"><head>
+    <title>Bloks: sections-of-pages | haXtatic Docs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../haxtatic.css" rel="stylesheet" />
+	<!--	basics\bloks.html
+			generated on 2016-12-20
+			from D:\dev\hs\hax2\dox-demo\pages\basics\2016-12-20.bloks.html	-->
+</head><body>
+    <h4>haXtatic Docs</h4>
+	<ul class="hd-nav">
+<li class="hd-nav"><a href="../index.html">Intro</a></li><li class="hd-nav hd-nav-sel"><a href="../basics/index.html">Basics</a></li><li class="hd-nav"><a href="../tags/index.html">haXtags</a></li><li class="hd-nav"><a href="../x/index.html">X-renderers</a></li>
+	</ul>
+	<div class="hd-toc">
+		<input type="checkbox" checked="checked" id="chk_showtoc"/>
+		<label for="chk_showtoc">On this page:</label>
+		<ul>
+<li><a href="#With such a directive in place:">With such a directive in place:</a></li><li><a href="#Auto-generation of Blok index pages">Auto-generation of Blok index pages</a></li>
+		</ul>
+	</div>
+
+
+<!-- begins content source page -->
+<h1>Bloks: sections-of-pages</h1>
+<p class="up">
+	A collection of <b>related pages sharing a common path prefix</b> can be associated together via the notion of the "Blok": a lightweight set of a handful of shared meta-data and processing properties. <span class="hd-note">For example, in this site the Bloks are <b>Basics</b>, <b>haXtags</b> and <b>X-renderers</b>.</span>
+</p>
+<p class="up">
+	Bloks are identified by a <code>name</code> that is <b>exactly equivalent to the common path prefix</b> of the related pages to be associated under this umbrella. This <i>name</i> must be connected to a number of properties via a <i>*.haxproj</i> <code>|B|<i>name</i>: ..</code> directive, <a href="haxproj.html#|B| directives: for &quot;Bloks&quot;">as this "live" example (for this site's Blok named <code>basics</code>) easily demonstrates</a>.
+</p>
+<h2 id="With such a directive in place:">With such a directive in place:</h2>
+<ul>
+	<li>The content source pages associated with the Blok will all have a relative path pattern of <i>either</i> <code><i>name</i>/*.html</code> <i>or</i> <code><i>name</i>.*.html</code></li>
+	<li>Named <a href="#">B-tags</a> (using the <i>name</i>) will work anywhere to output any given one of that Blok's shared meta-data and processing properties (that were just defined in the above <i>*.haxproj</i> <code>|B|<i>name</i>: ..</code> directive)</li>
+	<li>Unnamed <a href="#">B-tags</a> (for querying the "current" Blok) that end up (directly or indirectly) inside Blok-associated pages will work for the same purpose</li>
+	<li>Inclusion/exclusion of the associated Blok pages in/from <a href="#">output XML files</a> (<i>*.atom</i> and <i>sitemap.xml</i>) is precisely specified</li>
+	<li>All of the above equally applies to the auto-generated Blok index page, if any:</li>
+</ul>
+<h2 id="Auto-generation of Blok index pages">Auto-generation of Blok index pages</h2>
+<p>
+	If the above |B| directive defines a <code>blokIndexPageFile</code>, then 1 additional output page will be generated for the Blok that has no direct counterpart among the project's input content sources: this can be used as an umbrella page for the Blok's pages &mdash; dressed as a table-of-contents, a section home, an "article archive", etc. <span class="hd-note">Each Blok in this site has its own such auto-generated <code>/&lt;name&gt;/index.html</code> as set in its corresponding |B| directive in <i>default.haxproj</i>.</span>
+</p>
+<h3>Content from a snippet, not a source page</h3>
+<p>
+	During generation of that page, when the <a href="#">outer template</a> invokes <code>{P<!---->|:content:|<!---->}</code>, the content of the <code>tmpl/_hax_blokindex.haxsnip.html</code> file is applied in-place by invoking an (on-the-fly in-memory) <a href="#">X-tag</a> of the form <code>{X<!---->|_hax_blokindex: vars=[("bname","&lt;current-blok-name&gt;")], content="" |<!---->}</code>. For the "factory-default" pre-authored <code>tmpl/_hax_blokindex.haxsnip.html</code> this dynamically includes the Blok's <code>title</code> and <code>desc</code> directive properties as a starter template.
+</p>
+<h3>Auto link lists to Blok pages</h3>
+<p>
+	For seeing how to <i>actually</i> generate (in this auto-generated Blok index page or elsewhere) an acceptable hyperlinked listing of some or all of the Blok-associated pages &mdash;the original default <code>tmpl/_hax_blokindex.haxsnip.html</code> lacks this&mdash; it pays to inspect the project-directory from which this site was generated: specifically how a (minimally) customized <code>tmpl/_hax_blokindex.haxsnip.html</code> invokes an additional (project-specific) <code>tmpl/dox_blokindexlink.haxsnip.html</code> via a custom <a href="#">X-tag</a> defined in the <code>|X|hax/repeat:doxindex:</code> directive (in <a href="#">default.haxproj</a>). This interplay may appear slightly confusing during experimentation, unless the (ultimately trivial) rendering logic of both the <a href="#">hax/snippet</a> and especially the <a href="#">hax/repeat</a> X-renderers are absorbed first.
+</p>
+
+<!-- end of content source page -->
+
+
+</body></html>

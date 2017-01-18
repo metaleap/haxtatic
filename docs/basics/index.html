@@ -21,7 +21,11 @@
 
 <!-- begins content source page -->
 <h1>Basics</h1>
-	<p>This material may look overwhelming on a first glance.. but it really is embarrassingly simple stuff and mostly just for reference.</p>
+	<p>This material may look overwhelmingly extensive on a first glance, but it really is embarrassingly simple stuff and mostly just for
+	reference.</p>
+	<p>Notably no article on "how to author pages". That's because there's nothing to it once a quick note is made of
+	<a href="#">where to place them</a>, <a href="#">which outer-template is applied during processing &amp; how</a>, as well as the diverse range of
+	<a href="#">haXtags</a> that any page (indeed any user-authored/-customized file in a project) may invoke and combine in any manner.</p>
 	<hr/>
 	<ul class="hd-feed"><li><!--
 		other possible `vars` that can be added above and used below:
@@ -31,7 +35,32 @@
 			("pic" , ""),
 	-->
 	<a class="hd-feed-title" href="../basics/projdir.html">The project directory</a>
-	<blockquote class="hd-feed-desc">Any project resides in its own project-directory with a predefined (auto-generated) minimal-structure of 4 specific files plus these 4 folders, as outlined here.</blockquote></li><li><!--
+	<blockquote class="hd-feed-desc">Any project resides in its own project-directory with a predefined (auto-generated) minimal-structure of 3-4 standard folders and 3-4 standard files. Just the usual, bog-standard "content/templates/static/config" stuff! But here's some more color on the finer details.</blockquote></li><li><!--
+		other possible `vars` that can be added above and used below:
+			("feed" , ""),
+			("dt" , ""),
+			("cat" , ""),
+			("pic" , ""),
+	-->
+	<a class="hd-feed-title" href="../basics/bloks.html">Bloks: sections-of-pages</a>
+	<blockquote class="hd-feed-desc">A collection of <b>related pages sharing a common path prefix</b> can be associated together via the notion of the "Blok": a lightweight set of a handful of shared meta-data and processing properties. <span class="hd-note">For example, in this site the Bloks are <b>Basics</b>, <b>haXtags</b> and <b>X-renderers</b>.</span></blockquote></li><li><!--
+		other possible `vars` that can be added above and used below:
+			("feed" , ""),
+			("dt" , ""),
+			("cat" , ""),
+			("pic" , ""),
+	-->
+	<a class="hd-feed-title" href="../basics/datetime.html">Page date &amp; date-time formats</a>
+	<blockquote class="hd-feed-desc">For some projects, it will appear prudent to display or otherwise utilize "the Page Date": moreover, specifically a custom, explicitly-set one (effectively equivalent to "this is hereby decreed to have <i>really</i> been authored/published on..") rather than one blindly parroting the OS-set <i>file-last-modified</i> timestamp (de-facto equivalent to "this minor typo was belatedly fixed up on..").
+	<!--_hax_dtformat_iso8601--></blockquote></li><li><!--
+		other possible `vars` that can be added above and used below:
+			("feed" , ""),
+			("dt" , ""),
+			("cat" , ""),
+			("pic" , ""),
+	-->
+	<a class="hd-feed-title" href="../basics/tmplsnip.html">Templates and snippets in tmpl/</a>
+	<blockquote class="hd-feed-desc">When processing a content source file to generate its corresponding output file, <i>haXtatic's</i> first step is always determining the appropriate <i>tmpl/*.haxtmpl.*</i> file to apply.</blockquote></li><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
 			("dt" , ""),
@@ -39,7 +68,7 @@
 			("pic" , ""),
 	-->
 	<a class="hd-feed-title" href="../basics/haxproj.html">Project setup: *.haxproj files</a>
-	<blockquote class="hd-feed-desc">A near-empty <code>default.haxproj</code> was <a href="projdir.html#4 standard files">created</a> during project creation. All it contains are "directives": lean and simple (often 1-line) statements defining reusable micro-contents, fine-tuning the overall processing flow, or structuring rendering logic.</blockquote></li><li><!--
+	<blockquote class="hd-feed-desc">A near-empty <code>default.haxproj</code> was <a href="projdir.html#4 standard files">created</a> during project creation. This plain-text file exists to contain any number of (fairly trivial) "directives" &mdash; lean-yet-expressive statements that may: define reusable micro-contents, fine-tune the overall processing flow, associate certain content pages with one another, or compose and direct custom rendering logic.</blockquote></li><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
 			("dt" , ""),
@@ -54,8 +83,8 @@
 			("cat" , ""),
 			("pic" , ""),
 	-->
-	<a class="hd-feed-title" href="../basics/tmplsnip.html">Templates and snippets in tmpl/</a>
-	<blockquote class="hd-feed-desc">When processing a content source file to generate its corresponding output file, <i>haXtatic's</i> first step is always determining the appropriate <i>tmpl/*.haxtmpl.*</i> file to apply.</blockquote></li></ul>
+	<a class="hd-feed-title" href="../basics/xmlfiles.html">Additional XML output files</a>
+	<blockquote class="hd-feed-desc">During processing, <i>haXtatic</i> may generate (when so set up <i>and</i> fresh content changes indicate the need) additional XML output files of 2 kinds: <i>sitemap.xml</i> and <i>*.atom</i> feeds.</blockquote></li></ul>
 <!-- end of content source page -->
 
 

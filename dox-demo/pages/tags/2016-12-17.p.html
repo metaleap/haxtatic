@@ -5,17 +5,18 @@
 	<li><code>{P<!---->|title|<!---->}</code> &rarr; current page content source's first <code>&lt;h1&gt;</code>'s entire inner markup (if any)<br/>&mdash; eg. for this page: <span class="hd-note">{P|title|}</span></li>
 	<li><code>{P<!---->|1st:<i>htmltagname</i>|<!---->}</code> &rarr; current page content source's first <code>&lt;<i>htmltagname</i>&gt;</code>'s entire inner markup (if any)<br/>&mdash; eg. for this page for <code><i>{P<!---->|1st:</i>b<i>|<!---->}</i></code>: <span class="hd-note">{P|1st:b|}</span></li>
 	<li><code>{P<!---->|:content:|<!---->}</code> &rarr; current page's entire content source markup (only works in your <a href="#">*.haxtmpl.*</a> files)</li>
-	<li><code>{P<!---->|date|<!---->}</code> and <code>{P<!---->|date:<i>mydtformatname</i>|<!---->}</code> &rarr; current {T|PDate|} <br/>&mdash; eg. for this page: <span class="hd-note">{P|date|}</span></li>
-	<li><code>{P<!---->|fileBaseName|<!---->}</code> &rarr; the current page's output file name without extension<br/>&mdash; eg. for this page: <span class="hd-note">{P|fileBaseName|}</span></li>
+	<li><code>{P<!---->|date|<!---->}</code> and <code>{P<!---->|date:<i>mydtformatname</i>|<!---->}</code> &rarr; current <a href="#">page date</a> <br/>&mdash; eg. for this page: <span class="hd-note">{P|date|}</span></li>
 	<li><code>{P<!---->|fileName|<!---->}</code> &rarr; the current page's output file name<br/>&mdash; eg. for this page: <span class="hd-note">{P|fileName|}</span></li>
-	<li><code>{P<!---->|fileUri|<!---->}</code> &rarr; the current page's URI path relative to root<br/>&mdash; eg. for this page: <span class="hd-note">{P|fileUri|}</span></li>
+	<li><code>{P<!---->|fileBaseName|<!---->}</code> &rarr; the current page's output file name without file extensions<br/>&mdash; eg. for this page: <span class="hd-note">{P|fileBaseName|}</span></li>
+	<li><code>{P<!---->|fileUri|<!---->}</code> &rarr; the current page's URI path relative to the site root<br/>&mdash; eg. for this page: <span class="hd-note">{P|fileUri|}</span></li>
 	<li><code>{P<!---->|filePath|<!---->}</code> &rarr; the current page's file path relative to the output directory<br/>&mdash; eg. for this page: <span class="hd-note">{P|filePath|}</span></li>
 	<li><code>{P<!---->|dirName|<!---->}</code> &rarr; name of the current page's directory<br/>&mdash; eg. for this page: <span class="hd-note">{P|dirName|}</span></li>
-	<li><code>{P<!---->|dirUri|<!---->}</code> &rarr; URI path (relative to root) for the the current page's directory<br/>&mdash; eg. for this page: <span class="hd-note">{P|dirUri|}</span></li>
+	<li><code>{P<!---->|dirUri|<!---->}</code> &rarr; URI path (relative to the site root) for the the current page's directory<br/>&mdash; eg. for this page: <span class="hd-note">{P|dirUri|}</span></li>
 	<li><code>{P<!---->|dirPath|<!---->}</code> &rarr; relative path of the current page's directory<br/>&mdash; eg. for this page: <span class="hd-note">{P|dirPath|}</span></li>
 	<li><code>{P<!---->|srcPath|<!---->}</code> &rarr; full path to the content source of the current page<br/>&mdash; eg. for this page: <span class="hd-note">{P|srcPath|}</span></li>
+	<li><code>{P<!---->|srcRelPath|<!---->}</code> &rarr; project-directory-relative path to the content source of the current page<br/>&mdash; eg. for this page: <span class="hd-note">{P|srcRelPath|}</span></li>
 	<li><code>{P<!---->|outBuild|<!---->}</code> &rarr; full path to the current page's output file<br/>&mdash; eg. for this page: <span class="hd-note">{P|outBuild|}</span></li>
-	<li><code>{P<!---->|outDeploy|<!---->}</code> &rarr; full path to the current page's output file in the secondary output directory, if any</li>
+	<li><code>{P<!---->|outDeploy|<!---->}</code> &rarr; full path to the current page's output file in the <a href="#">secondary</a> output directory, if any</li>
 	<li><code>{P<!---->|srcTime|<!---->}</code> and <code>{P<!---->|srcTime:<i>mydtformatname</i>|<!---->}</code> &rarr; the current page source's <i>actual</i> modification date/time (which may differ from the <a href="#">page date</a> if that was set explicitly)<br/>&mdash; eg. for this page: <span class="hd-note">{P|srcTime|}</span></li>
 </ul>
 {X|h: Custom |}
@@ -33,10 +34,10 @@
 <p class="hd-note"><b>If</b> any such parameterized accesses are to be employed anywhere, to avoid faulty outputs <b>be sure to self-escape</b> <i>all</i> other occurrences of {X|c:&nbsp;%|} in the original <i>value</i> (not in the accessing P-tags) by doubling each to {X|c:&nbsp;%%|}.</p>
 {X|h: Page-relative URLs|}
 <p>
-	Useful when your machine isn't running a local web server / HTTP daemon: use <code>{P<!---->|/ <i>your/uri/here</i> |<!---->}</code> to rewrite that root-relative path such that it will correctly point to the destination from the current page <i>without</i> a leading <code>&nbsp;/</code>.<br/>&mdash; eg. linking to <span class="hd-note">/index.html</span> and <span class="hd-note">/basics/index.html</span> from this page via <code>{P<!---->|/<i>index.html</i>|<!---->}</code> and <code>{P<!---->|/<i>basics/index.html</i>|<!---->}</code> respectively outputs in-place: <span class="hd-note">{P|/index.html|}</span> and <span class="hd-note">{P|/basics/index.html|}</span>.
+	Useful when your machine isn't running a local web server / HTTP daemon: use <code>{P<!---->|/ <i>your/uri/here</i> |<!---->}</code> to rewrite that site-root-relative path such that it will correctly point to the destination from the current page <i>without</i> a leading <code>&nbsp;/</code>.<br/>&mdash; eg. linking to <span class="hd-note">/index.html</span> and <span class="hd-note">/basics/index.html</span> from this page via <code>{P<!---->|/<i>index.html</i>|<!---->}</code> and <code>{P<!---->|/<i>basics/index.html</i>|<!---->}</code> respectively outputs in-place: <span class="hd-note">{P|/index.html|}</span> and <span class="hd-note">{P|/basics/index.html|}</span>.
 </p>
 <p>
-	If all pages exist next at the root level anyway (micro-sites etc.), this isn't of course even needed.
+	If all pages exist next to each other at the site-root level anyway (micro-sites etc.), this isn't of course even needed.
 </p>
 {X|h: Delaying X-renderers|}
 <p>

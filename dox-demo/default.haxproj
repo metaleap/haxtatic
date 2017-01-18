@@ -1,11 +1,15 @@
+turn on whatever syntax highlighting for eased grokkage.
+no special comments syntax supported,
+no random comments after the first directive, which follows:
+
 |C|process:pages:
 	skip=[], force=["*"], dirs=[]
 
 
 |B|tags:
-	title="haXtags", atomFile="", blokIndexPageFile="tags/index.html", inSitemap = True, dtFormat="", desc=>
+	title="haXtags", atomFile="", blokIndexPageFile="tags/index.html", inSitemap=True, dtFormat="", desc=>
 
-	<p>Embed {T|Hax|} tags anywhere in source contents, templates, snippets or {T|HaxConfLink|} files with a simple notation:
+	<p>Embed {T|Hax|} tags anywhere in source contents, templates, snippets or *.haxproj files with a simple notation:
 	<code>{<i>Prefix</i>|<i>Name</i>|<!-- -->}</code> or <code>{<i>Prefix</i>|<i>Name</i>: <i>Args</i>|<!---->}</code>.</p>
 	<p>Example: <code>{P<!---->|date|<!---->}</code> outputs in-place the currently set {T|PDate|} during processing:
 	{X|note:{P|date|}|}.</p>
@@ -15,10 +19,19 @@
 	unprocessed inner tag (a "known non-issue")</li></ul></li>
 	<li>Available "prefixes" (or <i>haxTag types</i>) are (in order of simplicity) <b>T</b>, <b>B</b>, <b>P</b> and <b>X</b>:</li></ul>
 
+
 |B|basics:
-	title="Basics", atomFile="", blokIndexPageFile="basics/index.html", inSitemap = True, dtFormat="",
-	desc=>
-	<p>This material may look overwhelming on a first glance.. but it really is embarrassingly simple stuff and mostly just for reference.</p>
+	title="Basics", atomFile="", blokIndexPageFile="basics/index.html", inSitemap=True, dtFormat="", desc=>
+	<p>This material may look overwhelmingly extensive on a first glance, but it really is embarrassingly simple stuff and mostly just for
+	reference.</p>
+	<p>Notably no article on "how to author pages". That's because there's nothing to it once a quick note is made of
+	<a href="#">where to place them</a>, <a href="#">which outer-template is applied during processing &amp; how</a>, as well as the diverse range of
+	<a href="#">haXtags</a> that any page (indeed any user-authored/-customized file in a project) may invoke and combine in any manner.</p>
+
+
+|B|xtypes:
+	title="X-renderers", atomFile="", blokIndexPageFile="x/index.html", inSitemap=True, dtFormat="", desc=>
+	<p>The X-men x-tender-render-er-ers</p>
 
 
 |X|hax/miniTag:c:code
@@ -27,8 +40,8 @@
 
 |X|hax/links:doxtopnav:li:
 	 htmlAtts = [("class","hd-nav"),("/class","hd-nav-sel")],
-	 itemsFirst = [("" , "Intro")],
-	 itemsLast = [("x/" , "X-renderers")],
+		 itemsFirst = [("" , "Intro")],
+		 itemsLast = [("x/" , "{B|title:xtypes|}")],
 	 wrapHref = ("{P|/" , "index.html|}")
 
 |X|hax/pageAnchors:doxpagetoc:h2:
@@ -42,15 +55,3 @@
 
 |T|Hax: haXtatic
 |T|SiteTitle: {T|Hax|} Docs
-|T|Briefly: In a nutshell
-|T|HaxConf: *.haxproj
-|T|HaxConfi: <i>{T|HaxConf|}</i>
-|T|HaxConfLink: <a href="#">{T|HaxConf|}</a>
-|T|HaxBlokPage: <a href="#">blok-post page</a>
-|T|HaxBlokLink: <a href="#">blok</a>
-|T|HaxBlok: <i>blok</i>
-|T|HaxXSnippets: <a href="#">{X(Snippets)}</a>
-|T|HaxX: <a href="#">X-renderers</a>
-|T|HaxTTag: <a href="tags.t.html">T-tag</a>
-|T|HaxPTag: <a href="{P|/tags/p.html|}#Custom">custom P-tag</a>
-|T|PDate: <a href='#'>'page date'</a>

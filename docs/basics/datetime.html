@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="en"><head>
+    <title>Page date &amp; date-time formats | haXtatic Docs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../haxtatic.css" rel="stylesheet" />
+	<!--	basics\datetime.html
+			generated on 2016-12-17
+			from D:\dev\hs\hax2\dox-demo\pages\basics\2016-12-17.datetime.html	-->
+</head><body>
+    <h4>haXtatic Docs</h4>
+	<ul class="hd-nav">
+<li class="hd-nav"><a href="../index.html">Intro</a></li><li class="hd-nav hd-nav-sel"><a href="../basics/index.html">Basics</a></li><li class="hd-nav"><a href="../tags/index.html">haXtags</a></li><li class="hd-nav"><a href="../x/index.html">X-renderers</a></li>
+	</ul>
+	<div class="hd-toc">
+		<input type="checkbox" checked="checked" id="chk_showtoc"/>
+		<label for="chk_showtoc">On this page:</label>
+		<ul>
+<li><a href="#Setting custom Page Dates: 2 ways">Setting custom Page Dates: 2 ways</a></li><li><a href="#Named custom date-time formats">Named custom date-time formats</a></li>
+		</ul>
+	</div>
+
+
+<!-- begins content source page -->
+<h1>Page date &amp; date-time formats</h1>
+<p class="up">
+	For some projects, it will appear prudent to display or otherwise utilize "the Page Date": moreover, specifically a custom, explicitly-set one (effectively equivalent to "this is hereby decreed to have <i>really</i> been authored/published on..") rather than one blindly parroting the OS-set <i>file-last-modified</i> timestamp (de-facto equivalent to "this minor typo was belatedly fixed up on..").
+	<!--_hax_dtformat_iso8601-->
+</p>
+<p class="up">
+	Page Dates are for instance output during processing by embedded <code>{P<!---->|date|<!---->}</code> <a href="#">X-tags</a>; likewise the Page Date is accessed while <a href="#">generating XML outputs</a> or potentially, sooner-than-one-expected, with a custom setup of <a href="#">hax/repeat</a> and <a href="#">hax/snippet</a> X-renderers (especially in <a href="#">auto-generated Blok index page files</a>).
+</p>
+<h2 id="Setting custom Page Dates: 2 ways">Setting custom Page Dates: 2 ways</h2>
+<h3>Option 1:  content source file name</h3>
+<ul>
+	<li>Rename content source files: eg. from <code>page.htm</code> to <code><i>date.</i>page.htm</code> (<i>without</i> repeating this change anywhere else such as hyperlink references pointing to it etc.) &mdash; <b>IF</b> this <i>date</i> prefix is recognizable as a date-time via a "well-known" date-time format:</li>
+	<ul><li>then the output file name will <i>still</i> continue to be <code>page.htm</code> (with all references to it remaining intact)</li>
+	<li>(in fact, the file will <i>continue</i> to be identified throughout the entire processing pipeline simply as if its original source file name was still just <code>page.html</code>, as this date detection &amp; subsequent elimination occurs immediately prior to "encountering" the content source file during the early scanning&amp;planning stage)</li>
+	<li>and the custom page date is active and will be accessible via <code>{P<!---->|date|<!---->}</code> etc.</li></ul>
+	<li>What's a "well-known" date-time format here?<ul><li>Either: simply ensure <code>YYYY-MM-DD</code> in file name prefixes (eg. <code>2016-12-24.page.html</code>),</li><li>or: if a different date-time format in file name prefixes is indeed called for, be sure to <a href="#">declare a <i>*.haxproj</i> <code>|C|dtformat:</code> directive defining it correctly</a> under the <b>exact</b> name <code>_hax_dtformat_pagefilenames</code></li></ul></li>
+</ul>
+<h3>Option 2: in-page custom P-tag</h3>
+<p>
+	The Page Date can be set for any page on-the-fly during its processing by placing anywhere in its content source file a <a href="#">custom P-tag</a> (aka. "per-page variable") of the form <code>{%P<!---->|date=<i>2016-12-24</i>|<!---->%}</code> or indeed, if custom date-time formats are once again necessary for some reason, <code>{%P<!---->|date:<i>dtformatname</i>=<i>date-time-here</i>|<!---->%}</code>
+</p>
+<h3>Which is "better"?</h3>
+<p>
+	Purely a matter of subjective preference if <a href="#">sitemap.xml</a> reflecting the custom Page Date accurately is not a priority. Otherwise, option 1 will propagate properly there while option 2 won't (a very-low-priority known-issue).
+</p>
+<h2 id="Named custom date-time formats">Named custom date-time formats</h2>
+<p>
+	As already pointed out above, custom date-time formats have some support in <i>haXtatic</i>. In fact, anywhere date values are accessed, a custom format can be specified. But it first needs to be <b>defined correctly</b>, and that means <a href="#">declaring a corresponding <i>*.haxproj</i> <code>|C|dtformat:</code> directive</a> (which in turn commands a full grasp of the link to <i>parseable date-time format-strings</i> referenced there).
+</p>
+<p>
+	But to <b>simply try out</b> <i>utilizing</i> (not <i>defining</i>) "named date-time formats", anywhere this is supported the pre-defined exact date-time format name <code>_hax_dtformat_iso8601</code> will work for that purpose. Indeed, embedding <code>{P<!---->|date:_hax_dtformat_iso8601|<!---->}</code> right here, right now will yield: <span class="hd-note">2016-12-17T00:00:00</span> &mdash; not a very compelling day-time but after all, none whatsoever was <i>set</i> with the custom Page Date for this very <span class="hd-note">pages\basics\2016-12-17.datetime.html</span>.
+</p>
+
+<!-- end of content source page -->
+
+
+</body></html>

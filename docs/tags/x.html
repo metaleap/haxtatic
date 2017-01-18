@@ -23,7 +23,7 @@
 <h1>X-tags: dynamic renderers</h1>
 <p class="up">An <code>{X<!---->| <i>..</i> |<!---->}</code> tag invokes a programmatic output renderer.</p>
 <p class="up">Such an "<i>X-renderer</i>" may be of a built-in type, or of a custom one developed in Haskell and linked into the <i>haXtatic</i> code-base manually. Naturally only the built-in types are covered here and in the <a href="#">X-renderers</a> section.</p>
-<p class="up">Like <b>T</b> tags (and unlike <b>P</b> and <b>B</b> tags), there <i>are no</i> predefined <b>X</b>-tags, only those declared and set up in <a href="#">*.haxproj</a> files &mdash; ie. before an X-tag can be embedded many times anywhere in the project, it is first to be defined once in a <i>*.haxproj</i>: to be given a name and some default settings.</p>
+<p class="up">Like <b>T</b>-tags (and unlike <b>P</b>- and <b>B</b>-tags), there <i>are no</i> predefined <b>X</b>-tags, only those declared and set up in <a href="#">*.haxproj</a> files &mdash; ie. before an X-tag can be embedded many times anywhere in the project, it is first to be defined once in a <i>*.haxproj</i>: to be given a name and some default settings.</p>
 <p>Here are the built-in <i>X-renderers</i> ready to set up and try out:</p>
 <ul>
 	<li><a href="#demoSimplest">hax/demoSimplest</a> &mdash; "Hello World!"</li>
@@ -41,7 +41,7 @@
 	<p>Outputs <code>&lt;h1&gt;Hello World!&lt;/h1&gt;</code>, given:</p>
 	<ol>
 		<li>
-			<a href="#">Declaration</a> of an <code>|X|hax/demoSimplest:<i>myXtag</i></code> X-tag in a <i>*.haxproj</i> file,
+			<a href="#">Declaration</a> of an <code>|X|hax/demoSimplest:<i>myXtag</i></code> X-tag in a {T|HaxConfi|} file,
 			<ul><li>further configuring: (no settings)</li></ul>
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<i>myXtag</i> |<!---->}</code></li>
@@ -52,7 +52,7 @@
 	<p>Outputs <code>&lt;h1&gt;Hello, <i>greetname</i>!&lt;/h1&gt;</code>, given:</p>
 	<ol>
 		<li>
-			<a href="#">Declaration</a> of an <code>|X|hax/demoCfgArgs:<i>myXtag</i></code> or <code>|X|hax/demoCfgArgs:<i>myXtag</i>:<i>greetname</i></code> X-tag in a <i>*.haxproj</i> file,
+			<a href="#">Declaration</a> of an <code>|X|hax/demoCfgArgs:<i>myXtag</i></code> or <code>|X|hax/demoCfgArgs:<i>myXtag</i>:<i>greetname</i></code> X-tag in a {T|HaxConfi|} file,
 			<ul><li>further configuring: (no other settings)</li></ul>
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<i>myXtag</i>|<!---->}</code> or <code>{X<!---->|<i>myXtag</i>:<i>greetname</i> |<!---->}</code></li>
@@ -63,7 +63,7 @@
 	<p>Outputs <code>&lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt;</code>, given:</p>
 	<ol>
 		<li>
-			<a href="#">Declaration</a> of an <code>|X|hax/miniTag:<i>myXtag</i>:<i>somehtmltag</i>: <i>..</i></code> X-tag in a <i>*.haxproj</i> file,
+			<a href="#">Declaration</a> of an <code>|X|hax/miniTag:<i>myXtag</i>:<i>somehtmltag</i>: <i>..</i></code> X-tag in a {T|HaxConfi|} file,
 			<ul><li>further configuring: <code>htmlAtts</code></li></ul>
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<i>myXtag</i>:<i> tag's inner-markup content </i> |<!---->}</code></li>
@@ -74,7 +74,7 @@
 	<p>Outputs <code>&lt;img <i>..</i> /&gt;</code> or <code>&lt;a <i>..</i>&gt;&lt;img <i>..</i> /&gt;&lt;/a&gt;</code>, given:</p>
 	<ol>
 		<li>
-			<a href="#">Declaration</a> of an <code>|X|hax/image:<i>myXtag</i>:<i>somereldirpath</i>: <i>..</i></code> X-tag in a <i>*.haxproj</i> file,
+			<a href="#">Declaration</a> of an <code>|X|hax/image:<i>myXtag</i>:<i>somereldirpath</i>: <i>..</i></code> X-tag in a {T|HaxConfi|} file,
 			<ul><li>further configuring: <code>lnkAtts</code>, <code>imgAtts</code></li></ul>
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<i>myXtag</i>:<i>pic/rel/path and optionally some description text</i> |<!---->}</code></li>
@@ -85,7 +85,7 @@
 	<p>Outputs a sequence of <code>&lt;a ..&gt; .. &lt;/a&gt;</code> or <code>&lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code> in a uniform manner, given:</p>
 	<ol>
 		<li>
-			<a href="#">Declaration</a> of an <code>|X|hax/links:<i>myXtag</i>:<i>outerhtmltag</i>: <i>..</i></code> X-tag in a <i>*.haxproj</i> file,
+			<a href="#">Declaration</a> of an <code>|X|hax/links:<i>myXtag</i>:<i>outerhtmltag</i>: <i>..</i></code> X-tag in a {T|HaxConfi|} file,
 			<ul><li>further configuring: <code>htmlAtts</code>, <code>itemsFirst</code>, <code>itemsLast</code>, <code>wrapHref</code></li></ul>
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<i>myXtag</i>: items = [..] , htmlAtts = [..] |<!---->}</code></li>
@@ -96,7 +96,7 @@
 	<p>Outputs a sequence of <code>&lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code>, one per <code>&lt;<i>gatherhtmltag</i>&gt;</code> element found in the page's content source, given:</p>
 	<ol>
 		<li>
-			<a href="#">Declaration</a> of an <code>|X|hax/pageAnchors:<i>myXtag</i>:<i>gatherhtmltag</i>: <i>..</i></code> X-tag in a <i>*.haxproj</i> file,
+			<a href="#">Declaration</a> of an <code>|X|hax/pageAnchors:<i>myXtag</i>:<i>gatherhtmltag</i>: <i>..</i></code> X-tag in a {T|HaxConfi|} file,
 			<ul><li>further configuring: <code>considerEmpty</code>, <code>htmlIfEmpty</code></li></ul>
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<i>myXtag</i>:<i>outerhtmltag</i>: htmlAtts = [..] |<!---->}</code></li>
@@ -107,7 +107,7 @@
 	<p>Outputs the content of the named snippet with the specified variable substitutions.</p>
 	<ol>
 		<li>
-			<a href="#">Declaration</a> of an <code>|X|hax/snippet:<i>myXtag</i>: <i>..</i></code> X-tag in a <i>*.haxproj</i> file,
+			<a href="#">Declaration</a> of an <code>|X|hax/snippet:<i>myXtag</i>: <i>..</i></code> X-tag in a {T|HaxConfi|} file,
 			<ul><li>further configuring: <code>vars</code>, <code>content</code></li></ul>
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<i>myXtag</i>: vars = [..], content = &quot;..&quot; |<!---->}</code></li>
@@ -118,7 +118,7 @@
 	<p>Outputs a sequence of contents enumerated by the specified iterator.</p>
 	<ol>
 		<li>
-			<a href="#">Declaration</a> of an <code>|X|hax/repeat:<i>myXtag</i>: <i>..</i></code> X-tag in a <i>*.haxproj</i> file,
+			<a href="#">Declaration</a> of an <code>|X|hax/repeat:<i>myXtag</i>: <i>..</i></code> X-tag in a {T|HaxConfi|} file,
 			<ul><li>further configuring: <code>prefix</code>, <code>suffix</code>, <code>joinwith</code>, <code>content</code></li></ul>
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<i>myXtag</i>: over = .. , wrap = .. , order = .. , skip = .. , limit = .. |<!---->}</code></li>

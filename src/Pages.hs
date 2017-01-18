@@ -93,12 +93,12 @@ processPage ctxmain ctxbuild ctxtmpl tmplfinder outjob =
             ctxpageprep = ctxpage pagesrcraw (taghandler ctxpageprep)
             ctxpageproc = ctxpage pagesrcproc (taghandler ctxpageproc)
             (pagevars , pagedate , pagesrcchunks) = pageVars (ctxbuild-:Posts.projCfg) pagesrcraw $outjob-:Build.contentDate
-            taghandler pagectx = tagHandler (ctxbuild-:Posts.projCfg) pagectx ctxtmpl outjob
+            taghandler pagectx = tagHandler ctxmain (ctxbuild-:Posts.projCfg) pagectx ctxtmpl outjob
             tmpl = tmplfinder$ System.FilePath.takeExtension dstfilepath
             pagesrcproc = Tmpl.processSrcFully ctxtmpl (Just ctxpageprep)
                             (null pagevars |? pagesrcraw |! (concat pagesrcchunks))
             applied = Tmpl.apply tmpl ctxpageproc pagesrcproc
-            --  annoyingly, thanks to nested-nestings there may *still* be fresh/pending haXtags,
+            --  annoyingly, thanks to nested-nestings there may easily *still* be fresh/pending haXtags,
             --  now that we did only-the-page-src AND the so-far unprocessed {P|'s in tmpl, so once more with feeling:
             outsrc = Tmpl.processSrcFully ctxtmpl (Just ctxpageproc) applied
             htmlinners htmlsrc tagname =
@@ -132,7 +132,7 @@ pageVars cfgproj pagesrc contentdate =
 
 
 
-tagHandler cfgproj ctxpage ctxtmpl outjob ptagcontent
+tagHandler ctxmain cfgproj ctxpage ctxtmpl outjob ptagcontent
     | Util.startsWith ptagcontent "X|"
         = Just$ Tmpl.processXtagDelayed xtaghandler (drop 2 ptagcontent)
     | ptagcontent == "date"
@@ -172,6 +172,7 @@ tagHandler cfgproj ctxpage ctxtmpl outjob ptagcontent
                 , "dirUri" =: '/':(Util.ifIs reldir' (++"/"))
                 , "dirPath" =: Util.ifIs reldir (++[System.FilePath.pathSeparator])
                 , "srcPath" =: outjob-:Build.srcFile-:Files.path
+                , "srcRelPath" =: (drop (ctxmain-:Files.dirPath~>length+1) (outjob-:Build.srcFile-:Files.path))
                 , "outBuild" =: outjob-:Build.outPathBuild
                 , "outDeploy" =: outjob-:Build.outPathDeploy
                 ]

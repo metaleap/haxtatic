@@ -1,13 +1,22 @@
 <h1>Project setup: *.haxproj files</h1>
 <p class="up">
-	A near-empty {X|c: default.haxproj|} was <a href="projdir.html#4 standard files">created</a> during project creation. All it contains are "directives": lean and simple (often 1-line) statements defining reusable micro-contents, fine-tuning the overall processing flow, or structuring rendering logic.
+	A near-empty {X|c: default.haxproj|} was <a href="projdir.html#4 standard files">created</a> during project creation. This plain-text file exists to contain any number of (fairly trivial) "directives" &mdash; lean-yet-expressive statements that may: define reusable micro-contents, fine-tune the overall processing flow, associate certain content pages with one another, or compose and direct custom rendering logic.
 </p>
 <p class="up hd-note">
 	(Note that <a href="#">you can combine multiple *.haxproj files</a> &mdash; eg. if they grow too big to grasp at once, or for more advanced purposes such as temporary overriding of some directives or separately co-existing "named setups" in a single project.)
 </p>
 {X|h: Directives |}
 <p class="up">
-	A "directive" begins with a line starting precisely with one of <code>|T|</code>, <code>|B|</code>, <code>|X|</code>, <code>|P|</code>, or <code>|C|</code>, and spans all subsequent lines <i>until</i> the one that begins the next directive. Best practice (for readability and avoiding subtle glitches) is to indent all subsequent lines still "belonging" to such a directive! But this isn't strictly required. Everything before the first directive is ignored, everything after necessarily belongs to some directive or other.
+	Here's what they look like:
+	<pre>
+|T|<i>greeting</i>: <i>Hello stranger!</i>
+|C|_hax_domainname: <i>www.haxtatic.foo</i>
+	</pre>
+	<br />Simples. A "directive" begins with a line starting precisely with one of <code>|T|</code>, <code>|B|</code>, <code>|X|</code>, <code>|P|</code>, or <code>|C|</code>, and spans all subsequent lines <i>until</i> the one that begins the next directive. Best practice (for readability and avoiding subtle pitfalls) is to <i>indent</i> all subsequent lines "belonging" to each directive, but this isn't strictly required. Everything before the first directive is ignored, everything after necessarily belongs to some directive or other.
+</p>
+<h3>Specifying local paths</h3>
+<p>
+	Directives of type |B| and |C| allow specifying of local paths. These are typically considered relative to the project's build directory and in any event, nowhere are paths pointing outside the project directory <b>supported</b>. <i>{T|Hax|}</i> does attempt to sanitize those and then interpret them as relative to the currently supposed context.
 </p>
 {X|h: |T| directives: for text values |}
 <ul>
@@ -15,26 +24,25 @@
 	<li>Embed as <a href="{P|/tags/t.html|}">T-tags</a> anywhere: <code>{T<!---->|<i>AuthBlurb</i>|<!---->}</code></li>
 	<li>Leading/trailing white-space is stripped of both the <i>name</i> and the <i>value</i>, which as shown are separated by the first colon encountered.</li>
 </ul>
-{X|h: |B| directives: for "bloks" |}
+{X|h: |B| directives: for "Bloks" |}
 <p>
-	Just as <a href="#">|T| directives</a> consist of a <i>name</i> connected via a {X|c:&nbsp;:|} to their <i>value</i>, so each and every <b>|B| directive</b> defines a <a href="#">blok</a> {X|note:(a section-of-related-pages, or indeed a simple "poor-man's blog-of-sorts")|} by connecting via a {X|c:&nbsp;:|} that blok's <i>name</i> to its properties &mdash; eg. here's how this site's current <a href="{P|/basics/index.html|}">Basics</a> section (also just a "blok") is defined:
+	Just as <a href="#">|T| directives</a> consist of a <i>name</i> connected via a {X|c:&nbsp;:|} to their <i>value</i>, so each and every <b>|B| directive</b> defines a <a href="#">Blok</a> {X|note:(a section-of-related-pages, or indeed a simple "poor-man's blog-of-sorts")|} by connecting via a {X|c:&nbsp;:|} that Blok's <i>name</i> to its properties &mdash; eg. here's how this site's current <a href="{P|/basics/index.html|}">{B|title:basics|}</a> section (also just a "Blok") is defined:
 </p>
 <pre>
 |B|<i>basics</i>:
-    title="<i>Basics</i>",
-    atomFile="",
-    blokIndexPageFile="<i>basics/index.html</i>",
-    inSitemap = True,
-    dtFormat="",
-    desc=&gt;
-    <i>&lt;p&gt;The basics........&lt;/p&gt;</i>
+    title="<i>{B|title:basics|}</i>",
+    atomFile = "<i>{B|atomFile:basics|}</i>",
+    blokIndexPageFile="<i>{B|blokIndexPageFile:basics|}</i>",
+    inSitemap = <i>True</i>,
+    dtFormat = "<i>{B|dtFormat:basics|}</i>",
+    desc=&gt; <i>{B|desc:basics|}</i>
 </pre>
 <p><a href="#Syntactic rules (for some)">Stringent syntactic rules</a> apply here! The properties in detail:</p>
 <ul>
 	<li>{X|c:title|} and {X|c:desc|} &mdash; self-explanatory, and used (for one) in the associated generated files, if any:</li>
-	<li>{X|c:atomFile|} and {X|c:blokIndexPageFile|} both describe a root-relative (aka. <i>build</i>-directory-relative) file path and if empty, these files will not be generated.</li>
-	<li>{X|c:inSitemap|} includes or excludes <i>all</i> pages associated with this blok in/from the generated <a href="#">sitemap.xml</a> (if any)</li>
-	<li>{X|c:dtFormat|} &mdash; a hint as to the name of the preferred <a href="#">date-time format</a> that <a href="#">X-renderers</a> / <a href="#">snippets</a> should ideally use for contents associated with this blok</li>
+	<li>{X|c:atomFile|} and {X|c:blokIndexPageFile|} both describe a site-root-relative (aka. <i>build</i>-directory-relative) file path and if empty, these files will not be generated.</li>
+	<li>{X|c:inSitemap|} includes or excludes <i>all</i> pages associated with this Blok in/from the generated <a href="#">sitemap.xml</a> (if any)</li>
+	<li>{X|c:dtFormat|} &mdash; a hint as to the name of the preferred <a href="#">date-time format</a> that <a href="#">X-renderers</a> / <a href="#">snippets</a> should ideally use for contents associated with this Blok</li>
 </ul>
 <p class="hd-note">The values set for the above properties can be output anywhere via <a href="#">B-tags</a> &mdash; so in essence each <b>|B|</b> directive automatically defines 6 uniquely distinct B-tags.</p>
 {X|h: |X| directives: for rendering |}
@@ -95,7 +103,7 @@
 <ul><li>1 "feed" (aka. arbitrary primary category) named {X|c:quotes|}</li><li>made up of 2 "posts" (aka. micro-content records),</li><li>both in the "cat"(egory) of {X|c:Programming|}.</li></ul>
 <h3>Usage</h3>
 <p>
-	Such "feeds" can be output as <i>*.atom</i> XML files (just add a <a href="#">|C|_hax_relpath_postatoms</a> directive) but other than that no separate pages or other files will be auto-generated from them. To embed such micro-contents in the project's generated output pages in versatile ways (<i>without</i> coding up a custom X-renderer from scratch), use the "feed"-related iterators of the built-in <a href="#">hax/repeat</a> X-renderer (those, incidentally, treat |P| "feeds" and bloks as (for their purposes) functionally equivalent types of content sources, allowing for some neat mixing-and-mashing).
+	Such "feeds" can be output as <i>*.atom</i> XML files (just add a <a href="#">|C|_hax_relpath_postatoms</a> directive) but other than that no separate pages or other files will be auto-generated from them. To embed such micro-contents in the project's generated output pages in versatile ways (<i>without</i> coding up a custom X-renderer from scratch), use the "feed"-related iterators of the built-in <a href="#">hax/repeat</a> X-renderer (those, incidentally, treat |P| "feeds" and Bloks as (for their purposes) functionally equivalent types of content sources, allowing for some neat mixing-and-mashing).
 </p>
 {X|h: |C| directives: more control |}
 <p>
@@ -165,7 +173,7 @@ Format strings are parsed <a href="https://downloads.haskell.org/ghc/8.0.2/docs/
 <ul>
 	<li>{X|c:_hax_domainname|} is used in <i>sitemap.xml</i> and all generated <i>*.atom</i> XML feed files</li>
 	<li>{X|c:_hax_relpath_sitemap|} &mdash; the default generation of <i>/sitemap.xml</i> can be disabled by setting this directive without a value</li>
-	<li>{X|c:_hax_relpath_postatoms|} &mdash; generation of <i>*.atom</i> XML files for |P| feeds can be enabled by setting this directive with a root-relative (aka build-output-directory-relative) directory path to store them in; by default, such files are not generated</li>
+	<li>{X|c:_hax_relpath_postatoms|} &mdash; generation of <i>*.atom</i> XML files for |P| feeds can be enabled by setting this directive with a site-root-relative (aka build-output-directory-relative) directory path to store them in; by default, such files are not generated</li>
 	<li>{X|c:_hax_htmlequivexts|} &mdash; file extensions <i>other</i> than the built-in always-on {X|c:.html|}, {X|c:.htm|} and {X|c:&nbsp;|} (no file extension) can be designated to also be processed via the applicable <a href="#">*.haxtmpl.html</a> template</li>
 	<li>{X|c:process:tags:|} &mdash; haXtags that will never be embedded anywhere in the project output can be disabled to marginally, minimally speed up processing (perhaps noticable with vast amounts of contents)</li>
 	<li>{X|c:_hax_dir_deploy|} sets a secondary build-output directory (name, not path) where by default there is none.</li>
@@ -187,7 +195,7 @@ Format strings are parsed <a href="https://downloads.haskell.org/ghc/8.0.2/docs/
 a number of <b>directives</b> (in <i>*.haxproj</i> files and all <i>*.haxsnip.html</i>s' headers) and <b>haXtags</b> (anywhere including <i>*.haxproj</i> files) {X|note: lest they get ignored and skipped (for {X|c:|C|process:|}) or render warning/error messages (the others) into generated output contents|} specifically:
 </p>
 <ul>
-	<li>all <a href="#|B| directives: for &quot;bloks&quot;">|B| directives</a> (following the blok name)</li>
+	<li>all <a href="#|B| directives: for &quot;Bloks&quot;">|B| directives</a> (following the Blok name)</li>
 	<li>all <a href="#|P| directives: for &quot;postings&quot;">|P| directives</a> (following the feed name)</li>
 	<li>the <a href="#|C| directives: more control">|C| directives</a> {X|c:process:static:|} and {X|c:process:pages:|}</li>
 	<li>most <a href="#|X| directives: for rendering">|X| directives</a> (except 2 demo X-renderers for coders)</li>

@@ -9,7 +9,7 @@ h1 {
 	margin-right: 4em;
 }
 p.up, ul.up {
-	margin-right: 9em;
+	margin-right: 11em;
 }
 h3 {
 	color: ThreeDDarkShadow;
@@ -92,11 +92,8 @@ li.hd-nav-sel a {
 	background-color: ActiveCaption;
 	color: CaptionText;
 	overflow: hidden;
-	width: 7.77em;
+	width: 8.5em;
 	right: 0.5em;
-
-	position: fixed;
-	top: 6.66em;
 
 	position: absolute;
 	top: 6.88em;
@@ -104,7 +101,7 @@ li.hd-nav-sel a {
 .hd-toc ul {
 	display: none;
 	margin: 0;
-	padding: 0.33em 0 0.33em 1.11em;
+	padding: 0.33em 0.44em 0.33em 1.11em;
 }
 .hd-toc input, .hd-toc label {
 	display: none;

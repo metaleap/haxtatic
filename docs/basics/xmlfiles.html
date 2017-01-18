@@ -1,0 +1,50 @@
+<!DOCTYPE html><html lang="en"><head>
+    <title>Additional XML output files | haXtatic Docs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../haxtatic.css" rel="stylesheet" />
+	<!--	basics\xmlfiles.html
+			generated on 2016-12-01
+			from D:\dev\hs\hax2\dox-demo\pages\basics\2016-12-01.xmlfiles.html	-->
+</head><body>
+    <h4>haXtatic Docs</h4>
+	<ul class="hd-nav">
+<li class="hd-nav"><a href="../index.html">Intro</a></li><li class="hd-nav hd-nav-sel"><a href="../basics/index.html">Basics</a></li><li class="hd-nav"><a href="../tags/index.html">haXtags</a></li><li class="hd-nav"><a href="../x/index.html">X-renderers</a></li>
+	</ul>
+	<div class="hd-toc">
+		<input type="checkbox" checked="checked" id="chk_showtoc"/>
+		<label for="chk_showtoc">On this page:</label>
+		<ul>
+<li><a href="#sitemap.xml">sitemap.xml</a></li><li><a href="#*.atom files for Bloks">*.atom files for Bloks</a></li><li><a href="#*.atom files for |P| &quot;feeds&quot;">*.atom files for |P| "feeds"</a></li>
+		</ul>
+	</div>
+
+
+<!-- begins content source page -->
+<h1>Additional XML output files</h1>
+<p class="up">
+	During processing, <i>haXtatic</i> may generate (when so set up <i>and</i> fresh content changes indicate the need) additional XML output files of 2 kinds: <i>sitemap.xml</i> and <i>*.atom</i> feeds.
+</p>
+<h2 id="sitemap.xml">sitemap.xml</h2>
+<p>
+	uses <a href="http://en.wikipedia.org/wiki/Sitemaps">a trivial format</a>, is cheap to generate and written to <code>/sitemap.xml</code> during processing by default:
+</p>
+<ul>
+	<li>this can be changed or disabled via a <code>|C|_hax_relpath_sitemap:</code> <a href="#">*.haxproj directive</a>.</li>
+	<li>All site pages are included in the resulting <i>sitemap.xml</i> output file except pages associated with <a href="#">Bloks</a> that have <a href="#">declared otherwise</a>.</li>
+	<li>Each generated <code>loc</code> value is <i>required</i> (needlessly and wastefully so, but that's the format) to include a full domain-name and unless a custom <code>|C|_hax_domainname:</code> <a href="#">*.haxproj directive</a> was explicitly declared, <i>haXtatic</i> falls back on the project-directory's name for that.</li>
+	<li>Each generated <code>priority</code> value is guesstimated by a naive heuristic based loosely on page path length/depth/complexity and not currently user-customizable.</li>
+	<li>Each generated <code>lastmod</code> value refers to the <i>custom-set page date</i> <b>only</b> if that was <a href="#">explicitly encoded in the content source file's name</a>, otherwise it falls back to the content source file's currently set "<i>last modified</i>" timestamp.</li>
+</ul>
+<h2 id="*.atom files for Bloks">*.atom files for Bloks</h2>
+<p>
+	Whether and where these are written is specified in a |B| directive's <code>atomFile</code> <a href="#">property</a>. Every page associated with the Blok is (during generation of its corresponding <i>*.atom</i> feed) translated in its entirety into one equivalent <code>&lt;entry&gt;</code> (of course sans the <a href="#">outer template</a>). To not reprocess all <a href="#">haXtags</a> for each, a cached (already-processed and thus haXtag-free) in-memory version of the page content is used for that. However, <i>that</i> in turn forced haXtatic (since it doesn't do 'temp files' for entirely opinionated reasons) to reprocess and re-generate (prior to generating any <i>*.atom</i>s) <i>any and all</i> pages that will end up in any <i>*.atom</i> feed determined to need re-generation during this run. So be it!
+</p>
+<h2 id="*.atom files for |P| &quot;feeds&quot;">*.atom files for |P| "feeds"</h2>
+<p>
+	These are not by default generated unless a <code>|C|_hax_relpath_postatoms:</code> <a href="#">*.haxproj directive</a> explicitly specifies a site-root-relative (aka. build-directory-relative) path to the location they should be written to (can be <code>&nbsp;/</code> too). One such output file is then generated there per every <a href="#">"feed"</a> (auto-named <code><i>&lt;feed-name&gt;</i>.atom</code>). All the content/meta-data for each "post" belonging to the "feed" is translated into one equivalent <code>&lt;entry&gt;</code>.
+</p>
+
+<!-- end of content source page -->
+
+
+</body></html>
