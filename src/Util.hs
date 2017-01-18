@@ -73,6 +73,7 @@ noneOf vals val =
     all (val/=) vals
 
 
+
 repeatedly fn arg =
     let result = fn arg
     in if (result==arg) then result else repeatedly fn result

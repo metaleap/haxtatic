@@ -16,6 +16,7 @@ import Control.Applicative ( (<|>) )
 import qualified Data.List
 import qualified Data.Time.Clock
 import qualified System.FilePath
+import qualified Text.Printf
 
 
 
@@ -136,15 +137,17 @@ tagHandler cfgproj ctxpage ctxtmpl outjob ptagcontent
         = Just$ Tmpl.processXtagDelayed xtaghandler (drop 2 ptagcontent)
     | ptagcontent == "date"
         = fordate "" contentdate
-    | dtfprefix == "date"
-        = fordate dtfname contentdate
+    | split1st == "date"
+        = fordate splitrest contentdate
+    | has splitrest
+        = (Data.List.lookup split1st (ctxpage-:Tmpl.pVars)) ~> (formatpvar =|- for ptagcontent)
     | otherwise
         = (Data.List.lookup ptagcontent (ctxpage-:Tmpl.pVars)) <|> (for ptagcontent)
 
     where
     xtaghandler = (ctxtmpl-:Tmpl.xTagHandler) (Just ctxpage)
     contentdate = ctxpage-:Tmpl.pDate
-    (dtfprefix,dtfname) = Util.bothTrim (Util.splitOn1st ':' ptagcontent)
+    (split1st , splitrest) = Util.bothTrim (Util.splitOn1st ':' ptagcontent)
     fordate dtfn datetime =
         Just$ ProjC.dtUtc2Str cfgproj dtfn datetime
     for ('/':path) =
@@ -172,6 +175,29 @@ tagHandler cfgproj ctxpage ctxtmpl outjob ptagcontent
                 , "outBuild" =: outjob-:Build.outPathBuild
                 , "outDeploy" =: outjob-:Build.outPathDeploy
                 ]
+    formatpvar pvarfmt =
+        -- OUCH some ugly hackery! will do for a time
+        let num = count 0 pvarfmt
+            count c [] = c
+            count c ('%':'s':more) = count (c + 1) more
+            count c ('%':'v':more) = count (c + 1) more
+            count c (_:more) = count c more
+            args = (take num $ cycle (Util.splitOn ':' splitrest))
+            arg1 func [ _1 ] = func _1 ; arg1 _ _ = undefined
+            arg2 func [ _1 , _2 ] = func _1 _2 ; arg2 _ _ = undefined
+            arg3 func [ _1 , _2 , _3 ] = func _1 _2 _3 ; arg3 _ _ = undefined
+            arg4 func [ _1 , _2 , _3 , _4 ] = func _1 _2 _3 _4 ; arg4 _ _ = undefined
+            arg5 func [ _1 , _2 , _3 , _4 , _5 ] = func _1 _2 _3 _4 _5 ; arg5 _ _ = undefined
+            arg6 func [ _1 , _2 , _3 , _4 , _5 , _6 ] = func _1 _2 _3 _4 _5 _6 ; arg6 _ _ = undefined
+        in case num of
+            0 -> for ptagcontent
+            1 -> Just$ Text.Printf.printf pvarfmt `arg1` args
+            2 -> Just$ Text.Printf.printf pvarfmt `arg2` args
+            3 -> Just$ Text.Printf.printf pvarfmt `arg3` args
+            4 -> Just$ Text.Printf.printf pvarfmt `arg4` args
+            5 -> Just$ Text.Printf.printf pvarfmt `arg5` args
+            6 -> Just$ Text.Printf.printf pvarfmt `arg6` args
+            _ -> for ptagcontent
 
 
 

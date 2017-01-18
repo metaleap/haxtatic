@@ -38,7 +38,7 @@
 	<li><code>{P<!---->|srcPath|<!---->}</code> &rarr; full path to the content source of the current page<br/>&mdash; eg. for this page: <span class="hd-note">D:\dev\hs\hax2\dox-demo\pages\tags\2016-12-17.p.html</span></li>
 	<li><code>{P<!---->|outBuild|<!---->}</code> &rarr; full path to the current page's output file<br/>&mdash; eg. for this page: <span class="hd-note">D:\dev\hs\hax2\dox-demo\default-build\tags\p.html</span></li>
 	<li><code>{P<!---->|outDeploy|<!---->}</code> &rarr; full path to the current page's output file in the secondary output directory, if any</li>
-	<li><code>{P<!---->|srcTime|<!---->}</code> and <code>{P<!---->|srcTime:<i>mydtformatname</i>|<!---->}</code> &rarr; the current page source's <i>actual</i> modification date/time (which may differ from the <a href="#">page date</a> if that was set explicitly)<br/>&mdash; eg. for this page: <span class="hd-note">2017-01-17</span></li>
+	<li><code>{P<!---->|srcTime|<!---->}</code> and <code>{P<!---->|srcTime:<i>mydtformatname</i>|<!---->}</code> &rarr; the current page source's <i>actual</i> modification date/time (which may differ from the <a href="#">page date</a> if that was set explicitly)<br/>&mdash; eg. for this page: <span class="hd-note">2017-01-18</span></li>
 </ul>
 <h2 id="Custom">Custom</h2>
 <p>
@@ -50,6 +50,9 @@
 <p>
 	Of note: you <b>can</b> overwrite all the built-ins listed above with this feature! Possibly useful for setting page title / date that way, probably useless otherwise &mdash; but possible.
 </p>
+<h3>Parameterizing</h3>
+<p>The <i>value</i> may contain (up to 6 in total) occurrences of <code>&nbsp;%s</code> or <code>&nbsp;%v</code> (the former being slightly faster, both otherwise equivalent). For accesses then occurring anywhere not simply via <code>{P<!---->|<i>name</i>|<!---->}</code>, but via <code>{P<!---->|<i>name</i>:<i>value1</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>value1:value2</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>val1:val2:val3</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>v1:v2:v3:v4</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>v1:v2:v3:v4:v5</i>|<!---->}</code>, or <code>{P<!---->|<i>name</i>:<i>v1:v2:v3:v4:v5:v6</i>|<!---->}</code> the appropriate in-place value substitutions will be effected. (For any more expressive substitution requirements, use of a <a href="#">snippet</a> would be called for either <i>instead</i> of a custom P-tag or indeed inside it.)</p>
+<p class="hd-note"><b>If</b> any such parameterized accesses are to be employed anywhere, to avoid faulty outputs <b>be sure to self-escape</b> <i>all</i> other occurrences of <code>&nbsp;%</code> in the original <i>value</i> (not in the accessing P-tags) by doubling each to <code>&nbsp;%%</code>.</p>
 <h2 id="Page-relative URLs">Page-relative URLs</h2>
 <p>
 	Useful when your machine isn't running a local web server / HTTP daemon: use <code>{P<!---->|/ <i>your/uri/here</i> |<!---->}</code> to rewrite that root-relative path such that it will correctly point to the destination from the current page <i>without</i> a leading <code>&nbsp;/</code>.<br/>&mdash; eg. linking to <span class="hd-note">/index.html</span> and <span class="hd-note">/basics/index.html</span> from this page via <code>{P<!---->|/<i>index.html</i>|<!---->}</code> and <code>{P<!---->|/<i>basics/index.html</i>|<!---->}</code> respectively outputs in-place: <span class="hd-note">../index.html</span> and <span class="hd-note">../basics/index.html</span>.
