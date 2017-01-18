@@ -338,6 +338,8 @@ indexOf item (this:rest) =
     if this==item then 0 else
         (1 + (indexOf item rest))
 
+
+
 _indexof_droptil delim = _indexof_droptil' (delim==)
 _indexof_droptil' _ _ [] =
     (_intmin , [])
@@ -444,6 +446,26 @@ splitOn1st' predicate list =
         else (take i list , drop 1 rest)
 splitOn1stSpace = splitOn1st' Data.Char.isSpace
 
+splitOn1st_ delim list
+    |(i < 0)= (list , [])
+    |(otherwise) = (take i list , rest)
+    where
+    (i , rest) = spliton delim list ; spliton ':' = colon ; spliton '>' = gt ; spliton '\"' = quote
+    spliton '=' = eq ; spliton ',' = comma ; spliton ' ' = space ; spliton '\v' = white
+    spliton _ = error ("splitOn1st_ is hard-coded and doesn't support "++(show delim) ++ ", fix that or use splitOn1st")
+    n = (_intmin , []) ; y l = (0 , l) ; b (j,l) = (j+1,l)
+    colon [] = n ; colon (':':xs) = y xs ; colon (_:xs) = b (colon xs)
+    comma [] = n ; comma (',':xs) = y xs ; comma (_:xs) = b (comma xs)
+    space [] = n ; space (' ':xs) = y xs ; space (_:xs) = b (space xs)
+    quote [] = n ; quote ('\"':xs) = y xs ; quote (_:xs) = b (quote xs)
+    white [] = n ; white ('\t':xs) = y xs ; white ('\r':xs) = y xs ; white ('\n':xs) = y xs ; white ('\v':xs) = y xs ; white ('\b':xs) = y xs ; white ('\f':xs) = y xs ; white (_:xs) = b (white xs)
+    eq [] = n ; eq ('=':xs) = y xs ; eq (_:xs) = b (eq xs)
+    gt [] = n ; gt ('>':xs) = y xs ; gt (_:xs) = b (gt xs)
+
+
+splitIt i list
+    |(i < 0)= (list , [])
+    |(otherwise)= (take i list, drop (i+1) list)
 
 
 splitUp _ _ _ "" = []

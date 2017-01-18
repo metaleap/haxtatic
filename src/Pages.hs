@@ -120,13 +120,13 @@ pageVars cfgproj pagesrc contentdate =
     pagesrcchunks = (chunks ~|null.snd) >~ fst -- ~|is
 
     foreach (pvarstr , "{%P|") =
-        let nameandval = (Util.splitOn1st '=' pvarstr) ~> Util.bothTrim
+        let nameandval = (Util.splitOn1st_ '=' pvarstr) ~> Util.bothTrim
         in Just nameandval
     foreach _ =
         Nothing
 
     maybedate (varname,varval) =
-        let (dtpref , dtfname) = Util.bothTrim (Util.splitOn1st ':' varname)
+        let (dtpref , dtfname) = Util.bothTrim (Util.splitOn1st_ ':' varname)
         in if dtpref /= "date" then Nothing
             else ProjC.dtStr2Utc cfgproj dtfname varval
 
@@ -147,7 +147,7 @@ tagHandler cfgproj ctxpage ctxtmpl outjob ptagcontent
     where
     xtaghandler = (ctxtmpl-:Tmpl.xTagHandler) (Just ctxpage)
     contentdate = ctxpage-:Tmpl.pDate
-    (split1st , splitrest) = Util.bothTrim (Util.splitOn1st ':' ptagcontent)
+    (split1st , splitrest) = Util.bothTrim (Util.splitOn1st_ ':' ptagcontent)
     fordate dtfn datetime =
         Just$ ProjC.dtUtc2Str cfgproj dtfn datetime
     for ('/':path) =
@@ -157,7 +157,7 @@ tagHandler cfgproj ctxpage ctxtmpl outjob ptagcontent
     for ('1':'s':'t':':':htmltagname) =
         Just$ (ctxpage-:Tmpl.htmlInner1st) (Util.trim htmltagname) ""
     for name =
-        let (dtfp,dtfn) = Util.bothTrim (Util.splitOn1st ':' name)
+        let (dtfp,dtfn) = Util.bothTrim (Util.splitOn1st_ ':' name)
         in if dtfp=="srcTime"
             then fordate dtfn (outjob-:Build.srcFile-:Files.modTime)
             else Data.List.lookup name pvals
@@ -191,12 +191,12 @@ tagHandler cfgproj ctxpage ctxtmpl outjob ptagcontent
             arg6 func [ _1 , _2 , _3 , _4 , _5 , _6 ] = func _1 _2 _3 _4 _5 _6 ; arg6 _ _ = undefined
         in case num of
             0 -> for ptagcontent
-            1 -> Just$ Text.Printf.printf pvarfmt `arg1` args
-            2 -> Just$ Text.Printf.printf pvarfmt `arg2` args
-            3 -> Just$ Text.Printf.printf pvarfmt `arg3` args
-            4 -> Just$ Text.Printf.printf pvarfmt `arg4` args
-            5 -> Just$ Text.Printf.printf pvarfmt `arg5` args
-            6 -> Just$ Text.Printf.printf pvarfmt `arg6` args
+            1 -> Just$ arg1 (Text.Printf.printf pvarfmt) args
+            2 -> Just$ arg2 (Text.Printf.printf pvarfmt) args
+            3 -> Just$ arg3 (Text.Printf.printf pvarfmt) args
+            4 -> Just$ arg4 (Text.Printf.printf pvarfmt) args
+            5 -> Just$ arg5 (Text.Printf.printf pvarfmt) args
+            6 -> Just$ arg6 (Text.Printf.printf pvarfmt) args
             _ -> for ptagcontent
 
 

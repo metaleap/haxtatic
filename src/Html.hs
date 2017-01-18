@@ -89,7 +89,7 @@ findInnerContentOfTags tagname htmlsrc =
         foreach (_,"") = Nothing
         foreach ("",_) = Nothing
         foreach (inner'' , tagbegin) =
-            let inner' = if tagbegin == lookfor@!0 then inner'' else snd$ Util.splitOn1st '>' inner''
+            let inner' = if tagbegin == lookfor@!0 then inner'' else snd$ Util.splitOn1st_ '>' inner''
                 inner = Util.trim inner'
             in null inner |? Nothing |! Just inner
     in chunks>=~foreach
@@ -98,7 +98,7 @@ findValuesOfVoidTags1stAttr tagname attrname htmlsrc =
     let chunks = Util.splitUp id ['<':(tagname++" "++attrname++"=\"")] "/>" htmlsrc
         foreach (_,"") = Nothing
         foreach (inner',_) =
-            let (inner,_) = Util.splitOn1st '\"' inner'
+            let (inner,_) = Util.splitOn1st_ '\"' inner'
             in null inner |? Nothing |! Just inner
     in chunks>=~foreach
 

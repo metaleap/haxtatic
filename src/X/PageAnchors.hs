@@ -35,7 +35,7 @@ registerX _ xreg =
         foreach tagmatch =
             Html.out args_tagname (args-:htmlAtts)
                         [Html.T "a" ["" =: tagmatch , "href" =: "#"++(Html.escape tagmatch)] []]
-        (args_tagname , args_parsestr) = Util.splitOn1st ':' argstr
+        (args_tagname , args_parsestr) = Util.splitOn1st_ ':' argstr
         args = X.tryParseArgs args_parsestr
                 (Just Args { htmlAtts = [] })
                 (Args { htmlAtts = X.htmlErrAttsArgs (xreg , Util.excerpt 23 argstr) })

@@ -8,7 +8,7 @@
 </head><body>
     <h4>haXtatic Docs</h4>
 	<ul class="hd-nav">
-<li class="hd-nav"><a href="../index.html">Overview</a></li><li class="hd-nav"><a href="../basics/index.html">Basics</a></li><li class="hd-nav hd-nav-sel"><a href="../tags/index.html">haXtags</a></li><li class="hd-nav"><a href="../x/index.html">X-renderers</a></li>
+<li class="hd-nav"><a href="../index.html">Intro</a></li><li class="hd-nav"><a href="../basics/index.html">Basics</a></li><li class="hd-nav hd-nav-sel"><a href="../tags/index.html">haXtags</a></li><li class="hd-nav"><a href="../x/index.html">X-renderers</a></li>
 	</ul>
 	<div class="hd-toc">
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
@@ -51,7 +51,7 @@
 	Of note: you <b>can</b> overwrite all the built-ins listed above with this feature! Possibly useful for setting page title / date that way, probably useless otherwise &mdash; but possible.
 </p>
 <h3>Parameterizing</h3>
-<p>The <i>value</i> may contain (up to 6 in total) occurrences of <code>&nbsp;%s</code> or <code>&nbsp;%v</code> (the former being slightly faster, both otherwise equivalent). For accesses then occurring anywhere not simply via <code>{P<!---->|<i>name</i>|<!---->}</code>, but via <code>{P<!---->|<i>name</i>:<i>value1</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>value1:value2</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>val1:val2:val3</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>v1:v2:v3:v4</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>v1:v2:v3:v4:v5</i>|<!---->}</code>, or <code>{P<!---->|<i>name</i>:<i>v1:v2:v3:v4:v5:v6</i>|<!---->}</code> the appropriate in-place value substitutions will be effected. (For any more expressive substitution requirements, use of a <a href="#">snippet</a> would be called for either <i>instead</i> of a custom P-tag or indeed inside it.)</p>
+<p>Supported for up to 6 (in total) occurrences in <i>value</i> of <code>&nbsp;%s</code> or <code>&nbsp;%v</code> (the former being slightly faster, both otherwise equivalent). For accesses then occurring anywhere not simply via <code>{P<!---->|<i>name</i>|<!---->}</code>, but via <code>{P<!---->|<i>name</i>:<i>value1</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>value1:value2</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>val1:val2:val3</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>v1:v2:v3:v4</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>v1:v2:v3:v4:v5</i>|<!---->}</code>, or <code>{P<!---->|<i>name</i>:<i>v1:v2:v3:v4:v5:v6</i>|<!---->}</code> the appropriate in-place value substitutions will be effected. (For any more expressive substitution requirements, use of a <a href="#">snippet</a> would be called for either instead of or combined with the custom P-tag.)</p>
 <p class="hd-note"><b>If</b> any such parameterized accesses are to be employed anywhere, to avoid faulty outputs <b>be sure to self-escape</b> <i>all</i> other occurrences of <code>&nbsp;%</code> in the original <i>value</i> (not in the accessing P-tags) by doubling each to <code>&nbsp;%%</code>.</p>
 <h2 id="Page-relative URLs">Page-relative URLs</h2>
 <p>

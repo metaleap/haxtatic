@@ -18,7 +18,7 @@
 |B|basics:
 	title="Basics", atomFile="", blokIndexPageFile="basics/index.html", inSitemap = True, dtFormat="",
 	desc=>
-	<p>The basics........</p>
+	<p>This material may look overwhelming on a first glance.. but it really is embarrassingly simple stuff and mostly just for reference.</p>
 
 
 |X|hax/miniTag:c:code
@@ -27,7 +27,7 @@
 
 |X|hax/links:doxtopnav:li:
 	 htmlAtts = [("class","hd-nav"),("/class","hd-nav-sel")],
-	 itemsFirst = [("" , "Overview")],
+	 itemsFirst = [("" , "Intro")],
 	 itemsLast = [("x/" , "X-renderers")],
 	 wrapHref = ("{P|/" , "index.html|}")
 

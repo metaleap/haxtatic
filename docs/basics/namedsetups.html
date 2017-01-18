@@ -8,7 +8,7 @@
 </head><body>
     <h4>haXtatic Docs</h4>
 	<ul class="hd-nav">
-<li class="hd-nav"><a href="../index.html">Overview</a></li><li class="hd-nav hd-nav-sel"><a href="../basics/index.html">Basics</a></li><li class="hd-nav"><a href="../tags/index.html">haXtags</a></li><li class="hd-nav"><a href="../x/index.html">X-renderers</a></li>
+<li class="hd-nav"><a href="../index.html">Intro</a></li><li class="hd-nav hd-nav-sel"><a href="../basics/index.html">Basics</a></li><li class="hd-nav"><a href="../tags/index.html">haXtags</a></li><li class="hd-nav"><a href="../x/index.html">X-renderers</a></li>
 	</ul>
 	<div class="hd-toc">
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
@@ -30,16 +30,18 @@
 	<a href="projdir.html">When <i>haXtatic</i> is run, it is at a minimum always given a project directory path to work in</a>, but following that one required command-line argument there may be <b>any number of <i>*.haxproj</i> file names</b> (not paths, and separated via white-space). Only when these <i>aren't</i> specified does haXtatic actually assume a single <i>default.haxproj</i> is to be used.
 </p>
 <p>
-	So all the specified <a href="haxproj.html">*.haxproj</a> files are loaded in sequence and combined-into-one in memory on the fly. This may result in later definitions overriding previous ones, which in turn can be quite handy.
+	So all the specified <a href="haxproj.html">*.haxproj</a> files are loaded in sequence and combined-into-one in memory on the fly. This may result in later definitions overriding previous ones, which in turn can be really quite handy (once the need materializes).
 </p>
 <p>
-	If any one of these named files doesn't exist, it is quietly ignored. If <i>none</i> of them exist, the above-mentioned fallback to <i>default.haxproj</i> applies. If <i>that</i> one doesn't exist, a minimalist pre-authored version is re-created to illustrate just how seriously <i>haXtatic</i> takes all this.
+	If any one of these named files doesn't exist, it is quietly ignored. If <i>none</i> of them exist, the above-mentioned fallback to <i>default.haxproj</i> applies. If <i>that</i> one doesn't exist, a minimalist pre-authored version is re-created to demonstrate just how seriously <i>haXtatic</i> takes all this.
 </p>
 <h2 id="Named setups">Named setups</h2>
 <p>The above logic then easily gives rise to the concept of "named setups", that is: multiple separate (differently named) sets of <span class="hd-note">&nbsp;<b>&lt;name&gt;</b>.haxproj&nbsp;&nbsp;+&nbsp;&nbsp;tmpl/<b>&lt;name&gt;</b>.haxtmpl.html&nbsp;&nbsp;+&nbsp;&nbsp;<b>&lt;name&gt;-build</b>/&nbsp;</span> co-residing in parallel within the project directory.</p>
-<p>This may sound hopelessly convoluted, but consider that <i>(despite this functionality emerging rather on a whim upon determining the real need for and utility of supporting multiple *.haxproj)</i> there could certainly well exist use-cases where developing/generating a number of "quite-similar-but-differing-in-various-minor-or-major-details" versions/variations of a project &mdash;from partially shared, partially differing contents, templates, snippets, settings&mdash; is upon reflection ultimately called for. Happens to the best of them!</p>
+<h3>Why:</h3>
+<p>This may sound somewhat convoluted, but consider that <i>(despite this functionality emerging rather on a whim upon determining the real need for and utility of supporting multiple *.haxproj)</i> there could certainly well exist use-cases where developing/generating a number of "quite-similar-but-differing-in-various-minor-or-major-details" versions/variations of a project &mdash;from partially shared, partially differing contents, templates, snippets, settings&mdash; is upon reflection ultimately called for. Happens to the best of them!</p>
 <p>Since most other variations can be finely controlled entirely via the <i>*.haxproj files</i>, the "named setup" concept only affects these 3 entities of <span class="hd-note">&nbsp;<b>&lt;name&gt;</b>.haxproj&nbsp;&nbsp;+&nbsp;&nbsp;tmpl/<b>&lt;name&gt;</b>.haxtmpl.html&nbsp;&nbsp;+&nbsp;&nbsp;<b>&lt;name&gt;-build</b>/&nbsp;</span>.</p>
-<p>So <b>what names the current build setup</b> then? The <i>very first</i> of all the specified <i>*.haxproj</i> file names supplied over the command-line, as <a href="#Multiple *.haxproj">per above</a>, but existing or not, loaded or not: the first one names this setup! All this shows how new projects end up with the standard set of <span class="hd-note">&nbsp;<b>default</b>.haxproj&nbsp;&nbsp;+&nbsp;&nbsp;tmpl/<b>default</b>.haxtmpl.html&nbsp;&nbsp;+&nbsp;&nbsp;<b>default-build</b>/&nbsp;</span>: the setup name falls back to <b>default</b> absent any explicitly specified other <i>*.haxproj</i> file names.</p>
+<h3>So what exactly <i>does</i> "name" the current build setup then?</h3>
+<p>The <i>very first</i> of all the specified <i>*.haxproj</i> file names supplied over the command-line, as <a href="#Multiple *.haxproj">per above</a> &mdash; but existing or not, loaded or not: the first one names this setup! All this shows how new projects end up with the standard set of <span class="hd-note">&nbsp;<b>default</b>.haxproj&nbsp;&nbsp;+&nbsp;&nbsp;tmpl/<b>default</b>.haxtmpl.html&nbsp;&nbsp;+&nbsp;&nbsp;<b>default-build</b>/&nbsp;</span> &mdash; the setup name falls back to <b>default</b> absent any explicitly specified other <i>*.haxproj</i> file names.</p>
 
 <!-- end of content source page -->
 

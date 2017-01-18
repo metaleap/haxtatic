@@ -70,6 +70,6 @@ main =
         >> if has warnpages
             then putStrLn ("\n\n" ++ (Util.join "\n\t!>\t" ("Apparent {!| ERROR MESSAGES |!} were rendered into:":warnpages)) ++ "\n\n")
             else if has hintpages
-            then putStrLn ("\n\n" ++ (Util.join "\n\t?>\t" ("Don't miss the (potentially critical) notices above for:":hintpages)) ++ "\n\n")
+            then putStrLn ("\n\n" ++ (Util.join "\n\t?>\t" ("DON'T MISS the (potentially critical) notices above for:":hintpages)) ++ "\n\n")
             else putStrLn ("\n\n==== Bye now! ====\n\n")
         >> System.IO.hFlush System.IO.stdout

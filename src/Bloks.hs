@@ -122,7 +122,7 @@ tagHandler bloks curbname str =
     let fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
                     ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dtFormat",dtFormat)  ]
         bname = Util.ifNo bn curbname
-        (fname, bn) = Util.bothTrim (Util.splitOn1st ':' str)
+        (fname, bn) = Util.bothTrim (Util.splitOn1st_ ':' str)
     in (null fname) |? Nothing
         |! (fname=="name" && has bname) |? Just bname
             |! (blokByName bloks bname) =>= \blok ->

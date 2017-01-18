@@ -69,7 +69,7 @@ parseProjChunks ctxproj xregisterers chunkssplits =
         ( tn , reg ) where
         reg = registerx ctxproj Named { xname = xn, tname = tn,
                                         cfgFullStr = cfgstr, cfgSplitAll = tvals>~Util.trim,
-                                        cfgSplitOnce = Util.bothTrim (Util.splitOn1st ':' cfgstr) }
+                                        cfgSplitOnce = Util.bothTrim (Util.splitOn1st_ ':' cfgstr) }
         cfgstr = Util.trim$ Util.join ":" tvals
 
 
@@ -78,7 +78,7 @@ tagHandler xtags ctxpage tagcontent =
     renderwhen$ Data.Map.Strict.lookup xtagname xtags
     where
     renderargs = (ctxpage , Util.trim argstr)
-    (xtagname , argstr) = Util.splitOn1st ':' tagcontent
+    (xtagname , argstr) = Util.splitOn1st_ ':' tagcontent
 
     renderwhen (Just (Early xrend)) =
         xrend renderargs
