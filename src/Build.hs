@@ -42,6 +42,7 @@ data Task
         blokName :: String,
         outPathBuild :: FilePath,
         outPathDeploy :: FilePath,
+        projPathCached :: FilePath,
         contentDate :: Data.Time.Clock.UTCTime,
         srcFile :: Files.File
     }
@@ -91,6 +92,7 @@ _createIndexHtmlIfNoContentPages ctxmain ctxproj numpagesrcfiles =
                     blokName = "",
                     outPathBuild = outjobpath,
                     outPathDeploy = Util.ifIs (ctxproj-:Proj.dirPathDeploy) (</> relpath),
+                    projPathCached = ctxproj-:Proj.dirPathCache </> relpath,
                     contentDate = srcfile-:Files.modTime,
                     srcFile = srcfile
                 }
@@ -148,7 +150,8 @@ plan ctxmain ctxproj =
         anyprocessing = outpagefiles~>length > 0
         sitemapbuild = FileOutput { relPath = sitemaprelpath, outPathBuild = sitemapbuildpath,
                                     outPathDeploy = Util.ifIs (ctxproj-:Proj.dirPathDeploy) (</> sitemaprelpath),
-                                    relPathSlashes = "", blokName = "", contentDate = Util.dateTime0 , srcFile = Files.NoFile }
+                                    projPathCached = "", relPathSlashes = "", blokName = "",
+                                    contentDate = Util.dateTime0 , srcFile = Files.NoFile }
         sitemap = ( (has sitemaprelpath && anyprocessing) || (not sitemapexists) |? sitemapbuild |! NoOutput ,
                     sitemapfiles ~|relPath~.(Files.hasAnyFileExt $projcfg-:ProjC.htmlEquivExts) )
         feedjob outjob = Posts.BuildTask {
@@ -186,6 +189,7 @@ _outFileInfo ctxproj contentdater relpather both@(relpath,file) =
             blokName = Bloks.blokNameFromRelPath (ctxproj-:Proj.setup-:Proj.bloks) relpathnu file,
             outPathBuild = ctxproj-:Proj.dirPathBuild </> relpathnu,
             outPathDeploy = Util.ifIs (ctxproj-:Proj.dirPathDeploy) (</> relpathnu),
+            projPathCached = ctxproj-:Proj.dirPathCache </> relpathnu,
             contentDate = contentdate,
             srcFile = file
         }

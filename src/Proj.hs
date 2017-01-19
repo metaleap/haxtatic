@@ -27,6 +27,7 @@ data Ctx
         dirPath :: FilePath,
         dirPathBuild :: FilePath,
         dirPathDeploy :: FilePath,
+        dirPathCache :: FilePath,
         setup :: Setup,
         coreFiles :: Defaults.Files
     }
@@ -35,7 +36,6 @@ data Ctx
 
 data Setup
     = SetupFromProj {
-        tmpDbgSrc :: [(Char,String)],
         bloks :: Data.Map.Strict.Map String Bloks.Blok,
         feeds :: [String],
         posts :: [Posts.Item],
@@ -61,6 +61,7 @@ loadCtx ctxmain projname xregs defaultfiles =
                 setupname ++ "-" ++ loadedsetup-:cfg-:ProjC.dirNameBuild,
             dirPathDeploy = let dd = loadedsetup-:cfg-:ProjC.dirNameDeploy
                             in (null dd) |? "" |! dirpathjoin $setupname++"-"++dd,
+            dirPathCache = dirpathjoin ("_cache_tmp" </> setupname),
             setup = loadedsetup,
             coreFiles = defaultfiles
         }
@@ -70,8 +71,7 @@ loadCtx ctxmain projname xregs defaultfiles =
 
 _loadSetup ctxmain ctxproj xregs defaultfiles =
     SetupFromProj {
-            tmpDbgSrc = srcchunkspost, bloks = blokspost,
-            cfg = cfgpost, posts = postspost, feeds = feedspost,
+            bloks = blokspost, cfg = cfgpost, posts = postspost, feeds = feedspost,
             ctxTmpl = Tmpl.ProcessingContext {
                     Tmpl.bTagHandler =  Bloks.tagHandler blokspost,
                     Tmpl.cTagHandler = ProjC.tagHandler cfgmiscpost,
@@ -85,7 +85,7 @@ _loadSetup ctxmain ctxproj xregs defaultfiles =
         }
     where
     setupprep = SetupFromProj {
-            tmpDbgSrc = srcchunksprep, bloks = bloksprep, cfg = cfgprep, posts = postsprep, feeds = feedsprep,
+            bloks = bloksprep, cfg = cfgprep, posts = postsprep, feeds = feedsprep,
             ctxTmpl = Tmpl.ProcessingContext {
                     Tmpl.bTagHandler =  Bloks.tagHandler bloksprep,
                     Tmpl.cTagHandler = ProjC.tagHandler cfgmiscprep,

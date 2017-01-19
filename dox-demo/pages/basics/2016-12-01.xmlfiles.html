@@ -15,7 +15,7 @@
 </ul>
 {X|h: *.atom files for Bloks |}
 <p>
-	Whether and where these are written is specified in a |B| directive's {X|c:atomFile|} <a href="#">property</a>. Every page associated with the Blok is (during generation of its corresponding <i>*.atom</i> feed) translated in its entirety into one equivalent {X|c:&lt;entry&gt;|} (of course sans the <a href="#">outer template</a>). To not reprocess all <a href="#">haXtags</a> for each, a cached (already-processed and thus haXtag-free) in-memory version of the page content is used for that. However, <i>that</i> in turn forced {T|Hax|} (since it doesn't do 'temp files' for entirely opinionated reasons) to reprocess and re-generate (prior to generating any <i>*.atom</i>s) <i>any and all</i> pages that will end up in any <i>*.atom</i> feed determined to need re-generation during this run. So be it!
+	Whether and where these are written is specified in a |B| directive's {X|c:atomFile|} <a href="#">property</a>. Every page associated with the Blok is (during generation of its corresponding <i>*.atom</i> feed) translated in its entirety into one equivalent {X|c:&lt;entry&gt;|} (of course sans the <a href="#">outer template</a>). To not reprocess all <a href="#">haXtags</a> for each, a cached (already-processed and thus haXtag-free) in-memory version of the page content is used for that. However, <i>that</i> in turn forced {T|Hax|} to reprocess and re-generate (prior to generating any <i>*.atom</i>s) <i>any and all</i> pages that will end up in any <i>*.atom</i> feed determined to need re-generation during this run. This behavior will be improved in the future.
 </p>
 {X|h: *.atom files for |P| "feeds" |}
 <p>

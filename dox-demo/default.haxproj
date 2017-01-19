@@ -1,6 +1,7 @@
-turn on whatever syntax highlighting for eased grokkage.
-no special comments syntax supported,
-no random comments after the first directive, which follows:
+turn on whatever syntax highlighting for eased grokkage..
+	no special comments syntax supported,
+	no random comments after the first directive, which follows:
+
 
 |C|process:pages:
 	skip=[], force=["*"], dirs=[]
@@ -11,7 +12,7 @@ no random comments after the first directive, which follows:
 
 	<p>Embed {T|Hax|} tags anywhere in source contents, templates, snippets or *.haxproj files with a simple notation:
 	<code>{<i>Prefix</i>|<i>Name</i>|<!-- -->}</code> or <code>{<i>Prefix</i>|<i>Name</i>: <i>Args</i>|<!---->}</code>.</p>
-	<p>Example: <code>{P<!---->|date|<!---->}</code> outputs in-place the currently set {T|PDate|} during processing:
+	<p>Example: <code>{P<!---->|date|<!---->}</code> outputs in-place the currently set <a href="#">Page Date</a> during processing:
 	{X|note:{P|date|}|}.</p>
 	<ul><li>All unprocessable haXtags (mispelled etc.) simply remain in the output to aid swift detection.</li>
 	<li>Any haXtags may embed (or output) any other haXtags freely but <ul><li>cyclic references will hang (or eventually
@@ -32,6 +33,7 @@ no random comments after the first directive, which follows:
 |B|xtypes:
 	title="X-renderers", atomFile="", blokIndexPageFile="x/index.html", inSitemap=True, dtFormat="", desc=>
 	<p>The X-men x-tender-render-er-ers</p>
+
 
 
 |X|hax/miniTag:c:code

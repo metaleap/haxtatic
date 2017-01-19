@@ -14,15 +14,20 @@
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
 		<label for="chk_showtoc">On this page:</label>
 		<ul>
-<li><a href="#Get started">Get started</a></li><li><a href="#4 standard folders">4 standard folders</a></li><li><a href="#4 standard files">4 standard files</a></li>
+<li><a href="#Get started">Get started</a></li><li><a href="#Standard folders">Standard folders</a></li><li><a href="#Standard files">Standard files</a></li>
 		</ul>
 	</div>
 
 
 <!-- begins content source page -->
 <h1>The project directory</h1>
-<p class="up">Any project resides in its own project-directory with a predefined (auto-generated) minimal-structure of 3-4 standard folders and 3-4 standard files. Just the usual, bog-standard "content/templates/static/config" stuff! But here's some more color on the finer details.</p>
-<ul class="up"><li><b>default-build</b> (generated output)</li><li><b>pages</b> (all authored content source pages: likely-mostly-unstyled/unthemed/inner-body-only HTML files)</li><li><b>static</b> (raw files to batch-copy unprocessed straight into <b>default-build</b>)</li><li><b>tmpl</b> (templates and snippets)</li></ul>
+<p class="up">Any project resides in its own project-directory with a predefined (auto-generated) minimal-structure of 4-5 standard folders and 3-4 standard files. Just the usual, bog-standard "content/templates/static/config" stuff! But here's some more color on the finer details, starting with the standard folders belonging to the project-directory:</p>
+<ul class="up">
+    <li><b>default-build/</b> &mdash; generated output</li>
+    <li><b>pages/</b> &mdash; all authored content source pages: likely-mostly-unstyled/unthemed/inner-body-only HTML files (but technically, any text files that need processing of <a href="#">haXtags</a>)</li>
+    <li><b>static/</b> &mdash; raw files to batch-copy unprocessed straight into <b>default-build</b></li>
+    <li><b>tmpl/</b> &mdash; templates and snippets</li>
+    <li><b>_cache_tmp/</b> &mdash; temporary cache files</li></ul>
 <h2 id="Get started">Get started</h2>
 <p>Run HaXtatic specifying "the project-directory to process" and any missing parts from the above essentials will be (re)created in-place.</p>
 <p>Example, to create a new site project named <b>mydemosite.foo</b> (inside the existing <i>~/dev/</i> directory in this case) <ul><li>just run from inside the haXtatic code-base's <i>src</i> directory:<br/><code><a href="https://www.haskell.org/downloads#stack">stack</a> runghc ./@HaxMain.hs ~/dev/mydemosite.foo</code></li><li>or with a compiled executable binary (eg. for extra speed if so inclined), of course<br/><code>my-haxtatic-exe ~/dev/mydemosite.foo</code> works equally</li></ul> and the following is generated:</p>
@@ -71,18 +76,20 @@ Wrote 2 files in 0.07s:
 <p>
 	Now just proceed creating/modifying contents/templates/settings/etc. within this directory structure and then simply run the same command-line again to refresh <b>default-build</b> with any changes made since the last run.
 </p>
-<p>Of note: <i>haXtatic</i> <b>never deletes</b> any files whatsoever, and <b>never writes</b> any files outside the designated <i>build</i> folder(s) &mdash; except to re-create the few default folders/files described here, if missing.</p>
-<h2 id="4 standard folders">4 standard folders</h2>
-<h3>Directory <i>default-build</i>:</h3>
+<p>Of note: <i>haXtatic</i> <b>never deletes</b> any files whatsoever; and also <b>only writes</b> files to the designated <i>build</i> folder(s) and <i>_cache_tmp/</i> &mdash; plus re-creating the handful of standard folders/files described here <b>only</b> if entirely missing.</p>
+<h2 id="Standard folders">Standard folders</h2>
+<h3>default-build/</h3>
 <p>Contains the complete generated site after a successful run. (Technically, contains all outputs from all previous runs ever since the directory was created or last cleaned up manually.)</p>
-<h3>Directory <i>static</i>:</h3>
+<h3>static/</h3>
 <p>All (changed or new) files and folders (if any) will just be batch-copied over straight into <b>default-build</b> (with no processing) as the first step.</p>
-<h3>Directory <i>pages</i>:</h3>
+<h3>pages/</h3>
 <p>All (changed or new) files and folders in here will then be processed by applying a <a href="#">template</a> and the resulting corresponding output file goes into <b>default-build</b>.</p>
 <p>If and <i>only</i> if <b>pages</b> has <i>no files at all</i>, will a default <code>index.html</code> be created once (to get new projects started with).</p>
-<h3>Directory <i>tmpl</i>:</h3>
+<h3>tmpl/</h3>
 <p>To contain custom as well as the auto-generated default <a href="#">templates</a> and <a href="">snippets</a> used during processing of the content source files from <b>pages</b>.</p>
-<h2 id="4 standard files">4 standard files</h2>
+<h3>_cache_tmp/</h3>
+<p>Cached per-processed-page intermediate-representations to slightly speed up rebuilds. This may be cleared whenever deemed prudent.</p>
+<h2 id="Standard files">Standard files</h2>
 <h3>Always created if missing:</h3>
 <ul>
 	<li><b>default.haxproj</b> &mdash; initially near-empty file (and may well be completely empty) that will over time contain all sorts of custom project-specific definitions used in the project's content source pages, snippets or templates.</li>

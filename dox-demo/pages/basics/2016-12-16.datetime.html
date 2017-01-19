@@ -20,9 +20,12 @@
 	The Page Date can be set for any page on-the-fly during its processing by placing anywhere in its content source file a <a href="#">custom P-tag</a> (aka. "per-page variable") of the form {X|c:{%P<!---->|date=<i>2016-12-24</i>|<!---->%}|} or indeed, if custom date-time formats are once again necessary for some reason, {X|c:{%P<!---->|date:<i>dtformatname</i>=<i>date-time-here</i>|<!---->%}|}
 </p>
 <h3>Which is "better"?</h3>
-<p>
-	Purely a matter of subjective preference if <a href="#">sitemap.xml</a> reflecting the custom Page Date accurately is not a priority. Otherwise, option 1 will propagate properly there while option 2 won't (a very-low-priority known-issue). In any event, both approaches can be used in tandem and for any given file, option 2 if present will override whatever was first set via option 1.
-</p>
+<ul>
+	<li>Option 1 <b>will</b> properly propagate over to {X|c:&lt;lastmod&gt;|} values in generated <a href="#">sitemap.xml</a> (if any), option 2 <b>won't</b>.</li>
+	<li><a href="#">Unless a full rebuild is forced</a>, option 1 <b>possibly won't</b> get "picked up" during processing if no other change was also made to the same content source file since the last run. (<i>That's because {T|Hax|} compares file-modification timestamps for a faster incremental minimal rebuild, which the OS won't typically set just due to moving-aka.-renaming a file.</i>) Option 2 <b>will</b>.</li>
+	<li>The likelihood of a project needing to adjust individual custom Page Dates <i>all that frequently</i> is assessed as low.</li>
+	<li>In any event, both approaches can be used in tandem and for any given file, option 2 if present will override whatever was first set via option 1, if anything.</li>
+</ul>
 {X|h: Named custom date-time formats|}
 <p>
 	As already alluded to, custom date-time formats have a modicum of support in <i>{T|Hax|}</i>. In fact, most-anywhere date values are accessed, a custom format can be specified. But it first needs to be <b>defined correctly</b>, and that means <a href="#">declaring a corresponding <i>*.haxproj</i> {X|c:|C|dtformat:|} directive</a> (which in turn commands a full grasp of the link to <i>parseable date-time format-strings</i> referenced there).

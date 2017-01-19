@@ -4,6 +4,7 @@ module Pages where
 import Base
 import qualified Bloks
 import qualified Build
+import qualified Defaults
 import qualified Files
 import qualified Html
 import qualified Posts
@@ -15,6 +16,7 @@ import qualified Util
 import Control.Applicative ( (<|>) )
 import qualified Data.List
 import qualified Data.Time.Clock
+import qualified System.Directory
 import qualified System.FilePath
 import qualified Text.Printf
 
@@ -34,7 +36,7 @@ processAll ctxmain ctxproj buildplan =
         processpage done [] =
             return done
         processpage (prevwarns , prevhints , ctxbuildprev) (thisjob:morejobs) =
-            processPage ctxmain ctxbuildprev ctxtmpl tmplfinder thisjob
+            processPage ctxmain ctxproj ctxbuildprev ctxtmpl tmplfinder thisjob
             >>= \(maybewarning , maybehint , ctxbuildnext) -> let
                 nextwarns = maybewarning~>((:prevwarns) =|- prevwarns)
                 nexthints = maybehint~>((:prevhints) =|- prevhints)
@@ -44,7 +46,7 @@ processAll ctxmain ctxproj buildplan =
 
 
 
-processPage ctxmain ctxbuild ctxtmpl tmplfinder outjob =
+processPage ctxmain ctxproj ctxbuild ctxtmpl tmplfinder outjob =
     Files.writeTo dstfilepath (outjob-:Build.relPath) processcontent
     >>= \(outsrc , ctxpage , mismatches)
     -> Tmpl.warnIfTagMismatches ctxmain srcfilepath mismatches
@@ -62,18 +64,30 @@ processPage ctxmain ctxbuild ctxtmpl tmplfinder outjob =
     where
     dstfilepath = outjob-:Build.outPathBuild
     srcfilepath = outjob-:Build.srcFile-:Files.path
+    cmpmodtime = max (outjob-:Build.srcFile-:Files.modTime) (ctxproj-:Proj.coreFiles-:Defaults.projectDefault-:Files.modTime)
 
     loadsrccontent =
         let blokindexname = Bloks.blokNameFromIndexPagePath srcfilepath
-        in if has blokindexname
-            then return ((0,0) , "{X|_hax_blokindex: vars=[(\"bname\",\""++blokindexname++"\")], content=\"\" |}")
+            tmpfilepath = (outjob-:Build.projPathCached) ++
+                            (ProjC.dtPageDateFormat (ctxproj-:Proj.setup-:Proj.cfg) (outjob-:Build.contentDate))
+            readtmp False =
+                return$ Files.FileFull tmpfilepath Util.dateTime0 ""
+            readtmp True =
+                System.Directory.getModificationTime tmpfilepath >>= \tmpmodtime
+                -> if cmpmodtime > tmpmodtime then readtmp False else
+                    readFile tmpfilepath >>= \tmpsrc
+                    -> return$ Files.FileFull tmpfilepath tmpmodtime tmpsrc
+        in System.Directory.doesFileExist tmpfilepath >>= readtmp >>= \cachedfile
+        -> if has blokindexname
+            then return ((0,0) , "{X|_hax_blokindex: vars=[(\"bname\",\""++blokindexname++"\")], content=\"\" |}" , cachedfile)
             else readFile srcfilepath >>= \rawsrc
-                    -> return (Tmpl.tagMismatches rawsrc , rawsrc)
+                    -> return (Tmpl.tagMismatches rawsrc , rawsrc , cachedfile)
 
     processcontent =
         Data.Time.Clock.getCurrentTime >>= \nowtime
-        -> loadsrccontent >>= \(mismatches , pagesrcraw)
+        -> loadsrccontent >>= \(mismatches , pagesrcraw, cachedfile)
         -> let
+            pagesrctmp = cachedfile-:Files.content
             randseed' = (Util.dtInts nowtime)
                             ++ (Util.dtInts $outjob-:Build.srcFile-:Files.modTime)
                                 ++ [ length $ctxbuild-:Posts.allPagesFiles , pagesrcraw~>length ]
@@ -95,8 +109,9 @@ processPage ctxmain ctxbuild ctxtmpl tmplfinder outjob =
             (pagevars , pagedate , pagesrcchunks) = pageVars (ctxbuild-:Posts.projCfg) pagesrcraw $outjob-:Build.contentDate
             taghandler pagectx = tagHandler ctxmain (ctxbuild-:Posts.projCfg) pagectx ctxtmpl outjob
             tmpl = tmplfinder$ System.FilePath.takeExtension dstfilepath
-            pagesrcproc = Tmpl.processSrcFully ctxtmpl (Just ctxpageprep)
-                            (null pagevars |? pagesrcraw |! (concat pagesrcchunks))
+            pagesrcproc = if has pagesrctmp then pagesrctmp else
+                            Tmpl.processSrcFully ctxtmpl (Just ctxpageprep)
+                                (null pagevars |? pagesrcraw |! (concat pagesrcchunks))
             applied = Tmpl.apply tmpl ctxpageproc pagesrcproc
             --  annoyingly, thanks to nested-nestings there may easily *still* be fresh/pending haXtags,
             --  now that we did only-the-page-src AND the so-far unprocessed {P|'s in tmpl, so once more with feeling:
@@ -105,8 +120,10 @@ processPage ctxmain ctxbuild ctxtmpl tmplfinder outjob =
                 Html.findInnerContentOfTags tagname htmlsrc
             htmlinner1st htmlsrc tagname defval =
                 defval -|= (htmlinners htmlsrc tagname)@?0
-
-        in return (outsrc , (outsrc , ctxpageproc , mismatches))
+            writetmp "" = Files.writeTo (cachedfile-:Files.path) "" (return (pagesrcproc , ()))
+            writetmp _ = return ()
+        in writetmp pagesrctmp
+        >> return (outsrc , (outsrc , ctxpageproc , mismatches))
 
 
 

@@ -195,12 +195,15 @@ _fileoutputdonemsg = "OK ]"
 
 
 
+writeTo "" _ loadcontent =
+    loadcontent >>= \(_ , returnvalue)
+    -> return returnvalue
 writeTo filepath showpath loadcontent =
     System.Directory.createDirectoryIfMissing True (System.FilePath.takeDirectory filepath)
-    >> putStr (_fileoutputbeginmsg showpath)
+    >> (if has showpath then putStr$ _fileoutputbeginmsg showpath else return ())
     >> System.IO.hFlush System.IO.stdout
     >> loadcontent >>= \(loadedcontent , returnvalue)
     -> writeFile filepath loadedcontent
-    >> putStrLn _fileoutputdonemsg
+    >> (if has showpath then putStrLn _fileoutputdonemsg else return ())
     >> System.IO.hFlush System.IO.stdout
     >> return returnvalue
