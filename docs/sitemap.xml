@@ -2,7 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
     <url>
         <loc>http://dox-demo/xtypes/miniTag.html</loc>
-        <lastmod>1234-12-15</lastmod>
+        <lastmod>1234-10-15</lastmod>
+        <priority>0.5</priority>
+    </url><url>
+        <loc>http://dox-demo/xtypes/image.html</loc>
+        <lastmod>1234-09-15</lastmod>
+        <priority>0.5</priority>
+    </url><url>
+        <loc>http://dox-demo/xtypes/links.html</loc>
+        <lastmod>1234-08-15</lastmod>
+        <priority>0.5</priority>
+    </url><url>
+        <loc>http://dox-demo/xtypes/pageAnchors.html</loc>
+        <lastmod>1234-07-15</lastmod>
+        <priority>0.5</priority>
+    </url><url>
+        <loc>http://dox-demo/xtypes/snippet.html</loc>
+        <lastmod>1234-06-15</lastmod>
+        <priority>0.5</priority>
+    </url><url>
+        <loc>http://dox-demo/xtypes/repeat.html</loc>
+        <lastmod>1234-05-15</lastmod>
         <priority>0.5</priority>
     </url><url>
         <loc>http://dox-demo/tags/t.html</loc>
@@ -21,10 +41,6 @@
         <lastmod>2016-12-15</lastmod>
         <priority>0.5</priority>
     </url><url>
-        <loc>http://dox-demo/basics/haxproj.html</loc>
-        <lastmod>2016-12-10</lastmod>
-        <priority>0.5</priority>
-    </url><url>
         <loc>http://dox-demo/basics/projdir.html</loc>
         <lastmod>2016-12-21</lastmod>
         <priority>0.5</priority>
@@ -39,6 +55,10 @@
     </url><url>
         <loc>http://dox-demo/basics/tmplsnip.html</loc>
         <lastmod>2016-12-14</lastmod>
+        <priority>0.5</priority>
+    </url><url>
+        <loc>http://dox-demo/basics/haxproj.html</loc>
+        <lastmod>2016-12-10</lastmod>
         <priority>0.5</priority>
     </url><url>
         <loc>http://dox-demo/basics/namedsetups.html</loc>
@@ -62,7 +82,7 @@
         <priority>0.7</priority>
     </url><url>
         <loc>http://dox-demo/xtypes/index.html</loc>
-        <lastmod>1234-12-15</lastmod>
+        <lastmod>1234-10-15</lastmod>
         <priority>0.7</priority>
     </url>
 </urlset>

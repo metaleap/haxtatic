@@ -121,12 +121,17 @@
     cat="<i>Programming</i>",
     title="<i>John Carmack</i>",
     link="<i>http://number-none.com/blow/john_carmack_on_inlined_code.html</i>",
-    more=[],
+    more=[	("customfield1","data value 1"),
+    		("customfield2","dat data value 2"),
+    		("customfieldX","funky dis") ],
     content=&gt;
     <i>I have gotten much more bullish about pure functional programming.</i>
 </pre>
-<p><a href="#Syntactic rules (for some)">Stringent syntactic rules</a> apply here! The property names should be self-explanatory. The above example constitutes:</p>
+<p><a href="#Syntactic rules (for some)">Stringent syntactic rules</a> apply here! The property names should be self-explanatory, except <code>more</code> (normally not needed and then best kept <code>&nbsp;[]</code> empty &mdash; when such custom "record data" fields become a serious consideration, check out the <i>default.haxproj</i> for this very site for usage). The above example constitutes:</p>
 <ul><li>1 "feed" (aka. arbitrary primary category) named <code>quotes</code></li><li>made up of 2 "posts" (aka. micro-content records),</li><li>both in the "cat"(egory) of <code>Programming</code>.</li></ul>
+<p>
+	Custom name-value tuples can be
+</p>
 <h3>Usage</h3>
 <p>
 	Such "feeds" can be output as <i>*.atom</i> XML files (just add a <a href="#">|C|_hax_relpath_postatoms</a> directive) but other than that no separate pages or other files will be auto-generated from them. To embed such micro-contents in the project's generated output pages in versatile ways (<i>without</i> coding up a custom X-renderer from scratch), use the "feed"-related iterators of the built-in <a href="#">hax/repeat</a> X-renderer (those, incidentally, treat |P| "feeds" and Bloks as (for their purposes) functionally equivalent types of content sources, allowing for some neat mixing-and-mashing).
@@ -190,6 +195,7 @@ Format strings are parsed <a href="https://downloads.haskell.org/ghc/8.0.2/docs/
 |C|_hax_domainname: <i>&lt;name-of-project-directory&gt;</i>
 |C|_hax_dir_build: <i>build</i>
 |C|_hax_dir_deploy: <i></i>
+|C|_hax_dir_cache: <i>_cache_tmp</i>
 |C|_hax_relpath_postatoms: <i></i>
 |C|_hax_relpath_sitemap: <i>sitemap.xml</i>
 |C|_hax_htmlequivexts: <i></i>

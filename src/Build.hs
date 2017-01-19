@@ -92,7 +92,7 @@ _createIndexHtmlIfNoContentPages ctxmain ctxproj numpagesrcfiles =
                     blokName = "",
                     outPathBuild = outjobpath,
                     outPathDeploy = Util.ifIs (ctxproj-:Proj.dirPathDeploy) (</> relpath),
-                    projPathCached = ctxproj-:Proj.dirPathCache </> relpath,
+                    projPathCached = Util.ifIs (ctxproj-:Proj.dirPathCache) (</> relpath),
                     contentDate = srcfile-:Files.modTime,
                     srcFile = srcfile
                 }
@@ -189,7 +189,7 @@ _outFileInfo ctxproj contentdater relpather both@(relpath,file) =
             blokName = Bloks.blokNameFromRelPath (ctxproj-:Proj.setup-:Proj.bloks) relpathnu file,
             outPathBuild = ctxproj-:Proj.dirPathBuild </> relpathnu,
             outPathDeploy = Util.ifIs (ctxproj-:Proj.dirPathDeploy) (</> relpathnu),
-            projPathCached = ctxproj-:Proj.dirPathCache </> relpathnu,
+            projPathCached = Util.ifIs (ctxproj-:Proj.dirPathCache) (</> relpathnu),
             contentDate = contentdate,
             srcFile = file
         }

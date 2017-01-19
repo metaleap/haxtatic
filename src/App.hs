@@ -47,7 +47,7 @@ processAll ctxmain projfilename custfilenames =
     in System.Directory.createDirectoryIfMissing False (ctxmain-:Files.dirPath)
     >> Defaults.loadOrCreate ctxmain projname (projfilename~>nameonly) (custfilenames>~nameonly)
     >>= Proj.loadCtx ctxmain projname xregs >>= \ctxproj
-    -> Tmpl.warnIfTagMismatches ctxmain "*.haxproj"
+    -> Tmpl.warnIfTagMismatches ctxmain "*.haxproj (or *.haxsnip)"
                 (ctxproj-:Proj.setup-:Proj.tagMismatches)
 
     >> putStrLn ("\n2/6\tPlanning the work..")
@@ -86,10 +86,12 @@ processAll ctxmain projfilename custfilenames =
     >> Data.Time.Clock.getCurrentTime >>= \timexmldone
 
     -> let
+        extrahints = if (ctxproj-:Proj.setup-:Proj.tagMismatches~>fst /= ctxproj-:Proj.setup-:Proj.tagMismatches~>snd)
+                        then ["*.haxproj or *.haxsnip"] else []
         deploymsg = Text.Printf.printf "\n6/6\tCopying only the %u newly (over)written file(s) also to:\n\t~>\t" numoutfiles
         doordonot = if null$ ctxproj-:Proj.dirPathDeploy
                     then putStrLn (deploymsg++ "(skipping this step.)")
                     else putStrLn (deploymsg++(ctxproj-:Proj.dirPathDeploy))
                         >> System.IO.hFlush System.IO.stdout
                         >> Build.copyAllOutputsToDeploy buildplan
-    in Util.via doordonot (buildplan , warnpages , hintpages , numoutfiles , numxmls , timeinitdone , timecopydone , timeprocdone, timexmldone)
+    in Util.via doordonot (buildplan , warnpages , hintpages ++ extrahints , numoutfiles , numxmls , timeinitdone , timecopydone , timeprocdone, timexmldone)

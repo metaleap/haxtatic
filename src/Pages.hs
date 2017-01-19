@@ -68,9 +68,9 @@ processPage ctxmain ctxproj ctxbuild ctxtmpl tmplfinder outjob =
 
     loadsrccontent =
         let blokindexname = Bloks.blokNameFromIndexPagePath srcfilepath
-            tmpfilepath = (outjob-:Build.projPathCached) ++
-                            (ProjC.dtPageDateFormat (ctxproj-:Proj.setup-:Proj.cfg) (outjob-:Build.contentDate))
-            tmpfilepathpvars = tmpfilepath++"pv"
+            tmpfilepath = Util.ifIs (outjob-:Build.projPathCached)
+                            (++ (ProjC.dtPageDateFormat (ctxproj-:Proj.setup-:Proj.cfg) (outjob-:Build.contentDate)))
+            tmpfilepathpvars = Util.ifIs tmpfilepath (++"pv")
             readtmp False =
                 return$ Files.FileFull tmpfilepath Util.dateTime0 ""
             readtmp True =
@@ -81,7 +81,7 @@ processPage ctxmain ctxproj ctxbuild ctxtmpl tmplfinder outjob =
         in System.Directory.doesFileExist tmpfilepath >>= readtmp >>= \cachedfile
         -> System.Directory.doesFileExist tmpfilepathpvars >>= \istmpfilepvars
         -> if has blokindexname
-            then return ((0,0) , "{X|_hax_blokindex: vars=[(\"bname\",\""++blokindexname++"\")], content=\"\" |}" , cachedfile)
+            then return ((0,0) , "{X|_hax_blokindex: vars=[(\"bname\",\""++blokindexname++"\")] , flags=[] , content=\"\" |}" , cachedfile)
             else readFile (if (istmpfilepvars && has (cachedfile-:Files.content)) then tmpfilepathpvars else srcfilepath) >>= \rawsrc
                     -> return (Tmpl.tagMismatches rawsrc , rawsrc , cachedfile)
 
@@ -127,7 +127,7 @@ processPage ctxmain ctxproj ctxbuild ctxtmpl tmplfinder outjob =
                     foreach (pvname , pvval) =
                         "{%P|"++pvname++('=':(Tmpl.processSrc ctxtmpl (Just ctxpageproc) pvval))++"|%}"
                 in Files.writeTo (cachedfile-:Files.path) "" (return (pagesrcproc , ()))
-                >> Files.writeTo ((cachedfile-:Files.path)++"pv") "" (return (pvarstotmp , ()))
+                >> Files.writeTo (Util.ifIs (cachedfile-:Files.path) (++"pv")) "" (return (pvarstotmp , ()))
             writetmp _ =
                 return ()
         in writetmp pagesrctmp

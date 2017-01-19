@@ -2,11 +2,15 @@ vars = [("cat" , ""),
 		("content" , ""),
 		("declmore", ""),
 		("cfgmore", ""),
-		("usage", "")
+		("usage", ""),
+		("htop", ""),
+		("hsub", "{P|X|h: In a nutshell |}")
 		],
+flags = [],
 content=>
-{X|h: {%cat%}|}
+{P|X|h: {%htop%} |}
 <p>{%content%}</p>
+{%hsub%}
 <ol>
 	<li>
 		<a href="#">Declaration</a> of an <code>|X|hax/{%cat%}:<i>myXtag</i>{%declmore%}</code> X-tag in a <i>*.haxproj</i> file,

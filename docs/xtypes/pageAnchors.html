@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en"><head>
-    <title>hax/miniTag | haXtatic Docs</title>
+    <title>hax/pageAnchors | haXtatic Docs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../haxtatic.css" rel="stylesheet" />
-	<!--	xtypes\miniTag.html
-			generated on 1234-10-15
-			from D:\dev\hs\hax2\dox-demo\pages\xtypes\1234-10-15.miniTag.html	-->
+	<!--	xtypes\pageAnchors.html
+			generated on 1234-07-15
+			from D:\dev\hs\hax2\dox-demo\pages\xtypes\1234-07-15.pageAnchors.html	-->
 </head><body>
     <h4>haXtatic Docs</h4>
 	<ul class="hd-nav">
@@ -20,16 +20,17 @@
 
 
 <!-- begins content source page -->
-<h1>hax/miniTag</h1>
+<h1>hax/pageAnchors</h1>
 	
-	<p>Outputs <code>&lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt;</code>.</p>
+	<p>Outputs a sequence of <code>&lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code>, one
+	per <code>&lt;<i>gatherhtmltag</i>&gt;</code> element found in the page's content source.</p>
 	<h2 id="In a nutshell">In a nutshell</h2>
 	<ol>
 		<li>
-			<a href="#">Declaration</a> of an <code>|X|hax/miniTag:<i>myXtag</i>:<i>somehtmltag</i>: <i>..</i></code> X-tag in a <i>*.haxproj</i> file,
-			<ul><li>further configuring: <code>htmlAtts</code></li></ul>
+			<a href="#">Declaration</a> of an <code>|X|hax/pageAnchors:<i>myXtag</i>:<i>gatherhtmltag</i>: <i>..</i></code> X-tag in a <i>*.haxproj</i> file,
+			<ul><li>further configuring: <code>considerEmpty</code>, <code>htmlIfEmpty</code></li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myXtag</i>:<i> tag's inner-markup content </i> |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<i>myXtag</i>:<i>outerhtmltag</i>: htmlAtts = [..] |<!---->}</code></li>
 	</ol>
 
 <!-- end of content source page -->

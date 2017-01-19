@@ -131,3 +131,7 @@ ul.hd-feed > li {
 .hd-feed-desc {
 	color: GrayText;
 }
+
+.hd-xtd1 {
+	display: none;
+}

@@ -18,6 +18,7 @@ data Config
     = CfgFromProj {
         dirNameBuild :: String,
         dirNameDeploy :: String,
+        dirNameCache :: String,
         domainName :: String,
         relPathPostAtoms :: String,
         relPathSiteMap :: String,
@@ -63,7 +64,7 @@ dtPageDateFormat cfgproj = dtUtc2Str cfgproj "_hax_dtformat_pagefilenames"
 parseProjChunks chunkssplits =
     (cfg,cfgmisc)
     where
-    cfg = CfgFromProj { dirNameBuild = dirbuild, dirNameDeploy = dirdeploy, domainName = domainname,
+    cfg = CfgFromProj { dirNameBuild = dirbuild, dirNameDeploy = dirdeploy, dirNameCache = dircache, domainName = domainname,
                         relPathPostAtoms = relpathpostatoms, relPathSiteMap = relpathsitemap,
                         htmlEquivExts = htmlequivexts, dtFormat = dtformat,
                         processingOfFiles = procstatic, processingOfPages = procpages,
@@ -74,6 +75,8 @@ parseProjChunks chunkssplits =
                     Defaults.dir_Out "_hax_dir_build" cfgmisc
     dirdeploy = dirnameonly$ Data.Map.Strict.findWithDefault
                     Defaults.dir_Deploy "_hax_dir_deploy" cfgmisc
+    dircache = dirnameonly$ Data.Map.Strict.findWithDefault
+                    "_cache_tmp" "_hax_dir_cache" cfgmisc
     domainname = dirnameonly$ Data.Map.Strict.findWithDefault
                     "" "_hax_domainname" cfgmisc
     relpathsitemap = Files.sanitizeRelPath$ Data.Map.Strict.findWithDefault

@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en"><head>
-    <title>hax/miniTag | haXtatic Docs</title>
+    <title>hax/snippet | haXtatic Docs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../haxtatic.css" rel="stylesheet" />
-	<!--	xtypes\miniTag.html
-			generated on 1234-10-15
-			from D:\dev\hs\hax2\dox-demo\pages\xtypes\1234-10-15.miniTag.html	-->
+	<!--	xtypes\snippet.html
+			generated on 1234-06-15
+			from D:\dev\hs\hax2\dox-demo\pages\xtypes\1234-06-15.snippet.html	-->
 </head><body>
     <h4>haXtatic Docs</h4>
 	<ul class="hd-nav">
@@ -20,16 +20,16 @@
 
 
 <!-- begins content source page -->
-<h1>hax/miniTag</h1>
+<h1>hax/snippet</h1>
 	
-	<p>Outputs <code>&lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt;</code>.</p>
+	<p>Outputs the content of the named snippet with the specified variable substitutions.</p>
 	<h2 id="In a nutshell">In a nutshell</h2>
 	<ol>
 		<li>
-			<a href="#">Declaration</a> of an <code>|X|hax/miniTag:<i>myXtag</i>:<i>somehtmltag</i>: <i>..</i></code> X-tag in a <i>*.haxproj</i> file,
-			<ul><li>further configuring: <code>htmlAtts</code></li></ul>
+			<a href="#">Declaration</a> of an <code>|X|hax/snippet:<i>myXtag</i>: <i>..</i></code> X-tag in a <i>*.haxproj</i> file,
+			<ul><li>further configuring: <code>vars</code>, <code>flags</code>, <code>content</code></li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myXtag</i>:<i> tag's inner-markup content </i> |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<i>myXtag</i>: vars = [..], flags = [..], content = &quot;..&quot; |<!---->}</code></li>
 	</ol>
 
 <!-- end of content source page -->

@@ -6,7 +6,7 @@ turn on whatever syntax highlighting for eased grokkage..
 |C|process:pages:
 	skip=[], force=["*"], dirs=[]
 
-
+|T|_hax_dir_cache:
 
 
 |B|tags:
@@ -41,6 +41,30 @@ turn on whatever syntax highlighting for eased grokkage..
 
 |T|Hax: haXtatic
 |T|SiteTitle: {T|Hax|} Docs
+
+
+
+
+|X|hax/miniTag:c:code
+|X|hax/miniTag:h:h2: htmlAtts=[("id" , "{%:content:%}")]
+|X|hax/miniTag:note:span: htmlAtts=[("class" , "hd-note")]
+
+|X|hax/links:doxtopnav:li:
+	 htmlAtts = [("class","hd-nav"),("/class","hd-nav-sel")],
+		 itemsFirst = [("" , "Intro")],
+		 itemsLast = [("xtypes/" , "{B|title:xtypes|}")],
+	 wrapHref = ("{P|/" , "index.html|}")
+
+|X|hax/pageAnchors:doxpagetoc:h2:
+	considerEmpty = 1, htmlIfEmpty = "<style type='text/css'>.hd-toc { display: none; }</style>"
+
+|X|hax/repeat:doxindex:
+	prefix = "<ul class=\"hd-feed\"><li>{", suffix = "}</li></ul>", joinwith = "}</li><li>{",
+	content=""
+
+|X|hax/repeat:xdescs:
+	prefix = "{", suffix = "}", joinwith = "}{",
+	content = ""
 
 
 
@@ -98,8 +122,8 @@ turn on whatever syntax highlighting for eased grokkage..
 |P|xdesc:
 	dt = "1234-06-15", cat = "snippet", title = "", link = "",
 	more = [ ("declmore" , ": <i>..</i>"),
-			 ("cfgmore" , "{X|c:vars|}, {X|c:content|}"),
-			 ("usage" , ": vars = [..], content = &quot;..&quot;") ],
+			 ("cfgmore" , "{X|c:vars|}, {X|c:flags|}, {X|c:content|}"),
+			 ("usage" , ": vars = [..], flags = [..], content = &quot;..&quot;") ],
 	content=>
 	Outputs the content of the named snippet with the specified variable substitutions.
 
@@ -110,27 +134,3 @@ turn on whatever syntax highlighting for eased grokkage..
 			 ("usage" , ": over = .. , wrap = .. , order = .. , skip = .. , limit = .. , more = ..") ],
 	content=>
 	Outputs a sequence of contents enumerated by the specified iterator.
-
-
-
-
-|X|hax/miniTag:c:code
-|X|hax/miniTag:h:h2: htmlAtts=[("id" , "{%:content:%}")]
-|X|hax/miniTag:note:span: htmlAtts=[("class" , "hd-note")]
-
-|X|hax/links:doxtopnav:li:
-	 htmlAtts = [("class","hd-nav"),("/class","hd-nav-sel")],
-		 itemsFirst = [("" , "Intro")],
-		 itemsLast = [("xtypes/" , "{B|title:xtypes|}")],
-	 wrapHref = ("{P|/" , "index.html|}")
-
-|X|hax/pageAnchors:doxpagetoc:h2:
-	considerEmpty = 1, htmlIfEmpty = "<style type='text/css'>.hd-toc { display: none; }</style>"
-
-|X|hax/repeat:doxindex:
-	prefix = "<ul class=\"hd-feed\"><li>{", suffix = "}</li></ul>", joinwith = "}</li><li>{",
-	content=""
-
-|X|hax/repeat:xdescs:
-	prefix = "{", suffix = "}", joinwith = "}{",
-	content = ""

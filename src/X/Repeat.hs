@@ -79,7 +79,7 @@ registerX ctxproj xreg =
                     Data.List.lookup fieldname ((Posts.wellKnownFields True) ++ morefields)
             iter (FeedPosts maybequery) =
                 (Posts.feedPosts maybectxbuild projposts projbloks (maybequery))
-                    ~> (feedord $args-:order) >~ (fields2pairs ~. show ~. wrapped)
+                    ~> (feedord $args-:order) >~ (fields2pairs ~. show ~. (Util.crop 1 1) ~. wrapped)
                 where
                 fields2pairs post =
                     ((Posts.wellKnownFields False) ++ morefields) >~ (Util.both (id =: (post-:)))

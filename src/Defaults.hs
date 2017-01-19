@@ -118,12 +118,13 @@ _index_html dircur sitename dirproj dirpages pathpage pathtmpl pathfinal =
 
 _tmpl_html_blok =
     "vars = [(\"bname\",\"\")],\n\
+    \flags = [],\n\
     \content=>\n\
     \<h1>{B|title:{%bname%}|}</h1>\n\
     \<p>{B|desc:{%bname%}|}</p>\n\
     \<p>\n\
-    \For a neat overview listing of all your <code>pages/{%bname%}.*.html</code> (and/or <code>pages/{%bname%}/*.html</code>)\n\
-    \articles on this page, check out the <code>|X|hax.list:</code> tag type in the HaXtatic docs.\n\
+    \An overview listing of all your <code>pages/{%bname%}.*.html</code> (and/or <code>pages/{%bname%}/*.html</code>)\n\
+    \might fit well on this page! Check out HaXtatic Docs / Basics / Bloks for details.\n\
     \</p>"
 
 

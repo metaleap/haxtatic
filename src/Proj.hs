@@ -61,7 +61,8 @@ loadCtx ctxmain projname xregs defaultfiles =
                 setupname ++ "-" ++ loadedsetup-:cfg-:ProjC.dirNameBuild,
             dirPathDeploy = let dd = loadedsetup-:cfg-:ProjC.dirNameDeploy
                             in (null dd) |? "" |! dirpathjoin $setupname++"-"++dd,
-            dirPathCache = dirpathjoin ("_cache_tmp" </> setupname),
+            dirPathCache = let dc = loadedsetup-:cfg-:ProjC.dirNameCache
+                            in (null dc) |? "" |! dirpathjoin (dc </> setupname),
             setup = loadedsetup,
             coreFiles = defaultfiles
         }

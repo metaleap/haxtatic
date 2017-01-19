@@ -21,7 +21,7 @@ data Tag
 registerX _ xreg =
     let
     renderer (_ , argstr) =
-        Just$ Html.out
+        Just$ (null innercontent) |? "" |! Html.out
                 cfg_htmltagname (cfghtmlatts ++ [("" =: innercontent)] ++ (dynatts innercontent)) []
         where
         innercontent = argstr

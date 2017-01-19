@@ -78,6 +78,10 @@ repeatedly fn arg =
     let result = fn arg
     in if (result==arg) then result else repeatedly fn result
 
+while again fn arg =
+    let result = fn arg
+    in if not$ again result then result else while again fn result
+
 
 via fn =
     --  use it to `>>=` a value over to fn but then
