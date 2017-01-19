@@ -116,7 +116,7 @@ _loadSetup ctxmain ctxproj xregs defaultfiles =
     srcchunksprep = loadChunks rawsrc
     srcchunkspost = srcchunksprep >~ pretemplatechunk
     pretemplatechunk (prefix,src) =
-        (prefix , Tmpl.processSrcFully (setupprep-:ctxTmpl) Nothing src)
+        (prefix , Tmpl.processSrc (setupprep-:ctxTmpl) Nothing src)
 
 
 loadChunks rawsrc =

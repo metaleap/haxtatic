@@ -108,12 +108,12 @@ loadTmpl ctxmain ctxproc fileext tmpfile =
     where
     srcfile = tmpfile { Files.content = srcpreprocessed }
     srcchunks = Util.splitUp Util.trim [_applychunkbegin] _applychunkend srcpreprocessed
-    srcpreprocessed = processSrcFully ctxproc Nothing rawsrc
+    srcpreprocessed = processSrc ctxproc Nothing rawsrc
     rawsrc = (tmpfile-:Files.content)
 
 
 
-processSrcFully ctxproc ctxpage =
+processSrc ctxproc ctxpage =
     Util.repeatedly process
     where
     preserveunprocessedtag = const Nothing

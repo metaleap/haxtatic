@@ -70,6 +70,7 @@ processPage ctxmain ctxproj ctxbuild ctxtmpl tmplfinder outjob =
         let blokindexname = Bloks.blokNameFromIndexPagePath srcfilepath
             tmpfilepath = (outjob-:Build.projPathCached) ++
                             (ProjC.dtPageDateFormat (ctxproj-:Proj.setup-:Proj.cfg) (outjob-:Build.contentDate))
+            tmpfilepathpvars = tmpfilepath++"pv"
             readtmp False =
                 return$ Files.FileFull tmpfilepath Util.dateTime0 ""
             readtmp True =
@@ -78,9 +79,10 @@ processPage ctxmain ctxproj ctxbuild ctxtmpl tmplfinder outjob =
                     readFile tmpfilepath >>= \tmpsrc
                     -> return$ Files.FileFull tmpfilepath tmpmodtime tmpsrc
         in System.Directory.doesFileExist tmpfilepath >>= readtmp >>= \cachedfile
+        -> System.Directory.doesFileExist tmpfilepathpvars >>= \istmpfilepvars
         -> if has blokindexname
             then return ((0,0) , "{X|_hax_blokindex: vars=[(\"bname\",\""++blokindexname++"\")], content=\"\" |}" , cachedfile)
-            else readFile srcfilepath >>= \rawsrc
+            else readFile (if (istmpfilepvars && has (cachedfile-:Files.content)) then tmpfilepathpvars else srcfilepath) >>= \rawsrc
                     -> return (Tmpl.tagMismatches rawsrc , rawsrc , cachedfile)
 
     processcontent =
@@ -90,7 +92,7 @@ processPage ctxmain ctxproj ctxbuild ctxtmpl tmplfinder outjob =
             pagesrctmp = cachedfile-:Files.content
             randseed' = (Util.dtInts nowtime)
                             ++ (Util.dtInts $outjob-:Build.srcFile-:Files.modTime)
-                                ++ [ length $ctxbuild-:Posts.allPagesFiles , pagesrcraw~>length ]
+                                ++ [ length $ctxbuild-:Posts.allPagesFiles , (max 1 $pagesrcraw~>length) ]
             ctxpage htmlsrc thandler = Tmpl.PageContext {
                                             Tmpl.blokName = outjob-:Build.blokName,
                                             Tmpl.pTagHandler = thandler,
@@ -102,7 +104,7 @@ processPage ctxmain ctxproj ctxbuild ctxtmpl tmplfinder outjob =
                                             Tmpl.cachedRenderSansTmpl = pagesrcproc,
                                             Tmpl.lookupCachedPageRender = ctxbuild-:Posts.lookupCachedPageRender,
                                             Tmpl.allPagesFiles = ctxbuild-:Posts.allPagesFiles,
-                                            Tmpl.randSeed = randseed' >~ ((+) (pagesrcraw~>length * randseed'@!1))
+                                            Tmpl.randSeed = randseed' >~ ((+) ((max 1 $pagesrcraw~>length) * randseed'@!1))
                                         }
             ctxpageprep = ctxpage pagesrcraw (taghandler ctxpageprep)
             ctxpageproc = ctxpage pagesrcproc (taghandler ctxpageproc)
@@ -110,18 +112,24 @@ processPage ctxmain ctxproj ctxbuild ctxtmpl tmplfinder outjob =
             taghandler pagectx = tagHandler ctxmain (ctxbuild-:Posts.projCfg) pagectx ctxtmpl outjob
             tmpl = tmplfinder$ System.FilePath.takeExtension dstfilepath
             pagesrcproc = if has pagesrctmp then pagesrctmp else
-                            Tmpl.processSrcFully ctxtmpl (Just ctxpageprep)
+                            Tmpl.processSrc ctxtmpl (Just ctxpageprep)
                                 (null pagevars |? pagesrcraw |! (concat pagesrcchunks))
             applied = Tmpl.apply tmpl ctxpageproc pagesrcproc
             --  annoyingly, thanks to nested-nestings there may easily *still* be fresh/pending haXtags,
             --  now that we did only-the-page-src AND the so-far unprocessed {P|'s in tmpl, so once more with feeling:
-            outsrc = Tmpl.processSrcFully ctxtmpl (Just ctxpageproc) applied
+            outsrc = Tmpl.processSrc ctxtmpl (Just ctxpageproc) applied
             htmlinners htmlsrc tagname =
                 Html.findInnerContentOfTags tagname htmlsrc
             htmlinner1st htmlsrc tagname defval =
                 defval -|= (htmlinners htmlsrc tagname)@?0
-            writetmp "" = Files.writeTo (cachedfile-:Files.path) "" (return (pagesrcproc , ()))
-            writetmp _ = return ()
+            writetmp "" =
+                let pvarstotmp = concat$ pagevars>~foreach
+                    foreach (pvname , pvval) =
+                        "{%P|"++pvname++('=':(Tmpl.processSrc ctxtmpl (Just ctxpageproc) pvval))++"|%}"
+                in Files.writeTo (cachedfile-:Files.path) "" (return (pagesrcproc , ()))
+                >> Files.writeTo ((cachedfile-:Files.path)++"pv") "" (return (pvarstotmp , ()))
+            writetmp _ =
+                return ()
         in writetmp pagesrctmp
         >> return (outsrc , (outsrc , ctxpageproc , mismatches))
 
