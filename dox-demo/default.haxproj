@@ -1,10 +1,12 @@
 turn on whatever syntax highlighting for eased grokkage..
 	no special comments syntax supported,
-	no random comments after the first directive, which follows:
+	no random comments after the first |_| directive, which follows:
 
 
 |C|process:pages:
 	skip=[], force=["*"], dirs=[]
+
+
 
 
 |B|tags:
@@ -31,8 +33,84 @@ turn on whatever syntax highlighting for eased grokkage..
 
 
 |B|xtypes:
-	title="X-renderers", atomFile="", blokIndexPageFile="x/index.html", inSitemap=True, dtFormat="", desc=>
+	title="X-renderers", atomFile="", blokIndexPageFile="xtypes/index.html", inSitemap=True, dtFormat="", desc=>
 	<p>The X-men x-tender-render-er-ers</p>
+
+
+
+
+|T|Hax: haXtatic
+|T|SiteTitle: {T|Hax|} Docs
+
+
+
+
+|P|xdesc:
+	dt = "1234-12-15", cat = "demoSimplest", title = "", link = "",
+	more = [ ("declmore" , ""),
+			 ("cfgmore" , "(no settings)"),
+			 ("usage" , "") ],
+	content=>
+	Outputs <code>&lt;h1&gt;Hello World!&lt;/h1&gt;</code>.
+
+|P|xdesc:
+	dt = "1234-11-15", cat = "demoCfgArgs", title = "", link = "",
+	more = [ ("declmore" , "</code> or <code>|X|hax/demoCfgArgs:<i>myXtag</i>:<i>greetname</i>"),
+			 ("cfgmore" , "(no other settings)"),
+			 ("usage" , "|<!---->}</code> or <code>{X<!---->|<i>myXtag</i>:<i>greetname</i>") ],
+	content=>
+	Outputs <code>&lt;h1&gt;Hello, <i>greetname</i>!&lt;/h1&gt;</code>.
+
+|P|xdesc:
+	dt = "1234-10-15", cat = "miniTag", title = "", link = "",
+	more = [ ("declmore" , ":<i>somehtmltag</i>: <i>..</i>"),
+			 ("cfgmore" , "{X|c:htmlAtts|}"),
+			 ("usage" , ":<i> tag's inner-markup content </i>") ],
+	content=>
+	Outputs {X|c: &lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt; |}.
+
+|P|xdesc:
+	dt = "1234-09-15", cat = "image", title = "", link = "",
+	more = [ ("declmore" , ":<i>somereldirpath</i>: <i>..</i>"),
+			 ("cfgmore" , "{X|c:lnkAtts|}, {X|c:imgAtts|}"),
+			 ("usage" , ":<i>pic/rel/path and optionally some description text</i>") ],
+	content=>
+	Outputs {X|c: &lt;img <i>..</i> /&gt; |} or {X|c: &lt;a <i>..</i>&gt;&lt;img <i>..</i> /&gt;&lt;/a&gt; |}.
+
+|P|xdesc:
+	dt = "1234-08-15", cat = "links", title = "", link = "",
+	more = [ ("declmore" , ":<i>outerhtmltag</i>: <i>..</i>"),
+			 ("cfgmore" , "{X|c:htmlAtts|}, {X|c:itemsFirst|}, {X|c:itemsLast|}, {X|c:wrapHref|}"),
+			 ("usage" , ": items = [..] , htmlAtts = [..]") ],
+	content=>
+	Outputs a sequence of {X|c: &lt;a ..&gt; .. &lt;/a&gt; |} or
+	{X|c: &lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt; |} in a uniform manner.
+
+|P|xdesc:
+	dt = "1234-07-15", cat = "pageAnchors", title = "", link = "",
+	more = [ ("declmore" , ":<i>gatherhtmltag</i>: <i>..</i>"),
+			 ("cfgmore" , "{X|c:considerEmpty|}, {X|c:htmlIfEmpty|}"),
+			 ("usage" , ":<i>outerhtmltag</i>: htmlAtts = [..]") ],
+	content=>
+	Outputs a sequence of {X|c: &lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt; |}, one
+	per {X|c: &lt;<i>gatherhtmltag</i>&gt; |} element found in the page's content source.
+
+|P|xdesc:
+	dt = "1234-06-15", cat = "snippet", title = "", link = "",
+	more = [ ("declmore" , ": <i>..</i>"),
+			 ("cfgmore" , "{X|c:vars|}, {X|c:content|}"),
+			 ("usage" , ": vars = [..], content = &quot;..&quot;") ],
+	content=>
+	Outputs the content of the named snippet with the specified variable substitutions.
+
+|P|xdesc:
+	dt = "1234-05-15", cat = "repeat", title = "", link = "",
+	more = [ ("declmore" , ": <i>..</i>"),
+			 ("cfgmore" , "{X|c:prefix|}, {X|c:suffix|}, {X|c:joinwith|}, {X|c:content|}"),
+			 ("usage" , ": over = .. , wrap = .. , order = .. , skip = .. , limit = .. , more = ..") ],
+	content=>
+	Outputs a sequence of contents enumerated by the specified iterator.
+
 
 
 
@@ -43,7 +121,7 @@ turn on whatever syntax highlighting for eased grokkage..
 |X|hax/links:doxtopnav:li:
 	 htmlAtts = [("class","hd-nav"),("/class","hd-nav-sel")],
 		 itemsFirst = [("" , "Intro")],
-		 itemsLast = [("x/" , "{B|title:xtypes|}")],
+		 itemsLast = [("xtypes/" , "{B|title:xtypes|}")],
 	 wrapHref = ("{P|/" , "index.html|}")
 
 |X|hax/pageAnchors:doxpagetoc:h2:
@@ -53,7 +131,6 @@ turn on whatever syntax highlighting for eased grokkage..
 	prefix = "<ul class=\"hd-feed\"><li>{", suffix = "}</li></ul>", joinwith = "}</li><li>{",
 	content=""
 
-
-
-|T|Hax: haXtatic
-|T|SiteTitle: {T|Hax|} Docs
+|X|hax/repeat:xdescs:
+	prefix = "{", suffix = "}", joinwith = "}{",
+	content = ""

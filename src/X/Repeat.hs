@@ -25,7 +25,8 @@ data Tag
         wrap :: (String , String),
         order :: SortOrder,
         skip :: Int,
-        limit :: Int
+        limit :: Int,
+        more :: [String]
     }
     deriving Read
 
@@ -75,16 +76,18 @@ registerX ctxproj xreg =
                     ~> (feedord $args-:order) >~ wrapped
                 where
                 maybefieldfunc =
-                    Data.List.lookup fieldname (Posts.wellKnownFields True)
+                    Data.List.lookup fieldname ((Posts.wellKnownFields True) ++ morefields)
             iter (FeedPosts maybequery) =
                 (Posts.feedPosts maybectxbuild projposts projbloks (maybequery))
                     ~> (feedord $args-:order) >~ (fields2pairs ~. show ~. wrapped)
                 where
                 fields2pairs post =
-                    (Posts.wellKnownFields False) >~ (Util.both (id =: (post-:)))
+                    ((Posts.wellKnownFields False) ++ morefields) >~ (Util.both (id =: (post-:)))
             feedord Ascending = reverse
             feedord (Shuffle perpage) = shuffle perpage
             feedord _ = id
+            morefields = args-:more >~ topair where
+                topair mfield = mfield =: Posts.more~.(Util.lookup mfield $"{!|"++mfield++"|!}")
         maybectxbuild = maybectxpage =>- \ctxpage -> Posts.BuildContext (ctxpage-:Tmpl.lookupCachedPageRender)
                                                                         (ctxpage-:Tmpl.allPagesFiles) projbloks
                                                                         projposts (ctxproj-:Proj.setup-:Proj.cfg)
@@ -99,8 +102,8 @@ registerX ctxproj xreg =
                     Shuffle perpage  -> shuffle perpage
                     _               -> id
         args = X.tryParseArgs argstr (Just defargs) errargs where
-            defargs = Args { over = Values [], wrap = ("",""), order = None, skip = 0, limit = 0 }
-            errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))], wrap = ("",""), order = None, skip = 0, limit = 0 }
+            defargs = Args { over = Values [], wrap = ("",""), order = None, skip = 0, limit = 0, more=[] }
+            errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))], wrap = ("",""), order = None, skip = 0, limit = 0, more=[] }
 
         shuffle perpage = Util.shuffleExtra (randseeds maybectxpage perpage)
         randseeds (Just pagectx) True =

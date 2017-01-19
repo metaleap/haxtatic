@@ -32,7 +32,7 @@ data Item
         cat :: String,
         title :: String,
         link :: String,
-        pic :: String,
+        more :: Util.StringPairs,
         content :: String
     }
     deriving (Eq, Read)
@@ -116,12 +116,11 @@ parseProjChunks chunkssplits =
     foreach (pfeedcat:pvalsplits) =
         let
             pstr = Util.join ":" pvalsplits ~> Util.trim
-            parsestr = ("P {feed = \"" ++ pfeedcat ++ "\", ") ++ (Tmpl.fixParseStr "content" pstr) ++ "}"
+            parsestr = ("From {feed = \"" ++ pfeedcat ++ "\", ") ++ (Tmpl.fixParseStr "content" pstr) ++ "}"
             post = Util.tryParseOr errpost parsestr
             errpost = From {
-                    feed=pfeedcat, dt="9999-12-31", cat="_hax_cat", link="*.haxproj",
-                    title="{!|P| syntax issue, couldn't parse this post |!}", content = "<pre>" ++ (Html.escape pstr) ++ "</pre>",
-                    pic="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Warning_icon.svg/256px-Warning_icon.svg.png"
+                    feed=pfeedcat, dt="9999-12-31", cat="_hax_cat", link="*.haxproj", more=[],
+                    title="{!|P| syntax issue, couldn't parse this post |!}", content = "<pre>" ++ (Html.escape pstr) ++ "</pre>"
                 }
         in Just post
     foreach _ =
@@ -149,7 +148,7 @@ postsFromBlok (Just ctxbuild) blokname getcat =
                 cat = pcat,
                 title = htmlinner1st "h1" relpath,
                 link = relpageuri,
-                pic = Html.find1st (Html.findValuesOfVoidTags1stAttr "img" "src") "" htmlcontent,
+                more = [ ("_hax_pic" =: Html.find1st (Html.findValuesOfVoidTags1stAttr "img" "src") "" htmlcontent) ],
                 content = (htmlinner1st "p" htmlcontent) -- Html.stripMarkup ' '
             }
         in (htmlcontent , post)
@@ -162,7 +161,7 @@ wellKnownFields True =
     ("dt:year"=:dtYear) : (wellKnownFields False)
 
 wellKnownFields _ =
-    [ "feed"=:feed, "dt"=:dt, "cat"=:cat, "title"=:title, "link"=:link, "pic"=:pic, "content"=:content ]
+    [ "feed"=:feed, "dt"=:dt, "cat"=:cat, "title"=:title, "link"=:link, "content"=:content ]
 
 
 
@@ -225,7 +224,7 @@ writeAtoms ctxbuild domainname outjobs =
                 postdesc = xmlesc (post-:(has blokname |? content |! cat))
                 postfull = xmlesc (has blokname |? (sanitize htmlcontent) |! (post-:content))
                 postdt = post-:dt
-                posturl = has blokname |? post-:link |! pageuri++"#"++postdt
+                posturl = Util.ifNo (post-:link) (pageuri++"#"++postdt)
             in ("<entry>\n\
                 \        <title type=\"html\">"++posttitle++"</title>\n\
                 \        <summary type=\"html\">"++postdesc++"</summary>\n\
