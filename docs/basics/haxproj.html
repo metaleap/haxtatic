@@ -76,6 +76,9 @@
 	Just as a <a href="#">|T| directive</a> in essence defines a uniquely distinct <a href="#">T-tag</a> each that can be embedded many times anywhere (to effect in-place text substitution), so each and every <b>|X| directive</b> in essence defines a uniquely distinct <a href="#">X-tag</a> that can be embedded many times anywhere (to effect in-place output rendering by some custom logic).
 </p>
 <p>
+	That is to say: with <code>|X|<i>x-renderer-type</i>:<i>mytagname</i>: ..</code> we declare that <code>{X<!---->|mytagname: ..|<!---->}</code> encountered <i>anywhere</i> will during processing invoke the <a href="#">X-renderer</a> <i>x-renderer-type</i> with the defined properties in effect.
+</p>
+<p>
 	So every |X| directive associates with a chosen custom (X-)tag name: <i>both</i> a specified <a href="#">X-renderer</a> type to invoke for output rendering (in-place of every X-tag encountered with that given name), <i>and</i> that X-renderer's properties effective while it produces output.
 </p>
 <p>
@@ -129,9 +132,6 @@
 </pre>
 <p><a href="#Syntactic rules (for some)">Stringent syntactic rules</a> apply here! The property names should be self-explanatory, except <code>more</code> (normally not needed and then best kept <code>&nbsp;[]</code> empty &mdash; when such custom "record data" fields become a serious consideration, check out the <i>default.haxproj</i> for this very site for usage). The above example constitutes:</p>
 <ul><li>1 "feed" (aka. arbitrary primary category) named <code>quotes</code></li><li>made up of 2 "posts" (aka. micro-content records),</li><li>both in the "cat"(egory) of <code>Programming</code>.</li></ul>
-<p>
-	Custom name-value tuples can be
-</p>
 <h3>Usage</h3>
 <p>
 	Such "feeds" can be output as <i>*.atom</i> XML files (just add a <a href="#">|C|_hax_relpath_postatoms</a> directive) but other than that no separate pages or other files will be auto-generated from them. To embed such micro-contents in the project's generated output pages in versatile ways (<i>without</i> coding up a custom X-renderer from scratch), use the "feed"-related iterators of the built-in <a href="#">hax/repeat</a> X-renderer (those, incidentally, treat |P| "feeds" and Bloks as (for their purposes) functionally equivalent types of content sources, allowing for some neat mixing-and-mashing).
