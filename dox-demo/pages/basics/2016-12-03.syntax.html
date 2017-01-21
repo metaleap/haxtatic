@@ -1,0 +1,52 @@
+<h1>Syntactic rules (in places)</h1>
+<p>
+A number of certain <b>directives</b> (placed in <a href="#">*.haxproj</a> files or implied in <a href="#">*.haxsnip.html</a>s' headers) and <b>haXtags</b> (placed anywhere) &mdash; specifically:
+</p>
+<ul>
+	<li>all <a href="#|B| directives: for &quot;Bloks&quot;">|B| directives</a> (following the Blok name)</li>
+	<li>all <a href="#|P| directives: for &quot;postings&quot;">|P| directives</a> (following the feed name)</li>
+	<li>the <a href="#|C| directives: more control">|C| directives</a> {X|c:process:static:|} and {X|c:process:pages:|}</li>
+	<li>most <a href="#|X| directives: for rendering">|X| directives</a> (except 2 demo X-renderers for coders)</li>
+	<li>most <a href="{P|/tags/x.html|}">X-tags</a> (except those invoking {X|c:hax/image|} or {X|c:hax/miniTag|})</li>
+</ul>
+<p>&mdash; absolutely <i>require</i> {X|note: &mdash;lest they abort the entire process abruptly (with {X|c:|C|:_hax_onparseerror:|}
+<a href="#">set to</a> {X|c:abort|}) or render warning/error messages (otherwise) into generated output contents&mdash; |}
+<b>strict adherence to the following</b> (currently somewhat demanding, thanks to the.. "compactness" of the parser) syntax rules:</p>
+<ul>
+	<li><i>All</i> the properties shown <i>need</i> to appear,
+		<ul><li>each separated from the next by a {X|c:&nbsp;,|} comma,</li>
+		<li>and in <i>the very same order</i> showing in documentation!</li></ul>
+	</li>
+	<li>
+		A <b>text value</b> is enclosed in {X|c:&nbsp;&quot;|} quotation marks:
+		<ul><li>{X|c:= &quot;<i>Wrote this in </i>\"<i>VBScript</i>\"<i> back in '99..</i>&quot;|}</li>
+		<li>Inside literal line-breaks are supported; all standard escape sequences work predictably, eg. {X|c:&nbsp;\&quot;|}
+		for in-text quotation marks etc.)</li>
+		<li>Any <a href="#">haXtags</a> placed inside such quoted text-values (principally those that might output quotation marks eg. HTML attributes) should
+		escape the entire tag content (everything in between {X|c:&nbsp;{<i>*</i><!---->||} and {X|c:&nbsp;|<!---->}|}) by prefixing it with 2 {X|c:&nbsp;`|} backticks:
+		<ul><li>ie. by changing {X|c:{T<!---->|<i>sometextname</i>|<!---->}|}, {X|c:{P<!---->|1st:<i>div</i>|<!---->}|}
+		or {X|c:{X<!---->|<i>myctl:</i>|<!---->}|}<br/>into {X|c:{T<!---->|``<i>sometextname</i>|<!---->}|}, {X|c:{P<!---->|``1st:<i>div</i>|<!---->}|}
+		or {X|c:{X<!---->|``<i>myctl:</i>|<!---->}|} respectively</li></ul></li></ul>
+	</li>
+	<li>A <b>tuple</b> is a name-value pair enclosed within {X|c:( )|} parentheses: two text-values associated together (such as an URL
+		and its caption, or an attribute's name and its value), separated by a {X|c:&nbsp;,|} comma:
+		<ul><li>{X|c:wrap = ("<i>prefix here</i>" , "<i>suffix here</i>")|}</li></ul></li>
+	<li>
+		A <b>list</b> is enclosed by {X|c:&nbsp;[|} and {X|c:&nbsp;]|} and may contain any number of either <b>text values</b> (each
+		separated from the next by a {X|c:&nbsp;,|} comma), or <b>tuples</b> (dito), or nothing at all:
+		<ul><li>{X|c: more = ["<i>customfield1</i>" , "<i>customfield2</i>" , "<i>customfieldX</i>"] |}</li>
+		<li>{X|c: more = [] |}</li>
+		<li>{X|c: htmlAtts = [ ("<i>class</i>","<i>pagelink</i>") , ("<i>href</i>","{P<!---->|/<i>blog/index.html</i>|<!---->}") ] |}</li></ul>
+	</li>
+	<li><b>Other values</b> (numbers, yes/no toggles, optionals and more) are explicitly documented separately for each property on
+	the approriate topic page.</li>
+	<li><b>Text-value</b> properties shown in documentation <i>without</i> enclosing {X|c:&nbsp;&quot;|} quotation marks and <i>with</i> a
+	{X|c:&nbsp;=&gt;|} connector (in place of the usual {X|c:&nbsp;=|}) are in each and every instance
+		<ul><li>the <i>only</i> text-value property in the directive/haXtag that may omit the enclosing quotation marks (and that then
+		simply extends until the very end of the directive/haXtag)</li>
+		<li>but <i>only</i> if that property's name is followed <i>immediately</i> (no spaces) by exactly {X|c:=&gt;|} in place of
+		the usual {X|c:&nbsp;=|} assignment operator.</li>
+		<li>No {X|c:&nbsp;\&quot;|} escaping of quotation marks required in here, also no <a href="#">haXtags</a> in here require the above-mentioned {X|c:&nbsp;``|} double-backtick escaping.</li>
+		<li>Such properties <i>may</i> however, if somehow desired, also be written the same way as any other text value, that is with {X|c: = &quot;..&quot;|} plus any required inner escaping.</li>
+	</ul></li>
+</ul>

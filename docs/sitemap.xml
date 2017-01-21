@@ -41,6 +41,14 @@
         <lastmod>2016-12-15</lastmod>
         <priority>0.5</priority>
     </url><url>
+        <loc>http://dox-demo/basics/syntax.html</loc>
+        <lastmod>2016-12-03</lastmod>
+        <priority>0.5</priority>
+    </url><url>
+        <loc>http://dox-demo/basics/haxproj.html</loc>
+        <lastmod>2016-12-10</lastmod>
+        <priority>0.5</priority>
+    </url><url>
         <loc>http://dox-demo/basics/projdir.html</loc>
         <lastmod>2016-12-21</lastmod>
         <priority>0.5</priority>
@@ -55,10 +63,6 @@
     </url><url>
         <loc>http://dox-demo/basics/tmplsnip.html</loc>
         <lastmod>2016-12-14</lastmod>
-        <priority>0.5</priority>
-    </url><url>
-        <loc>http://dox-demo/basics/haxproj.html</loc>
-        <lastmod>2016-12-10</lastmod>
         <priority>0.5</priority>
     </url><url>
         <loc>http://dox-demo/basics/namedsetups.html</loc>
