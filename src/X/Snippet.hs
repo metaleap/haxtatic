@@ -34,7 +34,7 @@ registerX _ xreg =
                 let isflagset = elem flag (args-:flags)
                 in [    "{%if:"++flag++"%}" =: (isflagset |? "" |! "<!--"),
                         "{%fi:"++flag++"%}" =: (isflagset |? "" |! "-->")]
-        args = X.tryParseArgs (Tmpl.fixParseStr "content" argstr) (Just defargs) errargs where
+        args = X.tryParseArgs xreg (Tmpl.fixParseStr "content" argstr) (Just defargs) errargs where
             defargs = Args { vars = [], flags = [] , content = "" }
             errargs = Args { vars = [] , flags = [] , content = X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr)) }
 
@@ -46,6 +46,6 @@ registerX _ xreg =
 
     cfgvars = (cfg-:vars) >~ var2repl
     cfg_parsestr = Tmpl.fixParseStr "content" (xreg-:X.cfgFullStr)
-    cfg = X.tryParseCfg cfg_parsestr (Just defcfg) errcfg where
+    cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where
         defcfg = Cfg { vars = [] , flags = [] , content = "" }
         errcfg = Cfg { vars = [] , flags = [] , content = X.htmlErr (X.clarifyParseCfgError xreg) }

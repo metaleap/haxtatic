@@ -26,6 +26,7 @@ data Config
         dtFormat :: String->String,
         processingOfFiles :: Processing,
         processingOfPages :: Processing,
+        parsingFailEarly :: Bool,
         tmplTags :: [String]
     }
 
@@ -67,7 +68,7 @@ parseProjChunks chunkssplits =
     cfg = CfgFromProj { dirNameBuild = dirbuild, dirNameDeploy = dirdeploy, dirNameCache = dircache, domainName = domainname,
                         relPathPostAtoms = relpathpostatoms, relPathSiteMap = relpathsitemap,
                         htmlEquivExts = htmlequivexts, dtFormat = dtformat,
-                        processingOfFiles = procstatic, processingOfPages = procpages,
+                        processingOfFiles = procstatic, processingOfPages = procpages, parsingFailEarly = parsingfailearly,
                         tmplTags = proctags }
     dtformat name = Data.Map.Strict.findWithDefault
                     Defaults.dateTimeFormat ("dtformat:"++name) cfgdtformats
@@ -79,6 +80,7 @@ parseProjChunks chunkssplits =
                     "_cache_tmp" "_hax_dir_cache" cfgmisc
     domainname = dirnameonly$ Data.Map.Strict.findWithDefault
                     "" "_hax_domainname" cfgmisc
+    parsingfailearly = "abort" == (Data.Map.Strict.findWithDefault "" "_hax_onparseerror" cfgmisc)
     relpathsitemap = Files.sanitizeRelPath$ Data.Map.Strict.findWithDefault
                     "sitemap.xml" "_hax_relpath_sitemap" cfgmisc
     relpathpostatoms = Files.sanitizeRelPath$ Data.Map.Strict.findWithDefault
@@ -89,9 +91,12 @@ parseProjChunks chunkssplits =
     procstatic = procfind Defaults.dir_Static
     procpages = procfind Defaults.dir_Pages
     procfind name =
-        procsane name (Util.tryParseOr (procdef name) procstr) where
-            procstr = (null procval) |? procval |! ("Proc {"++procval++"}")
-            procval = Data.Map.Strict.findWithDefault "" ("process:"++name) cfgprocs
+        let procstr = Data.Map.Strict.findWithDefault "" ("process:"++name) cfgprocs
+        in procsane name (Util.tryParse (procdef name)
+                                        (procdef$ raiseParseErr "*.haxproj" ("|C|process:"++name++":") procstr)
+                                        (("Proc {"++).(++"}"))
+                                        procstr)
+
     procdef dirname =
         Proc { dirs = [dirname], skip = [], force = [] }
     procsane defname proc =
@@ -122,6 +127,11 @@ parseProjChunks chunkssplits =
                     where prefix = Util.trim prefix'
                 foreachchunk _ = ( "" , "" )
                 foreachvalue = (Util.join ":") ~.Util.trim
+
+
+
+raiseParseErr filehint directive parsestr =
+    errorWithoutStackTrace $"!!=>\n\n\t"++filehint++" --- failed to parse:\n`"++directive++"`\n\tdue to some SYNTAX mistake in:\n~============================>>\n"++parsestr++"\n<<============================~\n\nLOOK OUT for: typos, missing-or-superfluous\n\tcommas/quotation/parens/brackets/braces\n\t\tor in the docs: /basics/syntax.html\n\n\n"
 
 
 

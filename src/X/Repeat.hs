@@ -102,7 +102,7 @@ registerX ctxproj xreg =
                     Descending      -> Data.List.sortBy (flip compare)
                     Shuffle perpage -> shuffle perpage
                     None            -> id
-        args = X.tryParseArgs argstr (Just defargs) errargs where
+        args = X.tryParseArgs xreg argstr (Just defargs) errargs where
             defargs = Args { over = Values [], wrap = ("",""), order = None, skip = 0, limit = 0, more=[] }
             errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))], wrap = ("",""), order = None, skip = 0, limit = 0, more=[] }
 
@@ -137,6 +137,6 @@ registerX ctxproj xreg =
     projbloks = ctxproj-:Proj.setup-:Proj.bloks
     projbloknames = Data.Map.Strict.keys projbloks
     cfg_parsestr = Tmpl.fixParseStr "content" (xreg-:X.cfgFullStr)
-    cfg = X.tryParseCfg cfg_parsestr (Just defcfg) errcfg where
+    cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where
         defcfg = Cfg { prefix = "" , suffix = "" , joinwith = "" , content = "" }
         errcfg = Cfg { prefix = X.htmlErr (X.clarifyParseCfgError xreg) , suffix = "" , joinwith = "" , content = "" }

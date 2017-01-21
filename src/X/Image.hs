@@ -38,6 +38,6 @@ registerX _ xreg =
     (cfg_imgrelpath , cfg_parsestr) = xreg-:X.cfgSplitOnce
     (cfgerrmsg , cfgimgatts) = Html.attrClearInner $cfg-:imgAtts
     (_ , cfglnkatts) = Html.attrClearInner $cfg-:lnkAtts
-    cfg = X.tryParseCfg cfg_parsestr (Just defcfg) errcfg where
+    cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where
         defcfg = Cfg { lnkAtts = [], imgAtts = [] }
         errcfg = Cfg { lnkAtts = [], imgAtts = X.htmlErrAttsCfg xreg }

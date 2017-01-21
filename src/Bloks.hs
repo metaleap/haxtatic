@@ -89,21 +89,23 @@ isRelPathBlokPage bname relpath =
 
 
 
-parseProjChunks chunkssplits =
-    Data.Map.Strict.fromList$ chunkssplits>=~foreach
+parseProjChunks projcfg chunkssplits =
+    Data.Map.Strict.fromList$ chunkssplits>~foreach
     where
     foreach (blokname:bvalsplits) =
-        maybeblok =>- \blok -> (bname , blok)
+        (bname , blok)
         where
-        maybeblok = Util.tryParse Nothing (Just errblok) id ("Just "++parsestr)
-        bname = blokname~>Util.trim
-        parsestr = bvalsplits ~> (Util.join ":") ~> Util.trim ~> (toParseStr bname)
-        errblok = From { title="{!|B| syntax issue near `|B|" ++ bname ++ ":`, couldn't parse `" ++ parsestr ++ "` |!}",
-                            desc="{!|B| Syntax issue in your .haxproj file defining Blok named '" ++ bname ++
-                                    "'. Thusly couldn't parse Blok settings (incl. title/desc) |!}",
-                            atomFile="", blokIndexPageFile="", inSitemap=False, dtFormat="" }
+        (bname , blok) = (blokname~>Util.trim , Util.tryParseOr (errblok) parsestr)
+        parsestr' = bvalsplits ~> (Util.join ":") ~> Util.trim ~> (Tmpl.fixParseStr "desc")
+        parsestr = parsestr' ~> (("From {"++).(++"}"))
+        errblok = From { title = if projcfg-:ProjC.parsingFailEarly
+                                    then (ProjC.raiseParseErr "*.haxproj" ("|B|"++bname++":") parsestr')
+                                    else "{!|B| syntax issue near `|B|" ++ bname ++ ":`, couldn't parse `" ++ parsestr ++ "` |!}",
+                            desc = "{!|B| Syntax issue in your .haxproj file defining Blok named '" ++ bname ++
+                                    "'. Hence couldn't parse Blok settings (incl. title/desc) |!}",
+                            atomFile = "", blokIndexPageFile = "", inSitemap = False, dtFormat = "" }
     foreach _ =
-        Nothing
+        undefined
 
 
 
@@ -127,10 +129,3 @@ tagHandler bloks curbname str =
         |! (fname=="name" && has bname) |? Just bname
             |! (blokByName bloks bname) =>= \blok ->
                 (Data.List.lookup fname fields) =>- \fieldval -> blok-:fieldval
-
-
-
-toParseStr _bname projchunkval =
-    let
-        parsestr = Tmpl.fixParseStr "desc" projchunkval
-    in "From {" ++ parsestr ++ "}"

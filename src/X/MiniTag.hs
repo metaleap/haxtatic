@@ -32,6 +32,6 @@ registerX _ xreg =
 
     (cfg_htmltagname , cfg_parsestr ) = xreg-:X.cfgSplitOnce
     (cfgdynatts , cfghtmlatts) = (cfg-:htmlAtts) ~> (Data.List.partition $("{%:content:%}"==).snd)
-    cfg = X.tryParseCfg cfg_parsestr (Just defcfg) errcfg where
+    cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where
         defcfg = Cfg { htmlAtts = [] }
         errcfg = Cfg { htmlAtts = X.htmlErrAttsCfg xreg }

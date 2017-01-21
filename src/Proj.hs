@@ -96,16 +96,16 @@ _loadSetup ctxmain ctxproj xregs defaultfiles =
                 },
             tagMismatches = (0,0), randSeed = []
         }
-    bloksprep = Bloks.parseProjChunks (pick prepchunkssplits 'B')
-    blokspost = Bloks.parseProjChunks (pick postchunkssplits 'B')
+    bloksprep = Bloks.parseProjChunks cfgprep (pick prepchunkssplits 'B')
+    blokspost = Bloks.parseProjChunks cfgpost (pick postchunkssplits 'B')
     (cfgprep,cfgmiscprep) = ProjC.parseProjChunks (pick prepchunkssplits 'C')
     (cfgpost,cfgmiscpost) = ProjC.parseProjChunks (pick postchunkssplits 'C')
-    (feedsprep,postsprep) = Posts.parseProjChunks (pick prepchunkssplits 'P')
-    (feedspost,postspost) = Posts.parseProjChunks (pick postchunkssplits 'P')
+    (feedsprep,postsprep) = Posts.parseProjChunks cfgprep (pick prepchunkssplits 'P')
+    (feedspost,postspost) = Posts.parseProjChunks cfgpost (pick postchunkssplits 'P')
     ttagsprep = ProjT.parseProjChunks (pick prepchunkssplits 'T')
     ttagspost = ProjT.parseProjChunks (pick postchunkssplits 'T')
-    xtagsprep = X.parseProjChunks ctxproj xregs (pick prepchunkssplits 'X')
-    xtagspost = X.parseProjChunks ctxproj xregs (pick postchunkssplits 'X')
+    xtagsprep = X.parseProjChunks ctxproj cfgprep xregs (pick prepchunkssplits 'X')
+    xtagspost = X.parseProjChunks ctxproj cfgpost xregs (pick postchunkssplits 'X')
     pick chunkssplits prefix =
         (chunkssplits ~|(==prefix).fst) >~ snd
 

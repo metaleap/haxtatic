@@ -31,9 +31,9 @@ registerX _ xreg =
             else Just$ combine allitems
         where
         allitems = htmlout (args-:htmlAtts ++ cfghtmlatts) (args-:items)
-        args = Util.tryParse defargs errargs (("Args{"++).(++"}")) argstr where
-            defargs = Args { items = [], htmlAtts = [] }
-            errargs = Args { items = ["#"=:""], htmlAtts = X.htmlErrAttsArgs (xreg , Util.excerpt 23 argstr) }
+        args = X.tryParseArgs xreg argstr
+                (Just Args { items = [], htmlAtts = [] })
+                (Args { items = ["#"=:""], htmlAtts = X.htmlErrAttsArgs (xreg , Util.excerpt 23 argstr) })
 
         htmlout atts argitems =
             argitems>~(foreach atts) ~> concat
@@ -73,7 +73,7 @@ registerX _ xreg =
     (cfg_htmltagname , cfg_parsestr) = xreg-:X.cfgSplitOnce
     cfghtmlatts =  cfg-:htmlAtts
     cfgwraphref = cfg-:wrapHref ~> \(w1,w2) -> (w1++).(++w2)
-    cfg = X.tryParseCfg cfg_parsestr (Just defcfg) errcfg where
+    cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where
         defcfg = Cfg { htmlAtts = [], itemsFirst = [], itemsLast = [], wrapHref = ("","") }
         errcfg = Cfg { htmlAtts = X.htmlErrAttsCfg xreg ,
                         itemsFirst = ["#"=:""], itemsLast = [], wrapHref = ("","") }

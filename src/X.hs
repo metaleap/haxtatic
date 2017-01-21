@@ -3,6 +3,7 @@ module X where
 
 import Base
 import qualified Html
+import qualified ProjC
 import qualified Util
 
 import qualified Data.List
@@ -15,7 +16,8 @@ data Reg
         tname :: String,
         cfgFullStr :: String,
         cfgSplitAll :: [String],
-        cfgSplitOnce ::  (String,String)
+        cfgSplitOnce ::  (String,String),
+        parsingFailEarly :: Bool
     }
 
 
@@ -30,7 +32,7 @@ clarifyParseArgsError (xreg , arghint) =
 clarifyParseCfgError xreg =
     let (xn,tn) = (xreg-:xname , xreg-:tname)
         hint = Util.ifIs ("" -|= (xreg-:cfgSplitAll)@?0) (++": ...")
-    in ( ("(in your *.haxproj) following") , ("X|:" ++ xn ++ ":" ++ tn) , (Util.excerpt 23 hint) )
+    in ( ("(in your *.haxproj) following") , ("|X|" ++ xn ++ ":" ++ tn ++ ":") , (Util.excerpt 23 hint) )
 
 htmlErr (clarify , codemain , codemore) =
     "{!|X| Bad syntax "++clarify++" `"++codemain++": "++ (Html.escape codemore)++"` (couldn't parse it) |!}"
@@ -52,7 +54,7 @@ htmlErrAttsArgs =
 
 
 
-parseProjChunks ctxproj xregisterers chunkssplits =
+parseProjChunks ctxproj projcfg xregisterers chunkssplits =
     Data.Map.Strict.fromList (chunkssplits>=~foreach)
     where
     rendererr msg (_,_) = Just msg
@@ -67,7 +69,7 @@ parseProjChunks ctxproj xregisterers chunkssplits =
         Nothing
     from registerx xn tn tvals =
         ( tn , reg ) where
-        reg = registerx ctxproj Named { xname = xn, tname = tn,
+        reg = registerx ctxproj Named { xname = xn, tname = tn, parsingFailEarly = projcfg-:ProjC.parsingFailEarly,
                                         cfgFullStr = cfgstr, cfgSplitAll = tvals>~Util.trim,
                                         cfgSplitOnce = Util.bothTrim (Util.splitOn1st_ ':' cfgstr) }
         cfgstr = Util.trim$ Util.join ":" tvals
@@ -93,14 +95,19 @@ tagHandler xtags ctxpage tagcontent =
 
 
 
-tryParseArgs parsestr =
-    _tryparse "Args" parsestr
+tryParseArgs xreg =
+    _tryparse xreg "Args"
 
-tryParseCfg parsestr =
-    _tryparse "Cfg" parsestr
+tryParseCfg xreg =
+    _tryparse xreg "Cfg"
 
-_tryparse ctorname parsestr maybedefval errval =
+_tryparse xreg ctorname parsestr maybedefval errval =
     let wrap = (((ctorname++"{")++).(++"}"))
-        try (Just defval) = Util.tryParse defval errval wrap
-        try _ = (Util.tryParseOr errval) . wrap
+        err val |(xreg-:parsingFailEarly)= ProjC.raiseParseErr (ctorname=="Cfg" |? "(*.haxproj or *.haxsnip)" |! "(?)") (for ctorname) parsestr
+                |(otherwise)= val
+        for "Cfg" = "|X|"++(xreg-:xname)++":"++(xreg-:tname)++":.."
+        for "Args" = "{X|"++(xreg-:tname)++": .. |}"
+        for _ = undefined
+        try (Just defval) = Util.tryParse defval (err errval) wrap
+        try _ = (Util.tryParseOr (err errval)) . wrap
     in try maybedefval parsestr

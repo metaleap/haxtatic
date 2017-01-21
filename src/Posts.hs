@@ -106,7 +106,7 @@ feedGroups maybectxbuild projposts projbloks maybequery postfield =
 
 
 
-parseProjChunks chunkssplits =
+parseProjChunks projcfg chunkssplits =
     (feednames , posts)
     where
     feednames = Util.unique (posts>~feed)
@@ -116,11 +116,15 @@ parseProjChunks chunkssplits =
     foreach (pfeedcat:pvalsplits) =
         let
             pstr = Util.join ":" pvalsplits ~> Util.trim
-            parsestr = ("From {feed = \"" ++ pfeedcat ++ "\", ") ++ (Tmpl.fixParseStr "content" pstr) ++ "}"
+            parsestr' = (Tmpl.fixParseStr "content" pstr)
+            parsestr = ("From {feed = \"" ++ pfeedcat ++ "\", ") ++ parsestr' ++ "}"
             post = Util.tryParseOr errpost parsestr
             errpost = From {
-                    feed=pfeedcat, dt="9999-12-31", cat="_hax_cat", link="*.haxproj", more=[],
-                    title="{!|P| syntax issue, couldn't parse this post |!}", content = "<pre>" ++ (Html.escape pstr) ++ "</pre>"
+                    title = if projcfg-:ProjC.parsingFailEarly
+                                then ProjC.raiseParseErr "*.haxproj" ("|P|"++pfeedcat++":") parsestr'
+                                else "{!|P| syntax issue, couldn't parse this post |!}",
+                    content = "<pre>" ++ (Html.escape pstr) ++ "</pre>",
+                    feed = pfeedcat, dt = "9999-12-31", cat = "_hax_cat", link = "*.haxproj", more = []
                 }
         in Just post
     foreach _ =

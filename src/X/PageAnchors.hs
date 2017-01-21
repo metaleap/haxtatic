@@ -36,7 +36,7 @@ registerX _ xreg =
             Html.out args_tagname (args-:htmlAtts)
                         [Html.T "a" ["" =: tagmatch , "href" =: "#"++(Html.escape tagmatch)] []]
         (args_tagname , args_parsestr) = Util.splitOn1st_ ':' argstr
-        args = X.tryParseArgs args_parsestr
+        args = X.tryParseArgs xreg args_parsestr
                 (Just Args { htmlAtts = [] })
                 (Args { htmlAtts = X.htmlErrAttsArgs (xreg , Util.excerpt 23 argstr) })
 
@@ -47,5 +47,5 @@ registerX _ xreg =
     where
 
     (cfg_gathertagname , cfg_parsestr ) = xreg-:X.cfgSplitOnce
-    cfg = X.tryParseCfg cfg_parsestr Nothing errcfg where
+    cfg = X.tryParseCfg xreg cfg_parsestr Nothing errcfg where
         errcfg = Cfg { htmlIfEmpty = X.htmlErr$ X.clarifyParseCfgError xreg , considerEmpty = maxBound::Int }
