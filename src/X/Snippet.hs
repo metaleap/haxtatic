@@ -26,7 +26,7 @@ registerX _ xreg =
     renderer (_ , argstr) =
         Just$ Util.while again (Util.replaceSubs allrepls) (cfg-:content)
         where
-        again ('{':'%':_) = True ; again ('%':'}':_) = True ; again (_:more) = again more ; again [] = False
+        again = for where for [] = False ; for ('{':'%':_) = True ; for ('%':'}':_) = True ; for (_:more) = for more
         allrepls = argvars++cfgvars++flagrepls
         argvars = ("{%:content:%}" , args-:content) : (args-:vars >~ var2repl)
         flagrepls = concat$ (cfg-:flags) >~ flag2repl where

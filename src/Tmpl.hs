@@ -142,13 +142,16 @@ processSrc ctxproc ctxpage =
 
 
 processTag taghandler (tagcontent , tagbegin) =
-    noesc |? result |! (show result) ~> (Util.crop 1 1)
+    result
     where
-    noesc = not$ Util.startsWith tagcontent "``:"
-    taginner = noesc |? tagcontent |! drop 3 tagcontent
+    noesc = null$ tagesc
+    tagesc = isesc tagcontent where isesc ('`':'`':rest) = rest ; isesc _ = ""
+    taginner = if noesc then tagcontent else tagesc
     result = case (taghandler taginner) of
-        Just output-> output
-        Nothing-> tagbegin++tagcontent++tag_Close
+                Just output->
+                    if noesc then output else (show output) ~> (Util.crop 1 1)
+                Nothing->
+                    tagbegin++tagcontent++tag_Close
 
 
 processXtagDelayed taghandler tagcontent =

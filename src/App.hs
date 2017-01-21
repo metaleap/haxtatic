@@ -27,19 +27,18 @@ import qualified System.IO
 import qualified Text.Printf
 
 
-xregs = [ "hax/demoSimplest" =: X.DemoSimplest.registerX
-        , "hax/demoCfgArgs" =: X.DemoCfgArgs.registerX
-        , "hax/pageAnchors" =: X.PageAnchors.registerX
-        , "hax/image" =: X.Image.registerX
-        , "hax/links" =: X.Links.registerX
-        , "hax/repeat" =: X.Repeat.registerX
-        , "hax/snippet" =: X.Snippet.registerX
-        , "hax/miniTag" =: X.MiniTag.registerX
-        ]
-
 
 processAll ctxmain projfilename custfilenames =
-    let nameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
+    let xregs = [ "hax/demoSimplest" =: X.DemoSimplest.registerX
+                , "hax/demoCfgArgs" =: X.DemoCfgArgs.registerX
+                , "hax/pageAnchors" =: X.PageAnchors.registerX
+                , "hax/image" =: X.Image.registerX
+                , "hax/links" =: X.Links.registerX
+                , "hax/repeat" =: X.Repeat.registerX
+                , "hax/snippet" =: X.Snippet.registerX
+                , "hax/miniTag" =: X.MiniTag.registerX
+                ]
+        nameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
 
     in putStrLn "\n1/6\tReading essential project files (or creating them).."
     >> System.IO.hFlush System.IO.stdout

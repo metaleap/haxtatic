@@ -83,9 +83,10 @@ registerX ctxproj xreg =
                 where
                 fields2pairs post =
                     ((Posts.wellKnownFields False) ++ morefields) >~ (Util.both (id =: (post-:)))
+            feedord None = id
+            feedord Descending = id
             feedord Ascending = reverse
             feedord (Shuffle perpage) = shuffle perpage
-            feedord _ = id
             morefields = args-:more >~ topair where
                 topair mfield = mfield =: Posts.more~.(Util.lookup mfield $"{!|"++mfield++"|!}")
         maybectxbuild = maybectxpage =>- \ctxpage -> Posts.BuildContext (ctxpage-:Tmpl.lookupCachedPageRender)
@@ -97,10 +98,10 @@ registerX ctxproj xreg =
         droptake d 0 = (drop d)
         droptake d t = (drop d) ~. (take t)
         ordered = case args-:order of
-                    Ascending       -> Data.List.sort
+                    Ascending       -> Data.List.sortBy compare
                     Descending      -> Data.List.sortBy (flip compare)
-                    Shuffle perpage  -> shuffle perpage
-                    _               -> id
+                    Shuffle perpage -> shuffle perpage
+                    None            -> id
         args = X.tryParseArgs argstr (Just defargs) errargs where
             defargs = Args { over = Values [], wrap = ("",""), order = None, skip = 0, limit = 0, more=[] }
             errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))], wrap = ("",""), order = None, skip = 0, limit = 0, more=[] }
@@ -115,7 +116,7 @@ registerX ctxproj xreg =
             (not$ hasctxpage maybectxpage)
                 && ( (needpage4iter $args-:over) || (needpage4ord $args-:order) )
             where
-            hasctxpage Nothing = False ; hasctxpage _ = True
+            hasctxpage Nothing = False ; hasctxpage (Just _) = True
             needpage4ord (Shuffle perpage) = perpage ; needpage4ord _ = False
             needpage4iter (FeedGroups query _) = needpage4feed query
             needpage4iter (FeedPosts query) = needpage4feed query

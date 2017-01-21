@@ -1,7 +1,6 @@
 #!/usr/bin/env stack
 {-stack --install-ghc runghc
--}
-{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
+-}{-# OPTIONS_GHC -Wall #-}
 module Main where
 
 import Base

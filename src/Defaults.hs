@@ -39,13 +39,13 @@ loadOrCreate ctxmain projname projfilename custfilenames =
     >> Files.listAllFiles (ctxmain-:Files.dirPath) ["tmpl"] id >>= \tmplfileinfos
     -> let
         snipfileinfos = tmplfileinfos ~|(Data.List.isSuffixOf ".haxsnip.html").fst
-        snipmodtime = (null snipfileinfos) |? Util.dateTime0 |! (maximum$ snipfileinfos>~(snd ~. Files.modTime))
+        snipmodtime = if null snipfileinfos then Util.dateTime0 else maximum$ snipfileinfos>~(snd ~. Files.modTime)
     in (snipfileinfos>~(("tmpl" </>).fst)   ) >>~ foreach
     >>= \snipfiles
     -> custfilenames >>~ foreach
     >>= \custfiles
     -> let
-        custmodtime = max snipmodtime ((null custfiles) |? Util.dateTime0 |! (maximum $custfiles>~Files.modTime))
+        custmodtime = max snipmodtime (if null custfiles then Util.dateTime0 else maximum $custfiles>~Files.modTime)
         cfgmodtime = max custmodtime (projfile-:Files.modTime)
         tmplmodtime = max cfgmodtime (tmplmainfile-:Files.modTime)
         redated cmpmodtime file
