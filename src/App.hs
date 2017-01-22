@@ -20,6 +20,7 @@ import qualified X.Links (registerX)
 import qualified X.Repeat (registerX)
 import qualified X.Snippet (registerX)
 import qualified X.MiniTag (registerX)
+import qualified X.XmlEscape (registerX)
 
 import qualified Data.Time.Clock
 import qualified System.Directory
@@ -39,6 +40,7 @@ processAll ctxmain projfilename custfilenames =
                 , "hax.repeat" =: X.Repeat.registerX
                 , "hax.snippet" =: X.Snippet.registerX
                 , "hax.miniTag" =: X.MiniTag.registerX
+                , "hax.xmlEscape" =: X.XmlEscape.registerX
                 ]
         nameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
 

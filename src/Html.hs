@@ -132,11 +132,11 @@ stripMarkup substchar markup =
     stripmarkup False markup
     where
     stripmarkup _ [] = []
-    stripmarkup intagwas (curchar:rest) =
+    stripmarkup intagis (curchar:rest) =
         nextchar:(stripmarkup intagnext rest)
         where
         nextchar = intagnow |? substchar |! curchar
-        intagnow = intagwas || istagopen || istagclose
+        intagnow = intagis || istagopen -- || istagclose
         intagnext = intagnow && not istagclose
         istagopen = curchar=='<'
         istagclose = curchar=='>'

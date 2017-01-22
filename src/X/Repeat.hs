@@ -37,7 +37,7 @@ data Iterate
     | Bloks
     | Feeds
     | FeedGroups (Maybe Posts.Query) String
-    | FeedPosts (Maybe Posts.Query)
+    | FeedPosts (Maybe Posts.Query) String Util.StringPairs
     deriving Read
 
 
@@ -76,19 +76,20 @@ registerX ctxproj xreg =
                     ~> (feedord $args-:order) >~ wrapped
                 where
                 maybefieldfunc =
-                    Data.List.lookup fieldname ((Posts.wellKnownFields True) ++ morefields)
-            iter (FeedPosts maybequery) =
-                (Posts.feedPosts maybectxbuild projposts projbloks (maybequery))
+                    Data.List.lookup fieldname (Posts.wellKnownFields True)
+            iter (FeedPosts maybequery dtformat morehtmls) =
+                (Posts.feedPosts maybectxbuild projposts projbloks (maybequery) dtformat morehtmls)
                     ~> (feedord $args-:order) >~ (fields2pairs ~. show ~. (Util.crop 1 1) ~. wrapped)
                 where
                 fields2pairs post =
-                    ((Posts.wellKnownFields False) ++ morefields) >~ (Util.both (id =: (post-:)))
+                    ((Posts.wellKnownFields False) ++ morefields) >~ (Util.both (id , (post-:)))
+                morefields = (morehtmls>~Posts.moreFromHtmlFieldName ++ args-:more) >~ topair where
+                    topair mfield =
+                        mfield =: Posts.more~.(Util.lookup mfield $"{!|"++mfield++"|!}")
             feedord None = id
             feedord Descending = id
             feedord Ascending = reverse
             feedord (Shuffle perpage) = shuffle perpage
-            morefields = args-:more >~ topair where
-                topair mfield = mfield =: Posts.more~.(Util.lookup mfield $"{!|"++mfield++"|!}")
         maybectxbuild = maybectxpage =>- \ctxpage -> Posts.BuildContext (ctxpage-:Tmpl.lookupCachedPageRender)
                                                                         (ctxpage-:Tmpl.allPagesFiles) projbloks
                                                                         projposts (ctxproj-:Proj.setup-:Proj.cfg)
@@ -103,8 +104,8 @@ registerX ctxproj xreg =
                     Shuffle perpage -> shuffle perpage
                     None            -> id
         args = X.tryParseArgs xreg argstr (Just defargs) errargs where
-            defargs = Args { over = Values [], wrapEach = ("",""), order = None, skip = 0, limit = 0, more=[] }
-            errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))], wrapEach = ("",""), order = None, skip = 0, limit = 0, more=[] }
+            defargs = Args { over = Values [], wrapEach = ("",""), order = None, skip = 0, limit = 0, more = [] }
+            errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))], wrapEach = ("",""), order = None, skip = 0, limit = 0, more = [] }
 
         shuffle perpage = Util.shuffleExtra (randseeds maybectxpage perpage)
         randseeds (Just pagectx) True =
@@ -119,7 +120,7 @@ registerX ctxproj xreg =
             hasctxpage Nothing = False ; hasctxpage (Just _) = True
             needpage4ord (Shuffle perpage) = perpage ; needpage4ord _ = False
             needpage4iter (FeedGroups query _) = needpage4feed query
-            needpage4iter (FeedPosts query) = needpage4feed query
+            needpage4iter (FeedPosts query _ _) = needpage4feed query
             needpage4iter _ = False
             needpage4feed (Just (Posts.Filter feednames@(_:_) _ _)) =
                 not$ any (`elem` projfeednames) feednames -- not known yet (or other placeholder), so postpone til page

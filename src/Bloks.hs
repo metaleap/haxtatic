@@ -20,7 +20,6 @@ data Blok
         atomFile :: FilePath,
         blokIndexPageFile :: FilePath,
         inSitemap :: Bool,
-        dtFormat :: String,
         desc :: String
     }
     deriving (Eq, Read)
@@ -103,7 +102,7 @@ parseProjChunks projcfg chunkssplits =
                                     else "{!|B| syntax issue near `|B|" ++ bname ++ ":`, couldn't parse `" ++ parsestr ++ "` |!}",
                             desc = "{!|B| Syntax issue in your .haxproj file defining Blok named '" ++ bname ++
                                     "'. Hence couldn't parse Blok settings (incl. title/desc) |!}",
-                            atomFile = "", blokIndexPageFile = "", inSitemap = False, dtFormat = "" }
+                            atomFile = "", blokIndexPageFile = "", inSitemap = False }
     foreach _ =
         undefined
 
@@ -122,7 +121,7 @@ preferredRelPath bloks (outpagerelpath , file) =
 
 tagHandler bloks curbname str =
     let fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
-                    ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash) , ("dtFormat",dtFormat)  ]
+                    ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash)  ]
         bname = Util.ifNo bn curbname
         (fname, bn) = Util.bothTrim (Util.splitOn1st_ ':' str)
     in (null fname) |? Nothing

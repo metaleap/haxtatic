@@ -77,14 +77,14 @@ dtYear post =
 
 
 
-feedPosts maybectxbuild projposts projbloks maybequery =
+feedPosts maybectxbuild projposts projbloks maybequery dtformat morefromhtmls =
     case maybequery of
         Nothing -> allposts
         Just (Filter [] [] Nothing) -> allposts
         Just query -> allposts ~| match query
     where
     allposts = projposts ++ (concat$ bloknames>~postsfromblok)
-    postsfromblok blokname = (postsFromBlok maybectxbuild blokname (const "getcathere in Posts.feedPosts")) >~ snd
+    postsfromblok blokname = (postsFromBlok maybectxbuild dtformat morefromhtmls blokname) >~ snd
     bloknames = case maybequery of
         Nothing -> Data.Map.Strict.keys projbloks
         Just query -> (Data.Map.Strict.keys projbloks) ~|(`elem` (query-:feeds))
@@ -102,7 +102,12 @@ feedPosts maybectxbuild projposts projbloks maybequery =
 feedGroups maybectxbuild projposts projbloks maybequery postfield =
     Util.unique (allposts >~ postfield)
     where
-    allposts = feedPosts maybectxbuild projposts projbloks maybequery
+    allposts = feedPosts maybectxbuild projposts projbloks maybequery "" []
+
+
+
+moreFromHtmlFieldName (htmltag , htmlattr) =
+    htmltag ++ ('_':htmlattr)
 
 
 
@@ -132,32 +137,37 @@ parseProjChunks projcfg chunkssplits =
 
 
 
-postsFromBlok (Just ctxbuild) blokname getcat =
+postsFromBlok (Just ctxbuild) dtformat morefromhtmls blokname =
     allblokpages >~ topost
     where
     (allblokpages , cdatelatest) = Bloks.allBlokPageFiles (ctxbuild-:projCfg) (ctxbuild-:allPagesFiles) blokname
     topost (relpath,file) =
-        let
-            relpageuri = Files.sanitizeUriRelPathForJoin relpath
-            maybectxpage = (ctxbuild-:lookupCachedPageRender) (file-:Files.path)
-            (htmlcontent , htmlinner1st) = case maybectxpage of
+        let (htmlcontent , htmlinner1st) = case maybectxpage of
                 Nothing -> ( "<p>HaXtatic&apos;s fault: currently can&apos;t embed the requested content here unless `"
                                 ++ relpath ++ "` is included in your build.</p>",
                                     \_ _ -> "Include " ++ relpath ++ " in your rebuild" )
                 Just ctxpage -> (ctxpage-:Tmpl.cachedRenderSansTmpl , ctxpage-:Tmpl.htmlInner1st)
-            pcat = getcat post
+            maybectxpage = (ctxbuild-:lookupCachedPageRender) $file-:Files.path
+            morefromhtml (htmltag , "") =
+                htmltag =: htmlfind1st (Html.findInnerContentOfTags htmltag)
+            morefromhtml htmlboth@(htmltag , htmlattr) =
+                (moreFromHtmlFieldName htmlboth) =: htmlfind1st (Html.findValuesOfVoidTags1stAttr htmltag htmlattr)
+            htmlfind1st finder =
+                Html.find1st finder "" htmlcontent
+            formatdt dtf =
+                ProjC.dtUtc2Str (ctxbuild-:projCfg) dtf (maybectxpage-:(Tmpl.pDate =|- cdatelatest))
             post = From {
                 feed = blokname,
-                dt = ProjC.dtUtc2Str (ctxbuild-:projCfg) "" (maybectxpage-:(Tmpl.pDate =|- cdatelatest)),
-                cat = pcat,
+                dt = formatdt "",
+                cat = formatdt dtformat,
                 title = htmlinner1st "h1" relpath,
-                link = relpageuri,
-                more = [ ("_hax_pic" =: Html.find1st (Html.findValuesOfVoidTags1stAttr "img" "src") "" htmlcontent) ],
+                link = Files.sanitizeUriRelPathForJoin relpath,
+                more = morefromhtmls >~ morefromhtml,
                 content = (htmlinner1st "p" htmlcontent) -- Html.stripMarkup ' '
             }
         in (htmlcontent , post)
 
-postsFromBlok _ _ _ =
+postsFromBlok _ _ _ _ =
     []
 
 
@@ -175,7 +185,7 @@ writeAtoms ctxbuild domainname outjobs =
     outjobs >>~ writeatom >> return ()
     where
 
-    postsfromblok = postsFromBlok (Just ctxbuild)
+    postsfromblok = postsFromBlok (Just ctxbuild) "" []
 
     writeatom outjob =
         Files.writeTo (outjob-:outPathBuild) relpath xmlatomfull >>= \nowarnings
@@ -212,7 +222,7 @@ writeAtoms ctxbuild domainname outjobs =
         maybeblok = Bloks.blokByName (ctxbuild-:projBloks) blokname
         allposts = case maybeblok of
                     Nothing -> ((ctxbuild-:projPosts) ~|(==feedname).feed) >~((,) "")
-                    Just _ -> postsfromblok blokname (const blokname)
+                    Just _ -> postsfromblok blokname
         (pageuri , feedtitle , feeddesc) = case maybeblok of
                     Just blok -> ( '/':(urify (blok-:Bloks.blokIndexPageFile)) , blok-:Bloks.title , blok-:Bloks.desc )
                     Nothing -> ( '/':(feedname++".html") , feedname , "" )
