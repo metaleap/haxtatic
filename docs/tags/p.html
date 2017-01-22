@@ -1,12 +1,12 @@
 <!DOCTYPE html><html lang="en"><head>
-    <title>P-tags: page-specific outputs | haXtatic Docs</title>
+    <title>P-tags: page-specific outputs | HaXtatic Docs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../haxtatic.css" rel="stylesheet" />
 	<!--	tags\p.html
 			generated on 2016-12-17
 			from D:\dev\hs\hax2\dox-demo\pages\tags\2016-12-17.p.html	-->
 </head><body>
-    <h4>haXtatic Docs</h4>
+    <h4>HaXtatic Docs</h4>
 	<ul class="hd-nav">
 <li class="hd-nav"><a href="../index.html">Intro</a></li><li class="hd-nav"><a href="../basics/index.html">Basics</a></li><li class="hd-nav hd-nav-sel"><a href="../tags/index.html">haXtags</a></li><li class="hd-nav"><a href="../xtypes/index.html">X-renderers</a></li>
 	</ul>
@@ -54,7 +54,7 @@
 <h3>Parameterizing</h3>
 <p>Supported for up to 6 (in total) occurrences in <i>value</i> of <code>&nbsp;%s</code> or <code>&nbsp;%v</code> (the former should technically be minimally faster, but both functionally equivalent). For accesses then occurring anywhere not simply via <code>{P<!---->|<i>name</i>|<!---->}</code>, but via <code>{P<!---->|<i>name</i>:<i>my value #1</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>value1:value2</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>val1:val2:val3</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>v1:v2:v3:v4</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>v1:v2:v3:v4:v5</i>|<!---->}</code>, or <code>{P<!---->|<i>name</i>:<i>v1:v2:v3:v4:v5:v6</i>|<!---->}</code> the appropriate in-place value substitutions will be effected. (For any more expressive substitution requirements, use of a <a href="#">snippet</a> would be called for either instead of or combined with the custom P-tag.)</p>
 <p class="hd-note"><b>If</b> any such parameterized accesses are to be employed anywhere, to avoid faulty outputs <b>be sure to self-escape</b> <i>all</i> other occurrences of <code>&nbsp;%</code> in the original <i>value</i> (not in the accessing P-tags) by doubling each to <code>&nbsp;%%</code>.</p>
-<h2 id="Page-relative URLs">Page-relative URLs</h2>
+<span id="relpaths"><h2 id="Page-relative URLs">Page-relative URLs</h2></span>
 <p>
 	Useful when your machine isn't running a local web server / HTTP daemon: use <code>{P<!---->|/ <i>your/uri/here</i> |<!---->}</code> to rewrite that site-root-relative path such that it will correctly point to the destination from the current page <i>without</i> a leading <code>&nbsp;/</code>.<br/>&mdash; eg. linking to <span class="hd-note">/index.html</span> and <span class="hd-note">/basics/index.html</span> from this page via <code>{P<!---->|/<i>index.html</i>|<!---->}</code> and <code>{P<!---->|/<i>basics/index.html</i>|<!---->}</code> respectively outputs in-place: <span class="hd-note">../index.html</span> and <span class="hd-note">../basics/index.html</span>.
 </p>

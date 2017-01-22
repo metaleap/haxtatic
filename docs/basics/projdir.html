@@ -1,12 +1,12 @@
 <!DOCTYPE html><html lang="en"><head>
-    <title>The project directory | haXtatic Docs</title>
+    <title>The project directory | HaXtatic Docs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../haxtatic.css" rel="stylesheet" />
 	<!--	basics\projdir.html
 			generated on 2016-12-21
 			from D:\dev\hs\hax2\dox-demo\pages\basics\2016-12-21.projdir.html	-->
 </head><body>
-    <h4>haXtatic Docs</h4>
+    <h4>HaXtatic Docs</h4>
 	<ul class="hd-nav">
 <li class="hd-nav"><a href="../index.html">Intro</a></li><li class="hd-nav hd-nav-sel"><a href="../basics/index.html">Basics</a></li><li class="hd-nav"><a href="../tags/index.html">haXtags</a></li><li class="hd-nav"><a href="../xtypes/index.html">X-renderers</a></li>
 	</ul>
@@ -30,7 +30,7 @@
     <li><b>_cache_tmp/</b> &mdash; temporary cache files</li></ul>
 <h2 id="Get started">Get started</h2>
 <p>Run HaXtatic specifying "the project-directory to process" and any missing parts from the above essentials will be (re)created in-place.</p>
-<p>Example, to create a new site project named <b>mydemosite.foo</b> (inside the existing <i>~/dev/</i> directory in this case) <ul><li>just run from inside the haXtatic code-base's <i>src</i> directory:<br/><code><a href="https://www.haskell.org/downloads#stack">stack</a> runghc ./@HaxMain.hs ~/dev/mydemosite.foo</code></li><li>or with a compiled executable binary (eg. for extra speed if so inclined), of course<br/><code>my-haxtatic-exe ~/dev/mydemosite.foo</code> works equally</li></ul> and the following is generated:</p>
+<p>Example, to create a new site project named <b>mydemosite.foo</b> (inside the existing <i>~/dev/</i> directory in this case) <ul><li>just run from inside the HaXtatic code-base's <i>src</i> directory:<br/><code><a href="https://www.haskell.org/downloads#stack">stack</a> runghc ./@HaxMain.hs ~/dev/mydemosite.foo</code></li><li>or with a compiled executable binary (eg. for extra speed if so inclined), of course<br/><code>my-haxtatic-exe ~/dev/mydemosite.foo</code> works equally</li></ul> and the following is generated:</p>
 <p><img src="../pics/otiosely/long/path/fresh-project-directory.png" alt="A freshly made project-directory"/></p>
 <p>The on-screen output will be something like:</p>
 <pre>
@@ -76,7 +76,7 @@ Wrote 2 files in 0.07s:
 <p>
 	Now just proceed creating/modifying contents/templates/settings/etc. within this directory structure and then simply run the same command-line again to refresh <b>default-build</b> with any changes made since the last run.
 </p>
-<p>Of note: <i>haXtatic</i> <b>never deletes</b> any files whatsoever; and also <b>only writes</b> files to the designated <i>build</i> folder(s) and <i>_cache_tmp/</i> &mdash; plus re-creating the handful of standard folders/files described here <b>only</b> if entirely missing.</p>
+<p>Of note: <i>HaXtatic</i> <b>never deletes</b> any files whatsoever; and also <b>only writes</b> files to the designated <i>build</i> folder(s) and <i>_cache_tmp/</i> &mdash; plus re-creating the handful of standard folders/files described here <b>only</b> if entirely missing.</p>
 <h2 id="Standard folders">Standard folders</h2>
 <h3>default-build/</h3>
 <p>Contains the complete generated site after a successful run. (Technically, contains all outputs from all previous runs ever since the directory was created or last cleaned up manually.)</p>
@@ -88,7 +88,7 @@ Wrote 2 files in 0.07s:
 <h3>tmpl/</h3>
 <p>To contain custom as well as the auto-generated default <a href="#">templates</a> and <a href="">snippets</a> used during processing of the content source files from <b>pages</b>.</p>
 <h3>_cache_tmp/</h3>
-<p>Cached per-processed-page intermediate-representations to slightly speed up rebuilds. This may be cleared whenever deemed prudent.</p>
+<p>Cached per-processed-page intermediate-representations to slightly speed up rebuilds. This may be manually cleared (or <a href="../basics/haxproj.html#cmisc">changed/disabled</a>) whenever deemed prudent (such as while customizing HaXtatic's Haskell code-base itself).</p>
 <h2 id="Standard files">Standard files</h2>
 <h3>Always created if missing:</h3>
 <ul>

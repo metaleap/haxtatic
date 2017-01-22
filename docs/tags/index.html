@@ -1,12 +1,12 @@
 <!DOCTYPE html><html lang="en"><head>
-    <title>haXtags | haXtatic Docs</title>
+    <title>haXtags | HaXtatic Docs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../haxtatic.css" rel="stylesheet" />
 	<!--	tags\index.html
 			generated on 2016-12-18
 			from :B|/2016-12-18.tags	-->
 </head><body>
-    <h4>haXtatic Docs</h4>
+    <h4>HaXtatic Docs</h4>
 	<ul class="hd-nav">
 <li class="hd-nav"><a href="../index.html">Intro</a></li><li class="hd-nav"><a href="../basics/index.html">Basics</a></li><li class="hd-nav hd-nav-sel"><a href="../tags/index.html">haXtags</a></li><li class="hd-nav"><a href="../xtypes/index.html">X-renderers</a></li>
 	</ul>
@@ -21,15 +21,17 @@
 
 <!-- begins content source page -->
 <h1>haXtags</h1>
-	<p>Embed haXtatic tags anywhere in source contents, <a href="#">templates, snippets</a> or <a href="#">*.haxproj</a> files with
+	<p>Embed HaXtatic tags anywhere in source contents, <a href="../basics/tmplsnip.html">templates, snippets</a> or <a href="../basics/haxproj.html">*.haxproj</a> files with
 	a simple notation: <code>{<i>Prefix</i>|<i>Name</i>|<!---->}</code> or
 	<code>{<i>Prefix</i>|<i>Name</i>: <i>Args</i>|<!---->}</code>.</p>
-	<p>Example: <code>{P<!---->|date|<!---->}</code> outputs in-place the currently set <a href="#">Page Date</a> &mdash;using the
+	<p>Example: <code>{P<!---->|date|<!---->}</code> outputs in-place the currently set <a href="../basics/datetime.html">Page Date</a> &mdash;using the
 	built-in fallback date-time format since none was specified in the tag&mdash; when it is processed: <span class="hd-note">2016-12-18</span>.</p>
-	<ul><li>All unprocessed haXtags (mispelled etc.) simply remain in the output, aiding swift detection.</li>
-	<li>Any haXtags may embed/output any other haXtags freely but <ul><li>directly or indirectly recursive/looping/cyclic references
-	will hang (or eventually prematurely abort) the entire generating process</li><li>an otherwise-correct outer tag will typically
-	not render with an unprocessable inner tag (a "known non-issue")</li></ul></li>
+	<ul><li>All unprocessed haXtags (mispelled etc.) simply remain in the output, aiding swift detection<ul><li>(exception: some X-tags requiring
+		<a href="../basics/syntax.html">syntax</a> &mdash; if unprocessable these output error details)</li></ul></li>
+	<li>Any haXtags may embed/output any other haXtags freely both in their definitions and invocations but
+	<ul><li>an otherwise-correct outer tag will typically not render with a (directly embedded) unprocessable inner tag (a "known non-issue")</li>
+	<li>a direct-or-indirect recursive self-reference (self-invocation inside "defining portion" of a haXtag's related <a href="../basics/haxproj.html">declaration
+	directive</a>) will hang (and usually eventually prematurely abort with a <code>&lt;&lt;loop&gt;&gt;</code> farewell message) the entire generating process</li></ul></li>
 	<li>Available "prefixes" (or <i>haxTag types</i>) are (in order of simplicity) <b>T</b>, <b>B</b>, <b>P</b> and <b>X</b>:</li></ul>
 	<hr/>
 	<ul class="hd-feed"><li><!--

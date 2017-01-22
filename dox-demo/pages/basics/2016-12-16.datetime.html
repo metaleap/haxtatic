@@ -4,7 +4,7 @@
 	<!--_hax_dtformat_iso8601-->
 </p>
 <p class="up">
-	Page Dates are for instance output during processing by embedded {X|c:{P<!---->|date|<!---->}|} <a href="#">X-tags</a>; likewise the Page Date is accessed while <a href="#">generating XML outputs</a> or potentially (possibly sooner-than-hoped) with a custom setup of <a href="#">hax/repeat</a> and <a href="#">hax/snippet</a> X-renderers (particularly in <a href="#">auto-generated Blok index page files</a>).
+	Page Dates are for instance output during processing by embedded {X|c:{P<!---->|date|<!---->}|} <a href="#">X-tags</a>; likewise the Page Date is accessed while <a href="#">generating XML outputs</a> or potentially (possibly sooner-than-hoped) with a custom setup of <a href="#">hax.repeat</a> and <a href="#">hax.snippet</a> X-renderers (particularly in <a href="#">auto-generated Blok index page files</a>).
 </p>
 {X|h: Setting custom Page Dates: 2 ways|}
 <h3>Option 1:  content source file name</h3>
@@ -26,7 +26,7 @@
 	<li>The likelihood of a project needing to adjust individual custom Page Dates <i>all that frequently</i> is assessed as low.</li>
 	<li>In any event, both approaches can be used in tandem and for any given file, option 2 if present will override whatever was first set via option 1, if anything.</li>
 </ul>
-{X|h: Named custom date-time formats|}
+<span id="dtformats">{X|h: Named custom date-time formats|}</span>
 <p>
 	As already alluded to, custom date-time formats have a modicum of support in <i>{T|Hax|}</i>. In fact, most-anywhere date values are accessed, a custom format can be specified. But it first needs to be <b>defined correctly</b>, and that means <a href="#">declaring a corresponding <i>*.haxproj</i> {X|c:|C|dtformat:|} directive</a> (which in turn commands a full grasp of the link to <i>parseable date-time format-strings</i> referenced there).
 </p>

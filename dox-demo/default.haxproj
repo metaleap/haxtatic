@@ -5,7 +5,7 @@ turn on whatever syntax highlighting for eased grokkage..
 
 |C|process:pages:
 	skip=[], force=["*"], dirs=[]
-|C|_hax_onparseerror: abort
+|C|hax_onparseerror: abort
 
 |T|_hax_dir_cache:
 
@@ -15,23 +15,25 @@ turn on whatever syntax highlighting for eased grokkage..
 	<p>This material may appear "unduly exhaustive" at first glance, but this is all blatantly-simple-stuff and
 	mostly just spelled out in (almost) every last minor detail for completeness and future reference.</p>
 	<p>Notably no article on <b>"how to author pages"</b>. That's because there's nothing to it once a quick note is made of
-	<a href="#">where to place them</a>, <a href="#">which outer-template is applied during processing &amp; how</a>, as well as the
-	diverse range of <a href="#">haXtags</a> that any page (indeed any user-authored/-customized file in a project) may embed and
+	{X|lb:projdir where to place them|}, {X|lb:tmplsnip which outer-template is applied during processing &amp; how|}, as well as the
+	diverse range of {X|lt:index haXtags|} that any page (indeed any user-authored/-customized file in a project) may embed and
 	combine in any manner.</p>
 
 
 |B|tags:
 	title="haXtags", atomFile="", blokIndexPageFile="tags/index.html", inSitemap=True, dtFormat="", desc=>
 
-	<p>Embed {T|Hax|} tags anywhere in source contents, <a href="#">templates, snippets</a> or <a href="#">*.haxproj</a> files with
+	<p>Embed {T|Hax|} tags anywhere in source contents, {X|lb:tmplsnip templates, snippets|} or {X|lb:haxproj *.haxproj|} files with
 	a simple notation: <code>{<i>Prefix</i>|<i>Name</i>|<!---->}</code> or
 	<code>{<i>Prefix</i>|<i>Name</i>: <i>Args</i>|<!---->}</code>.</p>
-	<p>Example: <code>{P<!---->|date|<!---->}</code> outputs in-place the currently set <a href="#">Page Date</a> &mdash;using the
+	<p>Example: <code>{P<!---->|date|<!---->}</code> outputs in-place the currently set {X|lb:datetime Page Date|} &mdash;using the
 	built-in fallback date-time format since none was specified in the tag&mdash; when it is processed: {X|note:{P|date|}|}.</p>
-	<ul><li>All unprocessed haXtags (mispelled etc.) simply remain in the output, aiding swift detection.</li>
-	<li>Any haXtags may embed/output any other haXtags freely but <ul><li>directly or indirectly recursive/looping/cyclic references
-	will hang (or eventually prematurely abort) the entire generating process</li><li>an otherwise-correct outer tag will typically
-	not render with an unprocessable inner tag (a "known non-issue")</li></ul></li>
+	<ul><li>All unprocessed haXtags (mispelled etc.) simply remain in the output, aiding swift detection<ul><li>(exception: some X-tags requiring
+		{X|lb:syntax syntax|} &mdash; if unprocessable these output error details)</li></ul></li>
+	<li>Any haXtags may embed/output any other haXtags freely both in their definitions and invocations but
+	<ul><li>an otherwise-correct outer tag will typically not render with a (directly embedded) unprocessable inner tag (a "known non-issue")</li>
+	<li>a direct-or-indirect recursive self-reference (self-invocation inside "defining portion" of a haXtag's related {X|lb:haxproj declaration
+	directive|}) will hang (and usually eventually prematurely abort with a {X|c:&lt;&lt;loop&gt;&gt;|} farewell message) the entire generating process</li></ul></li>
 	<li>Available "prefixes" (or <i>haxTag types</i>) are (in order of simplicity) <b>T</b>, <b>B</b>, <b>P</b> and <b>X</b>:</li></ul>
 
 
@@ -41,30 +43,36 @@ turn on whatever syntax highlighting for eased grokkage..
 
 
 
-|T|Hax: haXtatic
-|T|SiteTitle: {T|Hax|} Docs
+|T|Hax:			HaXtatic
+|T|SiteTitle:	{T|Hax|} Docs
+|T|XdemoInfo:	<hr/><p class="hd-note">This "slightly pointless" X-renderer exists solely to serve as a
+				<a href="https://github.com/metaleap/haxtatic/blob/master/src/X/{P|fileBaseName|}.hs">code sample</a> to start from for Haskell programmers
+				wanting to develop custom X-renderers within the {T|Hax|} code-base.</p>
 
 
 
-|X|hax/image:doxpic: {P| /pics/otiosely/long/path |}: linkAtts=[], imgAtts=[]
-|X|hax/miniTag:c:code
-|X|hax/miniTag:h:h2: htmlAtts=[("id" , "{%:content:%}")]
-|X|hax/miniTag:note:span: htmlAtts=[("class" , "hd-note")]
+|X|hax.image:doxpic: {P| /pics/otiosely/long/path |}: linkAtts=[], imgAtts=[]
+|X|hax.miniTag:c: code
+|X|hax.miniTag:h: h2: htmlAtts=[("id" , "{%:content:%}")]
+|X|hax.miniTag:note: span: htmlAtts=[("class" , "hd-note")]
+|X|hax.link:lb: {P| /basics |}: htmlAtts = [] , htmlEsc = (False , False) , uriAutoExt = ".html"
+|X|hax.link:lt: {P| /tags |}: htmlAtts = [] , htmlEsc = (False , False) , uriAutoExt = ".html"
+|X|hax.link:lx: {P| /xtypes |}: htmlAtts = [] , htmlEsc = (False , False) , uriAutoExt = ".html"
 
-|X|hax/links:doxtopnav:li:
+|X|hax.links:doxtopnav:li:
 	 htmlAtts = [("class","hd-nav"),("&class","hd-nav-sel")],
 		 itemsFirst = [("" , "Intro")],
 		 itemsLast = [("xtypes/" , "{B|title:xtypes|}")],
 	 wrapHref = ("{P|/" , "index.html|}")
 
-|X|hax/pageAnchors:doxpagetoc:h2:
+|X|hax.pageAnchors:doxpagetoc:h2:
 	considerEmpty = 1, htmlIfEmpty = "<style type='text/css'>.hd-toc { display: none; }</style>"
 
-|X|hax/repeat:doxindex:
+|X|hax.repeat:doxindex:
 	prefix = "<ul class=\"hd-feed\"><li>{", suffix = "}</li></ul>", joinwith = "}</li><li>{",
 	content=""
 
-|X|hax/repeat:xdescs:
+|X|hax.repeat:xdescs:
 	prefix = "{", suffix = "}", joinwith = "}{",
 	content = ""
 
@@ -81,7 +89,7 @@ turn on whatever syntax highlighting for eased grokkage..
 
 |P|xdesc:
 	dt = "1234-11-15", cat = "demoCfgArgs", title = "", link = "",
-	more = [ ("declmore" , "</code> or <code>|X|hax/demoCfgArgs:<i>myXtag</i>:<i>greetname</i>"),
+	more = [ ("declmore" , "</code> or <code>|X|hax.demoCfgArgs:<i>myXtag</i>:<i>greetname</i>"),
 			 ("cfgmore" , "(no other settings)"),
 			 ("usage" , "|<!---->}</code> or <code>{X<!---->|<i>myXtag</i>:<i>greetname</i>") ],
 	content=>
@@ -97,11 +105,19 @@ turn on whatever syntax highlighting for eased grokkage..
 
 |P|xdesc:
 	dt = "1234-09-15", cat = "image", title = "", link = "",
-	more = [ ("declmore" , ":<i>somereldirpath</i>: <i>..</i>"),
+	more = [ ("declmore" , ":<i>some/rel/base/path</i>: <i>..</i>"),
 			 ("cfgmore" , "{X|c:linkAtts|}, {X|c:imgAtts|}"),
-			 ("usage" , ":<i>pic/rel/path and optionally some description text</i>") ],
+			 ("usage" , ":<i>rel-to-base/path/no/whitespace and optionally some description text</i>") ],
 	content=>
 	Outputs {X|c: &lt;img <i>..</i> /&gt; |} or {X|c: &lt;a <i>..</i>&gt;&lt;img <i>..</i> /&gt;&lt;/a&gt; |}.
+
+|P|xdesc:
+	dt = "1234-08-25", cat = "link", title = "", link = "",
+	more = [ ("declmore" , ":<i>some/rel/base/path</i>: <i>..</i>"),
+			 ("cfgmore" , "{X|c:htmlAtts|} , {X|c:htmlEsc|} , {X|c:uriAutoExt|} "),
+			 ("usage" , ":<i>rel-to-base/path/no/whitespace and then the link text text</i>") ],
+	content=>
+	Outputs {X|c: &lt;a <i>..</i>&gt;<i>..</i>&lt;/a&gt; |}.
 
 |P|xdesc:
 	dt = "1234-08-15", cat = "links", title = "", link = "",

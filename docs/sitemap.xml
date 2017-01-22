@@ -9,6 +9,10 @@
         <lastmod>1234-09-15</lastmod>
         <priority>0.5</priority>
     </url><url>
+        <loc>http://dox-demo/xtypes/link.html</loc>
+        <lastmod>1234-08-25</lastmod>
+        <priority>0.5</priority>
+    </url><url>
         <loc>http://dox-demo/xtypes/links.html</loc>
         <lastmod>1234-08-15</lastmod>
         <priority>0.5</priority>
@@ -23,6 +27,14 @@
     </url><url>
         <loc>http://dox-demo/xtypes/repeat.html</loc>
         <lastmod>1234-05-15</lastmod>
+        <priority>0.5</priority>
+    </url><url>
+        <loc>http://dox-demo/xtypes/demoSimplest.html</loc>
+        <lastmod>1234-01-20</lastmod>
+        <priority>0.5</priority>
+    </url><url>
+        <loc>http://dox-demo/xtypes/demoCfgArgs.html</loc>
+        <lastmod>1234-01-10</lastmod>
         <priority>0.5</priority>
     </url><url>
         <loc>http://dox-demo/tags/t.html</loc>

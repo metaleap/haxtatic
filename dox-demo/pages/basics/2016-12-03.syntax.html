@@ -6,12 +6,12 @@ A number of certain <b>directives</b> (placed in <a href="#">*.haxproj</a> files
 	<li>all <a href="#|B| directives: for &quot;Bloks&quot;">|B| directives</a> (following the Blok name)</li>
 	<li>all <a href="#|P| directives: for &quot;postings&quot;">|P| directives</a> (following the feed name)</li>
 	<li>the <a href="#|C| directives: more control">|C| directives</a> {X|c:process:static:|} and {X|c:process:pages:|}</li>
-	<li>most <a href="#|X| directives: for rendering">|X| directives</a> (except 2 demo X-renderers for coders)</li>
-	<li>most <a href="{P|/tags/x.html|}">X-tags</a> (except those invoking {X|c:hax/image|} or {X|c:hax/miniTag|})</li>
+	<li>most <a href="#|X| directives: for rendering">|X| directives</a> (except the 2 {X|lt:x#demo demo|} X-renderers for coders)</li>
+	<li>some <a href="{P|/tags/x.html|}">X-tags</a> (determined and documented by the X-renderer invoked)</li>
 </ul>
-<p>&mdash; absolutely <i>require</i> {X|note: &mdash;lest they abort the entire process abruptly (with {X|c:|C|:_hax_onparseerror:|}
+<p>&mdash; absolutely <b>require</b> {X|note: &mdash;lest they abort the entire process abruptly (with {X|c:|C|:_hax_onparseerror:|}
 <a href="#">set to</a> {X|c:abort|}) or render warning/error messages (otherwise) into generated output contents&mdash; |}
-<b>strict adherence to the following</b> (currently somewhat demanding, thanks to the.. "compactness" of the parser) syntax rules:</p>
+<b>strict adherence to the following</b> (essentially trivial, still currently rather demanding-and-unforgiving thanks to the.. "compactness" of the parser) syntax rules:</p>
 <ul>
 	<li><i>All</i> the properties shown <i>need</i> to appear,
 		<ul><li>each separated from the next by a {X|c:&nbsp;,|} comma,</li>

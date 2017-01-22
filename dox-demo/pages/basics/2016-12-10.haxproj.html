@@ -45,7 +45,7 @@
 	<li>{X|c:dtFormat|} &mdash; a hint as to the name of the preferred <a href="#">date-time format</a> that <a href="#">X-renderers</a> / <a href="#">snippets</a> should ideally use for contents associated with this Blok</li>
 </ul>
 <p class="hd-note">The values set for the above properties can be output anywhere via <a href="#">B-tags</a> &mdash; so in essence each <b>|B|</b> directive automatically defines 6 uniquely distinct B-tags.</p>
-{X|h: |X| directives: for rendering |}
+<span id="xdecl">{X|h: |X| directives: for rendering |}</span>
 <p>
 	Just as a <a href="#">|T| directive</a> in essence defines a uniquely distinct <a href="#">T-tag</a> each that can be embedded many times anywhere (to effect in-place text substitution), so each and every <b>|X| directive</b> in essence defines a uniquely distinct <a href="#">X-tag</a> that can be embedded many times anywhere (to effect in-place output rendering by some custom logic).
 </p>
@@ -59,10 +59,10 @@
 	For example, this site declares (among others) these two <b>|X|</b> directives in order to automatically generate on every page (the shaded box near the top to the right) a listing of "Jump To" shortcuts for every chapter heading on that page:
 </p>
 <pre>
-|X|hax/miniTag:<i>h</i>:<i>h2</i>:
+|X|hax.miniTag:<i>h</i>:<i>h2</i>:
     htmlAtts=<i>[("id","{%:content:%}")]</i>
 
-|X|hax/pageAnchors:<i>doxpagetoc</i>:<i>h2</i>:
+|X|hax.pageAnchors:<i>doxpagetoc</i>:<i>h2</i>:
     considerEmpty = <i>1</i>,
     htmlIfEmpty = <i>"&lt;style type='text/css'&gt;.hd-toc { display: none; }&lt;/style&gt;"</i>
 </pre>
@@ -72,13 +72,13 @@
 <h3>To recapitulate</h3>
 <p>what becomes immediately apparent from just this example:</p>
 <ol>
-	<li>Specify first the X-renderer type (here {X|c:hax/miniTag|} and {X|c:hax/pageAnchors|})</li>
+	<li>Specify first the X-renderer type (here {X|c:hax.miniTag|} and {X|c:hax.pageAnchors|})</li>
 	<li>followed by a {X|c:&nbsp;:|} and a <i>custom (X-)tag name</i> (here {X|c:&nbsp;h|} and {X|c:doxpagetoc|}) and another {X|c:&nbsp;:|}</li>
 	<li>followed by some individually-varying X-renderer-specific settings notation that each X-renderer defines and <a href="#">documents</a> separately.</li>
 	<li>In turn, usage of any {X|c: {X<!---->||} tag embedded anywhere begins with the very <i>custom tag name</i> from 2. (again, here {X|c:&nbsp;h|} and {X|c:doxpagetoc|}) pointing to the associated |X| directive, followed by a {X|c:&nbsp;:|} and then possibly some further individually-varying X-renderer-specific per-instance settings notation (if any).</li>
 	<li>For the built-in X-renderers, both the per-tag settings (aka. tag config) and per-instantiation settings (aka. tag args) notation is (either one or the other but) usually a combination of:<ul><li>first, 1 or 2 colon-separated "flags" (such as {X|c::h2:|} and {X|c::li:|} above) and</li><li>next, the already familiar {X|c:name=<i>value</i>, .. |} named properties, to which <a href="#">these stringent syntactic rules</a> strictly apply.</li></ul></li>
 </ol>
-{X|h: |P| directives: for "postings" |}
+<span id="pdecl">{X|h: |P| directives: for "postings" |}</span>
 <p>
 	Create "micro-content records" with <b>|P|</b> directives. All such "posts" are categorized first into "feed names" (or think arbitrary "primary category", really) and a further sub-level of "cat"(egory). The general format is as the following 2 examples illustrate:
 </p>
@@ -108,7 +108,7 @@
 <ul><li>1 "feed" (aka. arbitrary primary category) named {X|c:quotes|}</li><li>made up of 2 "posts" (aka. micro-content records),</li><li>both in the "cat"(egory) of {X|c:Programming|}.</li></ul>
 <h3>Usage</h3>
 <p>
-	Such "feeds" can be output as <i>*.atom</i> XML files (just add a <a href="#">|C|_hax_relpath_postatoms</a> directive) but other than that no separate pages or other files will be auto-generated from them. To embed such micro-contents in the project's generated output pages in versatile ways (<i>without</i> coding up a custom X-renderer from scratch), use the "feed"-related iterators of the built-in <a href="#">hax/repeat</a> X-renderer (those, incidentally, treat |P| "feeds" and Bloks as (for their purposes) functionally equivalent types of content sources, allowing for some neat mixing-and-mashing).
+	Such "feeds" can be output as <i>*.atom</i> XML files (just add a <a href="#">|C|_hax_relpath_postatoms</a> directive) but other than that no separate pages or other files will be auto-generated from them. To embed such micro-contents in the project's generated output pages in versatile ways (<i>without</i> coding up a custom X-renderer from scratch), use the "feed"-related iterators of the built-in <a href="#">hax.repeat</a> X-renderer (those, incidentally, treat |P| "feeds" and Bloks as (for their purposes) functionally equivalent types of content sources, allowing for some neat mixing-and-mashing).
 </p>
 {X|h: |C| directives: more control |}
 <p>
@@ -153,7 +153,7 @@
 <p>
 Format strings are parsed <a href="https://downloads.haskell.org/ghc/8.0.2/docs/html/libraries/time-1.6.0.1/Data-Time-Format.html#v:formatTime">as documented here</a>.
 </p>
-<h3>|C| .. (miscellaneous)</h3>
+<h3 id="cmisc">|C| .. (miscellaneous)</h3>
 <p>Choose by example what might be needed from:</p>
 <pre>
 |C|_hax_domainname: <i>www.haxtatic.foo</i>
