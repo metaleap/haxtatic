@@ -6,7 +6,7 @@ import qualified X
 
 registerX _ctxproj xreg =
     let
-    renderer (_ , argstr) =
+    renderer (_maybectxpage , argstr) =
 
         Just$ "<h1>Hello, " ++ greet ++ "!</h1>"
         where

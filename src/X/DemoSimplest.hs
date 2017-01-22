@@ -5,9 +5,9 @@ import X
 
 
 
-registerX _ctxproj _xreg =
+registerX _project _tag_config =
     let
-    renderer (_maybepagectx , _argstr) =
+    renderer (_page , _tag_args) =
 
         Just "<h1>Hello World!</h1>"
 

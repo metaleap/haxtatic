@@ -263,9 +263,9 @@ noNilFsts [] = []
 noNilFsts (([],_):more) = noNilFsts more
 noNilFsts (item:more) = item:(noNilFsts more)
 
-forNoNils _ [] = []
-forNoNils func ([]:more) = forNoNils func more
-forNoNils func (item:more) = (func item):(forNoNils func more)
+forNoNilsEach _ [] = []
+forNoNilsEach func ([]:more) = forNoNilsEach func more
+forNoNilsEach func (item:more) = (func item):(forNoNilsEach func more)
 
 keepNoNilFsts _ [] = []
 -- keepNoNilFsts func (([],_):more) = keepNoNilFsts func more
@@ -482,7 +482,7 @@ splitUp withmatch allbeginners end src =
     where
     nomatchpossible = not$ Data.List.isInfixOf end src -- oddly enough this extra work does pay off perf-wise
     beginners = beginners' ~| length~.((==)beg0len)
-    beginners' = allbeginners ~> forNoNils reverse
+    beginners' = allbeginners ~> forNoNilsEach reverse
     beg0len = beg0~>length
     beg0 = beginners'@!0
 
