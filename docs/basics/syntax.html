@@ -22,17 +22,17 @@
 <!-- begins content source page -->
 <h1>Syntactic rules (in places)</h1>
 <p>
-A number of certain <b>directives</b> (placed in <a href="#">*.haxproj</a> files or implied in <a href="#">*.haxsnip.html</a>s' headers) and <b>haXtags</b> (placed anywhere) &mdash; specifically:
+A number of certain <b>directives</b> (placed in <a href="../basics/haxproj.html">*.haxproj</a> files or implied in <a href="../basics/tmplsnip.html#snippets">*.haxsnip.html</a>s' headers) and <b>haXtags</b> (placed anywhere) &mdash; specifically:
 </p>
 <ul>
-	<li>all <a href="#|B| directives: for &quot;Bloks&quot;">|B| directives</a> (following the Blok name)</li>
-	<li>all <a href="#|P| directives: for &quot;postings&quot;">|P| directives</a> (following the feed name)</li>
-	<li>the <a href="#|C| directives: more control">|C| directives</a> <code>process:static:</code> and <code>process:pages:</code></li>
-	<li>most <a href="#|X| directives: for rendering">|X| directives</a> (except the 2 <a href="../tags/x.html#demo">demo</a> X-renderers for coders)</li>
-	<li>some <a href="../tags/x.html">X-tags</a> (determined and documented by the X-renderer invoked)</li>
+	<li>all <a href="../basics/haxproj.html#bdecl">|B| directives</a> (following the Blok name)</li>
+	<li>all <a href="../basics/haxproj.html#pdecl">|P| directives</a> (following the feed name)</li>
+	<li>the <a href="../basics/haxproj.html#cdecl">|C| directives</a> <code>process:static:</code> and <code>process:pages:</code></li>
+	<li>most <a href="../basics/haxproj.html#xdecl">|X| directives</a> (except the 2 <a href="../tags/x.html#demo">demo</a> X-renderers for coders)</li>
+	<li>some <a href="../tags/x.html">X-tags</a> (determined and documented by the <a href="../xtypes/index.html">X-renderer</a> invoked)</li>
 </ul>
 <p>&mdash; absolutely <b>require</b> <span class="hd-note">&mdash;lest they abort the entire process abruptly (with <code>|C|:_hax_onparseerror:</code>
-<a href="#">set to</a> <code>abort</code>) or render warning/error messages (otherwise) into generated output contents&mdash;</span>
+<a href="../basics/haxproj.html#cmisc">set to</a> <code>abort</code>) or render warning/error messages (otherwise) into generated output contents&mdash;</span>
 <b>strict adherence to the following</b> (essentially trivial, still currently rather demanding-and-unforgiving thanks to the.. "compactness" of the parser) syntax rules:</p>
 <ul>
 	<li><i>All</i> the properties shown <i>need</i> to appear,
@@ -44,7 +44,7 @@ A number of certain <b>directives</b> (placed in <a href="#">*.haxproj</a> files
 		<ul><li><code>= &quot;<i>Wrote this in </i>\"<i>VBScript</i>\"<i> back in '99..</i>&quot;</code></li>
 		<li>Inside literal line-breaks are supported; all standard escape sequences work predictably, eg. <code>&nbsp;\&quot;</code>
 		for in-text quotation marks etc.)</li>
-		<li>Any <a href="#">haXtags</a> placed inside such quoted text-values (principally those that might output quotation marks eg. HTML attributes) should
+		<li>Any <a href="../tags/index.html">haXtags</a> placed inside such quoted text-values (principally those that might output quotation marks eg. HTML attributes) should
 		escape the entire tag content (everything in between <code>&nbsp;{<i>*</i><!---->|</code> and <code>&nbsp;|<!---->}</code>) by prefixing it with 2 <code>&nbsp;`</code> backticks:
 		<ul><li>ie. by changing <code>{T<!---->|<i>sometextname</i>|<!---->}</code>, <code>{P<!---->|1st:<i>div</i>|<!---->}</code>
 		or <code>{X<!---->|<i>myctl:</i>|<!---->}</code><br/>into <code>{T<!---->|``<i>sometextname</i>|<!---->}</code>, <code>{P<!---->|``1st:<i>div</i>|<!---->}</code>
@@ -68,7 +68,7 @@ A number of certain <b>directives</b> (placed in <a href="#">*.haxproj</a> files
 		simply extends until the very end of the directive/haXtag)</li>
 		<li>but <i>only</i> if that property's name is followed <i>immediately</i> (no spaces) by exactly <code>=&gt;</code> in place of
 		the usual <code>&nbsp;=</code> assignment operator.</li>
-		<li>No <code>&nbsp;\&quot;</code> escaping of quotation marks required in here, also no <a href="#">haXtags</a> in here require the above-mentioned <code>&nbsp;``</code> double-backtick escaping.</li>
+		<li>No <code>&nbsp;\&quot;</code> escaping of quotation marks required in here, also no <a href="../tags/index.html">haXtags</a> in here require the above-mentioned <code>&nbsp;``</code> double-backtick escaping.</li>
 		<li>Such properties <i>may</i> however, if somehow desired, also be written the same way as any other text value, that is with <code>= &quot;..&quot;</code> plus any required inner escaping.</li>
 	</ul></li>
 </ul>

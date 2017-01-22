@@ -7,17 +7,17 @@
 	uses <a href="http://en.wikipedia.org/wiki/Sitemaps">a trivial format</a>, is cheap to generate and written to {X|c:/sitemap.xml|} during processing by default:
 </p>
 <ul>
-	<li>this can be changed or disabled via a {X|c:|C|_hax_relpath_sitemap:|} <a href="#">*.haxproj directive</a>.</li>
-	<li>All site pages are included in the resulting <i>sitemap.xml</i> output file except pages associated with <a href="#">Bloks</a> that have <a href="#">declared otherwise</a>.</li>
-	<li>Each generated {X|c:loc|} value is <i>required</i> (needlessly and wastefully so, but that's the format) to include a full domain-name and unless a custom {X|c:|C|_hax_domainname:|} <a href="#">*.haxproj directive</a> was explicitly declared, <i>{T|Hax|}</i> falls back on the project-directory's name for that.</li>
+	<li>this can be changed or disabled via a {X|c:|C|_hax_relpath_sitemap:|} {X|lb:haxproj#cmisc <i>*.haxproj</i> directive|}.</li>
+	<li>All site pages are included in the resulting <i>sitemap.xml</i> output file except pages associated with {X|lb:bloks Bloks|} that have {X|lb:haxproj#bdecl declared otherwise|}.</li>
+	<li>Each generated {X|c:loc|} value is <i>required</i> (needlessly and wastefully so, but that's the format) to include a full domain-name and unless a custom {X|c:|C|_hax_domainname:|} {X|lb:haxproj#cmisc <i>*.haxproj</i> directive|} was explicitly declared, <i>{T|Hax|}</i> falls back on the project-directory's name for that.</li>
 	<li>Each generated {X|c:priority|} value is guesstimated by a naive heuristic based loosely on page path length/depth/complexity and not currently user-customizable.</li>
-	<li>Each generated {X|c:lastmod|} value refers to the <i>custom-set page date</i> <b>only</b> if that was <a href="#">explicitly encoded in the content source file's name</a>, otherwise it falls back to the content source file's currently set "<i>last modified</i>" timestamp.</li>
+	<li>Each generated {X|c:lastmod|} value refers to the <i>custom-set page date</i> <b>only</b> if that was {X|lb:datetime#fname explicitly encoded in the content source file's name|}, otherwise it falls back to the content source file's currently set "<i>last modified</i>" timestamp.</li>
 </ul>
-{X|h: *.atom files for Bloks |}
+<span id="blokatoms">{X|h: *.atom files for Bloks |}</span>
 <p>
-	Whether and where these are written is specified in a |B| directive's {X|c:atomFile|} <a href="#">property</a>. Every page associated with the Blok is (during generation of its corresponding <i>*.atom</i> feed) translated in its entirety into one equivalent {X|c:&lt;entry&gt;|} (of course sans the <a href="#">outer template</a>). To not reprocess all <a href="#">haXtags</a> for each, a cached (already-processed and thus haXtag-free) in-memory version of the page content is used for that. However, <i>that</i> in turn forced {T|Hax|} to reprocess and re-generate (prior to generating any <i>*.atom</i>s) <i>any and all</i> pages that will end up in any <i>*.atom</i> feed determined to need re-generation during this run. This behavior will be improved in the future.
+	Whether and where these are written is specified in a |B| directive's {X|c:atomFile|} {X|lb:haxproj#bdecl property|}. Every page associated with the Blok is (during generation of its corresponding <i>*.atom</i> feed) translated in its entirety into one equivalent {X|c:&lt;entry&gt;|} (of course sans the {X|lb:tmplsnip outer template|}). To not reprocess all {X|lt:index haXtags|} for each, a cached (already-processed and thus haXtag-free) in-memory version of the page content is used for that. However, <i>that</i> in turn forced {T|Hax|} to reprocess and re-generate (prior to generating any <i>*.atom</i>s) <i>any and all</i> pages that will end up in any <i>*.atom</i> feed determined to need re-generation during this run. This behavior will be improved in the future.
 </p>
 {X|h: *.atom files for |P| "feeds" |}
 <p>
-	These are not by default generated unless a {X|c:|C|_hax_relpath_postatoms:|} <a href="#">*.haxproj directive</a> explicitly specifies a site-root-relative (aka. build-directory-relative) path to the location they should be written to (can be {X|c:&nbsp;/|} too). One such output file is then generated there per every <a href="#">"feed"</a> (auto-named {X|c:<i>&lt;feed-name&gt;</i>.atom|}). All the content/meta-data for each "post" belonging to the "feed" is translated into one equivalent {X|c:&lt;entry&gt;|}.
+	These are not by default generated unless a {X|c:|C|_hax_relpath_postatoms:|} {X|lb:haxproj#cmisc <i>*.haxproj</i> directive|} explicitly specifies a site-root-relative (aka. build-directory-relative) path to the location they should be written to (can be {X|c:&nbsp;/|} too). One such output file is then generated there per every {X|lb:haxproj#pdecl "feed"|} (auto-named {X|c:<i>&lt;feed-name&gt;</i>.atom|}). All the content/meta-data for each "post" belonging to the "feed" is translated into one equivalent {X|c:&lt;entry&gt;|}.
 </p>

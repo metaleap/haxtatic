@@ -3,25 +3,33 @@
 	A collection of <b>related pages sharing a common path prefix</b> can be associated together via the notion of the "Blok": a lightweight set of a handful of shared meta-data and processing properties. {X|note: For example, in this site the Bloks are <b>{B|title:basics|}</b>, <b>{B|title:tags|}</b> and <b>{B|title:xtypes|}</b>.|}
 </p>
 <p class="up">
-	Bloks are identified by a {X|c:name|} that is <b>exactly equivalent to the common path prefix</b> of the related pages to be associated under this umbrella. This <i>name</i> must be connected to a number of properties via a <i>*.haxproj</i> {X|c:|B|<i>name</i>: .. |} directive, <a href="haxproj.html#|B| directives: for &quot;Bloks&quot;">as this "live" example (for this site's Blok named {X|c:basics|}) easily demonstrates</a>.
+	Bloks are identified by a {X|c:name|} that is <b>exactly equivalent to the common path prefix</b> of the related pages to be associated under this umbrella. This <i>name</i> must be connected to a number of properties via a <i>*.haxproj</i> {X|c:|B|<i>name</i>: .. |} directive, {X|lb:haxproj#bdecl as this "live" example (for this site's Blok named {X|c:basics|}) easily demonstrates|}.
 </p>
 {X|h: With such a directive in place: |}
 <ul>
 	<li>The content source pages associated with the Blok will all have a relative path pattern of <i>either</i> {X|c:<i>name</i>/*.html|} <i>or</i> {X|c:<i>name</i>.*.html|}</li>
-	<li>Named <a href="#">B-tags</a> (using the <i>name</i>) will work anywhere to output any given one of that Blok's shared meta-data and processing properties (that were just defined in the above <i>*.haxproj</i> {X|c:|B|<i>name</i>: .. |} directive)</li>
-	<li>Unnamed <a href="#">B-tags</a> (for querying the "current" Blok) that end up (directly or indirectly) inside Blok-associated pages will work for the same purpose</li>
-	<li>Inclusion/exclusion of the associated Blok pages in/from <a href="#">output XML files</a> (<i>*.atom</i> and <i>sitemap.xml</i>) is precisely specified</li>
+	<li>Named {X|lt:b B-tags|} (using the <i>name</i>) will work anywhere to output any given one of that Blok's shared meta-data and processing properties (that were just defined in the above <i>*.haxproj</i> {X|c:|B|<i>name</i>: .. |} directive)</li>
+	<li>Unnamed {X|lt:b B-tags|} (for querying the "current" Blok) that end up (directly or indirectly) inside Blok-associated pages will work for the same purpose</li>
+	<li>Inclusion/exclusion of the associated Blok pages in/from {X|lb:xmlfiles output XML files|} (<i>*.atom</i> and <i>sitemap.xml</i>) is precisely specified</li>
 	<li>All of the above equally applies to the auto-generated Blok index page, if any:</li>
 </ul>
-{X|h: Auto-generation of Blok index pages |}
+<span id="auto">{X|h: Auto-generation of Blok index pages |}</span>
 <p>
 	If the above |B| directive defines a {X|c:blokIndexPageFile|}, then 1 additional output page will be generated for the Blok that has no direct counterpart among the project's input content sources: this can be used as an umbrella page for the Blok's pages &mdash; dressed as a table-of-contents, a section home, an "article archive", etc. {X|note: Each Blok in this site has its own such auto-generated {X|c:/&lt;name&gt;/index.html|} as set in its corresponding |B| directive in <i>default.haxproj</i>. |}
 </p>
 <h3>Content from a snippet, not a source page</h3>
 <p>
-	During generation of that page, when the <a href="#">outer template</a> invokes {X|c:{P<!---->|:content:|<!---->}|}, the content of the {X|c:tmpl/_hax_blokindex.haxsnip.html|} file is applied in-place by invoking an (on-the-fly in-memory) <a href="#">X-tag</a> of the form {X|c:{X<!---->|_hax_blokindex: vars=[("bname","&lt;current-blok-name&gt;")], content="" |<!---->}|}. For the "factory-default" pre-authored {X|c:tmpl/_hax_blokindex.haxsnip.html|} this dynamically includes the Blok's {X|c:title|} and {X|c:desc|} directive properties as a starter template.
+	During generation of that page, when the {X|lb:tmplsnip outer template|} invokes {X|lt:p#Built-in {X|c:{P<!---->|:content:|<!---->}|}|}
 </p>
+<ul>
+	<li>the content of the {X|c:tmpl/_hax_blokindex.haxsnip.html|} {X|lb:tmplsnip#snippets snippet file|} is applied in-place by</li>
+	<li>invoking an (on-the-fly in-memory) {X|lt:x X-tag|} of the form {X|c:{X<!---->|_hax_blokindex: vars=[ ("bname","<i>&lt;blok-name&gt;</i>") ], flags=[], content="" |<!---->}|}.
+		<ul><li>The "factory-default" (auto-generated whenever missing) {X|c:tmpl/_hax_blokindex.haxsnip.html|}, as a starter template by way of example,</li>
+		<li>dynamically embeds the so-{X|c:bname|}d Blok's {X|c:title|} and {X|c:desc|} {X|lb:haxproj#bdecl properties|}</li>
+		<li>via {X|c:{B<!---->|title:{%<i>bname</i>%}|<!---->}|} and {X|c:{B<!---->|desc:{%<i>bname</i>%}|<!---->}|} respectively.</li></ul>
+	</li>
+</ul>
 <h3>Auto link lists to Blok pages</h3>
 <p>
-	For seeing how to <i>actually</i> generate (in this auto-generated Blok index page or elsewhere) an acceptable hyperlinked listing of some or all of the Blok-associated pages &mdash;the original default {X|c:tmpl/_hax_blokindex.haxsnip.html|} lacks this&mdash; it pays to inspect the project-directory from which this site was generated: specifically how a (minimally) customized {X|c:tmpl/_hax_blokindex.haxsnip.html|} invokes an additional (project-specific) {X|c:tmpl/haxdox-bloklink.haxsnip.html|} via a custom <a href="#">X-tag</a> defined in the {X|c:|X|hax.repeat:doxindex:|} directive (in <a href="#">default.haxproj</a>). This interplay may appear slightly confusing during experimentation, unless the (ultimately trivial) rendering logic of both the <a href="#">hax.snippet</a> and especially the <a href="#">hax.repeat</a> X-renderers are absorbed first.
+	For seeing how to <i>actually</i> generate (in this auto-generated Blok index page or elsewhere) an acceptable hyperlinked listing of some or all of the Blok-associated pages &mdash;the original default {X|c:tmpl/_hax_blokindex.haxsnip.html|} lacks this&mdash; it pays to inspect the project-directory from which this site was generated: specifically how a (minimally) customized {X|c:tmpl/_hax_blokindex.haxsnip.html|} invokes an additional (project-specific) {X|c:tmpl/haxdox-bloklink.haxsnip.html|} via a custom {X|lt:x X-tag|} defined in the {X|c:|X|hax.repeat:doxindex:|} directive (in <a href="http://github.com/metaleap/haxtatic/blob/master/dox-demo/default.haxproj">default.haxproj</a>). This interplay may appear slightly confusing during experimentation, unless the (ultimately trivial) rendering logic of both the {X|lx:snippet hax.snippet|} and especially the {X|lx:repeat hax.repeat|} X-renderers are absorbed first.
 </p>

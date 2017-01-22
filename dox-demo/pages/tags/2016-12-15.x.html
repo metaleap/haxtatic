@@ -1,18 +1,20 @@
 <h1>X-tags: dynamic renderers</h1>
 <p class="up">An <code>{X<!---->| <i>..</i> |<!---->}</code> tag invokes a programmatic output renderer.</p>
-<p class="up">Such an "<i>X-renderer</i>" may be of a built-in type, or of a custom one developed in Haskell and linked into the <i>{T| Hax |}</i> code-base manually. Naturally only the built-in types are covered here and in the <a href="#">{B|title:xtypes|}</a> section.</p>
-<p class="up">Like <b>T</b>-tags (and unlike <b>P</b>- and <b>B</b>-tags), there <i>are no</i> predefined <b>X</b>-tags, only those declared and set up in <a href="#">*.haxproj</a> files &mdash; ie. before an X-tag can be embedded many times anywhere in the project, it is first to be defined once in a <i>*.haxproj</i>: to be given a name and some default settings.</p>
+<p class="up">Such an "<i>X-renderer</i>" may be of a built-in type, or of a custom one developed in Haskell and linked into the <i>{T| Hax |}</i> code-base manually. Naturally only the built-in types are covered here and in the {X|lx:index {B|title:xtypes|}|} section.</p>
+<p class="up">Like <b>T</b>-tags (and unlike <b>P</b>- and <b>B</b>-tags), there <i>are no</i> predefined <b>X</b>-tags, only those {X|lb:haxproj#xdecl declared and set up in <i>*.haxproj</i> files|} &mdash; ie. before an X-tag can be embedded many times anywhere in the project, it is first to be defined once in a <i>*.haxproj</i>: to be given a name and some default settings.</p>
 <p>Here are the built-in <i>X-renderers</i> ready to set up and try out:</p>
 <ul>
 	<li><a href="#demoSimplest">hax.demoSimplest</a> &mdash; "Hello World!"</li>
 	<li><a href="#demoCfgArgs">hax.demoCfgArgs</a> &mdash; "Hello, <i>foo</i>!"</li>
 	<li><a href="#miniTag">hax.miniTag</a> &mdash; to use eg. {X|c:{<!---->X|bq: ..|} or {X|c:{<!---->X|c: ..|} in place of verbosity such as {X|c:&lt;blockquote&gt; .. &lt;/blockquote&gt;|} or {X|c:&lt;code&gt; .. &lt;/code&gt;|}</li>
+	<li><a href="#xmlEscape">hax.xmlEscape</a> &mdash; HTML/XML-escape given content</li>
 	<li><a href="#image">hax.image</a> &mdash; less-verbose images</li>
+	<li><a href="#link">hax.link</a> &mdash; less-verbose links</li>
 	<li><a href="#links">hax.links</a> &mdash; lean &amp; neat navigation helper</li>
 	<li><a href="#pageAnchors">hax.pageAnchors</a> &mdash; gather and link to in-page contents</li>
 	<li><a href="#snippet">hax.snippet</a> &mdash; elsewhere known as "custom controls", "components", "sub-templates", or "<i>thing</i>lets"..</li>
 	<li><a href="#repeat">hax.repeat</a> &mdash; versatile content/data selector&rarr;rearranger&rarr;reformatter&rarr;renderer</li>
 </ul>
 <span id="demo">
-{X|xdescs: over = FeedPosts (Just Filter {feeds=["xdesc"], cats=[], dates=Nothing}) , wrapEach = ("X|haxdox-xtdesc: vars=[(\"hsub\",\"\") , (\"htop\" , \"{%cat%}\"), " , "], flags=[], content=\"\" |"), order = None, skip = 0, limit = 0, more = ["declmore" , "cfgmore" , "usage"] |}
+{X|xdescs: over = FeedPosts (Just Filter {feeds=["xdesc"], cats=[], dates=Nothing}) "" [] , wrapEach = ("X|haxdox-xtdesc: vars=[(\"hsub\",\"\") , (\"htop\" , \"{%cat%}\"), " , "], flags=[], content=\"\" |"), order = None, skip = 0, limit = 0, more = ["declmore" , "cfgmore" , "usage"] |}
 </span>

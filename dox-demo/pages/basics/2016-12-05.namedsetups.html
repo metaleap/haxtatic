@@ -3,14 +3,14 @@
 	{X|note: &nbsp;<b>%s</b>.haxproj&nbsp;&nbsp;+&nbsp;&nbsp;tmpl/<b>%s</b>.haxtmpl.html&nbsp;&nbsp;+&nbsp;&nbsp;<b>%s-build</b>/&nbsp; |}
 |%}
 <p class="up">
-	A near-empty {X|c: <i>default</i>.haxproj|} file was <a href="projdir.html#4 standard files">created</a> during project creation, as were a pre-authored {X|c: tmpl/<i>default</i>.haxtmpl.html|} file and a {X|c: <i>default</i>-build|} directory. Here's why they all share <b>default</b> in their names and how "setup names" can be leveraged for more finegrained project experiments / variations.
+	A near-empty {X|c: <i>default</i>.haxproj|} file was {X|lb:projdir#files created|} during project creation, as were a pre-authored {X|c: tmpl/<i>default</i>.haxtmpl.html|} file and a {X|c: <i>default</i>-build|} directory. Here's why they all share <b>default</b> in their names and how "setup names" can be leveraged for more finegrained project experiments / variations.
 </p>
 {X|h: Multiple *.haxproj|}
 <p>
-	<a href="projdir.html">When <i>{T|Hax|}</i> is run, it is at a minimum always given a project directory path to work in</a>, but following that one required command-line argument there may be <b>any number of <i>*.haxproj</i> file names</b> (not paths, and separated via white-space). Only when these <i>aren't</i> specified does {T|Hax|} actually assume a single <i>default.haxproj</i> is to be used.
+	{X|lb:projdir#run When <i>{T|Hax|}</i> is run, it is at a minimum always given a project directory path to work in|}, but following that one required command-line argument there may be <b>any number of <i>*.haxproj</i> file names</b> (not paths, and separated via white-space). Only when these <i>aren't</i> specified does {T|Hax|} actually assume a single <i>default.haxproj</i> is to be used.
 </p>
 <p>
-	So all the specified <a href="haxproj.html">*.haxproj</a> files are loaded in sequence and combined-into-one in memory on the fly. This may result in later definitions overriding previous ones, which in turn can be really quite handy (once the need materializes).
+	So all the specified {X|lb:haxproj *.haxproj|} files are loaded in sequence and combined-into-one in memory on the fly. This may result in later definitions overriding previous ones, which in turn can be really quite handy (once the need materializes).
 </p>
 <p>
 	If any one of these named files doesn't exist, it is quietly ignored. If <i>none</i> of them exist, the above-mentioned fallback to <i>default.haxproj</i> applies. If <i>that</i> one doesn't exist, a minimalist pre-authored version is re-created to demonstrate just how seriously <i>{T|Hax|}</i> takes all this.

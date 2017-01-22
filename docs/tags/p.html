@@ -14,7 +14,7 @@
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
 		<label for="chk_showtoc">On this page:</label>
 		<ul>
-<li><a href="#Built-in">Built-in</a></li><li><a href="#Custom">Custom</a></li><li><a href="#Page-relative URLs">Page-relative URLs</a></li><li><a href="#Delaying X-renderers">Delaying X-renderers</a></li>
+<li><a href="#Built-in">Built-in</a></li><li><a href="#Custom">Custom</a></li><li><a href="#Page-relative URLs">Page-relative URLs</a></li><li><a href="#Delaying X-tags">Delaying X-tags</a></li>
 		</ul>
 	</div>
 
@@ -26,8 +26,8 @@
 <ul>
 	<li><code>{P<!---->|title|<!---->}</code> &rarr; current page content source's first <code>&lt;h1&gt;</code>'s entire inner markup (if any)<br/>&mdash; eg. for this page: <span class="hd-note">P-tags: page-specific outputs</span></li>
 	<li><code>{P<!---->|1st:<i>htmltagname</i>|<!---->}</code> &rarr; current page content source's first <code>&lt;<i>htmltagname</i>&gt;</code>'s entire inner markup (if any)<br/>&mdash; eg. for this page for <code><i>{P<!---->|1st:</i>b<i>|<!---->}</i></code>: <span class="hd-note">current page context</span></li>
-	<li><code>{P<!---->|:content:|<!---->}</code> &rarr; current page's entire content source markup (only works in your <a href="#">*.haxtmpl.*</a> files)</li>
-	<li><code>{P<!---->|date|<!---->}</code> and <code>{P<!---->|date:<i>mydtformatname</i>|<!---->}</code> &rarr; current <a href="#">page date</a> <br/>&mdash; eg. for this page: <span class="hd-note">2016-12-17</span></li>
+	<li><code>{P<!---->|:content:|<!---->}</code> &rarr; current page's entire content source markup (only works in your <a href="../basics/tmplsnip.html">*.haxtmpl.*</a> files)</li>
+	<li><code>{P<!---->|date|<!---->}</code> and <code>{P<!---->|date:<i>mydtformatname</i>|<!---->}</code> &rarr; current <a href="../basics/datetime.html">page date</a> <br/>&mdash; eg. for this page: <span class="hd-note">2016-12-17</span></li>
 	<li><code>{P<!---->|fileName|<!---->}</code> &rarr; the current page's output file name<br/>&mdash; eg. for this page: <span class="hd-note">p.html</span></li>
 	<li><code>{P<!---->|fileBaseName|<!---->}</code> &rarr; the current page's output file name without file extensions<br/>&mdash; eg. for this page: <span class="hd-note">p</span></li>
 	<li><code>{P<!---->|fileUri|<!---->}</code> &rarr; the current page's URI path relative to the site root<br/>&mdash; eg. for this page: <span class="hd-note">/tags/p.html</span></li>
@@ -38,8 +38,8 @@
 	<li><code>{P<!---->|srcPath|<!---->}</code> &rarr; full path to the content source of the current page<br/>&mdash; eg. for this page: <span class="hd-note">D:\dev\hs\hax2\dox-demo\pages\tags\2016-12-17.p.html</span></li>
 	<li><code>{P<!---->|srcRelPath|<!---->}</code> &rarr; project-directory-relative path to the content source of the current page<br/>&mdash; eg. for this page: <span class="hd-note">pages\tags\2016-12-17.p.html</span></li>
 	<li><code>{P<!---->|outBuild|<!---->}</code> &rarr; full path to the current page's output file<br/>&mdash; eg. for this page: <span class="hd-note">D:\dev\hs\hax2\dox-demo\default-build\tags\p.html</span></li>
-	<li><code>{P<!---->|outDeploy|<!---->}</code> &rarr; full path to the current page's output file in the <a href="#">secondary</a> output directory, if any</li>
-	<li><code>{P<!---->|srcTime|<!---->}</code> and <code>{P<!---->|srcTime:<i>mydtformatname</i>|<!---->}</code> &rarr; the current page source's <i>actual</i> modification date/time (which may differ from the <a href="#">page date</a> if that was set explicitly)<br/>&mdash; eg. for this page: <span class="hd-note">2017-01-22</span></li>
+	<li><code>{P<!---->|outDeploy|<!---->}</code> &rarr; full path to the current page's output file in the <a href="../basics/haxproj.html#cmisc">secondary</a> output directory, if any</li>
+	<li><code>{P<!---->|srcTime|<!---->}</code> and <code>{P<!---->|srcTime:<i>mydtformatname</i>|<!---->}</code> &rarr; the current page source's <i>actual</i> modification date/time (which may differ from the <a href="../basics/datetime.html">page date</a> if that was set explicitly)<br/>&mdash; eg. for this page: <span class="hd-note">2017-01-22</span></li>
 </ul>
 <h2 id="Custom">Custom</h2>
 <p>
@@ -52,7 +52,7 @@
 	Of note: you <b>can</b> overwrite all the built-ins listed above with this feature! Possibly useful for setting page title / date that way, probably useless otherwise &mdash; but possible.
 </p>
 <h3>Parameterizing</h3>
-<p>Supported for up to 6 (in total) occurrences in <i>value</i> of <code>&nbsp;%s</code> or <code>&nbsp;%v</code> (the former should technically be minimally faster, but both functionally equivalent). For accesses then occurring anywhere not simply via <code>{P<!---->|<i>name</i>|<!---->}</code>, but via <code>{P<!---->|<i>name</i>:<i>my value #1</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>value1:value2</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>val1:val2:val3</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>v1:v2:v3:v4</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>v1:v2:v3:v4:v5</i>|<!---->}</code>, or <code>{P<!---->|<i>name</i>:<i>v1:v2:v3:v4:v5:v6</i>|<!---->}</code> the appropriate in-place value substitutions will be effected. (For any more expressive substitution requirements, use of a <a href="#">snippet</a> would be called for either instead of or combined with the custom P-tag.)</p>
+<p>Supported for up to 6 (in total) occurrences in <i>value</i> of <code>&nbsp;%s</code> or <code>&nbsp;%v</code> (the former should technically be minimally faster, but both functionally equivalent). For accesses then occurring anywhere not simply via <code>{P<!---->|<i>name</i>|<!---->}</code>, but via <code>{P<!---->|<i>name</i>:<i>my value #1</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>value1:value2</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>val1:val2:val3</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>v1:v2:v3:v4</i>|<!---->}</code>, <code>{P<!---->|<i>name</i>:<i>v1:v2:v3:v4:v5</i>|<!---->}</code>, or <code>{P<!---->|<i>name</i>:<i>v1:v2:v3:v4:v5:v6</i>|<!---->}</code> the appropriate in-place value substitutions will be effected. (For any more expressive substitution requirements, use of a <a href="../basics/tmplsnip.html#snippets">snippet</a> would be called for either instead of or combined with the custom P-tag.)</p>
 <p class="hd-note"><b>If</b> any such parameterized accesses are to be employed anywhere, to avoid faulty outputs <b>be sure to self-escape</b> <i>all</i> other occurrences of <code>&nbsp;%</code> in the original <i>value</i> (not in the accessing P-tags) by doubling each to <code>&nbsp;%%</code>.</p>
 <span id="relpaths"><h2 id="Page-relative URLs">Page-relative URLs</h2></span>
 <p>
@@ -61,9 +61,9 @@
 <p>
 	If all pages exist next to each other at the site-root level anyway (micro-sites etc.), this isn't of course even needed.
 </p>
-<h2 id="Delaying X-renderers">Delaying X-renderers</h2>
+<h2 id="Delaying X-tags">Delaying X-tags</h2>
 <p>
-	By default, the built-in <a href="#">X-renderers</a> readily detect and decide autonomously whether to process an <a href="#">X-tag</a> as early as possible, or only once a page context is current. However, any <a>X-tag</a> can be forced to delay rendering until page time by wrapping its contents inside a P-tag, ie. turning <code>{X<!---->|<i> .. tag content .. </i>|<!---->}</code> into <code>{P<!---->|X|<i> .. tag content .. </i>|<!---->}</code> &mdash; not particularly fruitful unless troubleshooting a particular X-tag or X-renderer.
+	By default, the built-in <a href="../xtypes/index.html">X-renderers</a> readily detect and decide autonomously whether to process an <a href="../tags/x.html">X-tag</a> as early as possible, or only once a page context is current. However, any X-tag can be forced to delay rendering until page time by wrapping its contents inside a P-tag, ie. turning <code>{X<!---->|<i> .. tag content .. </i>|<!---->}</code> into <code>{P<!---->|X|<i> .. tag content .. </i>|<!---->}</code> &mdash; not particularly fruitful unless troubleshooting a particular X-tag or X-renderer.
 </p>
 
 <!-- end of content source page -->

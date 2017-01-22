@@ -1,9 +1,9 @@
 <h1>Project setup: *.haxproj files</h1>
 <p class="up">
-	A near-empty {X|c: default.haxproj|} was <a href="projdir.html#4 standard files">created</a> during project creation. This plain-text file exists to contain any number of (fairly trivial) "directives" &mdash; lean-yet-expressive statements that may: define reusable micro-contents, fine-tune the overall processing flow, associate certain content pages with one another, or compose and direct custom rendering logic.
+	A near-empty {X|c: default.haxproj|} was {X|lb:projdir#files created|} during project creation. This plain-text file exists to contain any number of (fairly trivial) "directives" &mdash; lean-yet-expressive statements that may: define reusable micro-contents, fine-tune the overall processing flow, associate certain content pages with one another, or compose and direct custom rendering logic.
 </p>
 <p class="up hd-note">
-	(Note that <a href="#">you can combine multiple *.haxproj files</a> &mdash; eg. if they grow too big to grasp at once, or for more advanced purposes such as temporary overriding of some directives or separately co-existing "named setups" in a single project.)
+	(Note that {X|lb:namedsetups you can combine multiple <i>*.haxproj</i> files|} &mdash; eg. if they grow too big to grasp at once, or for more advanced purposes such as temporary overriding of some directives or separately co-existing "named setups" in a single project.)
 </p>
 {X|h: Directives |}
 <p class="up">
@@ -18,15 +18,15 @@
 <p>
 	Directives of type |B| and |C| allow specifying of local paths. These are typically considered relative to the project's build directory and in any event, nowhere are paths pointing outside the project directory <b>supported</b>. <i>{T|Hax|}</i> does attempt to sanitize those and then interpret them as relative to the currently supposed context.
 </p>
-{X|h: |T| directives: for text values |}
+<span id="tdecl">{X|h: |T| directives: for text values |}</span>
 <ul>
 	<li>Define named plain-text/simple-markup snippets like so:<br/><code>|T|<i>AuthBlurb</i>:<i> The author is a serial enthusiast<br/>role-playing &lt;a&gt;on XingedIn&lt;/a&gt;.</i></code></li>
-	<li>Embed as <a href="{P|/tags/t.html|}">T-tags</a> anywhere: <code>{T<!---->|<i>AuthBlurb</i>|<!---->}</code></li>
+	<li>Embed as {X|lt:t T-tags|} anywhere: <code>{T<!---->|<i>AuthBlurb</i>|<!---->}</code></li>
 	<li>Leading/trailing white-space is stripped of both the <i>name</i> and the <i>value</i>, which as shown are separated by the first colon encountered.</li>
 </ul>
-{X|h: |B| directives: for "Bloks" |}
+<span id="bdecl">{X|h: |B| directives: for "Bloks" |}</span>
 <p>
-	Just as <a href="#">|T| directives</a> consist of a <i>name</i> connected via a {X|c:&nbsp;:|} to their <i>value</i>, so each and every <b>|B| directive</b> defines a <a href="#">Blok</a> {X|note:(a section-of-related-pages, or indeed a simple "poor-man's blog-of-sorts")|} by connecting via a {X|c:&nbsp;:|} that Blok's <i>name</i> to its properties &mdash; eg. here's how this site's current <a href="{P|/basics/index.html|}">{B|title:basics|}</a> section (also just a "Blok") is defined:
+	Just as <a href="#tdecl">|T| directives</a> consist of a <i>name</i> connected via a {X|c:&nbsp;:|} to their <i>value</i>, so each and every <b>|B| directive</b> defines a {X|lb:bloks Blok|} {X|note:(a section-of-related-pages, or indeed a simple "poor-man's blog-of-sorts")|} by connecting via a {X|c:&nbsp;:|} that Blok's <i>name</i> to its properties &mdash; eg. here's how this site's current {X|lb:index {B|title:basics|}|}</a> section (also just a "Blok") is (approximately, <a href="http://github.com/metaleap/haxtatic/blob/master/dox-demo/default.haxproj#L15">the original</a> includes {X|lt:index haXtags|}) defined:
 </p>
 <pre>
 |B|<i>basics</i>:
@@ -34,26 +34,25 @@
     atomFile = "<i>{B|atomFile:basics|}</i>",
     blokIndexPageFile="<i>{B|blokIndexPageFile:basics|}</i>",
     inSitemap = <i>True</i>,
-    dtFormat = "<i>{B|dtFormat:basics|}</i>",
-    desc=&gt; <i>{B|desc:basics|}</i>
+    desc=&gt;
+       <i>{X|&:{B|desc:basics|}|}</i>
 </pre>
-<p><a href="#">Stringent syntactic rules</a> apply here! The properties in detail:</p>
+<p>{X|lb:syntax Stringent syntactic rules|} apply here! The properties in detail:</p>
 <ul>
 	<li>{X|c:title|} and {X|c:desc|} &mdash; self-explanatory, and used (for one) in the associated generated files, if any:</li>
 	<li>{X|c:atomFile|} and {X|c:blokIndexPageFile|} both describe a site-root-relative (aka. <i>build</i>-directory-relative) file path and if empty, these files will not be generated.</li>
-	<li>{X|c:inSitemap|} includes or excludes <i>all</i> pages associated with this Blok in/from the generated <a href="#">sitemap.xml</a> (if any)</li>
-	<li>{X|c:dtFormat|} &mdash; a hint as to the name of the preferred <a href="#">date-time format</a> that <a href="#">X-renderers</a> / <a href="#">snippets</a> should ideally use for contents associated with this Blok</li>
+	<li>{X|c:inSitemap|} includes or excludes <i>all</i> pages associated with this Blok in/from the generated {X|lb:xmlfiles sitemap.xml|} (if any)</li>
 </ul>
-<p class="hd-note">The values set for the above properties can be output anywhere via <a href="#">B-tags</a> &mdash; so in essence each <b>|B|</b> directive automatically defines 6 uniquely distinct B-tags.</p>
+<p class="hd-note">The values set for the above properties can be output anywhere via {X|lt:b B-tags|} &mdash; so in essence each <b>|B|</b> directive automatically defines 5 uniquely distinct B-tags.</p>
 <span id="xdecl">{X|h: |X| directives: for rendering |}</span>
 <p>
-	Just as a <a href="#">|T| directive</a> in essence defines a uniquely distinct <a href="#">T-tag</a> each that can be embedded many times anywhere (to effect in-place text substitution), so each and every <b>|X| directive</b> in essence defines a uniquely distinct <a href="#">X-tag</a> that can be embedded many times anywhere (to effect in-place output rendering by some custom logic).
+	Just as a <a href="#tdecl">|T| directive</a> in essence defines a uniquely distinct {X|lt:t T-tag|} each that can be embedded many times anywhere (to effect in-place text substitution), so each and every <b>|X| directive</b> in essence defines a uniquely distinct {X|lt:x X-tag|} that can be embedded many times anywhere (to effect in-place output rendering by some custom logic).
 </p>
 <p>
-	That is to say: with {X|c:|X|<i>x-renderer-type</i>:<i>mytagname</i>: ..|} we declare that {X|c:{X<!---->|mytagname: ..|<!---->}|} encountered <i>anywhere</i> will during processing invoke the <a href="#">X-renderer</a> <i>x-renderer-type</i> with the defined properties in effect.
+	That is to say: with {X|c:|X|<i>x-renderer-type</i>:<i>mytagname</i>: ..|} we declare that {X|c:{X<!---->|mytagname: ..|<!---->}|} encountered <i>anywhere</i> will during processing invoke the {X|lx:index X-renderer|} <i>x-renderer-type</i> with the defined properties in effect.
 </p>
 <p>
-	So every |X| directive associates with a chosen custom (X-)tag name: <i>both</i> a specified <a href="#">X-renderer</a> type to invoke for output rendering (in-place of every X-tag encountered with that given name), <i>and</i> that X-renderer's properties effective while it produces output.
+	So every |X| directive associates with a chosen custom (X-)tag name: <i>both</i> a specified {X|lx:index X-renderer|} type to invoke for output rendering (in-place of every X-tag encountered with that given name), <i>and</i> that X-renderer's properties effective while it produces output.
 </p>
 <p>
 	For example, this site declares (among others) these two <b>|X|</b> directives in order to automatically generate on every page (the shaded box near the top to the right) a listing of "Jump To" shortcuts for every chapter heading on that page:
@@ -67,16 +66,16 @@
     htmlIfEmpty = <i>"&lt;style type='text/css'&gt;.hd-toc { display: none; }&lt;/style&gt;"</i>
 </pre>
 <p>
-	No particular <i>extra</i> effort here for all the individual content pages: these simply contain their chapter headings not as plain {X|c:&lt;h2&gt;|} HTML tags but as <code>{X<!---->|h: Chapter Heading Here|<!---->}</code> X-tags instead (2 quick "find&amp;replace-in-folder" commands in any minimally capable text editor). Meanwhile just the <a href="#">default.haxtmpl.html</a> employs a single <code>{X<!---->|doxpagetoc:li: htmlAtts = [] |<!---->}</code> X-tag to generate these desired {X|c: &lt;li&gt;&lt;a href=&quot;#... |} outputs on all pages.
+	No particular <i>extra</i> effort here for all the individual content pages: these simply contain their chapter headings not as plain {X|c:&lt;h2&gt;|} HTML tags but as <code>{X<!---->|h: Chapter Heading Here|<!---->}</code> X-tags instead (2 quick "find&amp;replace-in-folder" commands in any minimally capable text editor). Meanwhile just the {X|lb:tmplsnip default.haxtmpl.html|} employs a single <code>{X<!---->|doxpagetoc:li: htmlAtts = [] |<!---->}</code> X-tag to generate these desired {X|c: &lt;li&gt;&lt;a href=&quot;#... |} outputs on all pages.
 </p>
 <h3>To recapitulate</h3>
 <p>what becomes immediately apparent from just this example:</p>
 <ol>
 	<li>Specify first the X-renderer type (here {X|c:hax.miniTag|} and {X|c:hax.pageAnchors|})</li>
 	<li>followed by a {X|c:&nbsp;:|} and a <i>custom (X-)tag name</i> (here {X|c:&nbsp;h|} and {X|c:doxpagetoc|}) and another {X|c:&nbsp;:|}</li>
-	<li>followed by some individually-varying X-renderer-specific settings notation that each X-renderer defines and <a href="#">documents</a> separately.</li>
+	<li>followed by some individually-varying X-renderer-specific settings notation that each X-renderer defines and {X|lx:index documents|} separately.</li>
 	<li>In turn, usage of any {X|c: {X<!---->||} tag embedded anywhere begins with the very <i>custom tag name</i> from 2. (again, here {X|c:&nbsp;h|} and {X|c:doxpagetoc|}) pointing to the associated |X| directive, followed by a {X|c:&nbsp;:|} and then possibly some further individually-varying X-renderer-specific per-instance settings notation (if any).</li>
-	<li>For the built-in X-renderers, both the per-tag settings (aka. tag config) and per-instantiation settings (aka. tag args) notation is (either one or the other but) usually a combination of:<ul><li>first, 1 or 2 colon-separated "flags" (such as {X|c::h2:|} and {X|c::li:|} above) and</li><li>next, the already familiar {X|c:name=<i>value</i>, .. |} named properties, to which <a href="#">these stringent syntactic rules</a> strictly apply.</li></ul></li>
+	<li>For the built-in X-renderers, both the per-tag settings (aka. tag config) and per-instantiation settings (aka. tag args) notation is (either one or the other but) usually a combination of:<ul><li>first, 1 or 2 colon-separated "flags" (such as {X|c::h2:|} and {X|c::li:|} above) and</li><li>next, the already familiar {X|c:name=<i>value</i>, .. |} named properties, to which {X|lb:syntax these stringent syntactic rules|} strictly apply.</li></ul></li>
 </ol>
 <span id="pdecl">{X|h: |P| directives: for "postings" |}</span>
 <p>
@@ -87,7 +86,7 @@
     dt = "<i>2016-01-23</i>",
     cat="<i>Programming</i>",
     title="<i>Brian Beckman</i>",
-    link="<i>https://youtu.be/ZhuHCtR3xq8?t=1003</i>",
+    link="<i>http://youtu.be/ZhuHCtR3xq8?t=1003</i>",
     more=[],
     content=&gt;
     <i>As software gets ever more complicated, we need better control over the complexity. [...]
@@ -104,15 +103,15 @@
     content=&gt;
     <i>I have gotten much more bullish about pure functional programming.</i>
 </pre>
-<p><a href="#">Stringent syntactic rules</a> apply here! The property names should be self-explanatory, except {X|c:more|} (normally not needed and then best kept {X|c:&nbsp;[]|} empty &mdash; when such custom "record data" fields become a serious consideration, check out the <i>default.haxproj</i> for this very site for usage). The above example constitutes:</p>
+<p>{X|lb:syntax Stringent syntactic rules|} apply here! The property names should be self-explanatory, except {X|c:more|} (normally not needed and then best kept {X|c:&nbsp;[]|} empty &mdash; when such custom "record data" fields become a serious consideration, check out the <i>default.haxproj</i> for this very site for usage). The above example constitutes:</p>
 <ul><li>1 "feed" (aka. arbitrary primary category) named {X|c:quotes|}</li><li>made up of 2 "posts" (aka. micro-content records),</li><li>both in the "cat"(egory) of {X|c:Programming|}.</li></ul>
 <h3>Usage</h3>
 <p>
-	Such "feeds" can be output as <i>*.atom</i> XML files (just add a <a href="#">|C|_hax_relpath_postatoms</a> directive) but other than that no separate pages or other files will be auto-generated from them. To embed such micro-contents in the project's generated output pages in versatile ways (<i>without</i> coding up a custom X-renderer from scratch), use the "feed"-related iterators of the built-in <a href="#">hax.repeat</a> X-renderer (those, incidentally, treat |P| "feeds" and Bloks as (for their purposes) functionally equivalent types of content sources, allowing for some neat mixing-and-mashing).
+	Such "feeds" can be output as <i>*.atom</i> XML files (just add a <a href="#cmisc">|C|_hax_relpath_postatoms</a> directive) but other than that no separate pages or other files will be auto-generated from them. To embed such micro-contents in the project's generated output pages in versatile ways (<i>without</i> coding up a custom X-renderer from scratch), use the "feed"-related iterators of the built-in {X|lx:repeat hax.repeat|} X-renderer (those, incidentally, treat |P| "feeds" and Bloks as (for their purposes) functionally equivalent types of content sources, allowing for some neat mixing-and-mashing).
 </p>
-{X|h: |C| directives: more control |}
+<span id="cdecl">{X|h: |C| directives: more control |}</span>
 <p>
-	All quite unnecessary at first, and only promising some relief for increasingly extensive projects on the verge of becoming unwiedly.
+	All quite unnecessary at first, and only promising some relief for increasingly extensive projects on the verge of becoming unwieldy.
 </p>
 <h3>|C|process:ing of source directories</h3>
 <p>For processing source directories, 2 directives are parsed if present: {X|c:|C|process:static:|} (raw files to be batch-copied unprocessed) and {X|c:|C|process:pages:|} (dynamically processed files to be templated-and-generated). Examples:</p>
@@ -143,15 +142,15 @@
 	<li>{X|c:force = ["*"] |} force-processes all <i>except</i> what's excluded by {X|c:skip|}. If the {X|c:force = [ .. ] |} list contains a single {X|c:"*"|} among other values, this is interpreted as simply {X|c:force = ["*"] |}.</li>
 	<li>If both {X|c:skip = ["*"] |} <i>and</i> {X|c:force = ["*"] |} end up as effectively present in the same directive, both cancel each other and the default combination {X|c:skip=[], force=[] |} is thusly assumed for both.</li>
 </ul>
-<h3>|C|dtformat:</h3>
-<p>Defines a custom date-time format.</p>
+<h3 id="cdtf">|C|dtformat:</h3>
+<p>Defines a custom {X|lb:datetime#dtformats date-time format|}.</p>
 <p>Example:</p>
 <pre>
 |C|dtformat:<i>slang</i>:
     <i>Way back on </i>%Y-%m-%d<i> it was!</i>
 </pre>
 <p>
-Format strings are parsed <a href="https://downloads.haskell.org/ghc/8.0.2/docs/html/libraries/time-1.6.0.1/Data-Time-Format.html#v:formatTime">as documented here</a>.
+Format strings are parsed <a href="http://downloads.haskell.org/ghc/8.0.2/docs/html/libraries/time-1.6.0.1/Data-Time-Format.html#v:formatTime">as documented here</a>.
 </p>
 <h3 id="cmisc">|C| .. (miscellaneous)</h3>
 <p>Choose by example what might be needed from:</p>
@@ -159,6 +158,7 @@ Format strings are parsed <a href="https://downloads.haskell.org/ghc/8.0.2/docs/
 |C|_hax_domainname: <i>www.haxtatic.foo</i>
 |C|_hax_dir_build: <i>g&eacute;n&eacute;r&eacute;</i>
 |C|_hax_dir_deploy: <i>redistribuer</i>
+|C|_hax_dir_cache: <i></i>
 |C|_hax_relpath_postatoms: <i>xml/posts/</i>
 |C|_hax_relpath_sitemap: <i>xml/sitemap.xml</i>
 |C|_hax_htmlequivexts: <i>php,shtml,xhtml</i>
@@ -179,15 +179,15 @@ Format strings are parsed <a href="https://downloads.haskell.org/ghc/8.0.2/docs/
 </pre>
 <p>To elaborate:</p>
 <ul>
-	<li>{X|c:_hax_domainname|} is used in <a href="#">sitemap.xml</a> and all generated <a href="#">*.atom XML</a> feed files</li>
-	<li>{X|c:_hax_relpath_sitemap|} &mdash; site-root-relative <i>file path</i> to the output <a href="#">sitemap.xml</a>, set to {X|c:&nbsp;|} (no value) to disable generating the sitemap.</li>
-	<li>{X|c:_hax_relpath_postatoms|} &mdash; generation of <a href="#">*.atom</a> XML files for |P| feeds can be enabled by setting this directive with a site-root-relative (aka build-output-directory-relative) <i>directory path</i> to store them in; by default, such files are not generated</li>
-	<li>{X|c:_hax_htmlequivexts|} &mdash; file extensions <i>other</i> than the built-in always-on {X|c:.html|}, {X|c:.htm|} and {X|c:&nbsp;|} (no file extension) can be designated to also be processed via the applicable <a href="#">*.haxtmpl.html</a> template</li>
+	<li>{X|c:_hax_domainname|} is used in {X|lb:xmlfiles sitemap.xml|} and all generated {X|lb:xmlfiles#blokatoms *.atom XML|} feed files</li>
+	<li>{X|c:_hax_relpath_sitemap|} &mdash; site-root-relative <i>file path</i> to the output {X|lb:xmlfiles sitemap.xml|}, set to {X|c:&nbsp;|} (no value) to disable generating the sitemap.</li>
+	<li>{X|c:_hax_relpath_postatoms|} &mdash; generation of {X|lb:xmlfiles#blokatoms *.atom XML|} files for |P| feeds can be enabled by setting this directive with a site-root-relative (aka build-output-directory-relative) <i>directory path</i> to store them in; by default, such files are not generated</li>
+	<li>{X|c:_hax_htmlequivexts|} &mdash; file extensions <i>other</i> than the built-in always-on {X|c:.html|}, {X|c:.htm|} and {X|c:&nbsp;|} (no file extension) can be designated to also be processed via the applicable {X|lb:tmplsnip *.haxtmpl<i>.html</i>|} template</li>
 	<li>{X|c:_hax_onparseerror|} &mdash; if manually set to {X|c:<i>abort</i>|}, all processing will halt upon the first
-	<a href="#">failure to parse</a> some directive properties or <a href="#">X-tag</a> args. By default, parse errors result in the
+	{X|lb:syntax failure to parse|} some directive properties or {X|lt:x X-tag|} args. By default, parse errors result in the
 	process continuing but the error details being written out directly in-place into generated output files.</li>
-	<li>{X|c:process:tags:|} &mdash; comma-separated list of haXtags to be processed. Removing those that will never be embedded anywhere in the project output may <i>marginally</i> speed up processing (perhaps only noticably-so with many 1000s of processable input files). Also allows enabling the disabled-by-default {X|c: {C<!---->|<i>misc_setting_name</i>|<!---->} |} C-tag prefix, which simply outputs the
+	<li>{X|c:process:tags:|} &mdash; comma-separated list of {X|lt:index haXtags|} to be processed. Removing those that will never be embedded anywhere in the project output may <i>marginally</i> speed up processing (perhaps only noticably-so with many 1000s of processable input files). Also allows enabling the disabled-by-default {X|c: {C<!---->|<i>misc_setting_name</i>|<!---->} |} C-tag prefix, which simply outputs the
 	current setting of any (except {X|c:|C|process:..|} &amp; {X|c:|C|dtformat:..|}) named configuration directive.</li>
 	<li>{X|c:_hax_dir_deploy|} sets a secondary build-output directory (name, not path) where by default there is none.</li>
-	<li>Note: both the {X|c:_hax_dir_build|} and {X|c:_hax_dir_deploy|} directory names will each (at runtime) be combined (via {X|c:&nbsp;-|} dash) with the current <a href="#">setup name</a> for the final <i>actual</i> build-output directory name: hence in new projects the implicit-default value for {X|c:_hax_dir_build|} &mdash;that is, {X|c:<i>build</i>|}&mdash; results in the <i>actual</i> build-output directory name {X|c:<i>default-build</i>|}.</li>
+	<li>Note: both the {X|c:_hax_dir_build|} and {X|c:_hax_dir_deploy|} directory names will each (at runtime) be combined (via {X|c:&nbsp;-|} dash) with the current {X|lb:namedsetups setup name|} for the final <i>actual</i> build-output directory name: hence in new projects the implicit-default value for {X|c:_hax_dir_build|} &mdash;that is, {X|c:<i>build</i>|}&mdash; results in the <i>actual</i> build-output directory name {X|c:<i>default-build</i>|}.</li>
 </ul>

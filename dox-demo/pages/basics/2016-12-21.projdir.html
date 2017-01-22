@@ -2,13 +2,13 @@
 <p class="up">Any project resides in its own project-directory with a predefined (auto-generated) minimal-structure of 4-5 standard folders and 3-4 standard files. Just the usual, bog-standard "content/templates/static/config" stuff! But here's some more color on the finer details, starting with the standard folders belonging to the project-directory:</p>
 <ul class="up">
     <li><b>default-build/</b> &mdash; generated output</li>
-    <li><b>pages/</b> &mdash; all authored content source pages: likely-mostly-unstyled/unthemed/inner-body-only HTML files (but technically, any text files that need processing of <a href="#">haXtags</a>)</li>
+    <li><b>pages/</b> &mdash; all authored content source pages: likely-mostly-unstyled/unthemed/inner-body-only HTML files (but technically, any text files that need processing of {X|lt:index haXtags|})</li>
     <li><b>static/</b> &mdash; raw files to batch-copy unprocessed straight into <b>default-build</b></li>
     <li><b>tmpl/</b> &mdash; templates and snippets</li>
     <li><b>_cache_tmp/</b> &mdash; temporary cache files</li></ul>
-{X|h: Get started |}
-<p>Run HaXtatic specifying "the project-directory to process" and any missing parts from the above essentials will be (re)created in-place.</p>
-<p>Example, to create a new site project named <b>mydemosite.foo</b> (inside the existing <i>~/dev/</i> directory in this case) <ul><li>just run from inside the {T|Hax|} code-base's <i>src</i> directory:<br/><code><a href="https://www.haskell.org/downloads#stack">stack</a> runghc ./@HaxMain.hs ~/dev/mydemosite.foo</code></li><li>or with a compiled executable binary (eg. for extra speed if so inclined), of course<br/><code>my-haxtatic-exe ~/dev/mydemosite.foo</code> works equally</li></ul> and the following is generated:</p>
+<span id="run">{X|h: Get started |}</span>
+<p>As <a href="{P|/index.html|}#Quick start">described earlier</a>, one runs {T|Hax|} specifying "the project-directory to process" and any missing parts from the above essentials will be (re)created in-place.</p>
+<p>Example, to create a new site project named <b>mydemosite.foo</b> (inside the existing <i>~/dev/</i> directory in this case) <ul><li>just run from inside the {T|Hax|} code-base's <i>src</i> directory:<br/><code><a href="http://www.haskell.org/downloads#stack">stack</a> ./@HaxMain.hs ~/dev/mydemosite.foo</code></li><li>or with a compiled executable binary (eg. for extra speed if so inclined), of course<br/><code>my-haxtatic-exe ~/dev/mydemosite.foo</code> works equally</li></ul> and the following is generated:</p>
 <p>{X|doxpic:fresh-project-directory.png A freshly made project-directory|}</p>
 <p>The on-screen output will be something like:</p>
 <pre>
@@ -61,18 +61,18 @@ Wrote 2 files in 0.07s:
 <h3>static/</h3>
 <p>All (changed or new) files and folders (if any) will just be batch-copied over straight into <b>default-build</b> (with no processing) as the first step.</p>
 <h3>pages/</h3>
-<p>All (changed or new) files and folders in here will then be processed by applying a <a href="#">template</a> and the resulting corresponding output file goes into <b>default-build</b>.</p>
+<p>All (changed or new) files and folders in here will then be processed by applying a {X|lb:tmplsnip template|} and the resulting corresponding output file goes into <b>default-build</b>.</p>
 <p>If and <i>only</i> if <b>pages</b> has <i>no files at all</i>, will a default <code>index.html</code> be created once (to get new projects started with).</p>
 <h3>tmpl/</h3>
-<p>To contain custom as well as the auto-generated default <a href="#">templates</a> and <a href="">snippets</a> used during processing of the content source files from <b>pages</b>.</p>
+<p>To contain custom as well as the auto-generated default {X|lb:tmplsnip templates|} and {X|lb:tmplsnip#snippets snippets|} used during processing of the content source files from <b>pages</b>.</p>
 <h3>_cache_tmp/</h3>
-<p>Cached per-processed-page intermediate-representations to slightly speed up rebuilds. This may be manually cleared (or {X|lb:haxproj#cmisc changed/disabled|}) whenever deemed prudent (such as while customizing HaXtatic's Haskell code-base itself).</p>
-{X|h: Standard files |}
+<p>Cached per-processed-page intermediate-representations to slightly speed up rebuilds. This may be manually cleared (or {X|lb:haxproj#cmisc changed/disabled|}) whenever deemed prudent (such as while customizing {T|Hax|}'s Haskell code-base itself).</p>
+<span id="files">{X|h: Standard files |}</span>
 <h3>Always created if missing:</h3>
 <ul>
-	<li><b>default.haxproj</b> &mdash; initially near-empty file (and may well be completely empty) that will over time contain all sorts of custom project-specific definitions used in the project's content source pages, snippets or templates.</li>
-	<li><b>tmpl/default.haxtmpl.html</b> &mdash; contains the complete outer HTML scaffolding markup that every generated HTML page will embed its own unique (processed) contents into. If empty, all generated output HTML pages will be empty. Needs at least the <code>{P<!---->|:content:|<!---->}</code> <a href="{P|/tags/p.html|}">haxTag</a> for output pages to contain their source pages' processed contents.</li>
-	<li><b>tmpl/_hax_blokindex.haxsnip.html</b> &mdash; unused in the initial minimum default structure; this snippet practically generates the dynamic <code>{P<!---->|:content:|<!---->}</code> of auto-generated index(/archive/all-articles-listing/etc.) pages for <a href="#">bloks</a>.</li>
+	<li>{X|lb:haxproj <b>default.haxproj</b>|} &mdash; initially near-empty file (and may well be completely empty) that will over time contain all sorts of custom project-specific definitions used in the project's content source pages, {X|lb:tmplsnip templates|} or {X|lb:tmplsnip#snippets snippets|}.</li>
+	<li>{X|lb:tmplsnip <b>tmpl/default.haxtmpl.html</b>|} &mdash; contains the complete outer HTML scaffolding markup that every generated HTML page will embed its own unique (processed) contents into. If empty, all generated output HTML pages will be empty. Needs at least the <code>{P<!---->|:content:|<!---->}</code> {X|lt:p#Built-in haxTag|} for output pages to contain their source pages' processed contents.</li>
+	<li>{X|lb:bloks#auto <b>tmpl/_hax_blokindex.haxsnip.html</b>|} &mdash; unused in the initial/minimum/default project structure</li>
 </ul>
 <h3>Only created in new and content-free projects:</h3>
 <ul>

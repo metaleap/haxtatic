@@ -5,12 +5,12 @@
 {X|h: Output templates: *.haxtmpl.* |}
 <h3>For files that are deemed HTML files,</h3>
 <p class="up">
-	in new projects, this will select {X|c:tmpl/<i>default</i>.haxtmpl<i>.html</i>|}, with the first part (here {X|c:default|}) derived from <a href="#">the current setup name</a> (which obviously defaults to {X|c:default|}) and {X|c:.html|} being hardcoded to always be chosen for "files that are deemed HTML files".
+	in new projects, this will select {X|c:tmpl/<i>default</i>.haxtmpl<i>.html</i>|}, with the first part (here {X|c:default|}) derived from {X|lb:namedsetups#Named%20setups the current setup name|} (which obviously defaults to {X|c:default|}) and {X|c:.html|} being hardcoded to always be chosen for "files that are deemed HTML files".
 </p>
 <ul>
 	<li>If {X|c:tmpl/<i>&lt;setup-name&gt;</i>.haxtmpl.html|} doesn't exist, <i>{T|Hax|}</i> always looks for {X|c:tmpl/default.haxtmpl.html|} next.</li>
 	<li>If <i>that</i> doesn't exist, a pre-authored default version is re-created in that location and used.</li>
-	<li><b>Which files are deemed HTML files?</b> Always those with file extensions {X|c:.html|}, {X|c:.htm|} and {X|c:&nbsp;|} (none at all), <i>plus</i> any custom <a href="#">_hax_htmlequivexts</a> explicitly listed in a currently loaded <i>*.haxproj</i>.</li>
+	<li><b>Which files are deemed HTML files?</b> Always those with file extensions {X|c:.html|}, {X|c:.htm|} and {X|c:&nbsp;|} (none at all), <i>plus</i> any custom {X|lb:haxproj#cmisc _hax_htmlequivexts|} explicitly listed in a currently loaded <i>*.haxproj</i>.</li>
 </ul>
 <h3>What about files <i>not</i> "deemed HTML"?</h3>
 <p>
@@ -22,7 +22,7 @@
 </ul>
 {X|h: Authoring *.haxtmpl.* files |}
 <p>
-	These templates may contain whatever content is desired. For each processed input file, the corresponding generated output file will <b>first and foremost contain exactly the template content</b>, <a href="#">with every <i>haXtag</i> occurrence substituted in-place for its own dynamically rendered output</a>. In this process, wherever the <a href="#">{X|c: {P<!---->|:content:|<!---->} |} haXtag</a> is encountered in the template content, it is substituted in-place for (finally) the current input file's <i>actual</i> original source content &mdash; again <a href="#">with each <i>haXtag</i> substituted likewise</a>.
+	These templates may contain whatever content is desired. For each processed input file, the corresponding generated output file will <b>first and foremost contain exactly the template content</b>, with every {X|lt:index haXtag|} occurrence substituted in-place for its own dynamically rendered output. In this process, wherever the {X|lt:p#Built-in {X|c: {P<!---->|:content:|<!---->} |} haXtag|} is encountered in the template content, it is substituted in-place for (finally) the current input file's <i>actual</i> original source content &mdash; again with each {X|lt:index haXtag|} substituted likewise.
 </p>
 <span id="snippets">{X|h: Output snippets: *.haxsnip.html |}</span>
 <p>These provide similar functionality to what is elsewhere variously called <b>"controls", "components", "sub-templates"</b>, or "<i>somesuch</i>lets" &mdash; that is the repeat reuse predefined blocks of content/markup in a parameterized manner, ie. with them including named, variable values passed to them from the call-site.</p>
@@ -30,9 +30,9 @@
 <p>the created-by-default {X|c:tmpl/_hax_blokindex.haxsnip.html|} illustrates the simplicity of <i>{T|Hax|}</i>'s implementation of this powerful concept:</p>
 <ul>
 	<li>Variable values that are declared in the {X|c:vars=[]|} list at the top (each allowing a default value if the caller does not supply a dynamic one to use) are</li>
-	<li>then, at processing time (of an <a href="#">X-tag</a> anywhere that's invoking this snippet), replacing any references to themselves inside {X|c:content=&gt;|} that are enclosed within {X|c:{%|} and {X|c:%}|}.
+	<li>then, at processing time (of an {X|lt:x X-tag|} anywhere that's invoking this snippet), replacing any references to themselves inside {X|c:content=&gt;|} that are enclosed within {X|c:{%|} and {X|c:%}|}.
 </ul>
 <h3>Directives first, then *.haxsnip.html files</h3>
-<p>These {X|c:tmpl/*.haxsnip.html|} files are really no different from bog-standard {X|c:|X|hax.snippet:<i>&lt;some-name&gt;</i>:|} <a href="#">directives in a *.haxproj</a>, so best to start with those at first (and delaying out-"sourcing" them to individual {X|c:tmpl/*.haxsnip.html|} files) until correct results are achieved with ease.</p>
-<p>In fact, this is how all the {X|c:tmpl/*.haxsnip.html|} files are loaded: exactly right after loading the current <a href="#">*.haxproj</a> files during start-up, with every such {X|c:tmpl/<i>some-name</i>.haxsnip.html|} being appended (in memory, on-the-fly, to the entire combined loaded <i>*.haxproj</i> source) as one individual {X|c:|X|hax.snippet:<i>some-name</i>:|} <a href="#">directive</a>.</p>
+<p>These {X|c:tmpl/*.haxsnip.html|} files are really no different from bog-standard {X|c:|X|hax.snippet:<i>&lt;some-name&gt;</i>:|} {X|lb:haxproj#xdecl directives in a <i>*.haxproj</i>|}, so best to start with those at first (and delaying out-"sourcing" them to individual {X|c:tmpl/*.haxsnip.html|} files) until correct results are achieved with ease.</p>
+<p>In fact, this is how all the {X|c:tmpl/*.haxsnip.html|} files are loaded: exactly right after loading the current {X|lb:haxproj *.haxproj|} files during start-up, with every such {X|c:tmpl/<i>some-name</i>.haxsnip.html|} being appended (in memory, on-the-fly, to the entire combined loaded <i>*.haxproj</i> source) as one individual {X|c:|X|hax.snippet:<i>some-name</i>:|} {X|lb:haxproj#xdecl directive|}.</p>
 <p>So the support for separate {X|c:tmpl/*.haxsnip.html|} files is really just icing on the {X|c:|X|hax.snippet:<i>my-component</i>:|} cake.</p>

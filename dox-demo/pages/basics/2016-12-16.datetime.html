@@ -4,32 +4,32 @@
 	<!--_hax_dtformat_iso8601-->
 </p>
 <p class="up">
-	Page Dates are for instance output during processing by embedded {X|c:{P<!---->|date|<!---->}|} <a href="#">X-tags</a>; likewise the Page Date is accessed while <a href="#">generating XML outputs</a> or potentially (possibly sooner-than-hoped) with a custom setup of <a href="#">hax.repeat</a> and <a href="#">hax.snippet</a> X-renderers (particularly in <a href="#">auto-generated Blok index page files</a>).
+	Page Dates are for instance output during processing by embedded {X|c:{P<!---->|date|<!---->}|} {X|lt:p#Built-in P-tags|}; likewise the Page Date is accessed while {X|lb:xmlfiles generating XML outputs|} or potentially (possibly sooner-than-hoped) with a custom setup of {X|lx:repeat hax.repeat|} and {X|lx:snippet hax.snippet|} X-renderers (particularly in {X|lb:bloks#auto auto-generated Blok index page files|}).
 </p>
 {X|h: Setting custom Page Dates: 2 ways|}
-<h3>Option 1:  content source file name</h3>
+<h3 id="fname">Option 1:  content source file name</h3>
 <ul>
 	<li>Rename content source files: eg. from {X|c:page.htm|} to {X|c:<i>date.</i>page.htm|} (<i>without</i> repeating this change anywhere else such as hyperlink references pointing to it etc.) &mdash; <b>IF</b> this <i>date</i> prefix is recognizable as a date-time via a "well-known" date-time format:</li>
 	<ul><li>then the output file name will <i>still</i> continue to be {X|c:page.htm|} (with all references to it remaining intact)</li>
 	<li>(in fact, the file will <i>continue</i> to be identified throughout the entire processing pipeline simply as if its original source file name was still just {X|c:page.html|}, as this date detection &amp; subsequent elimination occurs immediately prior to "encountering" the content source file during the early scanning&amp;planning stage)</li>
 	<li>and the custom page date is active and will be accessible via {X|c:{P<!---->|date|<!---->}|} etc.</li></ul>
-	<li>What's a "well-known" date-time format here?<ul><li>Either: simply ensure {X|c:YYYY-MM-DD|} in file name prefixes (eg. {X|c:2016-12-24.page.html|}),</li><li>or: if a different date-time format in file name prefixes is indeed called for, be sure to <a href="#">declare a <i>*.haxproj</i> {X|c:|C|dtformat:|} directive defining it correctly</a> under the <b>exact</b> name {X|c:_hax_dtformat_pagefilenames|}</li></ul></li>
+	<li>What's a "well-known" date-time format here?<ul><li>Either: simply ensure {X|c:YYYY-MM-DD|} in file name prefixes (eg. {X|c:2016-12-24.page.html|}),</li><li>or: if a different date-time format in file name prefixes is indeed called for, be sure to {X|lb:haxproj#cdtf declare a <i>*.haxproj</i> {X|c:|C|dtformat:|} directive defining it correctly|} under the <b>exact</b> custom-date-time-format name {X|c:_hax_dtformat_pagefilenames|}</li></ul></li>
 </ul>
 <h3>Option 2: in-page custom P-tag</h3>
 <p>
-	The Page Date can be set for any page on-the-fly during its processing by placing anywhere in its content source file a <a href="#">custom P-tag</a> (aka. "per-page variable") of the form {X|c:{%P<!---->|date=<i>2016-12-24</i>|<!---->%}|} or indeed, if custom date-time formats are once again necessary for some reason, {X|c:{%P<!---->|date:<i>dtformatname</i>=<i>date-time-here</i>|<!---->%}|}
+	The Page Date can be set for any page on-the-fly during its processing by placing anywhere in its content source file a {X|lt:p#Custom custom P-tag|} (aka. "per-page variable") of the form {X|c:{%P<!---->|date=<i>2016-12-24</i>|<!---->%}|} or indeed, if custom date-time formats are once again necessary for some reason, {X|c:{%P<!---->|date:<i>dtformatname</i>=<i>date-time-here</i>|<!---->%}|}
 </p>
 <h3>Which is "better"?</h3>
 <ul>
-	<li>Option 1 <b>will</b> properly propagate over to {X|c:&lt;lastmod&gt;|} values in generated <a href="#">sitemap.xml</a> (if any), option 2 <b>won't</b>.</li>
-	<li><a href="#">Unless a full rebuild is forced</a>, option 1 <b>possibly won't</b> get "picked up" during processing if no other change was also made to the same content source file since the last run. (<i>That's because {T|Hax|} compares file-modification timestamps for a faster incremental minimal rebuild, which the OS won't typically set just due to moving-aka.-renaming a file.</i>) Option 2 <b>will</b>.</li>
+	<li>Option 1 <b>will</b> properly propagate over to {X|c:&lt;lastmod&gt;|} values in generated {X|lb:xmlfiles sitemap.xml|} (if any), option 2 <b>won't</b>.</li>
+	<li>{X|lb:haxproj#cdecl Unless a full rebuild is forced|}, option 1 <b>possibly won't</b> get "picked up" during processing if no other change was also made to the same content source file since the last run. (<i>That's because {T|Hax|} compares file-modification timestamps for a faster incremental minimal rebuild, which the OS won't typically set just due to moving-aka.-renaming a file.</i>) Option 2 <b>will</b>.</li>
 	<li>The likelihood of a project needing to adjust individual custom Page Dates <i>all that frequently</i> is assessed as low.</li>
 	<li>In any event, both approaches can be used in tandem and for any given file, option 2 if present will override whatever was first set via option 1, if anything.</li>
 </ul>
 <span id="dtformats">{X|h: Named custom date-time formats|}</span>
 <p>
-	As already alluded to, custom date-time formats have a modicum of support in <i>{T|Hax|}</i>. In fact, most-anywhere date values are accessed, a custom format can be specified. But it first needs to be <b>defined correctly</b>, and that means <a href="#">declaring a corresponding <i>*.haxproj</i> {X|c:|C|dtformat:|} directive</a> (which in turn commands a full grasp of the link to <i>parseable date-time format-strings</i> referenced there).
+	As already alluded to, custom date-time formats have a modicum of support in <i>{T|Hax|}</i>. In fact, most-anywhere date values are accessed, a custom format can be specified. But it first needs to be <b>defined correctly</b>, and that means {X|lb:haxproj#cdtf declaring a corresponding <i>*.haxproj</i> {X|c:|C|dtformat:|} directive|} (which in turn commands an adequate grasp of the link to <i>parseable date-time format-strings</i> referenced right there).
 </p>
 <p>
-	But to <b>simply try out</b> <i>utilizing</i> (not <i>defining</i>) "named date-time formats", anywhere these are supported the pre-defined exact date-time format name {X|c:_hax_dtformat_iso8601|} will perform the deed for that purpose. To wit, embedding {X|c:{P<!---->|date:_hax_dtformat_iso8601|<!---->}|} right here, right now produces: {X|note: {P|date:_hax_dtformat_iso8601|} |} &mdash; the conspicuous day-time a consequence of <i>none whatsoever</i> having been <i>set</i> with the custom Page Date (using <a href="#">option 1</a>) for this very {X|note: {P|srcRelPath|} |}.
+	But to <b>simply try out</b> <i>utilizing</i> (not <i>defining</i>) "named date-time formats", anywhere these are supported the built-in date-time format name {X|c:_hax_dtformat_iso8601|} will perform the deed the same as any custom one. To wit, embedding {X|c:{P<!---->|date:_hax_dtformat_iso8601|<!---->}|} right here, right now produces: {X|note: {P|date:_hax_dtformat_iso8601|} |} &mdash; the conspicuous day-time a consequence of <i>none whatsoever</i> having been <i>set</i> with the custom Page Date (using <a href="#fname">option 1</a>) for this very {X|note: {P|srcRelPath|} |}.
 </p>

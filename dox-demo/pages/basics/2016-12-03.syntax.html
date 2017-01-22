@@ -1,16 +1,16 @@
 <h1>Syntactic rules (in places)</h1>
 <p>
-A number of certain <b>directives</b> (placed in <a href="#">*.haxproj</a> files or implied in <a href="#">*.haxsnip.html</a>s' headers) and <b>haXtags</b> (placed anywhere) &mdash; specifically:
+A number of certain <b>directives</b> (placed in {X|lb:haxproj *.haxproj|} files or implied in {X|lb:tmplsnip#snippets *.haxsnip.html|}s' headers) and <b>haXtags</b> (placed anywhere) &mdash; specifically:
 </p>
 <ul>
-	<li>all <a href="#|B| directives: for &quot;Bloks&quot;">|B| directives</a> (following the Blok name)</li>
-	<li>all <a href="#|P| directives: for &quot;postings&quot;">|P| directives</a> (following the feed name)</li>
-	<li>the <a href="#|C| directives: more control">|C| directives</a> {X|c:process:static:|} and {X|c:process:pages:|}</li>
-	<li>most <a href="#|X| directives: for rendering">|X| directives</a> (except the 2 {X|lt:x#demo demo|} X-renderers for coders)</li>
-	<li>some <a href="{P|/tags/x.html|}">X-tags</a> (determined and documented by the X-renderer invoked)</li>
+	<li>all {X|lb:haxproj#bdecl |B| directives|} (following the Blok name)</li>
+	<li>all {X|lb:haxproj#pdecl |P| directives|} (following the feed name)</li>
+	<li>the {X|lb:haxproj#cdecl |C| directives|} {X|c:process:static:|} and {X|c:process:pages:|}</li>
+	<li>most {X|lb:haxproj#xdecl |X| directives|} (except the 2 {X|lt:x#demo demo|} X-renderers for coders)</li>
+	<li>some {X|lt:x X-tags|} (determined and documented by the {X|lx:index X-renderer|} invoked)</li>
 </ul>
 <p>&mdash; absolutely <b>require</b> {X|note: &mdash;lest they abort the entire process abruptly (with {X|c:|C|:_hax_onparseerror:|}
-<a href="#">set to</a> {X|c:abort|}) or render warning/error messages (otherwise) into generated output contents&mdash; |}
+{X|lb:haxproj#cmisc set to|} {X|c:abort|}) or render warning/error messages (otherwise) into generated output contents&mdash; |}
 <b>strict adherence to the following</b> (essentially trivial, still currently rather demanding-and-unforgiving thanks to the.. "compactness" of the parser) syntax rules:</p>
 <ul>
 	<li><i>All</i> the properties shown <i>need</i> to appear,
@@ -22,7 +22,7 @@ A number of certain <b>directives</b> (placed in <a href="#">*.haxproj</a> files
 		<ul><li>{X|c:= &quot;<i>Wrote this in </i>\"<i>VBScript</i>\"<i> back in '99..</i>&quot;|}</li>
 		<li>Inside literal line-breaks are supported; all standard escape sequences work predictably, eg. {X|c:&nbsp;\&quot;|}
 		for in-text quotation marks etc.)</li>
-		<li>Any <a href="#">haXtags</a> placed inside such quoted text-values (principally those that might output quotation marks eg. HTML attributes) should
+		<li>Any {X|lt:index haXtags|} placed inside such quoted text-values (principally those that might output quotation marks eg. HTML attributes) should
 		escape the entire tag content (everything in between {X|c:&nbsp;{<i>*</i><!---->||} and {X|c:&nbsp;|<!---->}|}) by prefixing it with 2 {X|c:&nbsp;`|} backticks:
 		<ul><li>ie. by changing {X|c:{T<!---->|<i>sometextname</i>|<!---->}|}, {X|c:{P<!---->|1st:<i>div</i>|<!---->}|}
 		or {X|c:{X<!---->|<i>myctl:</i>|<!---->}|}<br/>into {X|c:{T<!---->|``<i>sometextname</i>|<!---->}|}, {X|c:{P<!---->|``1st:<i>div</i>|<!---->}|}
@@ -46,7 +46,7 @@ A number of certain <b>directives</b> (placed in <a href="#">*.haxproj</a> files
 		simply extends until the very end of the directive/haXtag)</li>
 		<li>but <i>only</i> if that property's name is followed <i>immediately</i> (no spaces) by exactly {X|c:=&gt;|} in place of
 		the usual {X|c:&nbsp;=|} assignment operator.</li>
-		<li>No {X|c:&nbsp;\&quot;|} escaping of quotation marks required in here, also no <a href="#">haXtags</a> in here require the above-mentioned {X|c:&nbsp;``|} double-backtick escaping.</li>
+		<li>No {X|c:&nbsp;\&quot;|} escaping of quotation marks required in here, also no {X|lt:index haXtags|} in here require the above-mentioned {X|c:&nbsp;``|} double-backtick escaping.</li>
 		<li>Such properties <i>may</i> however, if somehow desired, also be written the same way as any other text value, that is with {X|c: = &quot;..&quot;|} plus any required inner escaping.</li>
 	</ul></li>
 </ul>

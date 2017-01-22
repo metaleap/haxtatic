@@ -21,11 +21,11 @@
 
 <!-- begins content source page -->
 <h1>haXtags</h1>
-	<p>Embed HaXtatic tags anywhere in source contents, <a href="../basics/tmplsnip.html">templates, snippets</a> or <a href="../basics/haxproj.html">*.haxproj</a> files with
-	a simple notation: <code>{<i>Prefix</i>|<i>Name</i>|<!---->}</code> or
+	<p>Embed HaXtatic tags anywhere in source contents, <a href="../basics/tmplsnip.html">templates</a>, <a href="../basics/tmplsnip.html#snippets">snippets</a> or <a href="../basics/haxproj.html">*.haxproj</a>
+	files with a simple notation: <code>{<i>Prefix</i>|<i>Name</i>|<!---->}</code> or
 	<code>{<i>Prefix</i>|<i>Name</i>: <i>Args</i>|<!---->}</code>.</p>
-	<p>Example: <code>{P<!---->|date|<!---->}</code> outputs in-place the currently set <a href="../basics/datetime.html">Page Date</a> &mdash;using the
-	built-in fallback date-time format since none was specified in the tag&mdash; when it is processed: <span class="hd-note">2016-12-18</span>.</p>
+	<p>Example: <code>{P<!---->|date|<!---->}</code> outputs in-place the currently set <a href="../basics/datetime.html">page date</a> (using the
+	built-in fallback date-time format since none was specified in the tag) when it is processed: <span class="hd-note">2016-12-18</span>.</p>
 	<ul><li>All unprocessed haXtags (mispelled etc.) simply remain in the output, aiding swift detection<ul><li>(exception: some X-tags requiring
 		<a href="../basics/syntax.html">syntax</a> &mdash; if unprocessable these output error details)</li></ul></li>
 	<li>Any haXtags may embed/output any other haXtags freely both in their definitions and invocations but
@@ -41,7 +41,7 @@
 			("cat" , "")
 	-->
 	<a class="hd-feed-title" href="../tags/t.html">T-tags: named plain text/markup snippets</a>
-	<blockquote class="hd-feed-desc"><code>{T<!---->| .. |<!---->}</code> tags directly output named textual contents defined in a <a href="#">*.haxproj</a> file.</blockquote></li><li><!--
+	<blockquote class="hd-feed-desc"><code>{T<!---->| .. |<!---->}</code> tags directly output named textual contents defined in a <i>*.haxproj</i> file.</blockquote></li><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
 			("dt" , ""),
@@ -55,7 +55,7 @@
 			("cat" , "")
 	-->
 	<a class="hd-feed-title" href="../tags/b.html">B-tags: Blok info (name, title, desc, ..)</a>
-	<blockquote class="hd-feed-desc">A <code>{B<!---->| .. |<!---->}</code> tag outputs, for the (named or current) <a href="#">Blok</a>, the value (as set in a <a href="#">*.haxproj |B| directive</a>) of the requested property.</blockquote></li><li><!--
+	<blockquote class="hd-feed-desc">A <code>{B<!---->| .. |<!---->}</code> tag outputs, for the (named or current) <a href="../basics/bloks.html">Blok</a>, the value (as set in a <a href="../basics/haxproj.html#bdecl"><i>*.haxproj</i> |B| directive</a>) of the requested property.</blockquote></li><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
 			("dt" , ""),
