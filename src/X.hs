@@ -28,7 +28,7 @@ data Render r = Early r | EarlyOrWait r | WaitForPage r
 
 clarifyParseArgsError (xreg , arghint) =
     let (xn,tn) = (xreg-:xname , xreg-:tname)
-    in ( ("(for `" ++ xn ++"` args) near") , ("{X<!---->|" ++ tn) , arghint )
+    in ( ("(for `" ++ xn ++"` args) near") , ("{X<!---->|" ++ tn ++ ":") , arghint )
 
 clarifyParseCfgError xreg =
     let (xn,tn) = (xreg-:xname , xreg-:tname)
@@ -50,7 +50,7 @@ htmlAttsNeedPage (_:more) =
 
 
 htmlErr (clarify , codemain , codemore) =
-    "{!|X| Bad syntax "++clarify++" `"++codemain++": "++ (Html.escape codemore)++"` (couldn't parse it) |!}"
+    "{!|X| Bad syntax "++clarify++" `<code>"++codemain++" "++ (Html.escape codemore)++"</code>` (couldn't parse it) |!}"
 
 htmlErrAtts clarifywithcode =
     [ "" =: htmlErr clarifywithcode

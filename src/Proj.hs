@@ -157,5 +157,5 @@ _rawsrc ctxproj =
             unlines (headerline:tabbedlines)
             where
             basename = (Util.dropLast (".haxsnip.html"~>length)) (System.FilePath.takeFileName $snipfile-:Files.path)
-            headerline = "|X|hax/snippet:"++basename++":"
+            headerline = "|X|hax.snippet:"++basename++":"
             tabbedlines = (lines $snipfile-:Files.content) >~ ("\t"++)

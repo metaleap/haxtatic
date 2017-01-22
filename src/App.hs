@@ -15,6 +15,7 @@ import qualified X.DemoSimplest (registerX)
 import qualified X.DemoCfgArgs (registerX)
 import qualified X.PageAnchors (registerX)
 import qualified X.Image (registerX)
+import qualified X.Link (registerX)
 import qualified X.Links (registerX)
 import qualified X.Repeat (registerX)
 import qualified X.Snippet (registerX)
@@ -29,14 +30,15 @@ import qualified Text.Printf
 
 
 processAll ctxmain projfilename custfilenames =
-    let xregs = [ "hax/demoSimplest" =: X.DemoSimplest.registerX
-                , "hax/demoCfgArgs" =: X.DemoCfgArgs.registerX
-                , "hax/pageAnchors" =: X.PageAnchors.registerX
-                , "hax/image" =: X.Image.registerX
-                , "hax/links" =: X.Links.registerX
-                , "hax/repeat" =: X.Repeat.registerX
-                , "hax/snippet" =: X.Snippet.registerX
-                , "hax/miniTag" =: X.MiniTag.registerX
+    let xregs = [ "hax.demoSimplest" =: X.DemoSimplest.registerX
+                , "hax.demoCfgArgs" =: X.DemoCfgArgs.registerX
+                , "hax.pageAnchors" =: X.PageAnchors.registerX
+                , "hax.image" =: X.Image.registerX
+                , "hax.link" =: X.Link.registerX
+                , "hax.links" =: X.Links.registerX
+                , "hax.repeat" =: X.Repeat.registerX
+                , "hax.snippet" =: X.Snippet.registerX
+                , "hax.miniTag" =: X.MiniTag.registerX
                 ]
         nameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
 
