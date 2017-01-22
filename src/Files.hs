@@ -141,19 +141,20 @@ readOrDefault _ _ "" _ _ =
     return NoFile
 
 readOrDefault create ctxmain relpath relpath2 defaultcontent =
-    System.Directory.doesFileExist filepath >>= fileexists where
-        filepath = System.FilePath.combine (ctxmain-:dirPath) relpath
-        fileexists True =
-            System.Directory.getModificationTime filepath >>= \modtime
-            -> readFile filepath >>= (FileFull filepath modtime)~.return
-        fileexists False =
-            if has relpath2 && relpath2/=relpath
-            then readOrDefault create ctxmain relpath2 "" defaultcontent else
-            let file = FileFull filepath filetime defaultcontent
-                filetime = if create || has defaultcontent then (ctxmain-:nowTime) else Util.dateTime0
-            in if not create then return file else
-                writeTo filepath relpath (return (defaultcontent , ()))
-                >> return file
+    System.Directory.doesFileExist filepath >>= fileexists
+    where
+    filepath = System.FilePath.combine (ctxmain-:dirPath) relpath
+    fileexists True =
+        System.Directory.getModificationTime filepath >>= \modtime
+        -> readFile filepath >>= (FileFull filepath modtime)~.return
+    fileexists False =
+        if has relpath2 && relpath2/=relpath
+        then readOrDefault create ctxmain relpath2 "" defaultcontent else
+        let file = FileFull filepath filetime defaultcontent
+            filetime = if create || has defaultcontent then (ctxmain-:nowTime) else Util.dateTime0
+        in if not create then return file else
+            writeTo filepath relpath (return (defaultcontent , ()))
+            >> return file
 
 
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
-{-stack --install-ghc runghc
+{-stack --install-ghc --resolver ghc-8.0.2 runghc
 -}{-# OPTIONS_GHC -Wall #-}
 module Main where
 
@@ -29,10 +29,10 @@ main =
         then putStrLn "No project-directory path supplied.\n\
             \  For existing project: specify path to its current directory.\n\
             \  For a new project: specify path to its intended directory.\n    (I'll create it if missing and its parent isn't.)\n\n"
-        else
-        let projfilename = (Defaults.fileName_Proj -|= cmdargs@?1)
-        in System.Directory.canonicalizePath (cmdargs@!0) >>= \dirpath
+        else System.Directory.canonicalizePath (cmdargs@!0) >>= \dirpath
+        --  ROLL UP SLEEVES
         -> let
+            projfilename = (Defaults.fileName_Proj -|= cmdargs@?1)
             randseed' = (Util.dtInts starttime) ++ [curdir~>length , dirpath~>length , projfilename~>length]
             ctxmain = Files.AppContext {    Files.curDir = curdir,
                                             Files.dirPath = dirpath,

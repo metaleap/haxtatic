@@ -12,7 +12,7 @@ turn on whatever syntax highlighting for eased grokkage..
 
 |B|basics:
 	title="Basics", atomFile="", blokIndexPageFile="basics/index.html", inSitemap=True, dtFormat="", desc=>
-	<p>This material may appear "overly extensive" at first glance, but this is all really blatantly simple stuff and
+	<p>This material may appear "unduly exhaustive" at first glance, but this is all blatantly-simple-stuff and
 	mostly just spelled out in (almost) every last minor detail for completeness and future reference.</p>
 	<p>Notably no article on <b>"how to author pages"</b>. That's because there's nothing to it once a quick note is made of
 	<a href="#">where to place them</a>, <a href="#">which outer-template is applied during processing &amp; how</a>, as well as the
