@@ -176,9 +176,7 @@ tagHandler ctxmain cfgproj ctxpage ctxtmpl outjob ptagcontent
     fordate dtfn datetime =
         Just$ ProjC.dtUtc2Str cfgproj dtfn datetime
     for ('/':path) =
-        let newrelpath = take (Util.count '/' (outjob-:Build.relPathSlashes)) infinity
-            infinity = iterate (++ "../") "../"
-        in Just$ ( null newrelpath |? path |! ((last newrelpath) ++ path) )
+        Just$ Html.rootPathToRel (outjob-:Build.relPathSlashes) path
     for ('1':'s':'t':':':htmltagname) =
         Just$ (ctxpage-:Tmpl.htmlInner1st) (Util.trim htmltagname) ""
     for name =

@@ -117,6 +117,13 @@ out tname tatts tchildren =
 
 
 
+rootPathToRel currelpath dstrootpath =
+    let walktoroot = take (Util.count '/' (Files.sanitizeUriRelPathForJoin currelpath)) infinity
+        infinity = iterate (++ "../") "../"
+    in ( null walktoroot |? dstrootpath |! ((last walktoroot) ++ dstrootpath) )
+
+
+
 stripMarkup::
     Char->
     String->

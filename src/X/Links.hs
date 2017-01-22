@@ -32,8 +32,8 @@ registerX _ xreg =
         where
         allitems = htmlout (args-:htmlAtts ++ cfghtmlatts) (args-:items)
         args = X.tryParseArgs xreg argstr
-                (Just Args { items = [], htmlAtts = [] })
-                (Args { items = ["#"=:""], htmlAtts = X.htmlErrAttsArgs (xreg , Util.excerpt 23 argstr) })
+                {-empty-} (Just Args { items = [], htmlAtts = [] })
+                {-error-} (Args { items = ["#"=:""], htmlAtts = X.htmlErrAttsArgs (xreg , Util.excerpt 23 argstr) })
 
         htmlout atts argitems =
             argitems>~(foreach atts) ~> concat
@@ -42,7 +42,7 @@ registerX _ xreg =
                         (attribs >=~ (outattr maybectxpage))
                             [ Html.T "a" ["" =: text , "href" =: cfgwraphref url] [] ]
             where
-            outattr (Just ctxpage) (('/':name) , value) =
+            outattr (Just ctxpage) (('&':name) , value) =
                 if pathmatch then Just (name , value) else Nothing
                 where
                 pathmatch = (curdir == dstdir)
@@ -56,10 +56,9 @@ registerX _ xreg =
         cfgitemspost = htmlout cfghtmlatts $cfg-:itemsLast
 
         waitforpage =
-            (not$ hasctxpage maybectxpage) && (needpage4cfg || needpage4args)
+            (X.hasNoPageContext maybectxpage) && (needpage4cfg || needpage4args)
             where
-            hasctxpage Nothing = False ; hasctxpage _ = True
-            needpage4args = needpage $args-:htmlAtts
+            needpage4args = (X.htmlAttsNeedPage $args-:htmlAtts) || (needpage $args-:htmlAtts)
 
     in X.EarlyOrWait renderer
     where
@@ -67,13 +66,13 @@ registerX _ xreg =
 
     needpage =
         any ispathconditional where
-        ispathconditional (('/':_),_) = True
+        ispathconditional (('&':_),_) = True
         ispathconditional _ = False
-    needpage4cfg = needpage cfghtmlatts
+    needpage4cfg = X.htmlAttsNeedPage cfghtmlatts || needpage cfghtmlatts
     (cfg_htmltagname , cfg_parsestr) = xreg-:X.cfgSplitOnce
     cfghtmlatts =  cfg-:htmlAtts
     cfgwraphref = cfg-:wrapHref ~> \(w1,w2) -> (w1++).(++w2)
     cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where
         defcfg = Cfg { htmlAtts = [], itemsFirst = [], itemsLast = [], wrapHref = ("","") }
-        errcfg = Cfg { htmlAtts = X.htmlErrAttsCfg xreg ,
+        errcfg = Cfg { htmlAtts = X.htmlErrAttsCfg xreg,
                         itemsFirst = ["#"=:""], itemsLast = [], wrapHref = ("","") }

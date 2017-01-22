@@ -154,14 +154,21 @@ crop start 0 = drop start
 crop start end =
     (drop start) . (dropLast end)
 
-count _ [] = 0
-count item (this:rest) =
-    (if item==this then 1 else 0) + (count item rest)
-
 cropOn1st delim cropafter trimitemsafterdelim oncrop list =
     let i = indexOf delim list
     in if i < 0 then list else
         (oncrop . (trimEnd' trimitemsafterdelim) . (take (i+cropafter))) list
+
+count item =
+    countBy (==item)
+
+countBy predicate =
+    next 0 where
+    next counter [] =
+        counter
+    next counter (this:rest)
+        |(predicate this)= next (counter+1) rest
+        |(otherwise)= next counter rest
 
 countSub _ [] = 0
 countSub [] _ = 0
@@ -193,6 +200,16 @@ countSubVsSubs list (sub,subs) =
             else counter
 
 
+
+begins item (this:_) =
+    item == this
+begins _ _ =
+    False
+
+fstBegins item ((this:_),_) =
+    item == this
+fstBegins _ _ =
+    False
 
 contains :: (Eq t)=> [t] -> [t] -> Bool
 contains = flip Data.List.isInfixOf

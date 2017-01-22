@@ -22,7 +22,7 @@ data Tag
     }
     | Args {
         over :: Iterate,
-        wrap :: (String , String),
+        wrapEach :: (String , String),
         order :: SortOrder,
         skip :: Int,
         limit :: Int,
@@ -92,7 +92,7 @@ registerX ctxproj xreg =
         maybectxbuild = maybectxpage =>- \ctxpage -> Posts.BuildContext (ctxpage-:Tmpl.lookupCachedPageRender)
                                                                         (ctxpage-:Tmpl.allPagesFiles) projbloks
                                                                         projposts (ctxproj-:Proj.setup-:Proj.cfg)
-        wrapped = args-:wrap ~> \(w1,w2) -> (w1++).(++w2)
+        wrapped = args-:wrapEach ~> \(w1,w2) -> (w1++).(++w2)
         droptake 0 0 = id
         droptake 0 t = (take t)
         droptake d 0 = (drop d)
@@ -103,8 +103,8 @@ registerX ctxproj xreg =
                     Shuffle perpage -> shuffle perpage
                     None            -> id
         args = X.tryParseArgs xreg argstr (Just defargs) errargs where
-            defargs = Args { over = Values [], wrap = ("",""), order = None, skip = 0, limit = 0, more=[] }
-            errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))], wrap = ("",""), order = None, skip = 0, limit = 0, more=[] }
+            defargs = Args { over = Values [], wrapEach = ("",""), order = None, skip = 0, limit = 0, more=[] }
+            errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))], wrapEach = ("",""), order = None, skip = 0, limit = 0, more=[] }
 
         shuffle perpage = Util.shuffleExtra (randseeds maybectxpage perpage)
         randseeds (Just pagectx) True =

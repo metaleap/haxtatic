@@ -41,19 +41,18 @@ turn on whatever syntax highlighting for eased grokkage..
 
 
 
-
 |T|Hax: haXtatic
 |T|SiteTitle: {T|Hax|} Docs
 
 
 
-
+|X|hax/image:doxpic: {P| /pics/otiosely/long/path |}: linkAtts=[], imgAtts=[]
 |X|hax/miniTag:c:code
 |X|hax/miniTag:h:h2: htmlAtts=[("id" , "{%:content:%}")]
 |X|hax/miniTag:note:span: htmlAtts=[("class" , "hd-note")]
 
 |X|hax/links:doxtopnav:li:
-	 htmlAtts = [("class","hd-nav"),("/class","hd-nav-sel")],
+	 htmlAtts = [("class","hd-nav"),("&class","hd-nav-sel")],
 		 itemsFirst = [("" , "Intro")],
 		 itemsLast = [("xtypes/" , "{B|title:xtypes|}")],
 	 wrapHref = ("{P|/" , "index.html|}")
@@ -99,7 +98,7 @@ turn on whatever syntax highlighting for eased grokkage..
 |P|xdesc:
 	dt = "1234-09-15", cat = "image", title = "", link = "",
 	more = [ ("declmore" , ":<i>somereldirpath</i>: <i>..</i>"),
-			 ("cfgmore" , "{X|c:lnkAtts|}, {X|c:imgAtts|}"),
+			 ("cfgmore" , "{X|c:linkAtts|}, {X|c:imgAtts|}"),
 			 ("usage" , ":<i>pic/rel/path and optionally some description text</i>") ],
 	content=>
 	Outputs {X|c: &lt;img <i>..</i> /&gt; |} or {X|c: &lt;a <i>..</i>&gt;&lt;img <i>..</i> /&gt;&lt;/a&gt; |}.
@@ -134,6 +133,6 @@ turn on whatever syntax highlighting for eased grokkage..
 	dt = "1234-05-15", cat = "repeat", title = "", link = "",
 	more = [ ("declmore" , ": <i>..</i>"),
 			 ("cfgmore" , "{X|c:prefix|}, {X|c:suffix|}, {X|c:joinwith|}, {X|c:content|}"),
-			 ("usage" , ": over = .. , wrap = .. , order = .. , skip = .. , limit = .. , more = ..") ],
+			 ("usage" , ": over = .. , wrapEach = .. , order = .. , skip = .. , limit = .. , more = ..") ],
 	content=>
 	Outputs a sequence of contents enumerated by the specified iterator.

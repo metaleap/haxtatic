@@ -4,6 +4,7 @@ module X where
 import Base
 import qualified Html
 import qualified ProjC
+import qualified Tmpl
 import qualified Util
 
 import qualified Data.List
@@ -34,6 +35,20 @@ clarifyParseCfgError xreg =
         hint = Util.ifIs ("" -|= (xreg-:cfgSplitAll)@?0) (++": ...")
     in ( ("(in your *.haxproj) following") , ("|X|" ++ xn ++ ":" ++ tn ++ ":") , (Util.excerpt 23 hint) )
 
+hasPageContext Nothing = False
+hasPageContext _ = True
+
+hasNoPageContext Nothing = True
+hasNoPageContext _ = False
+
+htmlAttsNeedPage [] =
+    False
+htmlAttsNeedPage ((('/':_),_):_) =
+    True
+htmlAttsNeedPage (_:more) =
+    htmlAttsNeedPage more
+
+
 htmlErr (clarify , codemain , codemore) =
     "{!|X| Bad syntax "++clarify++" `"++codemain++": "++ (Html.escape codemore)++"` (couldn't parse it) |!}"
 
@@ -52,6 +67,12 @@ htmlErrAttsArgs =
     htmlErrAtts . clarifyParseArgsError
 
 
+htmlPathAtts _ [] =
+    []
+htmlPathAtts ctxpage ((('/':name),value):more) =
+    (name , value -|= (ctxpage-:Tmpl.pTagHandler) ('/':value)) : (htmlPathAtts ctxpage more)
+htmlPathAtts ctxpage (normal:more) =
+    normal : (htmlPathAtts ctxpage more)
 
 
 parseProjChunks ctxproj projcfg xregisterers chunkssplits =
@@ -74,6 +95,13 @@ parseProjChunks ctxproj projcfg xregisterers chunkssplits =
                                         cfgSplitOnce = Util.bothTrim (Util.splitOn1st_ ':' cfgstr) }
         cfgstr = Util.trim$ Util.join ":" tvals
 
+
+shouldWaitForPage (Just _) _ _ =
+    False
+shouldWaitForPage Nothing needctxpage [] =
+    needctxpage
+shouldWaitForPage Nothing needctxpage htmlattribs =
+    needctxpage || htmlAttsNeedPage htmlattribs
 
 
 tagHandler xtags ctxpage tagcontent =

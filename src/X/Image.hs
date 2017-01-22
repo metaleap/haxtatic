@@ -9,7 +9,7 @@ import qualified X
 
 data Tag =
     Cfg {
-        lnkAtts :: Util.StringPairs,
+        linkAtts :: Util.StringPairs,
         imgAtts :: Util.StringPairs
     }
     deriving Read
@@ -18,12 +18,11 @@ data Tag =
 registerX _ xreg =
     let
     renderer (_ , argstr) =
-
         Just$ Html.emit tag
         where
-        tag = if null (cfg-:lnkAtts) then imgtag else lnktag
+        tag = if null (cfg-:linkAtts) then imgtag else lnktag
         imgtag = Html.T "img" (cfgimgatts ++ (atts "src" "alt")) []
-        lnktag = Html.T "a" (cfglnkatts ++ (atts "href" "title")) [imgtag]
+        lnktag = Html.T "a" (cfglinkatts ++ (atts "href" "title")) [imgtag]
         (imgsrc,imgdesc) = argsplit ~> Util.bothTrim
         argsplit = Util.splitOn1stSpace argstr -- Util.splitOn1st_ '\r' argstr --
         atts uriattname descattname =
@@ -37,7 +36,7 @@ registerX _ xreg =
 
     (cfg_imgrelpath , cfg_parsestr) = xreg-:X.cfgSplitOnce
     (cfgerrmsg , cfgimgatts) = Html.attrClearInner $cfg-:imgAtts
-    (_ , cfglnkatts) = Html.attrClearInner $cfg-:lnkAtts
+    (_ , cfglinkatts) = Html.attrClearInner $cfg-:linkAtts
     cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where
-        defcfg = Cfg { lnkAtts = [], imgAtts = [] }
-        errcfg = Cfg { lnkAtts = [], imgAtts = X.htmlErrAttsCfg xreg }
+        defcfg = Cfg { linkAtts = [], imgAtts = [] }
+        errcfg = Cfg { linkAtts = [], imgAtts = X.htmlErrAttsCfg xreg }
