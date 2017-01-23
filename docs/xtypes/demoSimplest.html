@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="en"><head>
-    <title> | HaXtatic Docs</title>
+    <title>hax.demoSimplest | HaXtatic Docs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../haxtatic.css" rel="stylesheet" />
 	<!--	xtypes\demoSimplest.html
@@ -14,14 +14,24 @@
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
 		<label for="chk_showtoc">On this page:</label>
 		<ul>
-<style type='text/css'>.hd-toc { display: none; }</style>
+<li><a href="#In a nutshell">In a nutshell</a></li><li><a href="#Purpose">Purpose</a></li>
 		</ul>
 	</div>
 
 
 <!-- begins content source page -->
 
-
+<h1>hax.demoSimplest</h1>
+	
+	<p class="up">Outputs <code>&lt;h1&gt;Hello World!&lt;/h1&gt;</code>.</p>
+	<h2 id="In a nutshell">In a nutshell</h2>
+	<ol>
+		<li>
+			<a href="../xtypes/demoSimplest.html#decl">Declaration</a> of an <code>|X|hax.demoSimplest:<i>myTag</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
+			<ul><li>further configuring: (no settings)</li></ul>
+		</li>
+		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i> |<!---->}</code></li>
+	</ol>
 <h3>Stage:</h3><p><b>Early</b> &mdash; this X-renderer does not require a page context for rendering: therefore
 					any <i>hax.demoSimplest</i>-invoking X-tags encountered during pre-templating (at start-up time) will be
 					processed eagerly (for reduced per-page processing load).</p>

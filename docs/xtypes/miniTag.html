@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="en"><head>
-    <title> | HaXtatic Docs</title>
+    <title>hax.miniTag | HaXtatic Docs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../haxtatic.css" rel="stylesheet" />
 	<!--	xtypes\miniTag.html
@@ -14,13 +14,23 @@
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
 		<label for="chk_showtoc">On this page:</label>
 		<ul>
-<li><a href="#Purpose">Purpose</a></li><li><a href="#Declaration / Configuration">Declaration / Configuration</a></li><li><a href="#Invocation / Parameters">Invocation / Parameters</a></li>
+<li><a href="#In a nutshell">In a nutshell</a></li><li><a href="#Purpose">Purpose</a></li><li><a href="#Declaration / Configuration">Declaration / Configuration</a></li><li><a href="#Invocation / Parameters">Invocation / Parameters</a></li>
 		</ul>
 	</div>
 
 
 <!-- begins content source page -->
-
+<h1>hax.miniTag</h1>
+	
+	<p class="up">Outputs <code>&lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt;</code>.</p>
+	<h2 id="In a nutshell">In a nutshell</h2>
+	<ol>
+		<li>
+			<a href="../xtypes/miniTag.html#decl">Declaration</a> of an <code>|X|hax.miniTag:<i>myTag</i>:<i>somehtmltag</i>: <i>..</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
+			<ul><li>further configuring: <code>htmlAtts</code></li></ul>
+		</li>
+		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i> tag's inner-markup content </i> |<!---->}</code></li>
+	</ol>
 <h3>Stage:</h3><p><b>Early</b> &mdash; this X-renderer does not require a page context for rendering: therefore
 					any <i>hax.miniTag</i>-invoking X-tags encountered during pre-templating (at start-up time) will be
 					processed eagerly (for reduced per-page processing load).</p>

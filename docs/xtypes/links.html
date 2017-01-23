@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="en"><head>
-    <title> | HaXtatic Docs</title>
+    <title>hax.links | HaXtatic Docs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../haxtatic.css" rel="stylesheet" />
 	<!--	xtypes\links.html
@@ -20,7 +20,18 @@
 
 
 <!-- begins content source page -->
-
+<h1>hax.links</h1>
+	
+	<p class="up">Outputs a sequence of <code>&lt;a ..&gt; .. &lt;/a&gt;</code> or
+	<code>&lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code> in a uniform manner.</p>
+	<h2 id="In a nutshell">In a nutshell</h2>
+	<ol>
+		<li>
+			<a href="../xtypes/links.html#decl">Declaration</a> of an <code>|X|hax.links:<i>myTag</i>:<i>outerhtmltag</i>: <i>..</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
+			<ul><li>further configuring: <code>htmlAtts</code>, <code>itemsFirst</code>, <code>itemsLast</code>, <code>wrapHref</code></li></ul>
+		</li>
+		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: items = [..] , htmlAtts = [..] |<!---->}</code></li>
+	</ol>
 <h3>Stage:</h3><p><b>Early or Page</b> &mdash; this X-renderer determines dynamically whether or not it
 					requires a page context for rendering: so some <i>hax.links</i>-invoking X-tags encountered during
 					pre-templating (at start-up time) may be processed eagerly (for reduced per-page processing load), and others may be

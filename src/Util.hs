@@ -420,9 +420,9 @@ replaceSub ([] , _) = id
 replaceSub (old , new) =
     replsub where
     replsub [] = []
-    replsub list@(_ : more)
+    replsub list@(this : more)
         | (isprefix list) = withnew list
-        | (otherwise) = replsub more
+        | (otherwise) = this : replsub more
     withnew = ((new ++) . replsub . dropold)
     dropold = drop $old~>length
     isprefix = Data.List.isPrefixOf old
@@ -457,15 +457,12 @@ replaceSubsFew replpairs =
         undefined   -- not exist as a `replold` (ie. fst) in `replpairs`?!
 
 
-replaceSubsMany [] = id
-replaceSubsMany [replpair] = replaceSub replpair
-replaceSubsMany replpairs =
-    replall
+replaceSubsMany [] list = list
+replaceSubsMany [replpair] list = replaceSub replpair list
+replaceSubsMany replpairs list =
+    Data.List.foldl' replsub list replpairs
     where
-    replall str =
-        foldr replaceSub str repls
-        where
-        repls = replpairs ~|(contains str).fst
+    replsub = flip replaceSub --- wtf foldl'..
 
 
 replaceSubsBy [] _ = id
