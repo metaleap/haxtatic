@@ -22,17 +22,20 @@
 <!-- begins content source page -->
 <h1>hax.repeat</h1>
 	
-	<p>Outputs a sequence of contents enumerated by the specified iterator.</p>
+	<p class="up">Outputs a sequence of contents enumerated by the specified iterator.</p>
 	<h2 id="In a nutshell">In a nutshell</h2>
 	<ol>
 		<li>
-			<a href="../xtypes/repeat.html#decl">Declaration</a> of an <code>|X|hax.repeat:<i>myXtag</i>: <i>..</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
+			<a href="../xtypes/repeat.html#decl">Declaration</a> of an <code>|X|hax.repeat:<i>myTag</i>: <i>..</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
 			<ul><li>further configuring: <code>prefix</code>, <code>suffix</code>, <code>joinwith</code>, <code>content</code></li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myXtag</i>: over = .. , wrapEach = .. , order = .. , skip = .. , limit = .. , more = .. |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: over = .. , wrapEach = .. , order = .. , skip = .. , limit = .. , more = .. |<!---->}</code></li>
 	</ol>
+<h3>Stage:</h3><p><b>Early or Page</b> &mdash; this X-renderer determines dynamically whether or not it
+					requires a page context for rendering: so some <i>hax.repeat</i>-invoking X-tags encountered during
+					pre-templating (at start-up time) may be processed eagerly (for reduced per-page processing load), and others may be
+					skipped over and thus delayed until page time &mdash; depending on the X-tag's configuration and/or arguments.</p>
 
 <!-- end of content source page -->
-
-
+<a name="down"></a>
 </body></html>

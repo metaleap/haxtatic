@@ -29,8 +29,8 @@
     <li><b>tmpl/</b> &mdash; templates and snippets</li>
     <li><b>_cache_tmp/</b> &mdash; temporary cache files</li></ul>
 <span id="run"><h2 id="Get started">Get started</h2></span>
-<p>As <a href="../index.html#Quick start">described earlier</a>, one runs HaXtatic specifying "the project-directory to process" and any missing parts from the above essentials will be (re)created in-place.</p>
-<p>Example, to create a new site project named <b>mydemosite.foo</b> (inside the existing <i>~/dev/</i> directory in this case) <ul><li>just run from inside the HaXtatic code-base's <i>src</i> directory:<br/><code><a href="http://www.haskell.org/downloads#stack">stack</a> ./@HaxMain.hs ~/dev/mydemosite.foo</code></li><li>or with a compiled executable binary (eg. for extra speed if so inclined), of course<br/><code>my-haxtatic-exe ~/dev/mydemosite.foo</code> works equally</li></ul> and the following is generated:</p>
+<p>As <a href="../index.html#Quick start">described earlier</a>, one runs <i>HaXtatic</i> specifying "the project-directory to process" and any missing parts from the above essentials will be (re)created in-place.</p>
+<p>Example, to create a new site project named <b>mydemosite.foo</b> (inside the existing <i>~/dev/</i> directory in this case) <ul><li>just run from inside the <i>HaXtatic</i> code-base's <i>src</i> directory:<br/><code><a href="http://www.haskell.org/downloads#stack">stack</a> ./@HaxMain.hs ~/dev/mydemosite.foo</code></li><li>or with a compiled executable binary (eg. for extra speed if so inclined), of course<br/><code>my-haxtatic-exe ~/dev/mydemosite.foo</code> works equally</li></ul> and the following is generated:</p>
 <p><img src="../pics/otiosely/long/path/fresh-project-directory.png" alt="A freshly made project-directory"/></p>
 <p>The on-screen output will be something like:</p>
 <pre>
@@ -88,7 +88,7 @@ Wrote 2 files in 0.07s:
 <h3>tmpl/</h3>
 <p>To contain custom as well as the auto-generated default <a href="../basics/tmplsnip.html">templates</a> and <a href="../basics/tmplsnip.html#snippets">snippets</a> used during processing of the content source files from <b>pages</b>.</p>
 <h3>_cache_tmp/</h3>
-<p>Cached per-processed-page intermediate-representations to slightly speed up rebuilds. This may be manually cleared (or <a href="../basics/haxproj.html#cmisc">changed/disabled</a>) whenever deemed prudent (such as while customizing HaXtatic's Haskell code-base itself).</p>
+<p>Cached per-processed-page intermediate-representations to slightly speed up rebuilds. This may be manually cleared (or <a href="../basics/haxproj.html#cmisc">changed/disabled</a>) whenever deemed prudent (such as while customizing <i>HaXtatic</i>'s Haskell code-base itself).</p>
 <span id="files"><h2 id="Standard files">Standard files</h2></span>
 <h3>Always created if missing:</h3>
 <ul>
@@ -102,6 +102,5 @@ Wrote 2 files in 0.07s:
 </ul>
 
 <!-- end of content source page -->
-
-
+<a name="down"></a>
 </body></html>

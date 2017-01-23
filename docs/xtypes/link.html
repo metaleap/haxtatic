@@ -22,17 +22,19 @@
 <!-- begins content source page -->
 <h1>hax.link</h1>
 	
-	<p>Outputs <code>&lt;a <i>..</i>&gt;<i>..</i>&lt;/a&gt;</code>.</p>
+	<p class="up">Outputs <code>&lt;a <i>..</i>&gt;<i>..</i>&lt;/a&gt;</code>.</p>
 	<h2 id="In a nutshell">In a nutshell</h2>
 	<ol>
 		<li>
-			<a href="../xtypes/link.html#decl">Declaration</a> of an <code>|X|hax.link:<i>myXtag</i>:<i>some/rel/base/path</i>: <i>..</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
+			<a href="../xtypes/link.html#decl">Declaration</a> of an <code>|X|hax.link:<i>myTag</i>:<i>some/rel/base/path</i>: <i>..</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
 			<ul><li>further configuring: <code>htmlAtts</code> , <code>htmlEsc</code> , <code>uriAutoExt</code> </li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myXtag</i>:<i>rel-to-base/path/no/whitespace and then the link text text</i> |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i>rel-to-base/path/no/whitespace and then the link text text</i> |<!---->}</code></li>
 	</ol>
+<h3>Stage:</h3><p><b>Early</b> &mdash; this X-renderer does not require a page context for rendering: therefore
+					any <i>hax.link</i>-invoking X-tags encountered during pre-templating (at start-up time) will be
+					processed eagerly (for reduced per-page processing load).</p>
 
 <!-- end of content source page -->
-
-
+<a name="down"></a>
 </body></html>

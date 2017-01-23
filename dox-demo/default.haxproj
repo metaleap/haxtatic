@@ -44,15 +44,34 @@ turn on whatever syntax highlighting for eased grokkage..
 
 |B|xtypes:
 	title="X-renderers", atomFile="", blokIndexPageFile="xtypes/index.html", inSitemap=True, desc=>
-	<p>The X-men x-tender-render-er-ers</p>
+	<p>Any {X|lt:x X-tag|} {X|lb:haxproj#xdecl declared and defined|} in a project always invokes a so-called "X-renderer":</p>
+	<ul><li>a specific, specialized programmatic output-rendering routine integrated into the {T|Hax|} code-base,</li>
+	<li>each offering its own degree of configurability (the once-per-tag-definition settings) and parameterization (the
+	varying-per-tag-invocation settings).</li></ul>
+	<p>{T|Hax|} ships with numerous such simple-yet-versatile X-renderers <b>that are listed below</b>, and custom ones may be coded up
+	and integrated straightforwardly in Haskell (if minimally comfortable with the language and its tool-chain) &mdash; starting from the
+	2 <a href="#down">demo*</a> starter samples.</p>
+	<p>All the following built-in X-renderers are ready to use in X-tag definitions:</p>
 
 
 
-|T|Hax:			HaXtatic
-|T|SiteTitle:	{T|Hax|} Docs
-|T|XdemoInfo:	<hr/><p class="hd-note">This "slightly pointless" X-renderer exists solely to serve as a
-				<a href="http://github.com/metaleap/haxtatic/blob/master/src/X/{P|fileBaseName|}.hs">code sample</a> to start from for Haskell programmers
-				wanting to develop custom X-renderers within the {T|Hax|} code-base.</p>
+|T|Hax:				<i>HaXtatic</i>
+|T|SiteTitle:		HaXtatic Docs
+|T|XdemoInfo:		{T|Xpurpose|}<p>This "verging on useless" X-renderer exists solely to serve as a
+					<a href="http://github.com/metaleap/haxtatic/blob/master/src/X/Demo{P|xn|}.hs">code sample</a> to start from when
+					wanting to develop custom X-renderers within the {T|Hax|} code-base in Haskell.</p>
+|T|Xearly:			<h3>Stage:</h3><p><b>Early</b> &mdash; this X-renderer does not require a page context for rendering: therefore
+					any <i>hax.{P|fileBaseName|}</i>-invoking X-tags encountered during pre-templating (at start-up time) will be
+					processed eagerly (for reduced per-page processing load).</p>
+|T|Xpage:			<h3>Stage:</h3><p><b>Page</b> &mdash; this X-renderer requires a page context for rendering: therefore
+					any <i>hax.{P|fileBaseName|}</i>-invoking X-tags encountered during pre-templating (at start-up time) will be
+					skipped over and thus delayed until page time.</p>
+|T|Xearlyorpage:	<h3>Stage:</h3><p><b>Early or Page</b> &mdash; this X-renderer determines dynamically whether or not it
+					requires a page context for rendering: so some <i>hax.{P|fileBaseName|}</i>-invoking X-tags encountered during
+					pre-templating (at start-up time) may be processed eagerly (for reduced per-page processing load), and others may be
+					skipped over and thus delayed until page time &mdash; depending on the X-tag's configuration and/or arguments.</p>
+|T|Xpurpose:		{X|h: Purpose |}
+|T|Xcfg:			{X|h: Configuration properties |}
 
 
 
@@ -123,7 +142,8 @@ turn on whatever syntax highlighting for eased grokkage..
 			 ("cfgmore" , "(no settings)"),
 			 ("usage" , ": <i>any &quot;content&apos; to &lt;&gt; XML&amp;HTML-escape</i>") ],
 	content=>
-	XML/HTML-escapes all occurrences of {X|c: &amp; &lt; &gt; &quot; &apos; |} in the given content.
+	Outputs the given content with all occurrences of any of {X|c: &amp; &lt; &gt; &quot; &apos; |} each appropriately entity-escaped
+	for safe inclusion in markup.
 
 |P|xdesc:
 	dt = "1234-08-25", cat = "link", title = "", link = "",

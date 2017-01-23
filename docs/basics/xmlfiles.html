@@ -37,7 +37,7 @@
 </ul>
 <span id="blokatoms"><h2 id="*.atom files for Bloks">*.atom files for Bloks</h2></span>
 <p>
-	Whether and where these are written is specified in a |B| directive's <code>atomFile</code> <a href="../basics/haxproj.html#bdecl">property</a>. Every page associated with the Blok is (during generation of its corresponding <i>*.atom</i> feed) translated in its entirety into one equivalent <code>&lt;entry&gt;</code> (of course sans the <a href="../basics/tmplsnip.html">outer template</a>). To not reprocess all <a href="../tags/index.html">haXtags</a> for each, a cached (already-processed and thus haXtag-free) in-memory version of the page content is used for that. However, <i>that</i> in turn forced HaXtatic to reprocess and re-generate (prior to generating any <i>*.atom</i>s) <i>any and all</i> pages that will end up in any <i>*.atom</i> feed determined to need re-generation during this run. This behavior will be improved in the future.
+	Whether and where these are written is specified in a |B| directive's <code>atomFile</code> <a href="../basics/haxproj.html#bdecl">property</a>. Every page associated with the Blok is (during generation of its corresponding <i>*.atom</i> feed) translated in its entirety into one equivalent <code>&lt;entry&gt;</code> (of course sans the <a href="../basics/tmplsnip.html">outer template</a>). To not reprocess all <a href="../tags/index.html">haXtags</a> for each, a cached (already-processed and thus haXtag-free) in-memory version of the page content is used for that. However, <i>that</i> in turn forced <i>HaXtatic</i> to reprocess and re-generate (prior to generating any <i>*.atom</i>s) <i>any and all</i> pages that will end up in any <i>*.atom</i> feed determined to need re-generation during this run. This behavior will be improved in the future.
 </p>
 <h2 id="*.atom files for |P| &quot;feeds&quot;">*.atom files for |P| "feeds"</h2>
 <p>
@@ -45,6 +45,5 @@
 </p>
 
 <!-- end of content source page -->
-
-
+<a name="down"></a>
 </body></html>

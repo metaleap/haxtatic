@@ -14,7 +14,7 @@
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
 		<label for="chk_showtoc">On this page:</label>
 		<ul>
-<style type='text/css'>.hd-toc { display: none; }</style>
+<li><a href="#In a nutshell">In a nutshell</a></li><li><a href="#Purpose">Purpose</a></li><li><a href="#Configuration properties">Configuration properties</a></li>
 		</ul>
 	</div>
 
@@ -22,17 +22,31 @@
 <!-- begins content source page -->
 <h1>hax.miniTag</h1>
 	
-	<p>Outputs <code>&lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt;</code>.</p>
+	<p class="up">Outputs <code>&lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt;</code>.</p>
 	<h2 id="In a nutshell">In a nutshell</h2>
 	<ol>
 		<li>
-			<a href="../xtypes/miniTag.html#decl">Declaration</a> of an <code>|X|hax.miniTag:<i>myXtag</i>:<i>somehtmltag</i>: <i>..</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
+			<a href="../xtypes/miniTag.html#decl">Declaration</a> of an <code>|X|hax.miniTag:<i>myTag</i>:<i>somehtmltag</i>: <i>..</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
 			<ul><li>further configuring: <code>htmlAtts</code></li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myXtag</i>:<i> tag's inner-markup content </i> |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i> tag's inner-markup content </i> |<!---->}</code></li>
 	</ol>
+<h3>Stage:</h3><p><b>Early</b> &mdash; this X-renderer does not require a page context for rendering: therefore
+					any <i>hax.miniTag</i>-invoking X-tags encountered during pre-templating (at start-up time) will be
+					processed eagerly (for reduced per-page processing load).</p>
+<h2 id="Purpose">Purpose</h2>
+<p>Some contents require repetetive use of quickly-becoming-too-verbose "mostly just inner text" tags such as
+	<code>&lt;blockquote&gt;</code>, <code>&lt;code&gt;</code>, or <code>&lt;p class="my-para-highlighted my-smallerfont"&gt;</code> etc.</p>
+<p>Setting up <i>hax.miniTag</i> X-tags for any such instances alleviates this quickly, and lets the author turn
+	repetetive-hence-too-verbose occurrences of:</p>
+<ul>
+	<li><code>&lt;blockquote&gt;<i>content</i>&lt;/blockquote&gt;</code> into <code>{X<!---->|bq:<i>content</i>|<!---->}</code></li>
+	<li><code>&lt;code&gt;<i>content</i>&lt;/code&gt;</code> into <code>{X<!---->|c:<i>content</i>|<!---->}</code></li>
+	<li><code>&lt;p class="my-para-highlighted my-smallerfont"&gt;<i>content</i>&lt;/p&gt;</code> into <code>{X<!---->|phs:<i>content</i>|<!---->}</code></li>
+	<li>Et cetera!</li>
+</ul>
+<h2 id="Configuration properties">Configuration properties</h2>
 
 <!-- end of content source page -->
-
-
+<a name="down"></a>
 </body></html>

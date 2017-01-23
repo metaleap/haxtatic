@@ -27,7 +27,7 @@
 </p>
 <h2 id="Multiple *.haxproj">Multiple *.haxproj</h2>
 <p>
-	<a href="../basics/projdir.html#run">When <i>HaXtatic</i> is run, it is at a minimum always given a project directory path to work in</a>, but following that one required command-line argument there may be <b>any number of <i>*.haxproj</i> file names</b> (not paths, and separated via white-space). Only when these <i>aren't</i> specified does HaXtatic actually assume a single <i>default.haxproj</i> is to be used.
+	<a href="../basics/projdir.html#run">When <i>HaXtatic</i> is run, it is at a minimum always given a project directory path to work in</a>, but following that one required command-line argument there may be <b>any number of <i>*.haxproj</i> file names</b> (not paths, and separated via white-space). Only when these <i>aren't</i> specified does <i>HaXtatic</i> actually assume a single <i>default.haxproj</i> is to be used.
 </p>
 <p>
 	So all the specified <a href="../basics/haxproj.html">*.haxproj</a> files are loaded in sequence and combined-into-one in memory on the fly. This may result in later definitions overriding previous ones, which in turn can be really quite handy (once the need materializes).
@@ -44,6 +44,5 @@
 <p>The <i>very first</i> of all the specified <i>*.haxproj</i> file names supplied over the command-line, as <a href="#Multiple *.haxproj">per above</a> &mdash; but existing or not, loaded or not: the first one names this setup! All this shows how new projects end up with the standard set of <span class="hd-note">&nbsp;<b>default</b>.haxproj&nbsp;&nbsp;+&nbsp;&nbsp;tmpl/<b>default</b>.haxtmpl.html&nbsp;&nbsp;+&nbsp;&nbsp;<b>default-build</b>/&nbsp;</span> &mdash; the setup name falls back to <b>default</b> absent any explicitly specified other <i>*.haxproj</i> file names.</p>
 
 <!-- end of content source page -->
-
-
+<a name="down"></a>
 </body></html>

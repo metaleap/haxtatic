@@ -1,1 +1,14 @@
 {X|haxdox-xthead|}
+{T|Xearly|}
+{T|Xpurpose|}
+<p>Some contents require repetetive use of quickly-becoming-too-verbose "mostly just inner text" tags such as
+	{X|c: &lt;blockquote&gt; |}, {X|c: &lt;code&gt; |}, or {X|c: &lt;p class="my-para-highlighted my-smallerfont"&gt; |} etc.</p>
+<p>Setting up <i>hax.{P|fileBaseName|}</i> X-tags for any such instances alleviates this quickly, and lets the author turn
+	repetetive-hence-too-verbose occurrences of:</p>
+<ul>
+	<li>{X|c: &lt;blockquote&gt;<i>content</i>&lt;/blockquote&gt; |} into {X|c: {X<!---->|bq:<i>content</i>|<!---->} |}</li>
+	<li>{X|c: &lt;code&gt;<i>content</i>&lt;/code&gt; |} into {X|c: {X<!---->|c:<i>content</i>|<!---->} |}</li>
+	<li>{X|c: &lt;p class="my-para-highlighted my-smallerfont"&gt;<i>content</i>&lt;/p&gt; |} into {X|c: {X<!---->|phs:<i>content</i>|<!---->} |}</li>
+	<li>Et cetera!</li>
+</ul>
+{T|Xcfg|}

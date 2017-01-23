@@ -1,6 +1,6 @@
 <h1>Templates and snippets in tmpl/</h1>
 <p class="up">
-	When processing a content source file to generate its corresponding output file, <i>{T|Hax|}'s</i> first step is always determining the appropriate <i>tmpl/*.haxtmpl.*</i> file to apply.
+	When processing a content source file to generate its corresponding output file, {T|Hax|}'s first step is always determining the appropriate <i>tmpl/*.haxtmpl.*</i> file to apply.
 </p>
 {X|h: Output templates: *.haxtmpl.* |}
 <h3>For files that are deemed HTML files,</h3>
@@ -8,17 +8,17 @@
 	in new projects, this will select {X|c:tmpl/<i>default</i>.haxtmpl<i>.html</i>|}, with the first part (here {X|c:default|}) derived from {X|lb:namedsetups#Named%20setups the current setup name|} (which obviously defaults to {X|c:default|}) and {X|c:.html|} being hardcoded to always be chosen for "files that are deemed HTML files".
 </p>
 <ul>
-	<li>If {X|c:tmpl/<i>&lt;setup-name&gt;</i>.haxtmpl.html|} doesn't exist, <i>{T|Hax|}</i> always looks for {X|c:tmpl/default.haxtmpl.html|} next.</li>
+	<li>If {X|c:tmpl/<i>&lt;setup-name&gt;</i>.haxtmpl.html|} doesn't exist, {T|Hax|} always looks for {X|c:tmpl/default.haxtmpl.html|} next.</li>
 	<li>If <i>that</i> doesn't exist, a pre-authored default version is re-created in that location and used.</li>
 	<li><b>Which files are deemed HTML files?</b> Always those with file extensions {X|c:.html|}, {X|c:.htm|} and {X|c:&nbsp;|} (none at all), <i>plus</i> any custom {X|lb:haxproj#cmisc _hax_htmlequivexts|} explicitly listed in a currently loaded <i>*.haxproj</i>.</li>
 </ul>
 <h3>What about files <i>not</i> "deemed HTML"?</h3>
 <p>
-	For those <i>{T|Hax|}</i> will select {X|c:tmpl/<i>&lt;setup-name&gt;</i>.haxtmpl<i>.&lt;ext&gt;</i>|} with {X|c:&nbsp;.&lt;ext&gt;|} being the actual file extension of the current input file. So one may author various file-type-specific templates such as {X|c: tmpl/<i>&lt;setup-name&gt;</i>.haxtmpl<i>.js</i>|}, {X|c: tmpl/<i>&lt;setup-name&gt;</i>.haxtmpl<i>.css</i>|} {X|c: tmpl/<i>&lt;setup-name&gt;</i>.haxtmpl<i>.xml</i>|} and so forth.
+	For those {T|Hax|} will select {X|c:tmpl/<i>&lt;setup-name&gt;</i>.haxtmpl<i>.&lt;ext&gt;</i>|} with {X|c:&nbsp;.&lt;ext&gt;|} being the actual file extension of the current input file. So one may author various file-type-specific templates such as {X|c: tmpl/<i>&lt;setup-name&gt;</i>.haxtmpl<i>.js</i>|}, {X|c: tmpl/<i>&lt;setup-name&gt;</i>.haxtmpl<i>.css</i>|} {X|c: tmpl/<i>&lt;setup-name&gt;</i>.haxtmpl<i>.xml</i>|} and so forth.
 </p>
 <ul>
-	<li>If {X|c:tmpl/<i>&lt;setup-name&gt;</i>.haxtmpl<i>.&lt;ext&gt;</i>|} doesn't exist, <i>{T|Hax|}</i> always looks for {X|c:tmpl/default.haxtmpl<i>.&lt;ext&gt;</i>|} next.</li>
-	<li>If <i>that</i> doesn't exist, <i>{T|Hax|}</i> assumes in memory a default "template" with an entire content of just {X|c:{P<!---->|:content:|<!---->}|}, equivalent to a "template" that really adds nothing but simply refers directly to the current content source being processed.</li>
+	<li>If {X|c:tmpl/<i>&lt;setup-name&gt;</i>.haxtmpl<i>.&lt;ext&gt;</i>|} doesn't exist, {T|Hax|} always looks for {X|c:tmpl/default.haxtmpl<i>.&lt;ext&gt;</i>|} next.</li>
+	<li>If <i>that</i> doesn't exist, {T|Hax|} assumes in memory a default "template" with an entire content of just {X|c:{P<!---->|:content:|<!---->}|}, equivalent to a "template" that really adds nothing but simply refers directly to the current content source being processed.</li>
 </ul>
 {X|h: Authoring *.haxtmpl.* files |}
 <p>
@@ -27,7 +27,7 @@
 <span id="snippets">{X|h: Output snippets: *.haxsnip.html |}</span>
 <p>These provide similar functionality to what is elsewhere variously called <b>"controls", "components", "sub-templates"</b>, or "<i>somesuch</i>lets" &mdash; that is the repeat reuse predefined blocks of content/markup in a parameterized manner, ie. with them including named, variable values passed to them from the call-site.</p>
 <h3>For example,</h3>
-<p>the created-by-default {X|c:tmpl/_hax_blokindex.haxsnip.html|} illustrates the simplicity of <i>{T|Hax|}</i>'s implementation of this powerful concept:</p>
+<p>the created-by-default {X|c:tmpl/_hax_blokindex.haxsnip.html|} illustrates the simplicity of {T|Hax|}'s implementation of this powerful concept:</p>
 <ul>
 	<li>Variable values that are declared in the {X|c:vars=[]|} list at the top (each allowing a default value if the caller does not supply a dynamic one to use) are</li>
 	<li>then, at processing time (of an {X|lt:x X-tag|} anywhere that's invoking this snippet), replacing any references to themselves inside {X|c:content=&gt;|} that are enclosed within {X|c:{%|} and {X|c:%}|}.

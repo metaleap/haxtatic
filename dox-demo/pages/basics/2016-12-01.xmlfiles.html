@@ -1,6 +1,6 @@
 <h1>Additional XML output files</h1>
 <p class="up">
-	During processing, <i>{T|Hax|}</i> may generate (when so set up <i>and</i> fresh content changes indicate the need) additional XML output files of 2 kinds: <i>sitemap.xml</i> and <i>*.atom</i> feeds.
+	During processing, {T|Hax|} may generate (when so set up <i>and</i> fresh content changes indicate the need) additional XML output files of 2 kinds: <i>sitemap.xml</i> and <i>*.atom</i> feeds.
 </p>
 {X|h: sitemap.xml |}
 <p>
@@ -9,7 +9,7 @@
 <ul>
 	<li>this can be changed or disabled via a {X|c:|C|_hax_relpath_sitemap:|} {X|lb:haxproj#cmisc <i>*.haxproj</i> directive|}.</li>
 	<li>All site pages are included in the resulting <i>sitemap.xml</i> output file except pages associated with {X|lb:bloks Bloks|} that have {X|lb:haxproj#bdecl declared otherwise|}.</li>
-	<li>Each generated {X|c:loc|} value is <i>required</i> (needlessly and wastefully so, but that's the format) to include a full domain-name and unless a custom {X|c:|C|_hax_domainname:|} {X|lb:haxproj#cmisc <i>*.haxproj</i> directive|} was explicitly declared, <i>{T|Hax|}</i> falls back on the project-directory's name for that.</li>
+	<li>Each generated {X|c:loc|} value is <i>required</i> (needlessly and wastefully so, but that's the format) to include a full domain-name and unless a custom {X|c:|C|_hax_domainname:|} {X|lb:haxproj#cmisc <i>*.haxproj</i> directive|} was explicitly declared, {T|Hax|} falls back on the project-directory's name for that.</li>
 	<li>Each generated {X|c:priority|} value is guesstimated by a naive heuristic based loosely on page path length/depth/complexity and not currently user-customizable.</li>
 	<li>Each generated {X|c:lastmod|} value refers to the <i>custom-set page date</i> <b>only</b> if that was {X|lb:datetime#fname explicitly encoded in the content source file's name|}, otherwise it falls back to the content source file's currently set "<i>last modified</i>" timestamp.</li>
 </ul>
