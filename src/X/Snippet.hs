@@ -24,7 +24,7 @@ data Tag
 registerX _ xreg =
     let
     renderer (_ , argstr) =
-        Just$ Util.while again (Util.replaceSubs allrepls) (cfg-:content)
+        Just$ Util.repeatWhile again (Util.replaceSubsMany allrepls) (cfg-:content)
         where
         again = for where for [] = False ; for ('{':'%':_) = True ; for ('%':'}':_) = True ; for (_:more) = for more
         allrepls = argvars++cfgvars++flagrepls

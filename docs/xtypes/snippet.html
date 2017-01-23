@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="en"><head>
-    <title>hax.snippet | HaXtatic Docs</title>
+    <title> | HaXtatic Docs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../haxtatic.css" rel="stylesheet" />
 	<!--	xtypes\snippet.html
@@ -20,17 +20,7 @@
 
 
 <!-- begins content source page -->
-<h1>hax.snippet</h1>
-	
-	<p class="up">Outputs the content of the named snippet with the specified variable substitutions.</p>
-	<h2 id="In a nutshell">In a nutshell</h2>
-	<ol>
-		<li>
-			<a href="../xtypes/snippet.html#decl">Declaration</a> of an <code>|X|hax.snippet:<i>myTag</i>: <i>..</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: <code>vars</code>, <code>flags</code>, <code>content</code></li></ul>
-		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: vars = [..], flags = [..], content = &quot;..&quot; |<!---->}</code></li>
-	</ol>
+
 <h3>Stage:</h3><p><b>Early</b> &mdash; this X-renderer does not require a page context for rendering: therefore
 					any <i>hax.snippet</i>-invoking X-tags encountered during pre-templating (at start-up time) will be
 					processed eagerly (for reduced per-page processing load).</p>

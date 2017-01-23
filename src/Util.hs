@@ -78,9 +78,9 @@ repeatedly fn arg =
     let result = fn arg
     in if (result==arg) then result else repeatedly fn result
 
-while again fn arg =
+repeatWhile again fn arg =
     let result = fn arg
-    in if not$ again result then result else while again fn result
+    in if not$ again result then result else repeatWhile again fn result
 
 
 via fn =
@@ -392,9 +392,9 @@ indexOfSub haystack needle =
 
 
 indexOfSubs1st [] _ =
-    (_intmin , "" )
+    (_intmin , [] )
 indexOfSubs1st _ [] =
-    (_intmin , "" )
+    (_intmin , [] )
 indexOfSubs1st subs str =
     let startchars = unique$ subs>~(@!0)
         (startindex , _haystack) = _indexof_droptil' (`elem` startchars) 0 str
@@ -403,7 +403,7 @@ indexOfSubs1st subs str =
         indexof = indexOfSub _haystack
         (i,index) = Data.List.minimumBy (bothSnds compare) iidxs
     in if startindex<0 || null iidxs || index<0
-        then ( _intmin , "" )
+        then ( _intmin , [] )
         else ( index+startindex , subs@!i )
 
 
@@ -416,36 +416,73 @@ lastIndexOfSub revstr revsub
 
 
 
-replaceSub "" _ str = str
-replaceSub _ _ "" = ""
-replaceSub old new str =
-    _replace_helper (replaceSub old new) (const new) (idx,old) str
-    where
-    idx = indexOfSub str old
+replaceSub ([] , _) = id
+replaceSub (old , new) =
+    replsub where
+    replsub [] = []
+    replsub list@(_ : more)
+        | (isprefix list) = withnew list
+        | (otherwise) = replsub more
+    withnew = ((new ++) . replsub . dropold)
+    dropold = drop $old~>length
+    isprefix = Data.List.isPrefixOf old
 
-replaceSubs [] = id
-replaceSubs ((old,new):[]) = replaceSub old new
-replaceSubs replpairs =
-    _replaceall
+
+replaceSub' ([] , _) = id
+replaceSub' (old , new) =
+    replsub where
+    replsub [] = []
+    replsub str =
+        if str==old then new
+        else replrec (indexOfSub str old , old , oldlen) str
+    replrec = _replcore replsub (const new)
+    oldlen = old~>length
+
+
+replaceSubsFew [] = id
+replaceSubsFew [replpair] = replaceSub replpair
+replaceSubsFew replpairs =
+    replall
     where
-    tonew ((oldval,newval):rest) old =
-        if old==oldval then newval else tonew rest old
-    tonew _ _ =
-        error "Well somehow this codebase got messed up badly now!" -- OK to crash here, means a bug in the codebase
+    replall [] = []
+    replall str =
+        replrec (idx , old , old~>length) str
+        where
+        (idx,old) = indexOfSubs1st olds str
     (olds,_) = unzip replpairs
-    _replhelper = _replace_helper _replaceall (tonew replpairs)
-    _replaceall [] = []
-    _replaceall str =
-        _replhelper (indexOfSubs1st olds str) str
+    replrec = _replcore replall (tonew replpairs)
+    tonew ((replold , replnew):replmore) curold =
+        if curold==replold then replnew else tonew replmore curold
+    tonew _ _ =     -- impossible, or a freshly introduced bug: `curold` did
+        undefined   -- not exist as a `replold` (ie. fst) in `replpairs`?!
 
-replaceVia [] _ str = str
-replaceVia olds tonew str =
-    _replace_helper (replaceVia olds tonew) tonew (indexOfSubs1st olds str) str
 
-_replace_helper recurse tonew (idx,old) str =
+replaceSubsMany [] = id
+replaceSubsMany [replpair] = replaceSub replpair
+replaceSubsMany replpairs =
+    replall
+    where
+    replall str =
+        foldr replaceSub str repls
+        where
+        repls = replpairs ~|(contains str).fst
+
+
+replaceSubsBy [] _ = id
+replaceSubsBy olds tonew =
+    replby
+    where
+    replby [] = []
+    replby str =
+        let (idx , old) = indexOfSubs1st olds str
+        in replrec (idx , old , old~>length) str
+    replrec = _replcore replby tonew
+
+
+_replcore recurse tonew (idx , old , oldlen) str =
     if idx<0 then str else
         let pre = take idx str
-            rest = drop (idx + old~>length) str
+            rest = drop (idx + oldlen) str
         in pre ++ tonew old ++ recurse rest
 
 

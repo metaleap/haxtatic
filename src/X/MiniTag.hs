@@ -25,13 +25,13 @@ registerX _ xreg =
                 cfg_htmltagname (cfghtmlatts ++ [("" =: innercontent)] ++ (dynatts innercontent)) []
         where
         innercontent = argstr
-        dynatts inn = cfgdynatts >~ \(name , _) -> (name , Html.escape inn)
+        dynatts inn = cfgdynatts >~ \(name , val) -> (name , Util.replaceSub ("{%:content:%}" , inn) val)
 
     in X.Early renderer
     where
 
     (cfg_htmltagname , cfg_parsestr ) = xreg-:X.cfgSplitOnce
-    (cfgdynatts , cfghtmlatts) = (cfg-:htmlAtts) ~> (Data.List.partition $("{%:content:%}"==).snd)
+    (cfgdynatts , cfghtmlatts) = (cfg-:htmlAtts) ~> (Data.List.partition $(Data.List.isInfixOf "{%:content:%}").snd)
     cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where
         defcfg = Cfg { htmlAtts = [] }
         errcfg = Cfg { htmlAtts = X.htmlErrAttsCfg xreg }

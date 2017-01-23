@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="en"><head>
-    <title>hax.pageAnchors | HaXtatic Docs</title>
+    <title> | HaXtatic Docs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../haxtatic.css" rel="stylesheet" />
 	<!--	xtypes\pageAnchors.html
@@ -20,18 +20,7 @@
 
 
 <!-- begins content source page -->
-<h1>hax.pageAnchors</h1>
-	
-	<p class="up">Outputs a sequence of <code>&lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code>, one
-	per <code>&lt;<i>gatherhtmltag</i>&gt;</code> element found in the page's content source.</p>
-	<h2 id="In a nutshell">In a nutshell</h2>
-	<ol>
-		<li>
-			<a href="../xtypes/pageAnchors.html#decl">Declaration</a> of an <code>|X|hax.pageAnchors:<i>myTag</i>:<i>gatherhtmltag</i>: <i>..</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: <code>considerEmpty</code>, <code>htmlIfEmpty</code></li></ul>
-		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i>outerhtmltag</i>: htmlAtts = [..] |<!---->}</code></li>
-	</ol>
+
 <h3>Stage:</h3><p><b>Page</b> &mdash; this X-renderer requires a page context for rendering: therefore
 					any <i>hax.pageAnchors</i>-invoking X-tags encountered during pre-templating (at start-up time) will be
 					skipped over and thus delayed until page time.</p>

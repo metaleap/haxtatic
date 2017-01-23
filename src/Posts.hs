@@ -228,7 +228,7 @@ writeAtoms ctxbuild domainname outjobs =
                     Nothing -> ( '/':(feedname++".html") , feedname , "" )
 
         xmlesc = Html.escape
-        sanitize = Util.replaceSubs ["<link " =: "<hax_link style=\"display:none\" " , "<script" =: "<!--hax_script" ,
+        sanitize = Util.replaceSubsMany ["<link " =: "<hax_link style=\"display:none\" " , "<script" =: "<!--hax_script" ,
                     "<input " =: "<hax_input style=\"display:none\"" , "</link" =: "</hax_link" ,
                     "</script>" =: "</hax_script-->" , "</input" =: "</hax_input" , " style=\"" =: " hax_style=\""
                     ]

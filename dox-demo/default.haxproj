@@ -69,16 +69,17 @@ turn on whatever syntax highlighting for eased grokkage..
 |T|Xearlyorpage:	<h3>Stage:</h3><p><b>Early or Page</b> &mdash; this X-renderer determines dynamically whether or not it
 					requires a page context for rendering: so some <i>hax.{P|fileBaseName|}</i>-invoking X-tags encountered during
 					pre-templating (at start-up time) may be processed eagerly (for reduced per-page processing load), and others may be
-					skipped over and thus delayed until page time &mdash; depending on the X-tag's configuration and/or arguments.</p>
+					skipped over and thus delayed until page time &mdash; depending on the X-tag's configuration and/or parameters.</p>
 |T|Xpurpose:		{X|h: Purpose |}
-|T|Xcfg:			{X|h: Configuration properties |}
+|T|Xcfg:			<span id="decl">{X|h: Declaration / Configuration |}</span>
+|T|Xargs:			<span id="args">{X|h: Invocation / Parameters |}</span>
 
 
 
 |X|hax.image:doxpic: {P| /pics/otiosely/long/path |}: linkAtts=[], imgAtts=[]
 |X|hax.xmlEscape:&
 |X|hax.miniTag:c: code
-|X|hax.miniTag:h: h2: htmlAtts=[("id" , "{%:content:%}")]
+|X|hax.miniTag:h: h2: htmlAtts=[ ("id" , "{P|X|&:{%:content:%}|}") ]
 |X|hax.miniTag:note: span: htmlAtts=[("class" , "hd-note")]
 |X|hax.link:lb: {P| /basics |}: htmlAtts = [] , htmlEsc = (False , False) , uriAutoExt = ".html"
 |X|hax.link:lt: {P| /tags |}: htmlAtts = [] , htmlEsc = (False , False) , uriAutoExt = ".html"

@@ -14,7 +14,7 @@
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
 		<label for="chk_showtoc">On this page:</label>
 		<ul>
-<li><a href="#demoSimplest">demoSimplest</a></li><li><a href="#demoCfgArgs">demoCfgArgs</a></li><li><a href="#miniTag">miniTag</a></li><li><a href="#image">image</a></li><li><a href="#xmlEscape">xmlEscape</a></li><li><a href="#link">link</a></li><li><a href="#links">links</a></li><li><a href="#pageAnchors">pageAnchors</a></li><li><a href="#snippet">snippet</a></li><li><a href="#repeat">repeat</a></li>
+<style type='text/css'>.hd-toc { display: none; }</style>
 		</ul>
 	</div>
 
@@ -38,100 +38,7 @@
 	<li><a href="#repeat">hax.repeat</a> &mdash; versatile content/data selector&rarr;rearranger&rarr;reformatter&rarr;renderer</li>
 </ul>
 <span id="demo">
-<h2 id="demoSimplest">demoSimplest</h2>
-	<p class="up">Outputs <code>&lt;h1&gt;Hello World!&lt;/h1&gt;</code>.</p>
-	
-	<ol>
-		<li>
-			<a href="../xtypes/demoSimplest.html#decl">Declaration</a> of an <code>|X|hax.demoSimplest:<i>myTag</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: (no settings)</li></ul>
-		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i> |<!---->}</code></li>
-	</ol><h2 id="demoCfgArgs">demoCfgArgs</h2>
-	<p class="up">Outputs <code>&lt;h1&gt;Hello, <i>greetname</i>!&lt;/h1&gt;</code>.</p>
-	
-	<ol>
-		<li>
-			<a href="../xtypes/demoCfgArgs.html#decl">Declaration</a> of an <code>|X|hax.demoCfgArgs:<i>myTag</i></code> or <code>|X|hax.demoCfgArgs:<i>myXtag</i>:<i>greetname</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: (no other settings)</li></ul>
-		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>|<!---->}</code> or <code>{X<!---->|<i>myXtag</i>:<i>greetname</i> |<!---->}</code></li>
-	</ol><h2 id="miniTag">miniTag</h2>
-	<p class="up">Outputs <code>&lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt;</code>.</p>
-	
-	<ol>
-		<li>
-			<a href="../xtypes/miniTag.html#decl">Declaration</a> of an <code>|X|hax.miniTag:<i>myTag</i>:<i>somehtmltag</i>: <i>..</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: <code>htmlAtts</code></li></ul>
-		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i> tag's inner-markup content </i> |<!---->}</code></li>
-	</ol><h2 id="image">image</h2>
-	<p class="up">Outputs <code>&lt;img <i>..</i> /&gt;</code> or <code>&lt;a <i>..</i>&gt;&lt;img <i>..</i> /&gt;&lt;/a&gt;</code>.</p>
-	
-	<ol>
-		<li>
-			<a href="../xtypes/image.html#decl">Declaration</a> of an <code>|X|hax.image:<i>myTag</i>:<i>some/rel/base/path</i>: <i>..</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: <code>linkAtts</code>, <code>imgAtts</code></li></ul>
-		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i>rel-to-base/path/no/whitespace and optionally some description text</i> |<!---->}</code></li>
-	</ol><h2 id="xmlEscape">xmlEscape</h2>
-	<p class="up">Outputs the given content with all occurrences of any of <code>&amp; &lt; &gt; &quot; &apos;</code> each appropriately entity-escaped
-	for safe inclusion in markup.</p>
-	
-	<ol>
-		<li>
-			<a href="../xtypes/xmlEscape.html#decl">Declaration</a> of an <code>|X|hax.xmlEscape:<i>myTag</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: (no settings)</li></ul>
-		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: <i>any &quot;content&apos; to &lt;&gt; XML&amp;HTML-escape</i> |<!---->}</code></li>
-	</ol><h2 id="link">link</h2>
-	<p class="up">Outputs <code>&lt;a <i>..</i>&gt;<i>..</i>&lt;/a&gt;</code>.</p>
-	
-	<ol>
-		<li>
-			<a href="../xtypes/link.html#decl">Declaration</a> of an <code>|X|hax.link:<i>myTag</i>:<i>some/rel/base/path</i>: <i>..</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: <code>htmlAtts</code> , <code>htmlEsc</code> , <code>uriAutoExt</code> </li></ul>
-		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i>rel-to-base/path/no/whitespace and then the link text text</i> |<!---->}</code></li>
-	</ol><h2 id="links">links</h2>
-	<p class="up">Outputs a sequence of <code>&lt;a ..&gt; .. &lt;/a&gt;</code> or
-	<code>&lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code> in a uniform manner.</p>
-	
-	<ol>
-		<li>
-			<a href="../xtypes/links.html#decl">Declaration</a> of an <code>|X|hax.links:<i>myTag</i>:<i>outerhtmltag</i>: <i>..</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: <code>htmlAtts</code>, <code>itemsFirst</code>, <code>itemsLast</code>, <code>wrapHref</code></li></ul>
-		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: items = [..] , htmlAtts = [..] |<!---->}</code></li>
-	</ol><h2 id="pageAnchors">pageAnchors</h2>
-	<p class="up">Outputs a sequence of <code>&lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code>, one
-	per <code>&lt;<i>gatherhtmltag</i>&gt;</code> element found in the page's content source.</p>
-	
-	<ol>
-		<li>
-			<a href="../xtypes/pageAnchors.html#decl">Declaration</a> of an <code>|X|hax.pageAnchors:<i>myTag</i>:<i>gatherhtmltag</i>: <i>..</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: <code>considerEmpty</code>, <code>htmlIfEmpty</code></li></ul>
-		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i>outerhtmltag</i>: htmlAtts = [..] |<!---->}</code></li>
-	</ol><h2 id="snippet">snippet</h2>
-	<p class="up">Outputs the content of the named snippet with the specified variable substitutions.</p>
-	
-	<ol>
-		<li>
-			<a href="../xtypes/snippet.html#decl">Declaration</a> of an <code>|X|hax.snippet:<i>myTag</i>: <i>..</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: <code>vars</code>, <code>flags</code>, <code>content</code></li></ul>
-		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: vars = [..], flags = [..], content = &quot;..&quot; |<!---->}</code></li>
-	</ol><h2 id="repeat">repeat</h2>
-	<p class="up">Outputs a sequence of contents enumerated by the specified iterator.</p>
-	
-	<ol>
-		<li>
-			<a href="../xtypes/repeat.html#decl">Declaration</a> of an <code>|X|hax.repeat:<i>myTag</i>: <i>..</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: <code>prefix</code>, <code>suffix</code>, <code>joinwith</code>, <code>content</code></li></ul>
-		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: over = .. , wrapEach = .. , order = .. , skip = .. , limit = .. , more = .. |<!---->}</code></li>
-	</ol>
+
 </span>
 
 <!-- end of content source page -->

@@ -61,7 +61,7 @@
 <p>
 	If all pages exist next to each other at the site-root level anyway (micro-sites etc.), this isn't of course even needed.
 </p>
-<h2 id="Delaying X-tags">Delaying X-tags</h2>
+<span id="delay"><h2 id="Delaying X-tags">Delaying X-tags</h2></span>
 <p>
 	By default, the built-in <a href="../xtypes/index.html">X-renderers</a> readily detect and decide autonomously whether to process an <a href="../tags/x.html">X-tag</a> as early as possible, or only once a page context is current. However, any X-tag can be forced to delay rendering until page time by wrapping its contents inside a P-tag, ie. turning <code>{X<!---->|<i> .. tag content .. </i>|<!---->}</code> into <code>{P<!---->|X|<i> .. tag content .. </i>|<!---->}</code> &mdash; not particularly fruitful unless troubleshooting a particular X-tag or X-renderer.
 </p>

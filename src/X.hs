@@ -108,7 +108,7 @@ tagHandler xtags ctxpage tagcontent =
     renderwhen$ Data.Map.Strict.lookup xtagname xtags
     where
     renderargs = (ctxpage , Util.trim argstr)
-    (xtagname , argstr) = Util.splitOn1st_ ':' tagcontent
+    (xtagname , argstr) = Util.both (Util.trimEnd , Util.trimStart) (Util.splitOn1st_ ':' tagcontent)
 
     renderwhen (Just (Early xrend)) =
         xrend renderargs

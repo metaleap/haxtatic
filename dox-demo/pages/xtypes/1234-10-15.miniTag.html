@@ -3,12 +3,52 @@
 {T|Xpurpose|}
 <p>Some contents require repetetive use of quickly-becoming-too-verbose "mostly just inner text" tags such as
 	{X|c: &lt;blockquote&gt; |}, {X|c: &lt;code&gt; |}, or {X|c: &lt;p class="my-para-highlighted my-smallerfont"&gt; |} etc.</p>
-<p>Setting up <i>hax.{P|fileBaseName|}</i> X-tags for any such instances alleviates this quickly, and lets the author turn
+<p>Setting up <i>hax.miniTag</i> X-tags for any such instances alleviates this quickly, and lets the author turn
 	repetetive-hence-too-verbose occurrences of:</p>
 <ul>
-	<li>{X|c: &lt;blockquote&gt;<i>content</i>&lt;/blockquote&gt; |} into {X|c: {X<!---->|bq:<i>content</i>|<!---->} |}</li>
-	<li>{X|c: &lt;code&gt;<i>content</i>&lt;/code&gt; |} into {X|c: {X<!---->|c:<i>content</i>|<!---->} |}</li>
-	<li>{X|c: &lt;p class="my-para-highlighted my-smallerfont"&gt;<i>content</i>&lt;/p&gt; |} into {X|c: {X<!---->|phs:<i>content</i>|<!---->} |}</li>
-	<li>Et cetera!</li>
+	<li>{X|c: &lt;blockquote&gt;<i>content</i>&lt;/blockquote&gt; |}<br/>&rarr; into {X|c: {X<!---->|bq:<i>content</i>|<!---->} |}</li>
+	<li>{X|c: &lt;code&gt;<i>content</i>&lt;/code&gt; |}<br/>&rarr; into {X|c: {X<!---->|c:<i>content</i>|<!---->} |}</li>
+	<li>{X|c: &lt;p class="my-para-highlighted my-smallerfont my-roundborder"&gt;<i>content</i>&lt;/p&gt; |}<br/>&rarr; into
+		{X|c: {X<!---->|phs:<i>content</i>|<!---->} |}</li>
+	<li>et cetera..</li>
 </ul>
 {T|Xcfg|}
+<p>To demonstrate valid {X|lb:haxproj#xdecl *.haxproj|} directives to declare the above 3 example {X|lt:x X-tags|}:</p>
+<pre>
+|X|hax.miniTag:<i>bq</i>: <i>blockquote</i>
+
+|X|hax.miniTag:<i>c</i>:
+    <i>code</i>: htmlAtts = []
+
+|X|hax.miniTag:<i>phs</i>: <i>p</i>: htmlAtts
+    = [ ("<i>class</i>" , "<i>my-para-highlighted my-smallerfont</i>"),
+        ("<i>class</i>" , "<i>my-roundborder</i>") ]
+</pre>
+<p>To elaborate, for example the last one of the above, as all {X|lb:haxproj#xdecl |X| directives|} declaring {X|lt:x X-tags|} do:</p>
+<ul>
+	<li>begins with {X|c: |X| |} followed by the X-renderer identifier (here {X|c:hax.miniTag|})</li>
+	<li>followed by {X|c:&nbsp;:|} colon and the desired X-tag name to be used to invoke it (here {X|c:phs|}),</li>
+	<li>followed by {X|c:&nbsp;:|} colon and now <b><i>hax.miniTag</i>-specific</b> configuration:
+
+		<ul>
+			<li>The name of the output markup-language tag that this X-tag should wrap its content in (here {X|c:blockquote|}),</li>
+			<li>followed by a {X|c:&nbsp;:|} colon if an <b>optional</b> {X|lb:syntax syntax-sensitive|} properties block follows,
+			comprised of all of the following properties in this very order:
+				<ol>
+					<li>{X|c:htmlAtts = [ <i>..</i> ]|} &mdash; a List of all the tag attributes (each denoted in a
+					{X|c:("<i>name</i>","<i>value</i>")|} pair) to <i>always</i> append to the markup-language tag output by all instances of this
+					X-tag <ul><li>The special attribute <i>value</i> {X|c:&nbsp;{<!---->%:content:%<!---->}|} will replicate the X-tag content inside this
+					attribute (not specially escaped &mdash; effect this by wrapping inside a {X|lt:p#delay page-delayed|} X-tag invoking
+					{X|lx:xmlEscape hax.xmlEscape|}) </li></ul></li>
+				</ol>
+			</li>
+		</ul>
+
+	</li>
+</ul>
+{T|Xargs|}
+<p>No special tag parameters, no special content treatment: the entire X-tag content (ie. following the tag name such as above {X|c:phs|} and then {X|c:&nbsp;:|} colon, as in {X|c:{X<!---->|phs:<i>content</i>|<!---->}|}) is output as-is.</p>
+<p>
+	<b>Caution:</b> if no such X-tag <i>content</i> present, <i>nothing</i> is output at all, not even the intended HTML tag. This can
+	actually be desirable in certain scenarios of somewhat-dynamic tag contents &mdash; in any event, good to know.
+</p>

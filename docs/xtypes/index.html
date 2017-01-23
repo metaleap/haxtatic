@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="en"><head>
-    <title>X-renderers | HaXtatic Docs</title>
+    <title> | HaXtatic Docs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../haxtatic.css" rel="stylesheet" />
 	<!--	xtypes\index.html
@@ -20,90 +20,7 @@
 
 
 <!-- begins content source page -->
-<h1>X-renderers</h1>
-	<p>Any <a href="../tags/x.html">X-tag</a> <a href="../basics/haxproj.html#xdecl">declared and defined</a> in a project always invokes a so-called "X-renderer":</p>
-	<ul><li>a specific, specialized programmatic output-rendering routine integrated into the <i>HaXtatic</i> code-base,</li>
-	<li>each offering its own degree of configurability (the once-per-tag-definition settings) and parameterization (the
-	varying-per-tag-invocation settings).</li></ul>
-	<p><i>HaXtatic</i> ships with numerous such simple-yet-versatile X-renderers <b>that are listed below</b>, and custom ones may be coded up
-	and integrated straightforwardly in Haskell (if minimally comfortable with the language and its tool-chain) &mdash; starting from the
-	2 <a href="#down">demo*</a> starter samples.</p>
-	<p>All the following built-in X-renderers are ready to use in X-tag definitions:</p>
-	<hr/>
-	<ul class="hd-feed"><li><!--
-		other possible `vars` that can be added above and used below:
-			("feed" , ""),
-			("dt" , ""),
-			("cat" , "")
-	-->
-	<a class="hd-feed-title" href="../xtypes/miniTag.html">hax.miniTag</a>
-	<blockquote class="hd-feed-desc">Outputs <code>&lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt;</code>.</blockquote></li><li><!--
-		other possible `vars` that can be added above and used below:
-			("feed" , ""),
-			("dt" , ""),
-			("cat" , "")
-	-->
-	<a class="hd-feed-title" href="../xtypes/image.html">hax.image</a>
-	<blockquote class="hd-feed-desc">Outputs <code>&lt;img <i>..</i> /&gt;</code> or <code>&lt;a <i>..</i>&gt;&lt;img <i>..</i> /&gt;&lt;/a&gt;</code>.</blockquote></li><li><!--
-		other possible `vars` that can be added above and used below:
-			("feed" , ""),
-			("dt" , ""),
-			("cat" , "")
-	-->
-	<a class="hd-feed-title" href="../xtypes/xmlEscape.html">hax.xmlEscape</a>
-	<blockquote class="hd-feed-desc">Outputs the given content with all occurrences of any of <code>&amp; &lt; &gt; &quot; &apos;</code> each appropriately entity-escaped
-	for safe inclusion in markup.</blockquote></li><li><!--
-		other possible `vars` that can be added above and used below:
-			("feed" , ""),
-			("dt" , ""),
-			("cat" , "")
-	-->
-	<a class="hd-feed-title" href="../xtypes/link.html">hax.link</a>
-	<blockquote class="hd-feed-desc">Outputs <code>&lt;a <i>..</i>&gt;<i>..</i>&lt;/a&gt;</code>.</blockquote></li><li><!--
-		other possible `vars` that can be added above and used below:
-			("feed" , ""),
-			("dt" , ""),
-			("cat" , "")
-	-->
-	<a class="hd-feed-title" href="../xtypes/links.html">hax.links</a>
-	<blockquote class="hd-feed-desc">Outputs a sequence of <code>&lt;a ..&gt; .. &lt;/a&gt;</code> or
-	<code>&lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code> in a uniform manner.</blockquote></li><li><!--
-		other possible `vars` that can be added above and used below:
-			("feed" , ""),
-			("dt" , ""),
-			("cat" , "")
-	-->
-	<a class="hd-feed-title" href="../xtypes/pageAnchors.html">hax.pageAnchors</a>
-	<blockquote class="hd-feed-desc">Outputs a sequence of <code>&lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code>, one
-	per <code>&lt;<i>gatherhtmltag</i>&gt;</code> element found in the page's content source.</blockquote></li><li><!--
-		other possible `vars` that can be added above and used below:
-			("feed" , ""),
-			("dt" , ""),
-			("cat" , "")
-	-->
-	<a class="hd-feed-title" href="../xtypes/snippet.html">hax.snippet</a>
-	<blockquote class="hd-feed-desc">Outputs the content of the named snippet with the specified variable substitutions.</blockquote></li><li><!--
-		other possible `vars` that can be added above and used below:
-			("feed" , ""),
-			("dt" , ""),
-			("cat" , "")
-	-->
-	<a class="hd-feed-title" href="../xtypes/repeat.html">hax.repeat</a>
-	<blockquote class="hd-feed-desc">Outputs a sequence of contents enumerated by the specified iterator.</blockquote></li><li><!--
-		other possible `vars` that can be added above and used below:
-			("feed" , ""),
-			("dt" , ""),
-			("cat" , "")
-	-->
-	<a class="hd-feed-title" href="../xtypes/demoSimplest.html">hax.demoSimplest</a>
-	<blockquote class="hd-feed-desc">Outputs <code>&lt;h1&gt;Hello World!&lt;/h1&gt;</code>.</blockquote></li><li><!--
-		other possible `vars` that can be added above and used below:
-			("feed" , ""),
-			("dt" , ""),
-			("cat" , "")
-	-->
-	<a class="hd-feed-title" href="../xtypes/demoCfgArgs.html">hax.demoCfgArgs</a>
-	<blockquote class="hd-feed-desc">Outputs <code>&lt;h1&gt;Hello, <i>greetname</i>!&lt;/h1&gt;</code>.</blockquote></li></ul>
+
 <!-- end of content source page -->
 <a name="down"></a>
 </body></html>

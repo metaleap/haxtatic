@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="en"><head>
-    <title>hax.miniTag | HaXtatic Docs</title>
+    <title> | HaXtatic Docs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../haxtatic.css" rel="stylesheet" />
 	<!--	xtypes\miniTag.html
@@ -14,23 +14,13 @@
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
 		<label for="chk_showtoc">On this page:</label>
 		<ul>
-<li><a href="#In a nutshell">In a nutshell</a></li><li><a href="#Purpose">Purpose</a></li><li><a href="#Configuration properties">Configuration properties</a></li>
+<li><a href="#Purpose">Purpose</a></li><li><a href="#Declaration / Configuration">Declaration / Configuration</a></li><li><a href="#Invocation / Parameters">Invocation / Parameters</a></li>
 		</ul>
 	</div>
 
 
 <!-- begins content source page -->
-<h1>hax.miniTag</h1>
-	
-	<p class="up">Outputs <code>&lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt;</code>.</p>
-	<h2 id="In a nutshell">In a nutshell</h2>
-	<ol>
-		<li>
-			<a href="../xtypes/miniTag.html#decl">Declaration</a> of an <code>|X|hax.miniTag:<i>myTag</i>:<i>somehtmltag</i>: <i>..</i></code> directive in a <a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: <code>htmlAtts</code></li></ul>
-		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i> tag's inner-markup content </i> |<!---->}</code></li>
-	</ol>
+
 <h3>Stage:</h3><p><b>Early</b> &mdash; this X-renderer does not require a page context for rendering: therefore
 					any <i>hax.miniTag</i>-invoking X-tags encountered during pre-templating (at start-up time) will be
 					processed eagerly (for reduced per-page processing load).</p>
@@ -40,12 +30,52 @@
 <p>Setting up <i>hax.miniTag</i> X-tags for any such instances alleviates this quickly, and lets the author turn
 	repetetive-hence-too-verbose occurrences of:</p>
 <ul>
-	<li><code>&lt;blockquote&gt;<i>content</i>&lt;/blockquote&gt;</code> into <code>{X<!---->|bq:<i>content</i>|<!---->}</code></li>
-	<li><code>&lt;code&gt;<i>content</i>&lt;/code&gt;</code> into <code>{X<!---->|c:<i>content</i>|<!---->}</code></li>
-	<li><code>&lt;p class="my-para-highlighted my-smallerfont"&gt;<i>content</i>&lt;/p&gt;</code> into <code>{X<!---->|phs:<i>content</i>|<!---->}</code></li>
-	<li>Et cetera!</li>
+	<li><code>&lt;blockquote&gt;<i>content</i>&lt;/blockquote&gt;</code><br/>&rarr; into <code>{X<!---->|bq:<i>content</i>|<!---->}</code></li>
+	<li><code>&lt;code&gt;<i>content</i>&lt;/code&gt;</code><br/>&rarr; into <code>{X<!---->|c:<i>content</i>|<!---->}</code></li>
+	<li><code>&lt;p class="my-para-highlighted my-smallerfont my-roundborder"&gt;<i>content</i>&lt;/p&gt;</code><br/>&rarr; into
+		<code>{X<!---->|phs:<i>content</i>|<!---->}</code></li>
+	<li>et cetera..</li>
 </ul>
-<h2 id="Configuration properties">Configuration properties</h2>
+<span id="decl"><h2 id="Declaration / Configuration">Declaration / Configuration</h2></span>
+<p>To demonstrate valid <a href="../basics/haxproj.html#xdecl">*.haxproj</a> directives to declare the above 3 example <a href="../tags/x.html">X-tags</a>:</p>
+<pre>
+|X|hax.miniTag:<i>bq</i>: <i>blockquote</i>
+
+|X|hax.miniTag:<i>c</i>:
+    <i>code</i>: htmlAtts = []
+
+|X|hax.miniTag:<i>phs</i>: <i>p</i>: htmlAtts
+    = [ ("<i>class</i>" , "<i>my-para-highlighted my-smallerfont</i>"),
+        ("<i>class</i>" , "<i>my-roundborder</i>") ]
+</pre>
+<p>To elaborate, for example the last one of the above, as all <a href="../basics/haxproj.html#xdecl">|X| directives</a> declaring <a href="../tags/x.html">X-tags</a> do:</p>
+<ul>
+	<li>begins with <code>|X|</code> followed by the X-renderer identifier (here <code>hax.miniTag</code>)</li>
+	<li>followed by <code>&nbsp;:</code> colon and the desired X-tag name to be used to invoke it (here <code>phs</code>),</li>
+	<li>followed by <code>&nbsp;:</code> colon and now <b><i>hax.miniTag</i>-specific</b> configuration:
+
+		<ul>
+			<li>The name of the output markup-language tag that this X-tag should wrap its content in (here <code>blockquote</code>),</li>
+			<li>followed by a <code>&nbsp;:</code> colon if an <b>optional</b> <a href="../basics/syntax.html">syntax-sensitive</a> properties block follows,
+			comprised of all of the following properties in this very order:
+				<ol>
+					<li><code>htmlAtts = [ <i>..</i> ]</code> &mdash; a List of all the tag attributes (each denoted in a
+					<code>("<i>name</i>","<i>value</i>")</code> pair) to <i>always</i> append to the markup-language tag output by all instances of this
+					X-tag <ul><li>The special attribute <i>value</i> <code>&nbsp;{<!---->%:content:%<!---->}</code> will replicate the X-tag content inside this
+					attribute (not specially escaped &mdash; effect this by wrapping inside a <a href="../tags/p.html#delay">page-delayed</a> X-tag invoking
+					<a href="../xtypes/xmlEscape.html">hax.xmlEscape</a>) </li></ul></li>
+				</ol>
+			</li>
+		</ul>
+
+	</li>
+</ul>
+<span id="args"><h2 id="Invocation / Parameters">Invocation / Parameters</h2></span>
+<p>No special tag parameters, no special content treatment: the entire X-tag content (ie. following the tag name such as above <code>phs</code> and then <code>&nbsp;:</code> colon, as in <code>{X<!---->|phs:<i>content</i>|<!---->}</code>) is output as-is.</p>
+<p>
+	<b>Caution:</b> if no such X-tag <i>content</i> present, <i>nothing</i> is output at all, not even the intended HTML tag. This can
+	actually be desirable in certain scenarios of somewhat-dynamic tag contents &mdash; in any event, good to know.
+</p>
 
 <!-- end of content source page -->
 <a name="down"></a>

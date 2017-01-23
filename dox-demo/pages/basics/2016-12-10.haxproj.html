@@ -75,7 +75,7 @@
 	<li>followed by a {X|c:&nbsp;:|} and a <i>custom (X-)tag name</i> (here {X|c:&nbsp;h|} and {X|c:doxpagetoc|}) and another {X|c:&nbsp;:|}</li>
 	<li>followed by some individually-varying X-renderer-specific settings notation that each X-renderer defines and {X|lx:index documents|} separately.</li>
 	<li>In turn, usage of any {X|c: {X<!---->||} tag embedded anywhere begins with the very <i>custom tag name</i> from 2. (again, here {X|c:&nbsp;h|} and {X|c:doxpagetoc|}) pointing to the associated |X| directive, followed by a {X|c:&nbsp;:|} and then possibly some further individually-varying X-renderer-specific per-instance settings notation (if any).</li>
-	<li>For the built-in X-renderers, both the per-tag settings (aka. tag config) and per-instantiation settings (aka. tag args) notation is (either one or the other but) usually a combination of:<ul><li>first, 1 or 2 colon-separated "flags" (such as {X|c::h2:|} and {X|c::li:|} above) and</li><li>next, the already familiar {X|c:name=<i>value</i>, .. |} named properties, to which {X|lb:syntax these stringent syntactic rules|} strictly apply.</li></ul></li>
+	<li>For the built-in X-renderers, both the per-tag settings (aka. tag config) and per-instantiation settings (aka. tag params) notation is (either one or the other but) usually a combination of:<ul><li>first, 1 or 2 colon-separated "flags" (such as {X|c::h2:|} and {X|c::li:|} above) and</li><li>next, the already familiar {X|c:name=<i>value</i>, .. |} named properties, to which {X|lb:syntax these stringent syntactic rules|} strictly apply.</li></ul></li>
 </ol>
 <span id="pdecl">{X|h: |P| directives: for "postings" |}</span>
 <p>
@@ -184,7 +184,7 @@ Format strings are parsed <a href="http://downloads.haskell.org/ghc/8.0.2/docs/h
 	<li>{X|c:_hax_relpath_postatoms|} &mdash; generation of {X|lb:xmlfiles#blokatoms *.atom XML|} files for |P| feeds can be enabled by setting this directive with a site-root-relative (aka build-output-directory-relative) <i>directory path</i> to store them in; by default, such files are not generated</li>
 	<li>{X|c:_hax_htmlequivexts|} &mdash; file extensions <i>other</i> than the built-in always-on {X|c:.html|}, {X|c:.htm|} and {X|c:&nbsp;|} (no file extension) can be designated to also be processed via the applicable {X|lb:tmplsnip *.haxtmpl<i>.html</i>|} template</li>
 	<li>{X|c:_hax_onparseerror|} &mdash; if manually set to {X|c:<i>abort</i>|}, all processing will halt upon the first
-	{X|lb:syntax failure to parse|} some directive properties or {X|lt:x X-tag|} args. By default, parse errors result in the
+	{X|lb:syntax failure to parse|} some directive properties or {X|lt:x X-tag|} parameters. By default, parse errors result in the
 	process continuing but the error details being written out directly in-place into generated output files.</li>
 	<li>{X|c:process:tags:|} &mdash; comma-separated list of {X|lt:index haXtags|} to be processed. Removing those that will never be embedded anywhere in the project output may <i>marginally</i> speed up processing (perhaps only noticably-so with many 1000s of processable input files). Also allows enabling the disabled-by-default {X|c: {C<!---->|<i>misc_setting_name</i>|<!---->} |} C-tag prefix, which simply outputs the
 	current setting of any (except {X|c:|C|process:..|} &amp; {X|c:|C|dtformat:..|}) named configuration directive.</li>
