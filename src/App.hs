@@ -29,25 +29,25 @@ import qualified System.IO
 import qualified Text.Printf
 
 
+xregs = [ "hax.demoSimplest" =: X.DemoSimplest.registerX
+        , "hax.demoCfgArgs" =: X.DemoCfgArgs.registerX
+        , "hax.pageAnchors" =: X.PageAnchors.registerX
+        , "hax.image" =: X.Image.registerX
+        , "hax.link" =: X.Link.registerX
+        , "hax.links" =: X.Links.registerX
+        , "hax.repeat" =: X.Repeat.registerX
+        , "hax.snippet" =: X.Snippet.registerX
+        , "hax.miniTag" =: X.MiniTag.registerX
+        , "hax.xmlEscape" =: X.XmlEscape.registerX
+        ]
+
 
 processAll ctxmain projfilename custfilenames =
-    let xregs = [ "hax.demoSimplest" =: X.DemoSimplest.registerX
-                , "hax.demoCfgArgs" =: X.DemoCfgArgs.registerX
-                , "hax.pageAnchors" =: X.PageAnchors.registerX
-                , "hax.image" =: X.Image.registerX
-                , "hax.link" =: X.Link.registerX
-                , "hax.links" =: X.Links.registerX
-                , "hax.repeat" =: X.Repeat.registerX
-                , "hax.snippet" =: X.Snippet.registerX
-                , "hax.miniTag" =: X.MiniTag.registerX
-                , "hax.xmlEscape" =: X.XmlEscape.registerX
-                ]
-        nameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
-
+    let nameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
+        projname = System.FilePath.takeBaseName (ctxmain-:Files.dirPath)
     in putStrLn "\n1/6\tReading essential project files (or creating them).."
     >> System.IO.hFlush System.IO.stdout
-    >> let projname = System.FilePath.takeBaseName (ctxmain-:Files.dirPath)
-    in System.Directory.createDirectoryIfMissing False (ctxmain-:Files.dirPath)
+    >> System.Directory.createDirectoryIfMissing False (ctxmain-:Files.dirPath)
     >> Defaults.loadOrCreate ctxmain projname (projfilename~>nameonly) (custfilenames>~nameonly)
     >>= Proj.loadCtx ctxmain projname xregs >>= \ctxproj
     -> Tmpl.warnIfTagMismatches ctxmain "*.haxproj (or *.haxsnip)"
