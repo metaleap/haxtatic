@@ -27,14 +27,14 @@
 	<p>Example: <code>{P<!---->|date|<!---->}</code> outputs in-place the currently set <a href="../basics/datetime.html">page date</a> (using the
 	built-in fallback date-time format since none was specified in the tag) when it is processed: <span class="hd-note">2016-12-18</span>.</p>
 	<ul><li>All unprocessed haXtags (mispelled etc.) simply remain in the output, aiding swift detection<ul><li>(exception: some X-tags requiring
-		<a href="../basics/syntax.html">syntax</a> &mdash; if unprocessable these output error details)</li></ul></li>
+		<a href="../basics/syntax.html">syntax</a> &mdash; if unprocessable <i>due to bad syntax</i>, these output error details)</li></ul></li>
 	<li>Any haXtags may embed/output any other haXtags freely both in their definitions and invocations but
-	<ul><li>an otherwise-correct outer tag will typically not render with a (directly embedded) unprocessable inner tag (a "known non-issue")</li>
-	<li>a direct-or-indirect recursive self-reference (self-invocation inside "defining portion" of a haXtag's related <a href="../basics/haxproj.html">declaration
+	<ul><li>an otherwise-correct outer tag will typically not render with a (directly embedded) unprocessable inner tag (a "known non-issue", incidentally helping ensure later-stage inner tags provide correct input to their outer tags)</li>
+	<li>a direct-or-indirect recursive self-reference (self-invocation inside the "defining portion" of a haXtag's related <a href="../basics/haxproj.html">declaration
 	directive</a>) will hang (and usually eventually prematurely abort with a <code>&lt;&lt;loop&gt;&gt;</code> farewell message) the entire generating process</li></ul></li>
 	<li>Available "prefixes" (or <i>haxTag types</i>) are (in order of simplicity) <b>T</b>, <b>B</b>, <b>P</b> and <b>X</b>:</li></ul>
 	<hr/>
-	<ul class="hd-feed"><li><!--
+	<ul id="doxindexlisting" class="hd-feed"><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
 			("dt" , ""),
@@ -62,7 +62,8 @@
 			("cat" , "")
 	-->
 	<a class="hd-feed-title" href="../tags/x.html">X-tags: dynamic renderers</a>
-	<blockquote class="hd-feed-desc">An <code>{X<!---->| <i>..</i> |<!---->}</code> tag invokes a programmatic output renderer.</blockquote></li></ul>
+	<blockquote class="hd-feed-desc">An <code>{X<!---->| <i>..</i> |<!---->}</code> tag invokes a programmatic output renderer (aka.
+<a href="../xtypes/index.html">X-renderer</a>).</blockquote></li></ul>
 <!-- end of content source page -->
 <a name="down"></a>
 </body></html>

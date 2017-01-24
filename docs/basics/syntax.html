@@ -22,7 +22,7 @@
 <!-- begins content source page -->
 <h1>Syntactic rules (in places)</h1>
 <p>
-A number of certain <b>directives</b> (placed in <a href="../basics/haxproj.html">*.haxproj</a> files or implied in <a href="../basics/tmplsnip.html#snippets">*.haxsnip.html</a>s' headers) and <b>haXtags</b> (placed anywhere) &mdash; specifically:
+Certain <b>directives</b> (placed in <a href="../basics/haxproj.html">*.haxproj</a> files or implied in <a href="../basics/tmplsnip.html#snippets">*.haxsnip.html</a>s' headers) and certain <b>haXtags</b> (placed anywhere) &mdash; specifically:
 </p>
 <ul>
 	<li>all <a href="../basics/haxproj.html#bdecl">|B| directives</a> (following the Blok name)</li>
@@ -31,18 +31,17 @@ A number of certain <b>directives</b> (placed in <a href="../basics/haxproj.html
 	<li>most <a href="../basics/haxproj.html#xdecl">|X| directives</a> (except the 2 <a href="../tags/x.html#demo">demo</a> X-renderers for coders)</li>
 	<li>some <a href="../tags/x.html">X-tags</a> (determined and documented by the <a href="../xtypes/index.html">X-renderer</a> invoked)</li>
 </ul>
-<p>&mdash; absolutely <b>require</b> <span class="hd-note">&mdash;lest they abort the entire process abruptly (with <code>|C|:_hax_onparseerror:</code>
-<a href="../basics/haxproj.html#cmisc">set to</a> <code>abort</code>) or render warning/error messages (otherwise) into generated output contents&mdash;</span>
+<p>&mdash; absolutely <b>require</b> <span class="hd-note">&mdash;lest they render warning/error messages into generated output contents (or if so <a href="../basics/haxproj.html#cmisc">configured</a>, abort the overall process abruptly, prematurely and entirely)</span>
 <b>strict adherence to the following</b> (essentially trivial, still currently rather demanding-and-unforgiving thanks to the.. "compactness" of the parser) syntax rules:</p>
 <ul>
-	<li><i>All</i> the properties shown <i>need</i> to appear,
-		<ul><li>each separated from the next by a <code>&nbsp;,</code> comma,</li>
-		<li>and in <i>the very same order</i> showing in documentation!</li></ul>
+	<li><i>All</i> the properties shown (in the respective documentation section) <i>need</i> to appear,
+		<ul><li>each separated from the next via a <code>&nbsp;,</code> comma,</li>
+		<li>and in <i>the very same order</i> showing up in documentation!</li></ul>
 	</li>
 	<li>
 		A <b>text value</b> is enclosed in <code>&nbsp;&quot;</code> quotation marks:
 		<ul><li><code>= &quot;<i>Wrote this in </i>\"<i>VBScript</i>\"<i> back in '99..</i>&quot;</code></li>
-		<li>Inside literal line-breaks are supported; all standard escape sequences work predictably, eg. <code>&nbsp;\&quot;</code>
+		<li>In-text (literal) line-breaks are supported; all standard escape sequences work predictably, eg. <code>&nbsp;\&quot;</code>
 		for in-text quotation marks etc.)</li>
 		<li>Any <a href="../tags/index.html">haXtags</a> placed inside such quoted text-values (principally those that might output quotation marks eg. HTML attributes) should
 		escape the entire tag content (everything in between <code>&nbsp;{<i>*</i><!---->|</code> and <code>&nbsp;|<!---->}</code>) by prefixing it with 2 <code>&nbsp;`</code> backticks:

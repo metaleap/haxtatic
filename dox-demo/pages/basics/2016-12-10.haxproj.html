@@ -188,7 +188,8 @@ Format strings are parsed <a href="http://downloads.haskell.org/ghc/8.0.2/docs/h
 	{X|lb:syntax failure to parse|} some directive properties or {X|lt:x X-tag|} parameters. By default, parse errors result in the
 	process continuing but the error details being written out directly in-place into generated output files.</li>
 	<li>{X|c:process:tags:|} &mdash; comma-separated list of {X|lt:index haXtags|} to be processed. Removing those that will never be embedded anywhere in the project output may <i>marginally</i> speed up processing (perhaps only noticably-so with many 1000s of processable input files). Also allows enabling the disabled-by-default {X|c: {C<!---->|<i>misc_setting_name</i>|<!---->} |} C-tag prefix, which simply outputs the
-	current setting of any (except {X|c:|C|process:..|} &amp; {X|c:|C|dtformat:..|}) named configuration directive.</li>
+	current setting of any (except {X|c:|C|process:..|} &amp; {X|c:|C|dtformat:..|}) named configuration directive. <b>Note:</b>
+	use of haXtags in <i>this one</i> directive is (other than plain puzzling) probably ill-advised</li>
 	<li>{X|c:_hax_dir_deploy|} sets a secondary build-output directory (name, not path) where by default there is none.</li>
 	<li>Note: both the {X|c:_hax_dir_build|} and {X|c:_hax_dir_deploy|} directory names will each (at runtime) be combined (via {X|c:&nbsp;-|} dash) with the current {X|lb:namedsetups setup name|} for the final <i>actual</i> build-output directory name: hence in new projects the implicit-default value for {X|c:_hax_dir_build|} &mdash;that is, {X|c:<i>build</i>|}&mdash; results in the <i>actual</i> build-output directory name {X|c:<i>default-build</i>|}.</li>
 </ul>

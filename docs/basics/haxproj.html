@@ -220,7 +220,8 @@ Format strings are parsed <a href="http://downloads.haskell.org/ghc/8.0.2/docs/h
 	<a href="../basics/syntax.html">failure to parse</a> some directive properties or <a href="../tags/x.html">X-tag</a> parameters. By default, parse errors result in the
 	process continuing but the error details being written out directly in-place into generated output files.</li>
 	<li><code>process:tags:</code> &mdash; comma-separated list of <a href="../tags/index.html">haXtags</a> to be processed. Removing those that will never be embedded anywhere in the project output may <i>marginally</i> speed up processing (perhaps only noticably-so with many 1000s of processable input files). Also allows enabling the disabled-by-default <code>{C<!---->|<i>misc_setting_name</i>|<!---->}</code> C-tag prefix, which simply outputs the
-	current setting of any (except <code>|C|process:..</code> &amp; <code>|C|dtformat:..</code>) named configuration directive.</li>
+	current setting of any (except <code>|C|process:..</code> &amp; <code>|C|dtformat:..</code>) named configuration directive. <b>Note:</b>
+	use of haXtags in <i>this one</i> directive is (other than plain puzzling) probably ill-advised</li>
 	<li><code>_hax_dir_deploy</code> sets a secondary build-output directory (name, not path) where by default there is none.</li>
 	<li>Note: both the <code>_hax_dir_build</code> and <code>_hax_dir_deploy</code> directory names will each (at runtime) be combined (via <code>&nbsp;-</code> dash) with the current <a href="../basics/namedsetups.html">setup name</a> for the final <i>actual</i> build-output directory name: hence in new projects the implicit-default value for <code>_hax_dir_build</code> &mdash;that is, <code><i>build</i></code>&mdash; results in the <i>actual</i> build-output directory name <code><i>default-build</i></code>.</li>
 </ul>

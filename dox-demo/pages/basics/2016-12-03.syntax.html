@@ -1,6 +1,6 @@
 <h1>Syntactic rules (in places)</h1>
 <p>
-A number of certain <b>directives</b> (placed in {X|lb:haxproj *.haxproj|} files or implied in {X|lb:tmplsnip#snippets *.haxsnip.html|}s' headers) and <b>haXtags</b> (placed anywhere) &mdash; specifically:
+Certain <b>directives</b> (placed in {X|lb:haxproj *.haxproj|} files or implied in {X|lb:tmplsnip#snippets *.haxsnip.html|}s' headers) and certain <b>haXtags</b> (placed anywhere) &mdash; specifically:
 </p>
 <ul>
 	<li>all {X|lb:haxproj#bdecl |B| directives|} (following the Blok name)</li>
@@ -9,18 +9,17 @@ A number of certain <b>directives</b> (placed in {X|lb:haxproj *.haxproj|} files
 	<li>most {X|lb:haxproj#xdecl |X| directives|} (except the 2 {X|lt:x#demo demo|} X-renderers for coders)</li>
 	<li>some {X|lt:x X-tags|} (determined and documented by the {X|lx:index X-renderer|} invoked)</li>
 </ul>
-<p>&mdash; absolutely <b>require</b> {X|note: &mdash;lest they abort the entire process abruptly (with {X|c:|C|:_hax_onparseerror:|}
-{X|lb:haxproj#cmisc set to|} {X|c:abort|}) or render warning/error messages (otherwise) into generated output contents&mdash; |}
+<p>&mdash; absolutely <b>require</b> {X|note: &mdash;lest they render warning/error messages into generated output contents (or if so {X|lb:haxproj#cmisc configured|}, abort the overall process abruptly, prematurely and entirely) |}
 <b>strict adherence to the following</b> (essentially trivial, still currently rather demanding-and-unforgiving thanks to the.. "compactness" of the parser) syntax rules:</p>
 <ul>
-	<li><i>All</i> the properties shown <i>need</i> to appear,
-		<ul><li>each separated from the next by a {X|c:&nbsp;,|} comma,</li>
-		<li>and in <i>the very same order</i> showing in documentation!</li></ul>
+	<li><i>All</i> the properties shown (in the respective documentation section) <i>need</i> to appear,
+		<ul><li>each separated from the next via a {X|c:&nbsp;,|} comma,</li>
+		<li>and in <i>the very same order</i> showing up in documentation!</li></ul>
 	</li>
 	<li>
 		A <b>text value</b> is enclosed in {X|c:&nbsp;&quot;|} quotation marks:
 		<ul><li>{X|c:= &quot;<i>Wrote this in </i>\"<i>VBScript</i>\"<i> back in '99..</i>&quot;|}</li>
-		<li>Inside literal line-breaks are supported; all standard escape sequences work predictably, eg. {X|c:&nbsp;\&quot;|}
+		<li>In-text (literal) line-breaks are supported; all standard escape sequences work predictably, eg. {X|c:&nbsp;\&quot;|}
 		for in-text quotation marks etc.)</li>
 		<li>Any {X|lt:index haXtags|} placed inside such quoted text-values (principally those that might output quotation marks eg. HTML attributes) should
 		escape the entire tag content (everything in between {X|c:&nbsp;{<i>*</i><!---->||} and {X|c:&nbsp;|<!---->}|}) by prefixing it with 2 {X|c:&nbsp;`|} backticks:

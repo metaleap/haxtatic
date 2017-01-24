@@ -34,10 +34,10 @@ turn on whatever syntax highlighting for eased grokkage..
 	<p>Example: <code>{P<!---->|date|<!---->}</code> outputs in-place the currently set {X|lb:datetime page date|} (using the
 	built-in fallback date-time format since none was specified in the tag) when it is processed: {X|note:{P|date|}|}.</p>
 	<ul><li>All unprocessed haXtags (mispelled etc.) simply remain in the output, aiding swift detection<ul><li>(exception: some X-tags requiring
-		{X|lb:syntax syntax|} &mdash; if unprocessable these output error details)</li></ul></li>
+		{X|lb:syntax syntax|} &mdash; if unprocessable <i>due to bad syntax</i>, these output error details)</li></ul></li>
 	<li>Any haXtags may embed/output any other haXtags freely both in their definitions and invocations but
-	<ul><li>an otherwise-correct outer tag will typically not render with a (directly embedded) unprocessable inner tag (a "known non-issue")</li>
-	<li>a direct-or-indirect recursive self-reference (self-invocation inside "defining portion" of a haXtag's related {X|lb:haxproj declaration
+	<ul><li>an otherwise-correct outer tag will typically not render with a (directly embedded) unprocessable inner tag (a "known non-issue", incidentally helping ensure later-stage inner tags provide correct input to their outer tags)</li>
+	<li>a direct-or-indirect recursive self-reference (self-invocation inside the "defining portion" of a haXtag's related {X|lb:haxproj declaration
 	directive|}) will hang (and usually eventually prematurely abort with a {X|c:&lt;&lt;loop&gt;&gt;|} farewell message) the entire generating process</li></ul></li>
 	<li>Available "prefixes" (or <i>haxTag types</i>) are (in order of simplicity) <b>T</b>, <b>B</b>, <b>P</b> and <b>X</b>:</li></ul>
 
@@ -97,7 +97,7 @@ turn on whatever syntax highlighting for eased grokkage..
 	xmlEscapeHrefAttr = False
 
 |X|hax.repeat:doxindex:
-	prefix = "<ul class=\"hd-feed\"><li>{", suffix = "}</li></ul>", joinwith = "}</li><li>{",
+	prefix = "<ul id=\"doxindexlisting\" class=\"hd-feed\"><li>{", suffix = "}</li></ul>", joinwith = "}</li><li>{",
 	content=""
 
 |X|hax.repeat:xdescs:

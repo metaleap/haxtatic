@@ -43,7 +43,7 @@
 </ul>
 <h2 id="Custom">Custom</h2>
 <p>
-	Define those like <code>{%P<!---->|<i>name</i>=<i>value</i>|%<!---->}</code> in a page; then while that page is being processed, this <code><i>value</i></code> will replace all encounters of <code>{P<!---->|<i>name</i>|<!---->}</code> <i>anywhere</i> in the page output.
+	Define those like <code>{%P<!---->|<i>name</i>=<i>value</i>|%<!---->}</code> in a page; then while that page is being processed, this <code><i>value</i></code> will replace all encounters of <code>{P<!---->|<i>name</i>|<!---->}</code> <i>anywhere</i> in the page output (including portions coming from the <a href="../basics/tmplsnip.html">outer template</a>, <a href="../basics/tmplsnip.html#snippets">snippets</a> or <a href="../basics/haxproj.html">*.haxproj</a> definitions).
 </p>
 <p>
 	Any characters are acceptable for the <i>name</i> in between <code>{%P<!---->|</code> and <code>&nbsp;=</code>, as well as the <i>value</i> in between <code>&nbsp;=</code> and <code>&nbsp;|%<!---->}</code>. Name and value will each be stripped of all leading and trailing white-space. Later re-defines of an already defined variable are ignored.
@@ -62,9 +62,13 @@
 	If all pages exist next to each other at the site-root level anyway (micro-sites etc.), this isn't of course even needed.
 </p>
 <span id="delay"><h2 id="Delaying X-tags">Delaying X-tags</h2></span>
-<p>
-	By default, the built-in <a href="../xtypes/index.html">X-renderers</a> readily detect and decide autonomously whether to process an <a href="../tags/x.html">X-tag</a> as early as possible, or only once a page context is current. However, any X-tag can be forced to delay rendering until page time by wrapping its contents inside a P-tag, ie. turning <code>{X<!---->|<i> .. tag content .. </i>|<!---->}</code> into <code>{P<!---->|X|<i> .. tag content .. </i>|<!---->}</code> &mdash; not particularly fruitful unless troubleshooting a particular X-tag or X-renderer.
-</p>
+<p>By default, the built-in <a href="../xtypes/index.html">X-renderers</a> readily detect and decide autonomously whether to process an <a href="../tags/x.html">X-tag</a> as early as possible, or only once a page context is current (and each expressly documents this behavior).</p>
+<p>However, any X-tag can be forced to delay rendering until page time by wrapping it inside a P-tag, ie. turning <code>{X<!---->|<i> .. tag content .. </i>|<!---->}</code></p>
+<ul>
+	<li>into <b>this</b>: <code>{P<!---->|X|<i> .. tag content .. </i>|<!---->}</code></li>
+	<li><b>not</b> this: <code>{P<!---->|{X<!---->|<i> .. tag content .. </i>|<!---->}|<!---->}</code></li>
+</ul>
+<p>Except for rare intricate edge-cases, this is <b>typically neither necessary nor desirable</b>, but in any event always worthwhile when investigating unexpected X-tag outputs.</p>
 
 <!-- end of content source page -->
 <a name="down"></a>

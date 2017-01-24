@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
     <url>
-        <loc>http://dox-demo/xtypes/xmlEscape.html</loc>
-        <lastmod>1234-09-10</lastmod>
-        <priority>0.5</priority>
-    </url><url>
         <loc>http://dox-demo/xtypes/miniTag.html</loc>
         <lastmod>1234-10-15</lastmod>
         <priority>0.5</priority>
     </url><url>
         <loc>http://dox-demo/xtypes/image.html</loc>
         <lastmod>1234-09-15</lastmod>
+        <priority>0.5</priority>
+    </url><url>
+        <loc>http://dox-demo/xtypes/xmlEscape.html</loc>
+        <lastmod>1234-09-10</lastmod>
         <priority>0.5</priority>
     </url><url>
         <loc>http://dox-demo/xtypes/link.html</loc>
@@ -57,6 +57,10 @@
         <lastmod>2016-12-15</lastmod>
         <priority>0.5</priority>
     </url><url>
+        <loc>http://dox-demo/basics/syntax.html</loc>
+        <lastmod>2016-12-03</lastmod>
+        <priority>0.5</priority>
+    </url><url>
         <loc>http://dox-demo/basics/projdir.html</loc>
         <lastmod>2016-12-21</lastmod>
         <priority>0.5</priority>
@@ -79,10 +83,6 @@
     </url><url>
         <loc>http://dox-demo/basics/namedsetups.html</loc>
         <lastmod>2016-12-05</lastmod>
-        <priority>0.5</priority>
-    </url><url>
-        <loc>http://dox-demo/basics/syntax.html</loc>
-        <lastmod>2016-12-03</lastmod>
         <priority>0.5</priority>
     </url><url>
         <loc>http://dox-demo/basics/xmlfiles.html</loc>
