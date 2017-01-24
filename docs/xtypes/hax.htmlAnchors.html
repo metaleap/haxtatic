@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en"><head>
-    <title>hax.pageAnchors | HaXtatic Docs</title>
+    <title>hax.htmlAnchors | HaXtatic Docs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../haxtatic.css" rel="stylesheet" />
-	<!--	xtypes\pageAnchors.html
+	<!--	xtypes\hax.htmlAnchors.html
 			generated on 1234-07-15
-			from D:\dev\hs\hax2\dox-demo\pages\xtypes\1234-07-15.pageAnchors.html	-->
+			from D:\dev\hs\hax2\dox-demo\pages\xtypes\1234-07-15.hax.htmlAnchors.html	-->
 </head><body>
     <h4>HaXtatic Docs</h4>
 	<ul class="hd-nav">
@@ -20,21 +20,22 @@
 
 
 <!-- begins content source page -->
-<h1>hax.pageAnchors</h1>
+<h1>hax.htmlAnchors</h1>
 	
-	<p class="up">Outputs a sequence of <code>&lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code>, one
-	per <code>&lt;<i>gatherhtmltag</i>&gt;</code> element found in the page's content source.</p>
+	<p class="up">Outputs a sequence of
+	<code>&nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a href=&quot;#..&quot; ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code>,
+	one per <code>&nbsp;&lt;<i>gatherhtmltag</i>&gt;</code> element found in the page's content source.</p>
 	<h2 id="In a nutshell">In a nutshell</h2>
 	<ol>
 		<li>
-			<a href="../xtypes/pageAnchors.html#decl">Declaration</a> of an <code>|X|hax.pageAnchors:<i>myTag</i>:<i>gatherhtmltag</i>: <i>..</i></code> directive in a
+			<a href="../xtypes/hax.htmlAnchors.html#decl">Declaration</a> of an <code>|X|hax.htmlAnchors:<i>myTag</i>:<i>gatherhtmltag</i>: <i>..</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
 			<ul><li>further configuring: <code>considerEmpty</code>, <code>outputIfEmpty</code>, <code>xmlEscapeHref</code></li></ul>
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i>outerhtmltag</i>: attr = [..] |<!---->}</code></li>
 	</ol>
 <h3>Stage:</h3><p><a href="../tags/index.html#stages">Page</a> &mdash; this X-renderer requires a page context for rendering: therefore
-					any <i>hax.pageAnchors</i>-invoking X-tags encountered during pre-templating (at start-up time) will be
+					any <i>hax.htmlAnchors</i>-invoking X-tags encountered during pre-templating (at start-up time) will be
 					skipped over and thus delayed until page time.</p>
 
 <!-- end of content source page -->

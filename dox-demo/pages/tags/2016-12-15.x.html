@@ -5,16 +5,18 @@
 <p class="up">Like <b>T</b>-tags (and unlike <b>P</b>- and <b>B</b>-tags), there <i>are no</i> predefined <b>X</b>-tags, only those {X|lb:haxproj#xdecl declared and set up in <i>*.haxproj</i> files|} &mdash; ie. before an X-tag can be embedded many times anywhere in the project, it is first to be defined once in a <i>*.haxproj</i>: to be given a name and some default settings.</p>
 <p>Here are the built-in <i>X-renderers</i> ready to set up and try out:</p>
 <ul>
-	<li><a href="#demoSimplest">hax.demoSimplest</a> &mdash; "Hello World!"</li>
-	<li><a href="#demoCfgArgs">hax.demoCfgArgs</a> &mdash; "Hello, <i>foo</i>!"</li>
-	<li><a href="#miniTag">hax.miniTag</a> &mdash; to use eg. {X|c:{<!---->X|bq: ..|} or {X|c:{<!---->X|c: ..|} in place of verbosity such as {X|c:&lt;blockquote&gt; .. &lt;/blockquote&gt;|} or {X|c:&lt;code&gt; .. &lt;/code&gt;|}</li>
-	<li><a href="#xmlEscape">hax.xmlEscape</a> &mdash; HTML/XML-escape given content</li>
-	<li><a href="#image">hax.image</a> &mdash; less-verbose images</li>
-	<li><a href="#link">hax.link</a> &mdash; less-verbose links</li>
-	<li><a href="#links">hax.links</a> &mdash; lean &amp; neat navigation helper</li>
-	<li><a href="#pageAnchors">hax.pageAnchors</a> &mdash; gather and link to in-page contents</li>
-	<li><a href="#snippet">hax.snippet</a> &mdash; elsewhere known as "custom controls", "components", "sub-templates", or "<i>thing</i>lets"..</li>
-	<li><a href="#repeat">hax.repeat</a> &mdash; versatile content/data selector&rarr;rearranger&rarr;reformatter&rarr;renderer</li>
+	<li><a href="#demoSimplest">demoSimplest</a> &mdash; "Hello World!"</li>
+	<li><a href="#demoCfgArgs">demoCfgArgs</a> &mdash; "Hello, <i>foo</i>!"</li>
+	<li><a href="#hax.miniTag">hax.miniTag</a> &mdash; eliminate verbosity of repetetive markup</li>
+	<li><a href="#hax.xmlEscape">hax.xmlEscape</a> &mdash; HTML/XML/etc.-escape given content</li>
+	<li><a href="#hax.htmlLink">hax.htmlLink</a> &mdash; less-verbose hyperlinks</li>
+	<li><a href="#hax.htmlImage">hax.htmlImage</a> &mdash; less-verbose images</li>
+	<li><a href="#hax.htmlLinks">hax.htmlLinks</a> &mdash; lean &amp; handy navigation helper</li>
+	<li><a href="#hax.htmlAnchors">hax.htmlAnchors</a> &mdash; gather and link to in-page contents</li>
+	<li><a href="#hax.snippet">hax.snippet</a> &mdash; elsewhere known as "custom controls", "components", "sub-templates", or
+		"<i>thing</i>lets"..</li>
+	<li><a href="#hax.iterator">hax.iterator</a> &mdash; versatile content/record
+		selector&rarr;rearranger&rarr;reformatter&rarr;renderer</li>
 </ul>
 <span id="demo">
 {X|xdescs: over = FeedPosts (Just Filter {feeds=["xdesc"], cats=[], dates=Nothing}) "" [] , wrapEach = ("X|haxdox-xtdesc: vars=[(\"hsub\",\"\") , (\"htop\" , \"{%cat%}\"), " , "], flags=[], content=\"\" |"), order = None, skip = 0, limit = 0, more = ["declmore" , "cfgmore" , "usage"] |}

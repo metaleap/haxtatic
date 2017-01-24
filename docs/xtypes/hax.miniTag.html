@@ -2,9 +2,9 @@
     <title>hax.miniTag | HaXtatic Docs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../haxtatic.css" rel="stylesheet" />
-	<!--	xtypes\miniTag.html
+	<!--	xtypes\hax.miniTag.html
 			generated on 1234-10-15
-			from D:\dev\hs\hax2\dox-demo\pages\xtypes\1234-10-15.miniTag.html	-->
+			from D:\dev\hs\hax2\dox-demo\pages\xtypes\1234-10-15.hax.miniTag.html	-->
 </head><body>
     <h4>HaXtatic Docs</h4>
 	<ul class="hd-nav">
@@ -22,11 +22,11 @@
 <!-- begins content source page -->
 <h1>hax.miniTag</h1>
 	
-	<p class="up">Outputs <code>&lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt;</code>.</p>
+	<p class="up">Outputs <code>&nbsp;&lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt;</code>.</p>
 	<h2 id="In a nutshell">In a nutshell</h2>
 	<ol>
 		<li>
-			<a href="../xtypes/miniTag.html#decl">Declaration</a> of an <code>|X|hax.miniTag:<i>myTag</i>:<i>somehtmltag</i>: <i>..</i></code> directive in a
+			<a href="../xtypes/hax.miniTag.html#decl">Declaration</a> of an <code>|X|hax.miniTag:<i>myTag</i>:<i>somehtmltag</i>: <i>..</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
 			<ul><li>further configuring: <code>attr</code></li></ul>
 		</li>
@@ -36,33 +36,34 @@
 					rendering: therefore any <i>hax.miniTag</i>-invoking X-tags encountered during pre-templating (at
 					start-up time) will be <a href="../tags/index.html#Processing">processed</a> eagerly (for overall-reduced per-page processing load).</p>
 <h2 id="Purpose">Purpose</h2>
-<p>Some contents require repetetive use of quickly-becoming-too-verbose "mostly just inner text" tags such as
-	<code>&lt;blockquote&gt;</code>, <code>&lt;code&gt;</code>, or <code>&lt;p class="my-para-highlighted my-smallerfont"&gt;</code> etc.</p>
-<p>Setting up <i>hax.miniTag</i> X-tags for any such instances alleviates this quickly, and lets the author turn
-	repetetive-hence-too-verbose occurrences of:</p>
+<p>Some markup contents require repetetive use of quickly-becoming-too-verbose "mostly just inner text" tags such as
+	(often in raw-HTML contents) <code>&lt;blockquote&gt;</code>, <code>&lt;code&gt;</code>,
+	or <code>&lt;p class="my-para-highlighted my-smallerfont my-roundborder"&gt;</code> etc.</p>
+<p>Setting up <i>hax.miniTag</i> X-tags for such instances alleviates this easily, and lets the author turn
+	repetetive-hence-too-verbose occurrences of, for example:</p>
 <ul>
 	<li><code>&lt;blockquote&gt;<i>content</i>&lt;/blockquote&gt;</code><br/>&rarr; into <code>{X<!---->|bq:<i>content</i>|<!---->}</code></li>
 	<li><code>&lt;code&gt;<i>content</i>&lt;/code&gt;</code><br/>&rarr; into <code>{X<!---->|c:<i>content</i>|<!---->}</code></li>
 	<li><code>&lt;p class="my-para-highlighted my-smallerfont my-roundborder"&gt;<i>content</i>&lt;/p&gt;</code><br/>&rarr; into
-		<code>{X<!---->|phs:<i>content</i>|<!---->}</code></li>
+		<code>{X<!---->|phsr:<i>content</i>|<!---->}</code></li>
 	<li>et cetera..</li>
 </ul>
 <span id="decl"><h2 id="Declaration / Configuration">Declaration / Configuration</h2></span>
 <p>To demonstrate valid <a href="../basics/haxproj.html#xdecl">*.haxproj</a> directives to declare the above 3 example <a href="../tags/x.html">X-tags</a>:</p>
 <pre>
-|X|hax.miniTag:<i>bq</i>: <i>blockquote</i>
+|X|hax.miniTag:<i>bq</i>:<i>blockquote</i>
 
 |X|hax.miniTag:<i>c</i>:
     <i>code</i>: attr = []
 
-|X|hax.miniTag:<i>phs</i>: <i>p</i>: attr
+|X|hax.miniTag:<i>phsr</i>: <i>p</i>:attr
     = [ ("<i>class</i>" , "<i>my-para-highlighted my-smallerfont</i>"),
         ("<i>class</i>" , "<i>my-roundborder</i>") ]
 </pre>
 <p>To elaborate, for example the last one of the above, as all <a href="../basics/haxproj.html#xdecl">|X| directives</a> declaring <a href="../tags/x.html">X-tags</a> do:</p>
 <ul>
 	<li>begins with <code>|X|</code> followed by the X-renderer identifier (here <code>hax.miniTag</code>)</li>
-	<li>followed by <code>&nbsp;:</code> colon and the desired X-tag name to be used to invoke it (here <code>phs</code>),</li>
+	<li>followed by <code>&nbsp;:</code> colon and the desired X-tag name to be used to invoke it (here <code>phsr</code>),</li>
 	<li>followed by <code>&nbsp;:</code> colon and now <b><i>hax.miniTag</i>-specific</b> configuration:
 
 		<ul>
@@ -71,10 +72,12 @@
 			comprised of all of the following properties in this very order:
 				<ol>
 					<li><code>attr = [ <i>..</i> ]</code> &mdash; a List of all the tag attributes (each denoted in a
-					<code>("<i>name</i>","<i>value</i>")</code> pair) to <i>always</i> append to the markup-language tag output by all instances of this
-					X-tag <ul><li>The special attribute <i>value</i> <code>&nbsp;{<!---->%:content:%<!---->}</code> will replicate the X-tag content inside this
+					<code>("<i>name</i>","<i>value</i>")</code> pair) to <i>always</i> append to the markup-language tag output by
+					all instances of this
+					X-tag <ul><li>The special attribute <i>value</i> <code>&nbsp;{<!---->%:content:%<!---->}</code> will replicate the
+					X-tag content inside this
 					attribute (not specially escaped &mdash; effect this by wrapping inside a <a href="../tags/p.html#delay">page-delayed</a> X-tag invoking
-					<a href="../xtypes/xmlEscape.html">hax.xmlEscape</a>) </li></ul></li>
+					<a href="../xtypes/hax.xmlEscape.html">hax.xmlEscape</a>) </li></ul></li>
 				</ol>
 			</li>
 		</ul>
@@ -82,10 +85,13 @@
 	</li>
 </ul>
 <span id="args"><h2 id="Invocation / Parameters">Invocation / Parameters</h2></span>
-<p>No special tag parameters, no special content treatment: the entire X-tag content (ie. following the tag name such as above <code>phs</code> and then <code>&nbsp;:</code> colon, as in <code>{X<!---->|phs:<i>content</i>|<!---->}</code>) is output as-is, inside the markup-language tag configured for the X-tag.</p>
+<p>No special tag parameters, no special content treatment: the entire X-tag <i>content</i> (ie. following the tag name such as
+above <code>phsr</code> and then <code>&nbsp;:</code> colon, as in <code>{X<!---->|phsr:<i>content</i>|<!---->}</code>) is output as-is, inside the
+output markup tag configured for the X-tag (ie. as above,
+<code>&lt;p class="my-para-highlighted my-smallerfont my-roundborder"&gt;<i>content</i>&lt;/p&gt;</code>).</p>
 <p>
 	<b>Caution:</b> if no such X-tag <i>content</i> is present, <i>nothing</i> is rendered out at all, not even the intended
-	(would-be empty) markup-language tag. This is by design and more often than not desirable especially in certain scenarios
+	(would-be empty) output markup tag. This is by design and more often than not desirable, especially in certain scenarios
 	of somewhat-dynamic tag contents.
 </p>
 

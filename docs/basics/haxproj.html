@@ -94,7 +94,7 @@
 |X|hax.miniTag:<i>h</i>:<i>h2</i>:
     attr=<i>[("id","{%:content:%}")]</i>
 
-|X|hax.pageAnchors:<i>doxpagetoc</i>:<i>h2</i>:
+|X|hax.htmlAnchors:<i>doxpagetoc</i>:<i>h2</i>:
     considerEmpty = <i>1</i>,
     outputIfEmpty = <i>"&lt;style type='text/css'&gt;.hd-toc { display: none; }&lt;/style&gt;"</i>,
     xmlEscapeHref = False
@@ -105,7 +105,7 @@
 <h3>To recapitulate</h3>
 <p>what becomes immediately apparent from just this example:</p>
 <ol>
-	<li>Specify first the X-renderer type (here <code>hax.miniTag</code> and <code>hax.pageAnchors</code>)</li>
+	<li>Specify first the X-renderer type (here <code>hax.miniTag</code> and <code>hax.htmlAnchors</code>)</li>
 	<li>followed by a <code>&nbsp;:</code> and a <i>custom (X-)tag name</i> (here <code>&nbsp;h</code> and <code>doxpagetoc</code>) and another <code>&nbsp;:</code></li>
 	<li>followed by some individually-varying X-renderer-specific settings notation (aka. tag config) that each X-renderer defines and <a href="../xtypes/index.html">documents</a> separately.</li>
 	<li>In turn, usage of any <code>{X<!---->|</code> tag embedded anywhere begins with the very <i>custom tag name</i> from 2. (again, here <code>&nbsp;h</code> and <code>doxpagetoc</code>) pointing to the associated |X| directive, followed by a <code>&nbsp;:</code> and then possibly some further individually-varying X-renderer-specific per-instance settings notation (aka. tag params), if any.</li>
@@ -141,7 +141,7 @@
 <ul><li>1 "feed" (aka. arbitrary primary category) named <code>quotes</code></li><li>made up of 2 "posts" (aka. micro-content records),</li><li>both in the "cat"(egory) of <code>Programming</code>.</li></ul>
 <h3>Usage</h3>
 <p>
-	Such "feeds" can be output as <i>*.atom</i> XML files (just add a <a href="#cmisc">|C|_hax_relpath_postatoms</a> directive) but other than that no separate pages or other files will be auto-generated from them. To embed such micro-contents in the project's generated output pages in versatile ways (<i>without</i> coding up a custom X-renderer from scratch), use the "feed"-related iterators of the built-in <a href="../xtypes/repeat.html">hax.repeat</a> X-renderer (those, incidentally, treat |P| "feeds" and Bloks as (for their purposes) functionally equivalent types of content sources, allowing for some neat mixing-and-mashing).
+	Such "feeds" can be output as <i>*.atom</i> XML files (just add a <a href="#cmisc">|C|_hax_relpath_postatoms</a> directive) but other than that no separate pages or other files will be auto-generated from them. To embed such micro-contents in the project's generated output pages in versatile ways (<i>without</i> coding up a custom X-renderer from scratch), use the "feed"-related iterators of the built-in <a href="../xtypes/hax.iterator.html">hax.iterator</a> X-renderer (those, incidentally, treat |P| "feeds" and Bloks as (for their purposes) functionally equivalent types of content sources, allowing for some neat mixing-and-mashing).
 </p>
 <span id="cdecl"><h2 id="|C| directives: more control">|C| directives: more control</h2></span>
 <p>

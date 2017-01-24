@@ -1,21 +1,23 @@
 module X.DemoCfgArgs where
 
-import Base (has)
+import Base
+import qualified Html
 import qualified X
 
 
-registerX _ctxproj xreg =
+registerX _ xreg =
     let
-    renderer (_maybectxpage , argstr) =
-        Just$ "<h1>Hello, " ++ (greet argstr) ++ "!</h1>"
+    renderer (_ , argstr) =
+        Just$ Html.out "h4" ["" =: "Hello, "]
+                            [Html.T "b" ["" =: greet argstr ++ "!"] []]
 
     in X.Early renderer
     where
 
     greet name
         | has name = name
-        | has cfgstr = cfgstr
-        | otherwise = fallback
+        | has cfgname = cfgname
+        | otherwise = fallbackname
 
-    cfgstr = X.cfgFullStr xreg
-    fallback = X.tname xreg
+    cfgname = xreg-:X.cfgFullStr
+    fallbackname = xreg-:X.tname

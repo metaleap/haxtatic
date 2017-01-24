@@ -37,74 +37,75 @@
 			("dt" , ""),
 			("cat" , "")
 	-->
-	<a class="hd-feed-title" href="../xtypes/miniTag.html">hax.miniTag</a>
-	<blockquote class="hd-feed-desc">Outputs <code>&lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt;</code>.</blockquote></li><li><!--
+	<a class="hd-feed-title" href="../xtypes/hax.miniTag.html">hax.miniTag</a>
+	<blockquote class="hd-feed-desc">Outputs <code>&nbsp;&lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt;</code>.</blockquote></li><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
 			("dt" , ""),
 			("cat" , "")
 	-->
-	<a class="hd-feed-title" href="../xtypes/image.html">hax.image</a>
-	<blockquote class="hd-feed-desc">Outputs <code>&lt;img <i>..</i> /&gt;</code> or <code>&lt;a <i>..</i>&gt;&lt;img <i>..</i> /&gt;&lt;/a&gt;</code>.</blockquote></li><li><!--
+	<a class="hd-feed-title" href="../xtypes/hax.xmlEscape.html">hax.xmlEscape</a>
+	<blockquote class="hd-feed-desc">Outputs the given content with all occurrences of any of <code>&amp; &lt; &gt; &quot; &apos;</code> each appropriately
+	entity-escaped for safe inclusion in HTML/XML/etc. markup.</blockquote></li><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
 			("dt" , ""),
 			("cat" , "")
 	-->
-	<a class="hd-feed-title" href="../xtypes/xmlEscape.html">hax.xmlEscape</a>
-	<blockquote class="hd-feed-desc">Outputs the given content with all occurrences of any of <code>&amp; &lt; &gt; &quot; &apos;</code> each appropriately entity-escaped
-	for safe inclusion in markup.</blockquote></li><li><!--
-		other possible `vars` that can be added above and used below:
-			("feed" , ""),
-			("dt" , ""),
-			("cat" , "")
-	-->
-	<a class="hd-feed-title" href="../xtypes/link.html">hax.link</a>
+	<a class="hd-feed-title" href="../xtypes/hax.htmlLink.html">hax.htmlLink</a>
 	<blockquote class="hd-feed-desc">Outputs <code>&lt;a <i>..</i>&gt;<i>..</i>&lt;/a&gt;</code>.</blockquote></li><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
 			("dt" , ""),
 			("cat" , "")
 	-->
-	<a class="hd-feed-title" href="../xtypes/links.html">hax.links</a>
+	<a class="hd-feed-title" href="../xtypes/hax.htmlImage.html">hax.htmlImage</a>
+	<blockquote class="hd-feed-desc">Outputs <code>&lt;img <i>..</i> /&gt;</code> or <code>&lt;a <i>..</i>&gt;&lt;img <i>..</i> /&gt;&lt;/a&gt;</code>.</blockquote></li><li><!--
+		other possible `vars` that can be added above and used below:
+			("feed" , ""),
+			("dt" , ""),
+			("cat" , "")
+	-->
+	<a class="hd-feed-title" href="../xtypes/hax.htmlLinks.html">hax.htmlLinks</a>
 	<blockquote class="hd-feed-desc">Outputs a sequence of <code>&lt;a ..&gt; .. &lt;/a&gt;</code> or
-	<code>&lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code> in a uniform manner.</blockquote></li><li><!--
+	<code>&nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code> in a uniform manner.</blockquote></li><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
 			("dt" , ""),
 			("cat" , "")
 	-->
-	<a class="hd-feed-title" href="../xtypes/pageAnchors.html">hax.pageAnchors</a>
-	<blockquote class="hd-feed-desc">Outputs a sequence of <code>&lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code>, one
-	per <code>&lt;<i>gatherhtmltag</i>&gt;</code> element found in the page's content source.</blockquote></li><li><!--
+	<a class="hd-feed-title" href="../xtypes/hax.htmlAnchors.html">hax.htmlAnchors</a>
+	<blockquote class="hd-feed-desc">Outputs a sequence of
+	<code>&nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a href=&quot;#..&quot; ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code>,
+	one per <code>&nbsp;&lt;<i>gatherhtmltag</i>&gt;</code> element found in the page's content source.</blockquote></li><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
 			("dt" , ""),
 			("cat" , "")
 	-->
-	<a class="hd-feed-title" href="../xtypes/snippet.html">hax.snippet</a>
+	<a class="hd-feed-title" href="../xtypes/hax.snippet.html">hax.snippet</a>
 	<blockquote class="hd-feed-desc">Outputs the content of the named snippet with the specified variable substitutions.</blockquote></li><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
 			("dt" , ""),
 			("cat" , "")
 	-->
-	<a class="hd-feed-title" href="../xtypes/repeat.html">hax.repeat</a>
+	<a class="hd-feed-title" href="../xtypes/hax.iterator.html">hax.iterator</a>
 	<blockquote class="hd-feed-desc">Outputs a sequence of contents enumerated by the specified iterator.</blockquote></li><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
 			("dt" , ""),
 			("cat" , "")
 	-->
-	<a class="hd-feed-title" href="../xtypes/demoSimplest.html">hax.demoSimplest</a>
+	<a class="hd-feed-title" href="../xtypes/demoSimplest.html">demoSimplest</a>
 	<blockquote class="hd-feed-desc">Outputs <code>&lt;h1&gt;Hello World!&lt;/h1&gt;</code>.</blockquote></li><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
 			("dt" , ""),
 			("cat" , "")
 	-->
-	<a class="hd-feed-title" href="../xtypes/demoCfgArgs.html">hax.demoCfgArgs</a>
-	<blockquote class="hd-feed-desc">Outputs <code>&lt;h1&gt;Hello, <i>greetname</i>!&lt;/h1&gt;</code>.</blockquote></li></ul>
+	<a class="hd-feed-title" href="../xtypes/demoCfgArgs.html">demoCfgArgs</a>
+	<blockquote class="hd-feed-desc">Outputs <code>&lt;h4&gt;Hello, &lt;b&gt;<i>greetname</i>!&lt;/b&gt;&lt;/h4&gt;</code>.</blockquote></li></ul>
 	
 	
 <!-- end of content source page -->

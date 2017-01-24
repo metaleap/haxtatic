@@ -13,11 +13,11 @@ import qualified Util
 
 import qualified X.DemoSimplest (registerX)
 import qualified X.DemoCfgArgs (registerX)
-import qualified X.PageAnchors (registerX)
-import qualified X.Image (registerX)
-import qualified X.Link (registerX)
-import qualified X.Links (registerX)
-import qualified X.Repeat (registerX)
+import qualified X.HtmlAnchors (registerX)
+import qualified X.HtmlImage (registerX)
+import qualified X.HtmlLink (registerX)
+import qualified X.HtmlLinks (registerX)
+import qualified X.Iterator (registerX)
 import qualified X.Snippet (registerX)
 import qualified X.MiniTag (registerX)
 import qualified X.XmlEscape (registerX)
@@ -29,13 +29,13 @@ import qualified System.IO
 import qualified Text.Printf
 
 
-xregs = [ "hax.demoSimplest" =: X.DemoSimplest.registerX
-        , "hax.demoCfgArgs" =: X.DemoCfgArgs.registerX
-        , "hax.pageAnchors" =: X.PageAnchors.registerX
-        , "hax.image" =: X.Image.registerX
-        , "hax.link" =: X.Link.registerX
-        , "hax.links" =: X.Links.registerX
-        , "hax.repeat" =: X.Repeat.registerX
+xregs = [ "demoSimplest" =: X.DemoSimplest.registerX
+        , "demoCfgArgs" =: X.DemoCfgArgs.registerX
+        , "hax.htmlAnchors" =: X.HtmlAnchors.registerX
+        , "hax.htmlImage" =: X.HtmlImage.registerX
+        , "hax.htmlLink" =: X.HtmlLink.registerX
+        , "hax.htmlLinks" =: X.HtmlLinks.registerX
+        , "hax.iterator" =: X.Iterator.registerX
         , "hax.snippet" =: X.Snippet.registerX
         , "hax.miniTag" =: X.MiniTag.registerX
         , "hax.xmlEscape" =: X.XmlEscape.registerX

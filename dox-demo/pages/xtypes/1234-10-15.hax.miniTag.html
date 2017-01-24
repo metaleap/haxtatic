@@ -1,33 +1,34 @@
 {X|haxdox-xthead|}
 {T|Xearly|}
 {T|Xpurpose|}
-<p>Some contents require repetetive use of quickly-becoming-too-verbose "mostly just inner text" tags such as
-	{X|c: &lt;blockquote&gt; |}, {X|c: &lt;code&gt; |}, or {X|c: &lt;p class="my-para-highlighted my-smallerfont"&gt; |} etc.</p>
-<p>Setting up <i>hax.miniTag</i> X-tags for any such instances alleviates this quickly, and lets the author turn
-	repetetive-hence-too-verbose occurrences of:</p>
+<p>Some markup contents require repetetive use of quickly-becoming-too-verbose "mostly just inner text" tags such as
+	(often in raw-HTML contents) {X|c: &lt;blockquote&gt; |}, {X|c: &lt;code&gt; |},
+	or {X|c: &lt;p class="my-para-highlighted my-smallerfont my-roundborder"&gt; |} etc.</p>
+<p>Setting up <i>hax.miniTag</i> X-tags for such instances alleviates this easily, and lets the author turn
+	repetetive-hence-too-verbose occurrences of, for example:</p>
 <ul>
 	<li>{X|c: &lt;blockquote&gt;<i>content</i>&lt;/blockquote&gt; |}<br/>&rarr; into {X|c: {X<!---->|bq:<i>content</i>|<!---->} |}</li>
 	<li>{X|c: &lt;code&gt;<i>content</i>&lt;/code&gt; |}<br/>&rarr; into {X|c: {X<!---->|c:<i>content</i>|<!---->} |}</li>
 	<li>{X|c: &lt;p class="my-para-highlighted my-smallerfont my-roundborder"&gt;<i>content</i>&lt;/p&gt; |}<br/>&rarr; into
-		{X|c: {X<!---->|phs:<i>content</i>|<!---->} |}</li>
+		{X|c: {X<!---->|phsr:<i>content</i>|<!---->} |}</li>
 	<li>et cetera..</li>
 </ul>
 {T|Xcfg|}
 <p>To demonstrate valid {X|lb:haxproj#xdecl *.haxproj|} directives to declare the above 3 example {X|lt:x X-tags|}:</p>
 <pre>
-|X|hax.miniTag:<i>bq</i>: <i>blockquote</i>
+|X|hax.miniTag:<i>bq</i>:<i>blockquote</i>
 
 |X|hax.miniTag:<i>c</i>:
     <i>code</i>: attr = []
 
-|X|hax.miniTag:<i>phs</i>: <i>p</i>: attr
+|X|hax.miniTag:<i>phsr</i>: <i>p</i>:attr
     = [ ("<i>class</i>" , "<i>my-para-highlighted my-smallerfont</i>"),
         ("<i>class</i>" , "<i>my-roundborder</i>") ]
 </pre>
 <p>To elaborate, for example the last one of the above, as all {X|lb:haxproj#xdecl |X| directives|} declaring {X|lt:x X-tags|} do:</p>
 <ul>
 	<li>begins with {X|c: |X| |} followed by the X-renderer identifier (here {X|c:hax.miniTag|})</li>
-	<li>followed by {X|c:&nbsp;:|} colon and the desired X-tag name to be used to invoke it (here {X|c:phs|}),</li>
+	<li>followed by {X|c:&nbsp;:|} colon and the desired X-tag name to be used to invoke it (here {X|c:phsr|}),</li>
 	<li>followed by {X|c:&nbsp;:|} colon and now <b><i>hax.miniTag</i>-specific</b> configuration:
 
 		<ul>
@@ -36,10 +37,12 @@
 			comprised of all of the following properties in this very order:
 				<ol>
 					<li>{X|c:attr = [ <i>..</i> ]|} &mdash; a List of all the tag attributes (each denoted in a
-					{X|c:("<i>name</i>","<i>value</i>")|} pair) to <i>always</i> append to the markup-language tag output by all instances of this
-					X-tag <ul><li>The special attribute <i>value</i> {X|c:&nbsp;{<!---->%:content:%<!---->}|} will replicate the X-tag content inside this
+					{X|c:("<i>name</i>","<i>value</i>")|} pair) to <i>always</i> append to the markup-language tag output by
+					all instances of this
+					X-tag <ul><li>The special attribute <i>value</i> {X|c:&nbsp;{<!---->%:content:%<!---->}|} will replicate the
+					X-tag content inside this
 					attribute (not specially escaped &mdash; effect this by wrapping inside a {X|lt:p#delay page-delayed|} X-tag invoking
-					{X|lx:xmlEscape hax.xmlEscape|}) </li></ul></li>
+					{X|lx:hax.xmlEscape hax.xmlEscape|}) </li></ul></li>
 				</ol>
 			</li>
 		</ul>
@@ -47,9 +50,12 @@
 	</li>
 </ul>
 {T|Xargs|}
-<p>No special tag parameters, no special content treatment: the entire X-tag content (ie. following the tag name such as above {X|c:phs|} and then {X|c:&nbsp;:|} colon, as in {X|c:{X<!---->|phs:<i>content</i>|<!---->}|}) is output as-is, inside the markup-language tag configured for the X-tag.</p>
+<p>No special tag parameters, no special content treatment: the entire X-tag <i>content</i> (ie. following the tag name such as
+above {X|c:phsr|} and then {X|c:&nbsp;:|} colon, as in {X|c:{X<!---->|phsr:<i>content</i>|<!---->}|}) is output as-is, inside the
+output markup tag configured for the X-tag (ie. as above,
+{X|c: &lt;p class="my-para-highlighted my-smallerfont my-roundborder"&gt;<i>content</i>&lt;/p&gt; |}).</p>
 <p>
 	<b>Caution:</b> if no such X-tag <i>content</i> is present, <i>nothing</i> is rendered out at all, not even the intended
-	(would-be empty) markup-language tag. This is by design and more often than not desirable especially in certain scenarios
+	(would-be empty) output markup tag. This is by design and more often than not desirable, especially in certain scenarios
 	of somewhat-dynamic tag contents.
 </p>

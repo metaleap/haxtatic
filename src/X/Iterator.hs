@@ -1,5 +1,5 @@
 {-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
-module X.Repeat where
+module X.Iterator where
 
 import Base
 import qualified Posts
@@ -21,7 +21,7 @@ data Tag
         content :: String
     }
     | Args {
-        over :: Iterate,
+        over :: Iteration,
         wrapEach :: (String , String),
         order :: SortOrder,
         skip :: Int,
@@ -31,7 +31,7 @@ data Tag
     deriving Read
 
 
-data Iterate
+data Iteration
     = Range Int Int
     | Values [String]
     | BlokNames
@@ -126,9 +126,9 @@ registerX ctxproj xreg =
                 not$ any (`elem` projfeednames) feednames -- not known yet (or other placeholder), so postpone til page
             needpage4feed _ =
                 has projbloknames
-            _likelyinsnippet =
-                let i1 = Util.indexOfSub argstr "{%" ; i2 = Util.indexOfSub argstr "%}"
-                in i1 >= 0 && i2 > i1
+            -- _likelyinsnippet =
+            --     let i1 = Util.indexOfSub argstr "{%" ; i2 = Util.indexOfSub argstr "%}"
+            --     in i1 >= 0 && i2 > i1
 
     in X.EarlyOrWait renderer
     where

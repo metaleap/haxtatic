@@ -60,13 +60,13 @@ turn on whatever syntax highlighting for eased grokkage..
 					<a href="http://github.com/metaleap/haxtatic/blob/master/src/X/Demo{P|xn|}.hs">code sample</a> to start from when
 					wanting to develop custom X-renderers within the {T|Hax|} code-base in Haskell.</p>
 |T|Xearly:			<h3>Stage:</h3><p>{X|lt:index#stages Early|} &mdash; this X-renderer does not require a page context for
-					rendering: therefore any <i>hax.{P|fileBaseName|}</i>-invoking X-tags encountered during pre-templating (at
+					rendering: therefore any <i>{P|fileBaseName|}</i>-invoking X-tags encountered during pre-templating (at
 					start-up time) will be {X|lt:index#Processing processed|} eagerly (for overall-reduced per-page processing load).</p>
 |T|Xpage:			<h3>Stage:</h3><p>{X|lt:index#stages Page|} &mdash; this X-renderer requires a page context for rendering: therefore
-					any <i>hax.{P|fileBaseName|}</i>-invoking X-tags encountered during pre-templating (at start-up time) will be
+					any <i>{P|fileBaseName|}</i>-invoking X-tags encountered during pre-templating (at start-up time) will be
 					skipped over and thus delayed until page time.</p>
 |T|Xearlyorpage:	<h3>Stage:</h3><p>{X|lt:index#stages Early or Page|} &mdash; this X-renderer determines dynamically whether or not
-					it requires a page context for rendering: so some <i>hax.{P|fileBaseName|}</i>-invoking X-tags encountered during
+					it requires a page context for rendering: so some <i>{P|fileBaseName|}</i>-invoking X-tags encountered during
 					pre-templating (at start-up time) may be {X|lt:index#Processing processed|} eagerly (for overall-reduced per-page
 					processing load), and others may be skipped over and thus delayed until page time &mdash; depending on the X-tag's
 					configuration and/or parameters.</p>
@@ -76,31 +76,31 @@ turn on whatever syntax highlighting for eased grokkage..
 
 
 
-|X|hax.image:doxpic: {P| /pics/otiosely/long/path |}: attrLink=[], attrImg=[]
+|X|hax.htmlImage:doxpic: {P| /pics/otiosely/long/path |}: attrLink=[], attrImg=[]
 |X|hax.xmlEscape:xesc
 |X|hax.miniTag:c: code
 |X|hax.miniTag:h: h2: attr=[ ("id" , "{%:content:%}") ]
 |X|hax.miniTag:note: span: attr=[("class" , "hd-note")]
-|X|hax.link:lb: {P| /basics |}: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
-|X|hax.link:lt: {P| /tags |}: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
-|X|hax.link:lx: {P| /xtypes |}: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
+|X|hax.htmlLink:lb: {P| /basics |}: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
+|X|hax.htmlLink:lt: {P| /tags |}: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
+|X|hax.htmlLink:lx: {P| /xtypes |}: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
 
-|X|hax.links:doxtopnav:li:
+|X|hax.htmlLinks:doxtopnav:li:
 	 attr = [("class","hd-nav"),("&class","hd-nav-sel")],
 		 itemsFirst = [("" , "Intro")],
 		 itemsLast = [("xtypes/" , "{B|title:xtypes|}")],
 	 wrapHref = ("{P|/" , "index.html|}")
 
-|X|hax.pageAnchors:doxpagetoc:h2:
+|X|hax.htmlAnchors:doxpagetoc:h2:
 	considerEmpty = 1,
 	outputIfEmpty = "<style type='text/css'>.hd-toc { display: none; }</style>",
 	xmlEscapeHref = False
 
-|X|hax.repeat:doxindex:
+|X|hax.iterator:doxindex:
 	prefix = "<ul id=\"doxindexlisting\" class=\"hd-feed\"><li>{", suffix = "}</li></ul>", joinVia = "}</li><li>{",
 	content=""
 
-|X|hax.repeat:xdescs:
+|X|hax.iterator:xdescs:
 	prefix = "{", suffix = "}", joinVia = "}{",
 	content = ""
 
@@ -117,22 +117,22 @@ turn on whatever syntax highlighting for eased grokkage..
 
 |P|xdesc:
 	dt = "1234-11-15", cat = "demoCfgArgs", title = "", link = "",
-	more = [ ("declmore" , "</code> or <code>|X|hax.demoCfgArgs:<i>myXtag</i>:<i>greetname</i>"),
+	more = [ ("declmore" , "</code> or <code>|X|demoCfgArgs:<i>myXtag</i>:<i>greetname</i>"),
 			 ("cfgmore" , "(no other settings)"),
 			 ("usage" , "|<!---->}</code> or <code>{X<!---->|<i>myXtag</i>:<i>greetname</i>") ],
 	content=>
-	Outputs <code>&lt;h1&gt;Hello, <i>greetname</i>!&lt;/h1&gt;</code>.
+	Outputs <code>&lt;h4&gt;Hello, &lt;b&gt;<i>greetname</i>!&lt;/b&gt;&lt;/h4&gt;</code>.
 
 |P|xdesc:
-	dt = "1234-10-15", cat = "miniTag", title = "", link = "",
+	dt = "1234-10-15", cat = "hax.miniTag", title = "", link = "",
 	more = [ ("declmore" , ":<i>somehtmltag</i>: <i>..</i>"),
 			 ("cfgmore" , "{X|c:attr|}"),
 			 ("usage" , ":<i> tag's inner-markup content </i>") ],
 	content=>
-	Outputs {X|c: &lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt; |}.
+	Outputs {X|c: &nbsp;&lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt; |}.
 
 |P|xdesc:
-	dt = "1234-09-15", cat = "image", title = "", link = "",
+	dt = "1234-09-15", cat = "hax.htmlImage", title = "", link = "",
 	more = [ ("declmore" , ":<i>some/rel/base/path</i>: <i>..</i>"),
 			 ("cfgmore" , "{X|c:attrLink|}, {X|c:attrImg|}"),
 			 ("usage" , ":<i>rel-to-base/path/no/whitespace and optionally some description text</i>") ],
@@ -140,16 +140,16 @@ turn on whatever syntax highlighting for eased grokkage..
 	Outputs {X|c: &lt;img <i>..</i> /&gt; |} or {X|c: &lt;a <i>..</i>&gt;&lt;img <i>..</i> /&gt;&lt;/a&gt; |}.
 
 |P|xdesc:
-	dt = "1234-09-10", cat = "xmlEscape", title = "", link = "",
+	dt = "1234-09-10", cat = "hax.xmlEscape", title = "", link = "",
 	more = [ ("declmore" , ""),
 			 ("cfgmore" , "(no settings)"),
 			 ("usage" , ": <i>any &quot;content&apos; to &lt;&gt; XML&amp;HTML-escape</i>") ],
 	content=>
-	Outputs the given content with all occurrences of any of {X|c: &amp; &lt; &gt; &quot; &apos; |} each appropriately entity-escaped
-	for safe inclusion in markup.
+	Outputs the given content with all occurrences of any of {X|c: &amp; &lt; &gt; &quot; &apos; |} each appropriately
+	entity-escaped for safe inclusion in HTML/XML/etc. markup.
 
 |P|xdesc:
-	dt = "1234-08-25", cat = "link", title = "", link = "",
+	dt = "1234-08-25", cat = "hax.htmlLink", title = "", link = "",
 	more = [ ("declmore" , ":<i>some/rel/base/path</i>: <i>..</i>"),
 			 ("cfgmore" , "{X|c:attr|} , {X|c:xmlEscape|} , {X|c:uriAutoExt|} "),
 			 ("usage" , ":<i>rel-to-base/path/no/whitespace and then the link text text</i>") ],
@@ -157,25 +157,26 @@ turn on whatever syntax highlighting for eased grokkage..
 	Outputs {X|c: &lt;a <i>..</i>&gt;<i>..</i>&lt;/a&gt; |}.
 
 |P|xdesc:
-	dt = "1234-08-15", cat = "links", title = "", link = "",
+	dt = "1234-08-15", cat = "hax.htmlLinks", title = "", link = "",
 	more = [ ("declmore" , ":<i>outerhtmltag</i>: <i>..</i>"),
 			 ("cfgmore" , "{X|c:attr|}, {X|c:itemsFirst|}, {X|c:itemsLast|}, {X|c:wrapHref|}"),
 			 ("usage" , ": items = [..] , attr = [..]") ],
 	content=>
 	Outputs a sequence of {X|c: &lt;a ..&gt; .. &lt;/a&gt; |} or
-	{X|c: &lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt; |} in a uniform manner.
+	{X|c: &nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt; |} in a uniform manner.
 
 |P|xdesc:
-	dt = "1234-07-15", cat = "pageAnchors", title = "", link = "",
+	dt = "1234-07-15", cat = "hax.htmlAnchors", title = "", link = "",
 	more = [ ("declmore" , ":<i>gatherhtmltag</i>: <i>..</i>"),
 			 ("cfgmore" , "{X|c:considerEmpty|}, {X|c:outputIfEmpty|}, {X|c:xmlEscapeHref|}"),
 			 ("usage" , ":<i>outerhtmltag</i>: attr = [..]") ],
 	content=>
-	Outputs a sequence of {X|c: &lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt; |}, one
-	per {X|c: &lt;<i>gatherhtmltag</i>&gt; |} element found in the page's content source.
+	Outputs a sequence of
+	{X|c: &nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a href=&quot;#..&quot; ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt; |},
+	one per {X|c: &nbsp;&lt;<i>gatherhtmltag</i>&gt; |} element found in the page's content source.
 
 |P|xdesc:
-	dt = "1234-06-15", cat = "snippet", title = "", link = "",
+	dt = "1234-06-15", cat = "hax.snippet", title = "", link = "",
 	more = [ ("declmore" , ": <i>..</i>"),
 			 ("cfgmore" , "{X|c:vars|}, {X|c:flags|}, {X|c:content|}"),
 			 ("usage" , ": vars = [..], flags = [..], content = &quot;..&quot;") ],
@@ -183,7 +184,7 @@ turn on whatever syntax highlighting for eased grokkage..
 	Outputs the content of the named snippet with the specified variable substitutions.
 
 |P|xdesc:
-	dt = "1234-05-15", cat = "repeat", title = "", link = "",
+	dt = "1234-05-15", cat = "hax.iterator", title = "", link = "",
 	more = [ ("declmore" , ": <i>..</i>"),
 			 ("cfgmore" , "{X|c:prefix|}, {X|c:suffix|}, {X|c:joinVia|}, {X|c:content|}"),
 			 ("usage" , ": over = .. , wrapEach = .. , order = .. , skip = .. , limit = .. , more = ..") ],

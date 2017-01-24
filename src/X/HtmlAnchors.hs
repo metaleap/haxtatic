@@ -1,5 +1,5 @@
 {-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
-module X.PageAnchors where
+module X.HtmlAnchors where
 
 import Base
 import qualified Html
