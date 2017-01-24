@@ -1,7 +1,54 @@
-{X|haxdox-xthead|}
+{X|dox-xthead|}
 {T|Xearly|}
 {T|Xpurpose|}
 <p>
-	In a similar spirit to {X|lx:hax.miniTag hax.miniTag|} and {X|lx:hax.htmlLink hax.htmlLink|}, this one is for saving precious keypresses
-	with {X|c:&lt;img ..&gt;|}-rich HTML contents requiring repetetive use of quickly-becoming-too-verbose
+	In a similar spirit to {X|lx:hax.miniTag hax.miniTag|} and {X|lx:hax.htmlLink hax.htmlLink|}, this one is for saving precious
+	keystrokes with {X|c:&lt;img ..&gt;|}-rich HTML contents requiring repetetive use of quickly-becoming-too-verbose markup.
 </p>
+{T|Xcfg|}
+<p>To demonstrate valid {X|lb:haxproj#xdecl *.haxproj|} directives to declare <i>hax.htmlImage</i> {X|lt:x X-tags|}:</p>
+<pre>
+|X|hax.htmlImage:<i>logo</i>:
+	<i>../pics/logos</i>
+
+|X|hax.htmlImage: <i>photo</i> : <i>{P<!---->|/pics/photos/|<!---->}</i>:
+	attrLink = [ <i>("class","foo-photo")</i> ],
+	attrImg = [<i>("class" , "foo-roundborder")
+		, ("onload","myGallerize(this)")</i>
+		],
+	xmlEscape = True
+</pre>
+{P|X|dox-xtdecl:	vars= [	("xn" , "hax.htmlImage"),
+							("xf" , "The relative base path for all images from this X-tag (here
+										{X|``lt:p#relpaths ensuring root-relative |}:
+										{X|c: {P<!---->| /pics/photos |<!---->} |}),")
+							],
+					flags = [],
+					content=>
+	<li>{X|c:attrLink = [ <i>..</i> ]|} &mdash; a List of all the tag attributes (each denoted in a
+	{X|c:("<i>name</i>","<i>value</i>")|} pair) to <i>always</i> append (in addition to automatic {X|c:href|} and {X|c:title|})
+	to the outer {X|c:&lt;a&gt;|} element <ul><li>if empty (the default), no such outer {X|c:&lt;a&gt;|} element will be rendered
+	(only the {X|c:&lt;img&gt;|} element itself)</li></ul></li>
+	<li>{X|c:attrImg = [ <i>..</i> ]|} &mdash; a List of all the tag attributes (each denoted in a {X|c:("<i>name</i>","<i>value</i>")|}
+	pair) to <i>always</i> append (in addition to automatic {X|c:src|} and {X|c:alt|}) to the inner {X|c:&lt;img&gt;|} output by
+	all instances of this X-tag</li>
+	<li>{X|c:xmlEscape = ..|} &mdash; either {X|c:False|} (the default) or {X|c:True|}; whether to auto-HTML/XML-escape
+	the automatic {X|c:title|} / {X|c:alt|} attribute values</li>
+
+|}
+{T|Xargs|}
+<p>
+	Usage for the above example: {X|c: {X<!---->|photo:<i>eire%202016/IMG_5.jpg Look, a 'geysir'!</i> |<!---->} |} would output,
+	depending on the current-page URL, perhaps something like:
+	{X|c: &lt;a class="<i>foo-photo</i>" href="<i>../pics/photos/eire%202016/IMG_5.jpg</i>"
+	title="<i>Look, a &amp;apos;geysir&amp;apos;!</i>"&gt;
+	&lt;img class="<i>foo-roundborder</i>" onload="<i>myGallerize(this)</i>" src="<i>../pics/photos/eire%202016/IMG_5.jpg</i>"
+	alt="<i>Look, a &amp;apos;geysir&amp;apos;!</i>" /&gt;&lt;/a&gt; |} &mdash; it follows that:
+</p>
+<ul>
+	<li>the (X-tag-)relative image path comes first, followed optionally</li>
+	<li>by <b>a white-space</b> and any manner of picture description, if any;</li>
+	<li>any white-space in the picture URI path is to be replaced, as is standard, with {X|c:%20|};</li>
+	<li>if {X|c:xmlEscape|} is {X|c:False|}, the picture description <b>has</b> to be provided HTML-escaped: manually or wrapped
+	inside an {X|lx:hax.xmlEscape hax.xmlEscape|}</li>
+</ul>

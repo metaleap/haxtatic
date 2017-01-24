@@ -25,7 +25,7 @@
 	<p class="up">Outputs <code>&nbsp;&lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt;</code>.</p>
 	<h2 id="In a nutshell">In a nutshell</h2>
 	<ol>
-		<li>
+		<li class="up">
 			<a href="../xtypes/hax.miniTag.html#decl">Declaration</a> of an <code>|X|hax.miniTag:<i>myTag</i>:<i>somehtmltag</i>: <i>..</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
 			<ul><li>further configuring: <code>attr</code></li></ul>
@@ -60,30 +60,30 @@
     = [ ("<i>class</i>" , "<i>my-para-highlighted my-smallerfont</i>"),
         ("<i>class</i>" , "<i>my-roundborder</i>") ]
 </pre>
+
 <p>To elaborate, for example the last one of the above, as all <a href="../basics/haxproj.html#xdecl">|X| directives</a> declaring <a href="../tags/x.html">X-tags</a> do:</p>
-<ul>
-	<li>begins with <code>|X|</code> followed by the X-renderer identifier (here <code>hax.miniTag</code>)</li>
-	<li>followed by <code>&nbsp;:</code> colon and the desired X-tag name to be used to invoke it (here <code>phsr</code>),</li>
-	<li>followed by <code>&nbsp;:</code> colon and now <b><i>hax.miniTag</i>-specific</b> configuration:
+	<ul>
+		<li>begins with <code>|X|</code> followed by the X-renderer identifier (here <code>hax.miniTag</code>)</li>
+		<li>followed by <code>&nbsp;:</code> colon and the desired X-tag name to be used to invoke it (here <code>photo</code>),</li>
+		<li>followed by <code>&nbsp;:</code> colon and now <b><i>hax.miniTag</i>-specific</b> configuration:
+			<ul>
+				<li>The name of the output markup-language tag that this X-tag should wrap its content in
+										(here <code>blockquote</code>),</li>
+				<li>followed by a <code>&nbsp;:</code> colon if an <b>optional</b> <a href="../basics/syntax.html">syntax-sensitive</a> properties block follows,
+				comprised of all of the following properties in this very order:
+					<ol><li><code>attr = [ <i>..</i> ]</code> &mdash; a List of all the tag attributes (each denoted in a
+	<code>("<i>name</i>","<i>value</i>")</code> pair) to <i>always</i> append to the markup-language tag output by
+	all instances of this
+	X-tag <ul><li>The special attribute <i>value</i> <code>&nbsp;{<!---->%:content:%<!---->}</code> will replicate the
+	X-tag content inside this
+	attribute (not specially escaped &mdash; effect this by wrapping inside a <a href="../tags/p.html#delay">page-delayed</a> X-tag invoking
+	<a href="../xtypes/hax.xmlEscape.html">hax.xmlEscape</a>) </li></ul></li></ol>
+				</li>
+			</ul>
+	
+		</li>
+	</ul>
 
-		<ul>
-			<li>The name of the output markup-language tag that this X-tag should wrap its content in (here <code>blockquote</code>),</li>
-			<li>followed by a <code>&nbsp;:</code> colon if an <b>optional</b> <a href="../basics/syntax.html">syntax-sensitive</a> properties block follows,
-			comprised of all of the following properties in this very order:
-				<ol>
-					<li><code>attr = [ <i>..</i> ]</code> &mdash; a List of all the tag attributes (each denoted in a
-					<code>("<i>name</i>","<i>value</i>")</code> pair) to <i>always</i> append to the markup-language tag output by
-					all instances of this
-					X-tag <ul><li>The special attribute <i>value</i> <code>&nbsp;{<!---->%:content:%<!---->}</code> will replicate the
-					X-tag content inside this
-					attribute (not specially escaped &mdash; effect this by wrapping inside a <a href="../tags/p.html#delay">page-delayed</a> X-tag invoking
-					<a href="../xtypes/hax.xmlEscape.html">hax.xmlEscape</a>) </li></ul></li>
-				</ol>
-			</li>
-		</ul>
-
-	</li>
-</ul>
 <span id="args"><h2 id="Invocation / Parameters">Invocation / Parameters</h2></span>
 <p>No special tag parameters, no special content treatment: the entire X-tag <i>content</i> (ie. following the tag name such as
 above <code>phsr</code> and then <code>&nbsp;:</code> colon, as in <code>{X<!---->|phsr:<i>content</i>|<!---->}</code>) is output as-is, inside the

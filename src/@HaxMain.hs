@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
-{-stack --install-ghc --resolver ghc-8.0.2 runghc
+{-stack --install-ghc --resolver ghc-8.0.1 runghc
 -}{-# OPTIONS_GHC -Wall #-}
 module Main where
 

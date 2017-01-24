@@ -24,8 +24,9 @@ data Tag
 registerX _ xreg =
     let
     renderer (_ , argstr) =
-        Just$ Util.repeatWhile again (Util.replaceSubsMany allrepls) (cfg-:content)
+        Just$ Util.repeatWhile again (Util.replaceSubsMany allrepls) maincontent
         where
+        maincontent = Util.lookup "_hax_snippeterror" (cfg-:content) ((args-:vars)++(cfg-:vars))
         again = for where for [] = False ; for ('{':'%':_) = True ; for ('%':'}':_) = True ; for (_:more) = for more
         allrepls = argvars++cfgvars++flagrepls
         argvars = ("{%:content:%}" , args-:content) : (args-:vars >~ var2repl)
@@ -36,7 +37,8 @@ registerX _ xreg =
                     "{%fi:"++flag++"%}" =: (isflagset |? "" |! "-->")]
         args = X.tryParseArgs xreg (Tmpl.fixParseStr "content" argstr) (Just defargs) errargs where
             defargs = Args { vars = [], flags = [] , content = "" }
-            errargs = Args { vars = [] , flags = [] , content = X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr)) }
+            errargs = Args { vars = ["_hax_snippeterror" =: errmsg] , flags = [] , content = errmsg }
+            errmsg = X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))
 
     in X.Early renderer
     where
@@ -48,4 +50,5 @@ registerX _ xreg =
     cfg_parsestr = Tmpl.fixParseStr "content" (xreg-:X.cfgFullStr)
     cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where
         defcfg = Cfg { vars = [] , flags = [] , content = "" }
-        errcfg = Cfg { vars = [] , flags = [] , content = X.htmlErr (X.clarifyParseCfgError xreg) }
+        errcfg = Cfg { vars = ["_hax_snippeterror" =: errmsg] , flags = [] , content = errmsg }
+        errmsg = X.htmlErr (X.clarifyParseCfgError xreg)

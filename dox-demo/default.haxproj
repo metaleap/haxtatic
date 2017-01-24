@@ -1,13 +1,18 @@
 turn on whatever syntax highlighting for eased grokkage..
+		(for new projects, ignore rather than copy-paste the following
+		very haxtatic-codebase-developer-specific |C| directives)
+
 	no special comments syntax supported,
-	no random comments after the first |_| directive, which follows:
+	no random comments after the first |_| directive,
+	which follows:
 
 
 |C|process:pages:
 	skip=[], force=["*"], dirs=[]
-|C|hax_onparseerror: abort
 
-|T|_hax_dir_cache:
+|C|_hax_onparseerror: abort
+
+|C|_hax_dir_cache:
 
 
 |B|basics:
@@ -50,7 +55,7 @@ turn on whatever syntax highlighting for eased grokkage..
 
 |T|blokIntroMore_xtypes:
 |T|blokIntroMore_basics:
-|T|blokIntroMore_tags: {X|haxdox-blokmore-tags|}
+|T|blokIntroMore_tags: {X|dox-blokmore-tags|}
 
 
 
@@ -76,11 +81,12 @@ turn on whatever syntax highlighting for eased grokkage..
 
 
 
-|X|hax.htmlImage:doxpic: {P| /pics/otiosely/long/path |}: attrLink=[], attrImg=[]
+|X|hax.htmlImage:doxpic: {P| /pics/otiosely/long/path |}: attrLink=[], attrImg=[], xmlEscape=False
 |X|hax.xmlEscape:xesc
 |X|hax.miniTag:c: code
 |X|hax.miniTag:h: h2: attr=[ ("id" , "{%:content:%}") ]
 |X|hax.miniTag:note: span: attr=[("class" , "hd-note")]
+|X|hax.miniTag:xli: li
 |X|hax.htmlLink:lb: {P| /basics |}: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
 |X|hax.htmlLink:lt: {P| /tags |}: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
 |X|hax.htmlLink:lx: {P| /xtypes |}: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
@@ -134,7 +140,7 @@ turn on whatever syntax highlighting for eased grokkage..
 |P|xdesc:
 	dt = "1234-09-15", cat = "hax.htmlImage", title = "", link = "",
 	more = [ ("declmore" , ":<i>some/rel/base/path</i>: <i>..</i>"),
-			 ("cfgmore" , "{X|c:attrLink|}, {X|c:attrImg|}"),
+			 ("cfgmore" , "{X|c:attrLink|}, {X|c:attrImg|}, {X|c:xmlEscape|}"),
 			 ("usage" , ":<i>rel-to-base/path/no/whitespace and optionally some description text</i>") ],
 	content=>
 	Outputs {X|c: &lt;img <i>..</i> /&gt; |} or {X|c: &lt;a <i>..</i>&gt;&lt;img <i>..</i> /&gt;&lt;/a&gt; |}.

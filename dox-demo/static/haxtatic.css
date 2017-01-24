@@ -8,7 +8,7 @@ h1 {
 	color: ThreeDShadow;
 	margin-right: 4em;
 }
-p.up, ul.up {
+p.up, ul.up, ol.up, li.up {
 	margin-right: 11em;
 }
 h3 {

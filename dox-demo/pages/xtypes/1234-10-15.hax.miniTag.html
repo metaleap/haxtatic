@@ -1,4 +1,4 @@
-{X|haxdox-xthead|}
+{X|dox-xthead|}
 {T|Xearly|}
 {T|Xpurpose|}
 <p>Some markup contents require repetetive use of quickly-becoming-too-verbose "mostly just inner text" tags such as
@@ -25,30 +25,23 @@
     = [ ("<i>class</i>" , "<i>my-para-highlighted my-smallerfont</i>"),
         ("<i>class</i>" , "<i>my-roundborder</i>") ]
 </pre>
-<p>To elaborate, for example the last one of the above, as all {X|lb:haxproj#xdecl |X| directives|} declaring {X|lt:x X-tags|} do:</p>
-<ul>
-	<li>begins with {X|c: |X| |} followed by the X-renderer identifier (here {X|c:hax.miniTag|})</li>
-	<li>followed by {X|c:&nbsp;:|} colon and the desired X-tag name to be used to invoke it (here {X|c:phsr|}),</li>
-	<li>followed by {X|c:&nbsp;:|} colon and now <b><i>hax.miniTag</i>-specific</b> configuration:
 
-		<ul>
-			<li>The name of the output markup-language tag that this X-tag should wrap its content in (here {X|c:blockquote|}),</li>
-			<li>followed by a {X|c:&nbsp;:|} colon if an <b>optional</b> {X|lb:syntax syntax-sensitive|} properties block follows,
-			comprised of all of the following properties in this very order:
-				<ol>
-					<li>{X|c:attr = [ <i>..</i> ]|} &mdash; a List of all the tag attributes (each denoted in a
-					{X|c:("<i>name</i>","<i>value</i>")|} pair) to <i>always</i> append to the markup-language tag output by
-					all instances of this
-					X-tag <ul><li>The special attribute <i>value</i> {X|c:&nbsp;{<!---->%:content:%<!---->}|} will replicate the
-					X-tag content inside this
-					attribute (not specially escaped &mdash; effect this by wrapping inside a {X|lt:p#delay page-delayed|} X-tag invoking
-					{X|lx:hax.xmlEscape hax.xmlEscape|}) </li></ul></li>
-				</ol>
-			</li>
-		</ul>
+{P|X|dox-xtdecl:	vars= [	("xn" , "hax.miniTag"),
+							("xf" , "The name of the output markup-language tag that this X-tag should wrap its content in
+										(here {X|c:blockquote|}),")
+							],
+					flags = [],
+					content=>
+	<li>{X|c:attr = [ <i>..</i> ]|} &mdash; a List of all the tag attributes (each denoted in a
+	{X|c:("<i>name</i>","<i>value</i>")|} pair) to <i>always</i> append to the markup-language tag output by
+	all instances of this
+	X-tag <ul><li>The special attribute <i>value</i> {X|c:&nbsp;{<!---->%:content:%<!---->}|} will replicate the
+	X-tag content inside this
+	attribute (not specially escaped &mdash; effect this by wrapping inside a {X|lt:p#delay page-delayed|} X-tag invoking
+	{X|lx:hax.xmlEscape hax.xmlEscape|}) </li></ul></li>
 
-	</li>
-</ul>
+|}
+
 {T|Xargs|}
 <p>No special tag parameters, no special content treatment: the entire X-tag <i>content</i> (ie. following the tag name such as
 above {X|c:phsr|} and then {X|c:&nbsp;:|} colon, as in {X|c:{X<!---->|phsr:<i>content</i>|<!---->}|}) is output as-is, inside the
