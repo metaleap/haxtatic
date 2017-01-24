@@ -1,0 +1,5 @@
+- `_misc` -- unimportant dump-of-stuff
+- `docs` -- the [HaXtatic user docs](http://metaleap.github.io/haxtatic/)
+- `dox-demo` -- the HaXtatic project to generate `docs`
+- `src` -- HaXtatic code-base
+- `src/X` -- HaXtatic code-base: all [X-renderers](http://metaleap.github.io/haxtatic/xtypes/index.html)
