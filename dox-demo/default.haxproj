@@ -28,18 +28,12 @@ turn on whatever syntax highlighting for eased grokkage..
 |B|tags:
 	title="haXtags", atomFile="", blokIndexPageFile="tags/index.html", inSitemap=True, desc=>
 
-	<p>Embed {T|Hax|} tags anywhere in source contents, {X|lb:tmplsnip templates|}, {X|lb:tmplsnip#snippets snippets|} or {X|lb:haxproj *.haxproj|}
-	files with a simple notation: <code>{<i>Prefix</i>|<i>Name</i>|<!---->}</code> or
+	<p class="up">Embed {T|Hax|} tags anywhere in source contents, {X|lb:tmplsnip templates|}, {X|lb:tmplsnip#snippets snippets|}
+	or {X|lb:haxproj *.haxproj|} files with a simple notation: <code>{<i>Prefix</i>|<i>Name</i>|<!---->}</code> or
 	<code>{<i>Prefix</i>|<i>Name</i>: <i>Args</i>|<!---->}</code>.</p>
 	<p>Example: <code>{P<!---->|date|<!---->}</code> outputs in-place the currently set {X|lb:datetime page date|} (using the
 	built-in fallback date-time format since none was specified in the tag) when it is processed: {X|note:{P|date|}|}.</p>
-	<ul><li>All unprocessed haXtags (mispelled etc.) simply remain in the output, aiding swift detection<ul><li>(exception: some X-tags requiring
-		{X|lb:syntax syntax|} &mdash; if unprocessable <i>due to bad syntax</i>, these output error details)</li></ul></li>
-	<li>Any haXtags may embed/output any other haXtags freely both in their definitions and invocations but
-	<ul><li>an otherwise-correct outer tag will typically not render with a (directly embedded) unprocessable inner tag (a "known non-issue", incidentally helping ensure later-stage inner tags provide correct input to their outer tags)</li>
-	<li>a direct-or-indirect recursive self-reference (self-invocation inside the "defining portion" of a haXtag's related {X|lb:haxproj declaration
-	directive|}) will hang (and usually eventually prematurely abort with a {X|c:&lt;&lt;loop&gt;&gt;|} farewell message) the entire generating process</li></ul></li>
-	<li>Available "prefixes" (or <i>haxTag types</i>) are (in order of simplicity) <b>T</b>, <b>B</b>, <b>P</b> and <b>X</b>:</li></ul>
+	<p>Available "prefixes" (or <i>haxTag types</i>) are (in order of simplicity) <b>T</b>, <b>B</b>, <b>P</b> and <b>X</b>:</p>
 
 
 |B|xtypes:
@@ -47,11 +41,16 @@ turn on whatever syntax highlighting for eased grokkage..
 	<p>Any {X|lt:x X-tag|} {X|lb:haxproj#xdecl declared and defined|} in a project always invokes a so-called "X-renderer":</p>
 	<ul><li>a specific, specialized programmatic output-rendering routine integrated into the {T|Hax|} code-base,</li>
 	<li>each offering its own degree of configurability (the once-per-tag-definition settings) and parameterization (the
-	varying-per-tag-invocation settings).</li></ul>
+	varying-dynamically-per-tag-invocation settings).</li></ul>
 	<p>{T|Hax|} ships with numerous such simple-yet-versatile X-renderers <b>that are listed below</b>, and custom ones may be coded up
 	and integrated straightforwardly in Haskell (if minimally comfortable with the language and its tool-chain) &mdash; starting from the
-	2 <a href="#down">demo*</a> starter samples.</p>
+	2 <a href="#down">demo</a> starter samples.</p>
 	<p>All the following built-in X-renderers are ready to use in X-tag definitions:</p>
+
+
+|T|blokIntroMore_xtypes:
+|T|blokIntroMore_basics:
+|T|blokIntroMore_tags: {X|haxdox-blokmore-tags|}
 
 
 
@@ -60,16 +59,17 @@ turn on whatever syntax highlighting for eased grokkage..
 |T|XdemoInfo:		{T|Xpurpose|}<p>This "verging on useless" X-renderer exists solely to serve as a
 					<a href="http://github.com/metaleap/haxtatic/blob/master/src/X/Demo{P|xn|}.hs">code sample</a> to start from when
 					wanting to develop custom X-renderers within the {T|Hax|} code-base in Haskell.</p>
-|T|Xearly:			<h3>Stage:</h3><p><b>Early</b> &mdash; this X-renderer does not require a page context for rendering: therefore
-					any <i>hax.{P|fileBaseName|}</i>-invoking X-tags encountered during pre-templating (at start-up time) will be
-					processed eagerly (for reduced per-page processing load).</p>
-|T|Xpage:			<h3>Stage:</h3><p><b>Page</b> &mdash; this X-renderer requires a page context for rendering: therefore
+|T|Xearly:			<h3>Stage:</h3><p>{X|lt:index#stages Early|} &mdash; this X-renderer does not require a page context for
+					rendering: therefore any <i>hax.{P|fileBaseName|}</i>-invoking X-tags encountered during pre-templating (at
+					start-up time) will be {X|lt:index#Processing processed|} eagerly (for overall-reduced per-page processing load).</p>
+|T|Xpage:			<h3>Stage:</h3><p>{X|lt:index#stages Page|} &mdash; this X-renderer requires a page context for rendering: therefore
 					any <i>hax.{P|fileBaseName|}</i>-invoking X-tags encountered during pre-templating (at start-up time) will be
 					skipped over and thus delayed until page time.</p>
-|T|Xearlyorpage:	<h3>Stage:</h3><p><b>Early or Page</b> &mdash; this X-renderer determines dynamically whether or not it
-					requires a page context for rendering: so some <i>hax.{P|fileBaseName|}</i>-invoking X-tags encountered during
-					pre-templating (at start-up time) may be processed eagerly (for reduced per-page processing load), and others may be
-					skipped over and thus delayed until page time &mdash; depending on the X-tag's configuration and/or parameters.</p>
+|T|Xearlyorpage:	<h3>Stage:</h3><p>{X|lt:index#stages Early or Page|} &mdash; this X-renderer determines dynamically whether or not
+					it requires a page context for rendering: so some <i>hax.{P|fileBaseName|}</i>-invoking X-tags encountered during
+					pre-templating (at start-up time) may be {X|lt:index#Processing processed|} eagerly (for overall-reduced per-page
+					processing load), and others may be skipped over and thus delayed until page time &mdash; depending on the X-tag's
+					configuration and/or parameters.</p>
 |T|Xpurpose:		{X|h: Purpose |}
 |T|Xcfg:			<span id="decl">{X|h: Declaration / Configuration |}</span>
 |T|Xargs:			<span id="args">{X|h: Invocation / Parameters |}</span>

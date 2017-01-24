@@ -31,10 +31,10 @@ Certain <b>directives</b> (placed in <a href="../basics/haxproj.html">*.haxproj<
 	<li>most <a href="../basics/haxproj.html#xdecl">|X| directives</a> (except the 2 <a href="../tags/x.html#demo">demo</a> X-renderers for coders)</li>
 	<li>some <a href="../tags/x.html">X-tags</a> (determined and documented by the <a href="../xtypes/index.html">X-renderer</a> invoked)</li>
 </ul>
-<p>&mdash; absolutely <b>require</b> <span class="hd-note">&mdash;lest they render warning/error messages into generated output contents (or if so <a href="../basics/haxproj.html#cmisc">configured</a>, abort the overall process abruptly, prematurely and entirely)</span>
+<p>&mdash; absolutely <b>require</b> <span class="hd-note">&mdash;lest they render warning/error messages into generated output contents (or if so <a href="../basics/haxproj.html#cmisc">configured</a>, abort the overall process abruptly, prematurely and entirely)&mdash;</span>
 <b>strict adherence to the following</b> (essentially trivial, still currently rather demanding-and-unforgiving thanks to the.. "compactness" of the parser) syntax rules:</p>
 <ul>
-	<li><i>All</i> the properties shown (in the respective documentation section) <i>need</i> to appear,
+	<li><i>All</i> the properties shown (in the respective documentation topic) <i>need</i> to appear,
 		<ul><li>each separated from the next via a <code>&nbsp;,</code> comma,</li>
 		<li>and in <i>the very same order</i> showing up in documentation!</li></ul>
 	</li>
@@ -43,8 +43,9 @@ Certain <b>directives</b> (placed in <a href="../basics/haxproj.html">*.haxproj<
 		<ul><li><code>= &quot;<i>Wrote this in </i>\"<i>VBScript</i>\"<i> back in '99..</i>&quot;</code></li>
 		<li>In-text (literal) line-breaks are supported; all standard escape sequences work predictably, eg. <code>&nbsp;\&quot;</code>
 		for in-text quotation marks etc.)</li>
-		<li>Any <a href="../tags/index.html">haXtags</a> placed inside such quoted text-values (principally those that might output quotation marks eg. HTML attributes) should
-		escape the entire tag content (everything in between <code>&nbsp;{<i>*</i><!---->|</code> and <code>&nbsp;|<!---->}</code>) by prefixing it with 2 <code>&nbsp;`</code> backticks:
+		<li>Any <a href="../tags/index.html">haXtags</a> placed inside such quoted text-values (principally those that might output literal quotation marks,
+		eg. markup-language attributes and such) should have the entire tag content (everything in between <code>&nbsp;{<i>*</i><!---->|</code>
+		and <code>&nbsp;|<!---->}</code>) specially escaped by prefixing it with 2 <code>&nbsp;`</code> backticks:
 		<ul><li>ie. by changing <code>{T<!---->|<i>sometextname</i>|<!---->}</code>, <code>{P<!---->|1st:<i>div</i>|<!---->}</code>
 		or <code>{X<!---->|<i>myctl:</i>|<!---->}</code><br/>into <code>{T<!---->|``<i>sometextname</i>|<!---->}</code>, <code>{P<!---->|``1st:<i>div</i>|<!---->}</code>
 		or <code>{X<!---->|``<i>myctl:</i>|<!---->}</code> respectively</li></ul></li></ul>

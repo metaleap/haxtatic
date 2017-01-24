@@ -9,10 +9,10 @@ Certain <b>directives</b> (placed in {X|lb:haxproj *.haxproj|} files or implied 
 	<li>most {X|lb:haxproj#xdecl |X| directives|} (except the 2 {X|lt:x#demo demo|} X-renderers for coders)</li>
 	<li>some {X|lt:x X-tags|} (determined and documented by the {X|lx:index X-renderer|} invoked)</li>
 </ul>
-<p>&mdash; absolutely <b>require</b> {X|note: &mdash;lest they render warning/error messages into generated output contents (or if so {X|lb:haxproj#cmisc configured|}, abort the overall process abruptly, prematurely and entirely) |}
+<p>&mdash; absolutely <b>require</b> {X|note: &mdash;lest they render warning/error messages into generated output contents (or if so {X|lb:haxproj#cmisc configured|}, abort the overall process abruptly, prematurely and entirely)&mdash; |}
 <b>strict adherence to the following</b> (essentially trivial, still currently rather demanding-and-unforgiving thanks to the.. "compactness" of the parser) syntax rules:</p>
 <ul>
-	<li><i>All</i> the properties shown (in the respective documentation section) <i>need</i> to appear,
+	<li><i>All</i> the properties shown (in the respective documentation topic) <i>need</i> to appear,
 		<ul><li>each separated from the next via a {X|c:&nbsp;,|} comma,</li>
 		<li>and in <i>the very same order</i> showing up in documentation!</li></ul>
 	</li>
@@ -21,8 +21,9 @@ Certain <b>directives</b> (placed in {X|lb:haxproj *.haxproj|} files or implied 
 		<ul><li>{X|c:= &quot;<i>Wrote this in </i>\"<i>VBScript</i>\"<i> back in '99..</i>&quot;|}</li>
 		<li>In-text (literal) line-breaks are supported; all standard escape sequences work predictably, eg. {X|c:&nbsp;\&quot;|}
 		for in-text quotation marks etc.)</li>
-		<li>Any {X|lt:index haXtags|} placed inside such quoted text-values (principally those that might output quotation marks eg. HTML attributes) should
-		escape the entire tag content (everything in between {X|c:&nbsp;{<i>*</i><!---->||} and {X|c:&nbsp;|<!---->}|}) by prefixing it with 2 {X|c:&nbsp;`|} backticks:
+		<li>Any {X|lt:index haXtags|} placed inside such quoted text-values (principally those that might output literal quotation marks,
+		eg. markup-language attributes and such) should have the entire tag content (everything in between {X|c:&nbsp;{<i>*</i><!---->||}
+		and {X|c:&nbsp;|<!---->}|}) specially escaped by prefixing it with 2 {X|c:&nbsp;`|} backticks:
 		<ul><li>ie. by changing {X|c:{T<!---->|<i>sometextname</i>|<!---->}|}, {X|c:{P<!---->|1st:<i>div</i>|<!---->}|}
 		or {X|c:{X<!---->|<i>myctl:</i>|<!---->}|}<br/>into {X|c:{T<!---->|``<i>sometextname</i>|<!---->}|}, {X|c:{P<!---->|``1st:<i>div</i>|<!---->}|}
 		or {X|c:{X<!---->|``<i>myctl:</i>|<!---->}|} respectively</li></ul></li></ul>

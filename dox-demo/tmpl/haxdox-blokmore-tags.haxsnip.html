@@ -1,0 +1,35 @@
+vars = [],
+flags = [],
+content=>
+{X|h: Processing |}
+<ul><li>All unprocessed haXtags (mispelled etc.) simply remain in the output, aiding swift detection<ul><li>(exception: some
+	X-tags requiring {X|lb:syntax syntax|} &mdash; if unprocessable <i>due to bad syntax</i>, these output error details)
+	</li></ul></li>
+	<li>Any haXtags may embed/output any other haXtags freely both in their definitions and invocations but
+		<ul><li>an otherwise-correct outer tag will typically not render with a (directly embedded) unprocessable inner tag (a
+		"known non-issue", incidentally helping ensure <a href="#stages">later-stage</a> inner tags provide correct input to their
+		outer tags)</li>
+		<li>a direct-or-indirect recursive self-reference (self-invocation inside the "defining portion" of a haXtag's related
+		{X|lb:haxproj declaration directive|}) will hang (and usually eventually prematurely abort with a
+		{X|c:&lt;&lt;loop&gt;&gt;|} farewell message) the entire generating process</li></ul></li>
+</ul>
+<span id="stages">{X|h: Render stages |}</span>
+<p>Unnecessary knowledge 99% of the time until running into <i>that one odd edge-case</i> where it'll help: a haXtag will
+be processed during one of two possible (multi-pass each) "stages":</p>
+<ul>
+	<li><b>Early stage</b> &mdash; during the loading of project files needed before even the first page can be generated:
+	{X|lb:haxproj *.haxproj|}, {X|lb:tmplsnip#snippets snippets|}, {X|lb:tmplsnip templates|}</li>
+	<li><b>Page stage</b> &mdash; per generated file: all the haXtags contained in the current content source file, plus
+	any unprocessed left-overs from Early stage that come into play for this file and might now, with a page context
+	current, be able to produce output (if not <a href="#Processing">unprocessable</a>)</li>
+</ul>
+<p>Early stage by default: {X|lt:t T-tags|}, <i>named</i> {X|lt:b B-tags|}, <i>most</i> {X|lt:x X-tags|}</p>
+<p>Page stage by default: {X|lt:p P-tags|}, <i>unnamed</i> {X|lt:b B-tags|}, <i>a few</i> {X|lt:x X-tags|}</p>
+<p><a href="#Processing">Recall</a> that as a general rule, a directly embedded unprocessable inner tag prevents processing
+of its outer tag. This reality both allows for the staged processing to function smoothly in the first place, and also suggests
+keeping in mind that Early-<i>capable</i> haXtags in non-page project files may <i>still</i> only process at page time.</p>
+<h3>For X-tags:</h3>
+<ul>
+	<li>Each built-in X-renderer {X|lx:index#doxindexlisting documents its render stage|} explicitly.</li>
+	<li>They can be {X|lt:p#delay force-delayed to Page stage|}.</li>
+</ul>

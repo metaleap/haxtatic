@@ -14,26 +14,21 @@
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
 		<label for="chk_showtoc">On this page:</label>
 		<ul>
-			<style type='text/css'>.hd-toc { display: none; }</style>
+			<li><a href="#Topics">Topics</a></li><li><a href="#Processing">Processing</a></li><li><a href="#Render stages">Render stages</a></li>
 		</ul>
 	</div>
 
 
 <!-- begins content source page -->
 <h1>haXtags</h1>
-	<p>Embed <i>HaXtatic</i> tags anywhere in source contents, <a href="../basics/tmplsnip.html">templates</a>, <a href="../basics/tmplsnip.html#snippets">snippets</a> or <a href="../basics/haxproj.html">*.haxproj</a>
-	files with a simple notation: <code>{<i>Prefix</i>|<i>Name</i>|<!---->}</code> or
+	<p class="up">Embed <i>HaXtatic</i> tags anywhere in source contents, <a href="../basics/tmplsnip.html">templates</a>, <a href="../basics/tmplsnip.html#snippets">snippets</a>
+	or <a href="../basics/haxproj.html">*.haxproj</a> files with a simple notation: <code>{<i>Prefix</i>|<i>Name</i>|<!---->}</code> or
 	<code>{<i>Prefix</i>|<i>Name</i>: <i>Args</i>|<!---->}</code>.</p>
 	<p>Example: <code>{P<!---->|date|<!---->}</code> outputs in-place the currently set <a href="../basics/datetime.html">page date</a> (using the
 	built-in fallback date-time format since none was specified in the tag) when it is processed: <span class="hd-note">2016-12-18</span>.</p>
-	<ul><li>All unprocessed haXtags (mispelled etc.) simply remain in the output, aiding swift detection<ul><li>(exception: some X-tags requiring
-		<a href="../basics/syntax.html">syntax</a> &mdash; if unprocessable <i>due to bad syntax</i>, these output error details)</li></ul></li>
-	<li>Any haXtags may embed/output any other haXtags freely both in their definitions and invocations but
-	<ul><li>an otherwise-correct outer tag will typically not render with a (directly embedded) unprocessable inner tag (a "known non-issue", incidentally helping ensure later-stage inner tags provide correct input to their outer tags)</li>
-	<li>a direct-or-indirect recursive self-reference (self-invocation inside the "defining portion" of a haXtag's related <a href="../basics/haxproj.html">declaration
-	directive</a>) will hang (and usually eventually prematurely abort with a <code>&lt;&lt;loop&gt;&gt;</code> farewell message) the entire generating process</li></ul></li>
-	<li>Available "prefixes" (or <i>haxTag types</i>) are (in order of simplicity) <b>T</b>, <b>B</b>, <b>P</b> and <b>X</b>:</li></ul>
-	<hr/>
+	<p>Available "prefixes" (or <i>haxTag types</i>) are (in order of simplicity) <b>T</b>, <b>B</b>, <b>P</b> and <b>X</b>:</p>
+	<h2 id="Topics">Topics</h2>
+	
 	<ul id="doxindexlisting" class="hd-feed"><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
@@ -64,6 +59,39 @@
 	<a class="hd-feed-title" href="../tags/x.html">X-tags: dynamic renderers</a>
 	<blockquote class="hd-feed-desc">An <code>{X<!---->| <i>..</i> |<!---->}</code> tag invokes a programmatic output renderer (aka.
 <a href="../xtypes/index.html">X-renderer</a>).</blockquote></li></ul>
+	
+	<h2 id="Processing">Processing</h2>
+	<ul><li>All unprocessed haXtags (mispelled etc.) simply remain in the output, aiding swift detection<ul><li>(exception: some
+		X-tags requiring <a href="../basics/syntax.html">syntax</a> &mdash; if unprocessable <i>due to bad syntax</i>, these output error details)
+		</li></ul></li>
+		<li>Any haXtags may embed/output any other haXtags freely both in their definitions and invocations but
+			<ul><li>an otherwise-correct outer tag will typically not render with a (directly embedded) unprocessable inner tag (a
+			"known non-issue", incidentally helping ensure <a href="#stages">later-stage</a> inner tags provide correct input to their
+			outer tags)</li>
+			<li>a direct-or-indirect recursive self-reference (self-invocation inside the "defining portion" of a haXtag's related
+			<a href="../basics/haxproj.html">declaration directive</a>) will hang (and usually eventually prematurely abort with a
+			<code>&lt;&lt;loop&gt;&gt;</code> farewell message) the entire generating process</li></ul></li>
+	</ul>
+	<span id="stages"><h2 id="Render stages">Render stages</h2></span>
+	<p>Unnecessary knowledge 99% of the time until running into <i>that one odd edge-case</i> where it'll help: a haXtag will
+	be processed during one of two possible (multi-pass each) "stages":</p>
+	<ul>
+		<li><b>Early stage</b> &mdash; during the loading of project files needed before even the first page can be generated:
+		<a href="../basics/haxproj.html">*.haxproj</a>, <a href="../basics/tmplsnip.html#snippets">snippets</a>, <a href="../basics/tmplsnip.html">templates</a></li>
+		<li><b>Page stage</b> &mdash; per generated file: all the haXtags contained in the current content source file, plus
+		any unprocessed left-overs from Early stage that come into play for this file and might now, with a page context
+		current, be able to produce output (if not <a href="#Processing">unprocessable</a>)</li>
+	</ul>
+	<p>Early stage by default: <a href="../tags/t.html">T-tags</a>, <i>named</i> <a href="../tags/b.html">B-tags</a>, <i>most</i> <a href="../tags/x.html">X-tags</a></p>
+	<p>Page stage by default: <a href="../tags/p.html">P-tags</a>, <i>unnamed</i> <a href="../tags/b.html">B-tags</a>, <i>a few</i> <a href="../tags/x.html">X-tags</a></p>
+	<p><a href="#Processing">Recall</a> that as a general rule, a directly embedded unprocessable inner tag prevents processing
+	of its outer tag. This reality both allows for the staged processing to function smoothly in the first place, and also suggests
+	keeping in mind that Early-<i>capable</i> haXtags in non-page project files may <i>still</i> only process at page time.</p>
+	<h3>For X-tags:</h3>
+	<ul>
+		<li>Each built-in X-renderer <a href="../xtypes/index.html#doxindexlisting">documents its render stage</a> explicitly.</li>
+		<li>They can be <a href="../tags/p.html#delay">force-delayed to Page stage</a>.</li>
+	</ul>
 <!-- end of content source page -->
 <a name="down"></a>
 </body></html>

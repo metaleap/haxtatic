@@ -40,10 +40,11 @@
 	If all pages exist next to each other at the site-root level anyway (micro-sites etc.), this isn't of course even needed.
 </p>
 <span id="delay">{X|h: Delaying X-tags|}</span>
-<p>By default, the built-in {X|lx:index X-renderers|} readily detect and decide autonomously whether to process an {X|lt:x X-tag|} as early as possible, or only once a page context is current (and each expressly documents this behavior).</p>
-<p>However, any X-tag can be forced to delay rendering until page time by wrapping it inside a P-tag, ie. turning <code>{X<!---->|<i> .. tag content .. </i>|<!---->}</code></p>
+<p class="hd-note">Except for rare intricate edge-cases, this is <b>typically neither necessary nor desirable</b>, but in any
+event always worth a try (to be undone later if possible) when investigating unexpected X-tag outputs.</p>
+<p>By default, the built-in {X|lx:index X-renderers|} readily detect and decide autonomously whether to process an {X|lt:x X-tag|} as {X|lt:index#stages early|} as possible, or only once a page context is current (and each expressly documents this behavior).</p>
+<p>However, any X-tag can be forced to delay rendering until {X|lt:index#stages page time|} by wrapping it inside a P-tag, ie. turning <code>{X<!---->|<i> .. tag content .. </i>|<!---->}</code></p>
 <ul>
 	<li>into <b>this</b>: <code>{P<!---->|X|<i> .. tag content .. </i>|<!---->}</code></li>
 	<li><b>not</b> this: <code>{P<!---->|{X<!---->|<i> .. tag content .. </i>|<!---->}|<!---->}</code></li>
 </ul>
-<p>Except for rare intricate edge-cases, this is <b>typically neither necessary nor desirable</b>, but in any event always worthwhile when investigating unexpected X-tag outputs.</p>
