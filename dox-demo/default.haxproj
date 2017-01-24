@@ -77,9 +77,9 @@ turn on whatever syntax highlighting for eased grokkage..
 
 
 |X|hax.image:doxpic: {P| /pics/otiosely/long/path |}: linkAtts=[], imgAtts=[]
-|X|hax.xmlEscape:&
+|X|hax.xmlEscape:xesc
 |X|hax.miniTag:c: code
-|X|hax.miniTag:h: h2: htmlAtts=[ ("id" , "{P|X|&:{%:content:%}|}") ]
+|X|hax.miniTag:h: h2: htmlAtts=[ ("id" , "{%:content:%}") ]
 |X|hax.miniTag:note: span: htmlAtts=[("class" , "hd-note")]
 |X|hax.link:lb: {P| /basics |}: htmlAtts = [] , htmlEsc = (False , False) , uriAutoExt = ".html"
 |X|hax.link:lt: {P| /tags |}: htmlAtts = [] , htmlEsc = (False , False) , uriAutoExt = ".html"
@@ -92,7 +92,9 @@ turn on whatever syntax highlighting for eased grokkage..
 	 wrapHref = ("{P|/" , "index.html|}")
 
 |X|hax.pageAnchors:doxpagetoc:h2:
-	considerEmpty = 1, htmlIfEmpty = "<style type='text/css'>.hd-toc { display: none; }</style>"
+	considerEmpty = 1,
+	outputIfEmpty = "<style type='text/css'>.hd-toc { display: none; }</style>",
+	xmlEscapeHrefAttr = False
 
 |X|hax.repeat:doxindex:
 	prefix = "<ul class=\"hd-feed\"><li>{", suffix = "}</li></ul>", joinwith = "}</li><li>{",
@@ -166,7 +168,7 @@ turn on whatever syntax highlighting for eased grokkage..
 |P|xdesc:
 	dt = "1234-07-15", cat = "pageAnchors", title = "", link = "",
 	more = [ ("declmore" , ":<i>gatherhtmltag</i>: <i>..</i>"),
-			 ("cfgmore" , "{X|c:considerEmpty|}, {X|c:htmlIfEmpty|}"),
+			 ("cfgmore" , "{X|c:considerEmpty|}, {X|c:outputIfEmpty|}, {X|c:xmlEscapeHrefAttr|}"),
 			 ("usage" , ":<i>outerhtmltag</i>: htmlAtts = [..]") ],
 	content=>
 	Outputs a sequence of {X|c: &lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt; |}, one

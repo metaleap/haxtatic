@@ -8,13 +8,13 @@
 </head><body>
     <h4>HaXtatic Docs</h4>
 	<ul class="hd-nav">
-<li class="hd-nav"><a href="../index.html">Intro</a></li><li class="hd-nav hd-nav-sel"><a href="../basics/index.html">Basics</a></li><li class="hd-nav"><a href="../tags/index.html">haXtags</a></li><li class="hd-nav"><a href="../xtypes/index.html">X-renderers</a></li>
+		<li class="hd-nav"><a href="../index.html">Intro</a></li><li class="hd-nav hd-nav-sel"><a href="../basics/index.html">Basics</a></li><li class="hd-nav"><a href="../tags/index.html">haXtags</a></li><li class="hd-nav"><a href="../xtypes/index.html">X-renderers</a></li>
 	</ul>
 	<div class="hd-toc">
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
 		<label for="chk_showtoc">On this page:</label>
 		<ul>
-<li><a href="#Directives">Directives</a></li><li><a href="#|T| directives: for text values">|T| directives: for text values</a></li><li><a href="#|B| directives: for &quot;Bloks&quot;">|B| directives: for "Bloks"</a></li><li><a href="#|X| directives: for rendering">|X| directives: for rendering</a></li><li><a href="#|P| directives: for &quot;postings&quot;">|P| directives: for "postings"</a></li><li><a href="#|C| directives: more control">|C| directives: more control</a></li>
+			<li><a href="#Directives">Directives</a></li><li><a href="#|T| directives: for text values">|T| directives: for text values</a></li><li><a href="#|B| directives: for &quot;Bloks&quot;">|B| directives: for &quot;Bloks&quot;</a></li><li><a href="#|X| directives: for rendering">|X| directives: for rendering</a></li><li><a href="#|P| directives: for &quot;postings&quot;">|P| directives: for &quot;postings&quot;</a></li><li><a href="#|C| directives: more control">|C| directives: more control</a></li>
 		</ul>
 	</div>
 
@@ -46,7 +46,7 @@
 	<li>Embed as <a href="../tags/t.html">T-tags</a> anywhere: <code>{T<!---->|<i>AuthBlurb</i>|<!---->}</code></li>
 	<li>Leading/trailing white-space is stripped of both the <i>name</i> and the <i>value</i>, which as shown are separated by the first colon encountered.</li>
 </ul>
-<span id="bdecl"><h2 id="|B| directives: for &quot;Bloks&quot;">|B| directives: for "Bloks"</h2></span>
+<span id="bdecl"><h2 id="|B| directives: for &quot;Bloks&quot;">|B| directives: for &quot;Bloks&quot;</h2></span>
 <p>
 	Just as <a href="#tdecl">|T| directives</a> consist of a <i>name</i> connected via a <code>&nbsp;:</code> to their <i>value</i>, so each and every <b>|B| directive</b> defines a <a href="../basics/bloks.html">Blok</a> <span class="hd-note">(a section-of-related-pages, or indeed a simple "poor-man's blog-of-sorts")</span> by connecting via a <code>&nbsp;:</code> that Blok's <i>name</i> to its properties &mdash; eg. here's how this site's current <a href="../basics/index.html">Basics</a></a> section (also just a "Blok") is (approximately, <a href="http://github.com/metaleap/haxtatic/blob/master/dox-demo/default.haxproj#L15">the original</a> includes <a href="../tags/index.html">haXtags</a>) defined:
 </p>
@@ -95,7 +95,8 @@
 
 |X|hax.pageAnchors:<i>doxpagetoc</i>:<i>h2</i>:
     considerEmpty = <i>1</i>,
-    htmlIfEmpty = <i>"&lt;style type='text/css'&gt;.hd-toc { display: none; }&lt;/style&gt;"</i>
+    outputIfEmpty = <i>"&lt;style type='text/css'&gt;.hd-toc { display: none; }&lt;/style&gt;"</i>,
+    xmlEscapeHrefAttr = False
 </pre>
 <p>
 	No particular <i>extra</i> effort here for all the individual content pages: these simply contain their chapter headings not as plain <code>&lt;h2&gt;</code> HTML tags but as <code>{X<!---->|h: Chapter Heading Here|<!---->}</code> X-tags instead (2 quick "find&amp;replace-in-folder" commands in any minimally capable text editor). Meanwhile just the <a href="../basics/tmplsnip.html">default.haxtmpl.html</a> employs a single <code>{X<!---->|doxpagetoc:li: htmlAtts = [] |<!---->}</code> X-tag to generate these desired <code>&lt;li&gt;&lt;a href=&quot;#...</code> outputs on all pages.
@@ -109,7 +110,7 @@
 	<li>In turn, usage of any <code>{X<!---->|</code> tag embedded anywhere begins with the very <i>custom tag name</i> from 2. (again, here <code>&nbsp;h</code> and <code>doxpagetoc</code>) pointing to the associated |X| directive, followed by a <code>&nbsp;:</code> and then possibly some further individually-varying X-renderer-specific per-instance settings notation (if any).</li>
 	<li>For the built-in X-renderers, both the per-tag settings (aka. tag config) and per-instantiation settings (aka. tag params) notation is (either one or the other but) usually a combination of:<ul><li>first, 1 or 2 colon-separated "flags" (such as <code>:h2:</code> and <code>:li:</code> above) and</li><li>next, the already familiar <code>name=<i>value</i>, ..</code> named properties, to which <a href="../basics/syntax.html">these stringent syntactic rules</a> strictly apply.</li></ul></li>
 </ol>
-<span id="pdecl"><h2 id="|P| directives: for &quot;postings&quot;">|P| directives: for "postings"</h2></span>
+<span id="pdecl"><h2 id="|P| directives: for &quot;postings&quot;">|P| directives: for &quot;postings&quot;</h2></span>
 <p>
 	Create "micro-content records" with <b>|P|</b> directives. All such "posts" are categorized first into "feed names" (or think arbitrary "primary category", really) and a further sub-level of "cat"(egory). The general format is as the following 2 examples illustrate:
 </p>

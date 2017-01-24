@@ -24,7 +24,7 @@
 	<li>Embed as {X|lt:t T-tags|} anywhere: <code>{T<!---->|<i>AuthBlurb</i>|<!---->}</code></li>
 	<li>Leading/trailing white-space is stripped of both the <i>name</i> and the <i>value</i>, which as shown are separated by the first colon encountered.</li>
 </ul>
-<span id="bdecl">{X|h: |B| directives: for "Bloks" |}</span>
+<span id="bdecl">{X|h: |B| directives: for &quot;Bloks&quot; |}</span>
 <p>
 	Just as <a href="#tdecl">|T| directives</a> consist of a <i>name</i> connected via a {X|c:&nbsp;:|} to their <i>value</i>, so each and every <b>|B| directive</b> defines a {X|lb:bloks Blok|} {X|note:(a section-of-related-pages, or indeed a simple "poor-man's blog-of-sorts")|} by connecting via a {X|c:&nbsp;:|} that Blok's <i>name</i> to its properties &mdash; eg. here's how this site's current {X|lb:index {B|title:basics|}|}</a> section (also just a "Blok") is (approximately, <a href="http://github.com/metaleap/haxtatic/blob/master/dox-demo/default.haxproj#L15">the original</a> includes {X|lt:index haXtags|}) defined:
 </p>
@@ -35,7 +35,7 @@
     blokIndexPageFile="<i>{B|blokIndexPageFile:basics|}</i>",
     inSitemap = <i>True</i>,
     desc=&gt;
-       <i>{X|&:{B|desc:basics|}|}</i>
+       <i>{X|xesc:{B|desc:basics|}|}</i>
 </pre>
 <p>{X|lb:syntax Stringent syntactic rules|} apply here! The properties in detail:</p>
 <ul>
@@ -63,7 +63,8 @@
 
 |X|hax.pageAnchors:<i>doxpagetoc</i>:<i>h2</i>:
     considerEmpty = <i>1</i>,
-    htmlIfEmpty = <i>"&lt;style type='text/css'&gt;.hd-toc { display: none; }&lt;/style&gt;"</i>
+    outputIfEmpty = <i>"&lt;style type='text/css'&gt;.hd-toc { display: none; }&lt;/style&gt;"</i>,
+    xmlEscapeHrefAttr = False
 </pre>
 <p>
 	No particular <i>extra</i> effort here for all the individual content pages: these simply contain their chapter headings not as plain {X|c:&lt;h2&gt;|} HTML tags but as <code>{X<!---->|h: Chapter Heading Here|<!---->}</code> X-tags instead (2 quick "find&amp;replace-in-folder" commands in any minimally capable text editor). Meanwhile just the {X|lb:tmplsnip default.haxtmpl.html|} employs a single <code>{X<!---->|doxpagetoc:li: htmlAtts = [] |<!---->}</code> X-tag to generate these desired {X|c: &lt;li&gt;&lt;a href=&quot;#... |} outputs on all pages.
@@ -77,7 +78,7 @@
 	<li>In turn, usage of any {X|c: {X<!---->||} tag embedded anywhere begins with the very <i>custom tag name</i> from 2. (again, here {X|c:&nbsp;h|} and {X|c:doxpagetoc|}) pointing to the associated |X| directive, followed by a {X|c:&nbsp;:|} and then possibly some further individually-varying X-renderer-specific per-instance settings notation (if any).</li>
 	<li>For the built-in X-renderers, both the per-tag settings (aka. tag config) and per-instantiation settings (aka. tag params) notation is (either one or the other but) usually a combination of:<ul><li>first, 1 or 2 colon-separated "flags" (such as {X|c::h2:|} and {X|c::li:|} above) and</li><li>next, the already familiar {X|c:name=<i>value</i>, .. |} named properties, to which {X|lb:syntax these stringent syntactic rules|} strictly apply.</li></ul></li>
 </ol>
-<span id="pdecl">{X|h: |P| directives: for "postings" |}</span>
+<span id="pdecl">{X|h: |P| directives: for &quot;postings&quot; |}</span>
 <p>
 	Create "micro-content records" with <b>|P|</b> directives. All such "posts" are categorized first into "feed names" (or think arbitrary "primary category", really) and a further sub-level of "cat"(egory). The general format is as the following 2 examples illustrate:
 </p>

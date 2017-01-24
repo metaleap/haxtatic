@@ -47,8 +47,9 @@
 	</li>
 </ul>
 {T|Xargs|}
-<p>No special tag parameters, no special content treatment: the entire X-tag content (ie. following the tag name such as above {X|c:phs|} and then {X|c:&nbsp;:|} colon, as in {X|c:{X<!---->|phs:<i>content</i>|<!---->}|}) is output as-is.</p>
+<p>No special tag parameters, no special content treatment: the entire X-tag content (ie. following the tag name such as above {X|c:phs|} and then {X|c:&nbsp;:|} colon, as in {X|c:{X<!---->|phs:<i>content</i>|<!---->}|}) is output as-is, inside the markup-language tag configured for the X-tag.</p>
 <p>
-	<b>Caution:</b> if no such X-tag <i>content</i> present, <i>nothing</i> is output at all, not even the intended HTML tag. This can
-	actually be desirable in certain scenarios of somewhat-dynamic tag contents &mdash; in any event, good to know.
+	<b>Caution:</b> if no such X-tag <i>content</i> is present, <i>nothing</i> is rendered out at all, not even the intended
+	(would-be empty) markup-language tag. This is by design and more often than not desirable especially in certain scenarios
+	of somewhat-dynamic tag contents.
 </p>

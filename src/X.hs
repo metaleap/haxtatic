@@ -92,7 +92,7 @@ parseProjChunks ctxproj projcfg xregisterers chunkssplits =
         ( tn , reg ) where
         reg = registerx ctxproj Named { xname = xn, tname = tn, parsingFailEarly = projcfg-:ProjC.parsingFailEarly,
                                         cfgFullStr = cfgstr, cfgSplitAll = tvals>~Util.trim,
-                                        cfgSplitOnce = Util.bothTrim (Util.splitOn1st_ ':' cfgstr) }
+                                        cfgSplitOnce = Util.both (Util.trimEnd , Util.trimStart) (Util.splitOn1st_ ':' cfgstr) }
         cfgstr = Util.trim$ Util.join ":" tvals
 
 
@@ -107,8 +107,8 @@ shouldWaitForPage Nothing needctxpage htmlattribs =
 tagHandler xtags ctxpage tagcontent =
     renderwhen$ Data.Map.Strict.lookup xtagname xtags
     where
-    renderargs = (ctxpage , Util.trim argstr)
-    (xtagname , argstr) = Util.both (Util.trimEnd , Util.trimStart) (Util.splitOn1st_ ':' tagcontent)
+    renderargs = (ctxpage , Util.trimStart argstr)
+    (xtagname , argstr) = (Util.splitOn1st_ ':' tagcontent) -- Util.both (Util.trimEnd , Util.trimStart)
 
     renderwhen (Just (Early xrend)) =
         xrend renderargs
