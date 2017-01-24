@@ -66,7 +66,7 @@
 		<li>
 			<a href="../xtypes/miniTag.html#decl">Declaration</a> of an <code>|X|hax.miniTag:<i>myTag</i>:<i>somehtmltag</i>: <i>..</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: <code>htmlAtts</code></li></ul>
+			<ul><li>further configuring: <code>attr</code></li></ul>
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i> tag's inner-markup content </i> |<!---->}</code></li>
 	</ol><h2 id="image">image</h2>
@@ -76,7 +76,7 @@
 		<li>
 			<a href="../xtypes/image.html#decl">Declaration</a> of an <code>|X|hax.image:<i>myTag</i>:<i>some/rel/base/path</i>: <i>..</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: <code>linkAtts</code>, <code>imgAtts</code></li></ul>
+			<ul><li>further configuring: <code>attrLink</code>, <code>attrImg</code></li></ul>
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i>rel-to-base/path/no/whitespace and optionally some description text</i> |<!---->}</code></li>
 	</ol><h2 id="xmlEscape">xmlEscape</h2>
@@ -97,7 +97,7 @@
 		<li>
 			<a href="../xtypes/link.html#decl">Declaration</a> of an <code>|X|hax.link:<i>myTag</i>:<i>some/rel/base/path</i>: <i>..</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: <code>htmlAtts</code> , <code>htmlEsc</code> , <code>uriAutoExt</code> </li></ul>
+			<ul><li>further configuring: <code>attr</code> , <code>xmlEscape</code> , <code>uriAutoExt</code> </li></ul>
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i>rel-to-base/path/no/whitespace and then the link text text</i> |<!---->}</code></li>
 	</ol><h2 id="links">links</h2>
@@ -108,9 +108,9 @@
 		<li>
 			<a href="../xtypes/links.html#decl">Declaration</a> of an <code>|X|hax.links:<i>myTag</i>:<i>outerhtmltag</i>: <i>..</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: <code>htmlAtts</code>, <code>itemsFirst</code>, <code>itemsLast</code>, <code>wrapHref</code></li></ul>
+			<ul><li>further configuring: <code>attr</code>, <code>itemsFirst</code>, <code>itemsLast</code>, <code>wrapHref</code></li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: items = [..] , htmlAtts = [..] |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: items = [..] , attr = [..] |<!---->}</code></li>
 	</ol><h2 id="pageAnchors">pageAnchors</h2>
 	<p class="up">Outputs a sequence of <code>&lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code>, one
 	per <code>&lt;<i>gatherhtmltag</i>&gt;</code> element found in the page's content source.</p>
@@ -119,9 +119,9 @@
 		<li>
 			<a href="../xtypes/pageAnchors.html#decl">Declaration</a> of an <code>|X|hax.pageAnchors:<i>myTag</i>:<i>gatherhtmltag</i>: <i>..</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: <code>considerEmpty</code>, <code>outputIfEmpty</code>, <code>xmlEscapeHrefAttr</code></li></ul>
+			<ul><li>further configuring: <code>considerEmpty</code>, <code>outputIfEmpty</code>, <code>xmlEscapeHref</code></li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i>outerhtmltag</i>: htmlAtts = [..] |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i>outerhtmltag</i>: attr = [..] |<!---->}</code></li>
 	</ol><h2 id="snippet">snippet</h2>
 	<p class="up">Outputs the content of the named snippet with the specified variable substitutions.</p>
 	
@@ -139,7 +139,7 @@
 		<li>
 			<a href="../xtypes/repeat.html#decl">Declaration</a> of an <code>|X|hax.repeat:<i>myTag</i>: <i>..</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: <code>prefix</code>, <code>suffix</code>, <code>joinwith</code>, <code>content</code></li></ul>
+			<ul><li>further configuring: <code>prefix</code>, <code>suffix</code>, <code>joinVia</code>, <code>content</code></li></ul>
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: over = .. , wrapEach = .. , order = .. , skip = .. , limit = .. , more = .. |<!---->}</code></li>
 	</ol>

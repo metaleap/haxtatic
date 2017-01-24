@@ -12,7 +12,7 @@ import qualified Data.List
 
 data Tag
     = Cfg {
-        htmlAtts :: Util.StringPairs
+        attr :: Util.StringPairs
     }
     deriving Read
 
@@ -31,7 +31,7 @@ registerX _ xreg =
     where
 
     (cfg_htmltagname , cfg_parsestr ) = xreg-:X.cfgSplitOnce
-    (cfgdynatts , cfghtmlatts) = (cfg-:htmlAtts) ~> (Data.List.partition $(Data.List.isInfixOf "{%:content:%}").snd)
+    (cfgdynatts , cfghtmlatts) = (cfg-:attr) ~> (Data.List.partition $(Data.List.isInfixOf "{%:content:%}").snd)
     cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where
-        defcfg = Cfg { htmlAtts = [] }
-        errcfg = Cfg { htmlAtts = X.htmlErrAttsCfg xreg }
+        defcfg = Cfg { attr = [] }
+        errcfg = Cfg { attr = X.htmlErrAttsCfg xreg }

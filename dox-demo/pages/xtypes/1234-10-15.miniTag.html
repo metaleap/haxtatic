@@ -18,9 +18,9 @@
 |X|hax.miniTag:<i>bq</i>: <i>blockquote</i>
 
 |X|hax.miniTag:<i>c</i>:
-    <i>code</i>: htmlAtts = []
+    <i>code</i>: attr = []
 
-|X|hax.miniTag:<i>phs</i>: <i>p</i>: htmlAtts
+|X|hax.miniTag:<i>phs</i>: <i>p</i>: attr
     = [ ("<i>class</i>" , "<i>my-para-highlighted my-smallerfont</i>"),
         ("<i>class</i>" , "<i>my-roundborder</i>") ]
 </pre>
@@ -35,7 +35,7 @@
 			<li>followed by a {X|c:&nbsp;:|} colon if an <b>optional</b> {X|lb:syntax syntax-sensitive|} properties block follows,
 			comprised of all of the following properties in this very order:
 				<ol>
-					<li>{X|c:htmlAtts = [ <i>..</i> ]|} &mdash; a List of all the tag attributes (each denoted in a
+					<li>{X|c:attr = [ <i>..</i> ]|} &mdash; a List of all the tag attributes (each denoted in a
 					{X|c:("<i>name</i>","<i>value</i>")|} pair) to <i>always</i> append to the markup-language tag output by all instances of this
 					X-tag <ul><li>The special attribute <i>value</i> {X|c:&nbsp;{<!---->%:content:%<!---->}|} will replicate the X-tag content inside this
 					attribute (not specially escaped &mdash; effect this by wrapping inside a {X|lt:p#delay page-delayed|} X-tag invoking

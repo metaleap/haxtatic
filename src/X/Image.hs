@@ -9,8 +9,8 @@ import qualified X
 
 data Tag =
     Cfg {
-        linkAtts :: Util.StringPairs,
-        imgAtts :: Util.StringPairs
+        attrLink :: Util.StringPairs,
+        attrImg :: Util.StringPairs
     }
     deriving Read
 
@@ -20,7 +20,7 @@ registerX _ xreg =
     renderer (_ , argstr) =
         Just$ Html.emit tag
         where
-        tag = if null (cfg-:linkAtts) then imgtag else lnktag
+        tag = if null (cfg-:attrLink) then imgtag else lnktag
         imgtag = Html.T "img" (cfgimgatts ++ (atts "src" "alt")) []
         lnktag = Html.T "a" (cfglinkatts ++ (atts "href" "title")) [imgtag]
         (imgsrc,imgdesc) = argsplit ~> Util.bothTrim
@@ -35,8 +35,8 @@ registerX _ xreg =
 
 
     (cfg_imgrelpath , cfg_parsestr) = xreg-:X.cfgSplitOnce
-    (cfgerrmsg , cfgimgatts) = Html.attrClearInner $cfg-:imgAtts
-    (_ , cfglinkatts) = Html.attrClearInner $cfg-:linkAtts
+    (cfgerrmsg , cfgimgatts) = Html.attrClearInner $cfg-:attrImg
+    (_ , cfglinkatts) = Html.attrClearInner $cfg-:attrLink
     cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where
-        defcfg = Cfg { linkAtts = [], imgAtts = [] }
-        errcfg = Cfg { linkAtts = [], imgAtts = X.htmlErrAttsCfg xreg }
+        defcfg = Cfg { attrLink = [], attrImg = [] }
+        errcfg = Cfg { attrLink = [], attrImg = X.htmlErrAttsCfg xreg }

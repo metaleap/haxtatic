@@ -76,17 +76,17 @@ turn on whatever syntax highlighting for eased grokkage..
 
 
 
-|X|hax.image:doxpic: {P| /pics/otiosely/long/path |}: linkAtts=[], imgAtts=[]
+|X|hax.image:doxpic: {P| /pics/otiosely/long/path |}: attrLink=[], attrImg=[]
 |X|hax.xmlEscape:xesc
 |X|hax.miniTag:c: code
-|X|hax.miniTag:h: h2: htmlAtts=[ ("id" , "{%:content:%}") ]
-|X|hax.miniTag:note: span: htmlAtts=[("class" , "hd-note")]
-|X|hax.link:lb: {P| /basics |}: htmlAtts = [] , htmlEsc = (False , False) , uriAutoExt = ".html"
-|X|hax.link:lt: {P| /tags |}: htmlAtts = [] , htmlEsc = (False , False) , uriAutoExt = ".html"
-|X|hax.link:lx: {P| /xtypes |}: htmlAtts = [] , htmlEsc = (False , False) , uriAutoExt = ".html"
+|X|hax.miniTag:h: h2: attr=[ ("id" , "{%:content:%}") ]
+|X|hax.miniTag:note: span: attr=[("class" , "hd-note")]
+|X|hax.link:lb: {P| /basics |}: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
+|X|hax.link:lt: {P| /tags |}: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
+|X|hax.link:lx: {P| /xtypes |}: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
 
 |X|hax.links:doxtopnav:li:
-	 htmlAtts = [("class","hd-nav"),("&class","hd-nav-sel")],
+	 attr = [("class","hd-nav"),("&class","hd-nav-sel")],
 		 itemsFirst = [("" , "Intro")],
 		 itemsLast = [("xtypes/" , "{B|title:xtypes|}")],
 	 wrapHref = ("{P|/" , "index.html|}")
@@ -94,14 +94,14 @@ turn on whatever syntax highlighting for eased grokkage..
 |X|hax.pageAnchors:doxpagetoc:h2:
 	considerEmpty = 1,
 	outputIfEmpty = "<style type='text/css'>.hd-toc { display: none; }</style>",
-	xmlEscapeHrefAttr = False
+	xmlEscapeHref = False
 
 |X|hax.repeat:doxindex:
-	prefix = "<ul id=\"doxindexlisting\" class=\"hd-feed\"><li>{", suffix = "}</li></ul>", joinwith = "}</li><li>{",
+	prefix = "<ul id=\"doxindexlisting\" class=\"hd-feed\"><li>{", suffix = "}</li></ul>", joinVia = "}</li><li>{",
 	content=""
 
 |X|hax.repeat:xdescs:
-	prefix = "{", suffix = "}", joinwith = "}{",
+	prefix = "{", suffix = "}", joinVia = "}{",
 	content = ""
 
 
@@ -126,7 +126,7 @@ turn on whatever syntax highlighting for eased grokkage..
 |P|xdesc:
 	dt = "1234-10-15", cat = "miniTag", title = "", link = "",
 	more = [ ("declmore" , ":<i>somehtmltag</i>: <i>..</i>"),
-			 ("cfgmore" , "{X|c:htmlAtts|}"),
+			 ("cfgmore" , "{X|c:attr|}"),
 			 ("usage" , ":<i> tag's inner-markup content </i>") ],
 	content=>
 	Outputs {X|c: &lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt; |}.
@@ -134,7 +134,7 @@ turn on whatever syntax highlighting for eased grokkage..
 |P|xdesc:
 	dt = "1234-09-15", cat = "image", title = "", link = "",
 	more = [ ("declmore" , ":<i>some/rel/base/path</i>: <i>..</i>"),
-			 ("cfgmore" , "{X|c:linkAtts|}, {X|c:imgAtts|}"),
+			 ("cfgmore" , "{X|c:attrLink|}, {X|c:attrImg|}"),
 			 ("usage" , ":<i>rel-to-base/path/no/whitespace and optionally some description text</i>") ],
 	content=>
 	Outputs {X|c: &lt;img <i>..</i> /&gt; |} or {X|c: &lt;a <i>..</i>&gt;&lt;img <i>..</i> /&gt;&lt;/a&gt; |}.
@@ -151,7 +151,7 @@ turn on whatever syntax highlighting for eased grokkage..
 |P|xdesc:
 	dt = "1234-08-25", cat = "link", title = "", link = "",
 	more = [ ("declmore" , ":<i>some/rel/base/path</i>: <i>..</i>"),
-			 ("cfgmore" , "{X|c:htmlAtts|} , {X|c:htmlEsc|} , {X|c:uriAutoExt|} "),
+			 ("cfgmore" , "{X|c:attr|} , {X|c:xmlEscape|} , {X|c:uriAutoExt|} "),
 			 ("usage" , ":<i>rel-to-base/path/no/whitespace and then the link text text</i>") ],
 	content=>
 	Outputs {X|c: &lt;a <i>..</i>&gt;<i>..</i>&lt;/a&gt; |}.
@@ -159,8 +159,8 @@ turn on whatever syntax highlighting for eased grokkage..
 |P|xdesc:
 	dt = "1234-08-15", cat = "links", title = "", link = "",
 	more = [ ("declmore" , ":<i>outerhtmltag</i>: <i>..</i>"),
-			 ("cfgmore" , "{X|c:htmlAtts|}, {X|c:itemsFirst|}, {X|c:itemsLast|}, {X|c:wrapHref|}"),
-			 ("usage" , ": items = [..] , htmlAtts = [..]") ],
+			 ("cfgmore" , "{X|c:attr|}, {X|c:itemsFirst|}, {X|c:itemsLast|}, {X|c:wrapHref|}"),
+			 ("usage" , ": items = [..] , attr = [..]") ],
 	content=>
 	Outputs a sequence of {X|c: &lt;a ..&gt; .. &lt;/a&gt; |} or
 	{X|c: &lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt; |} in a uniform manner.
@@ -168,8 +168,8 @@ turn on whatever syntax highlighting for eased grokkage..
 |P|xdesc:
 	dt = "1234-07-15", cat = "pageAnchors", title = "", link = "",
 	more = [ ("declmore" , ":<i>gatherhtmltag</i>: <i>..</i>"),
-			 ("cfgmore" , "{X|c:considerEmpty|}, {X|c:outputIfEmpty|}, {X|c:xmlEscapeHrefAttr|}"),
-			 ("usage" , ":<i>outerhtmltag</i>: htmlAtts = [..]") ],
+			 ("cfgmore" , "{X|c:considerEmpty|}, {X|c:outputIfEmpty|}, {X|c:xmlEscapeHref|}"),
+			 ("usage" , ":<i>outerhtmltag</i>: attr = [..]") ],
 	content=>
 	Outputs a sequence of {X|c: &lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt; |}, one
 	per {X|c: &lt;<i>gatherhtmltag</i>&gt; |} element found in the page's content source.
@@ -185,7 +185,7 @@ turn on whatever syntax highlighting for eased grokkage..
 |P|xdesc:
 	dt = "1234-05-15", cat = "repeat", title = "", link = "",
 	more = [ ("declmore" , ": <i>..</i>"),
-			 ("cfgmore" , "{X|c:prefix|}, {X|c:suffix|}, {X|c:joinwith|}, {X|c:content|}"),
+			 ("cfgmore" , "{X|c:prefix|}, {X|c:suffix|}, {X|c:joinVia|}, {X|c:content|}"),
 			 ("usage" , ": over = .. , wrapEach = .. , order = .. , skip = .. , limit = .. , more = ..") ],
 	content=>
 	Outputs a sequence of contents enumerated by the specified iterator.

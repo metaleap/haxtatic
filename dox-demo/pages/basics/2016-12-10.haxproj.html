@@ -39,14 +39,15 @@
 </pre>
 <p>{X|lb:syntax Stringent syntactic rules|} apply here! The properties in detail:</p>
 <ul>
-	<li>{X|c:title|} and {X|c:desc|} &mdash; self-explanatory, and used (for one) in the associated generated files, if any:</li>
+	<li>{X|c:title|} and {X|c:desc|} &mdash; self-explanatory, and used (for one) in these associated {X|lb:bloks auto-generated
+	files|}, if any:</li>
 	<li>{X|c:atomFile|} and {X|c:blokIndexPageFile|} both describe a site-root-relative (aka. <i>build</i>-directory-relative) file path and if empty, these files will not be generated.</li>
 	<li>{X|c:inSitemap|} includes or excludes <i>all</i> pages associated with this Blok in/from the generated {X|lb:xmlfiles sitemap.xml|} (if any)</li>
 </ul>
 <p class="hd-note">The values set for the above properties can be output anywhere via {X|lt:b B-tags|} &mdash; so in essence each <b>|B|</b> directive automatically defines 5 uniquely distinct B-tags.</p>
 <span id="xdecl">{X|h: |X| directives: for rendering |}</span>
 <p>
-	Just as a <a href="#tdecl">|T| directive</a> in essence defines a uniquely distinct {X|lt:t T-tag|} each that can be embedded many times anywhere (to effect in-place text substitution), so each and every <b>|X| directive</b> in essence defines a uniquely distinct {X|lt:x X-tag|} that can be embedded many times anywhere (to effect in-place output rendering by some custom logic).
+	Just as each <a href="#tdecl">|T| directive</a> practically defines a uniquely distinct {X|lt:t T-tag|} each that can be embedded many times anywhere (to effect in-place text substitution), so each and every <b>|X| directive</b> in essence defines a uniquely distinct {X|lt:x X-tag|} that can be embedded many times anywhere (to effect in-place output rendering by some custom logic).
 </p>
 <p>
 	That is to say: with {X|c:|X|<i>x-renderer-type</i>:<i>mytagname</i>: ..|} we declare that {X|c:{X<!---->|mytagname: ..|<!---->}|} encountered <i>anywhere</i> will during processing invoke the {X|lx:index X-renderer|} <i>x-renderer-type</i> with the defined properties in effect.
@@ -59,24 +60,24 @@
 </p>
 <pre>
 |X|hax.miniTag:<i>h</i>:<i>h2</i>:
-    htmlAtts=<i>[("id","{%:content:%}")]</i>
+    attr=<i>[("id","{%:content:%}")]</i>
 
 |X|hax.pageAnchors:<i>doxpagetoc</i>:<i>h2</i>:
     considerEmpty = <i>1</i>,
     outputIfEmpty = <i>"&lt;style type='text/css'&gt;.hd-toc { display: none; }&lt;/style&gt;"</i>,
-    xmlEscapeHrefAttr = False
+    xmlEscapeHref = False
 </pre>
 <p>
-	No particular <i>extra</i> effort here for all the individual content pages: these simply contain their chapter headings not as plain {X|c:&lt;h2&gt;|} HTML tags but as <code>{X<!---->|h: Chapter Heading Here|<!---->}</code> X-tags instead (2 quick "find&amp;replace-in-folder" commands in any minimally capable text editor). Meanwhile just the {X|lb:tmplsnip default.haxtmpl.html|} employs a single <code>{X<!---->|doxpagetoc:li: htmlAtts = [] |<!---->}</code> X-tag to generate these desired {X|c: &lt;li&gt;&lt;a href=&quot;#... |} outputs on all pages.
+	No particularly <i>substantial</i> extra effort here for all the individual content pages: these simply contain their chapter headings not as plain {X|c:&lt;h2&gt;|} HTML tags but as <code>{X<!---->|h: Chapter Heading Here|<!---->}</code> X-tags instead (2 quick "find&amp;replace-in-folders" commands in any minimally capable text editor if this change is introduced late). Meanwhile just the {X|lb:tmplsnip default.haxtmpl.html|} employs a single <code>{X<!---->|doxpagetoc:li: attr = [] |<!---->}</code> X-tag to dynamically produce these desired, page-content-specific {X|c: &lt;li&gt;&lt;a href=&quot;#... |} outputs in all generated pages.
 </p>
 <h3>To recapitulate</h3>
 <p>what becomes immediately apparent from just this example:</p>
 <ol>
 	<li>Specify first the X-renderer type (here {X|c:hax.miniTag|} and {X|c:hax.pageAnchors|})</li>
 	<li>followed by a {X|c:&nbsp;:|} and a <i>custom (X-)tag name</i> (here {X|c:&nbsp;h|} and {X|c:doxpagetoc|}) and another {X|c:&nbsp;:|}</li>
-	<li>followed by some individually-varying X-renderer-specific settings notation that each X-renderer defines and {X|lx:index documents|} separately.</li>
-	<li>In turn, usage of any {X|c: {X<!---->||} tag embedded anywhere begins with the very <i>custom tag name</i> from 2. (again, here {X|c:&nbsp;h|} and {X|c:doxpagetoc|}) pointing to the associated |X| directive, followed by a {X|c:&nbsp;:|} and then possibly some further individually-varying X-renderer-specific per-instance settings notation (if any).</li>
-	<li>For the built-in X-renderers, both the per-tag settings (aka. tag config) and per-instantiation settings (aka. tag params) notation is (either one or the other but) usually a combination of:<ul><li>first, 1 or 2 colon-separated "flags" (such as {X|c::h2:|} and {X|c::li:|} above) and</li><li>next, the already familiar {X|c:name=<i>value</i>, .. |} named properties, to which {X|lb:syntax these stringent syntactic rules|} strictly apply.</li></ul></li>
+	<li>followed by some individually-varying X-renderer-specific settings notation (aka. tag config) that each X-renderer defines and {X|lx:index documents|} separately.</li>
+	<li>In turn, usage of any {X|c: {X<!---->||} tag embedded anywhere begins with the very <i>custom tag name</i> from 2. (again, here {X|c:&nbsp;h|} and {X|c:doxpagetoc|}) pointing to the associated |X| directive, followed by a {X|c:&nbsp;:|} and then possibly some further individually-varying X-renderer-specific per-instance settings notation (aka. tag params), if any.</li>
+	<li>For the built-in X-renderers, both the per-tag settings (aka. tag config) and per-instantiation settings (aka. tag params) notation is (either one or the other but) usually a combination of:<ul><li>first, 1 or 2 colon-separated "flags" (such as {X|c::h2:|} and {X|c::li:|} above) and</li><li>next, a block of the <a href="#bdecl">already familiar</a> {X|c:name=<i>value</i>, .. |} <i>named properties</i>, to which {X|lb:syntax these stringent syntactic rules|} strictly apply.</li></ul></li>
 </ol>
 <span id="pdecl">{X|h: |P| directives: for &quot;postings&quot; |}</span>
 <p>
@@ -136,6 +137,7 @@
 </pre>
 <p>For any such {X|c:|C|process:|} directive:</p>
 <ul>
+	<li>{X|lb:syntax Stringent syntactic rules|} apply here.</li>
 	<li>{X|c:dirs|} to specify the list of <i>names</i> (not patterns or paths) of all direct sub-directories (situated inside the project directory) to source contents from. If empty {X|c:&nbsp;[]|}, defaults to <i>pages</i> for {X|c:|C|process:pages:|} and to <i>static</i> for {X|c:|C|process:static:|}.</li>
 	<li>{X|c:skip|} to specify a list of "simpleton file name (not path) patterns" designating which files to <b>always-skip</b> during processing, regardless of current file modification timestamps. {X|note:(A "simpleton" pattern either begins with, or ends with, or both, or is devoid of, or consists entirely of an {X|c:&nbsp;*|} and interprets no other wildcards or wildcard placements.)|}</li>
 	<li>{X|c:force|} to specify a list of "simpleton file name (not path) patterns" designating which files to <b>always force</b> processing for, regardless of current file modification timestamps.</li>

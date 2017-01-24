@@ -10,8 +10,8 @@ import qualified X
 
 data Tag =
     Cfg {
-        htmlAtts :: Util.StringPairs,
-        htmlEsc :: (Bool , Bool),
+        attr :: Util.StringPairs,
+        xmlEscape :: (Bool , Bool),
         uriAutoExt :: String
     }
     deriving Read
@@ -42,11 +42,12 @@ registerX _ xreg =
             let (hrefpath , hrefanchor) = Util.splitOn1st '#' href
             in (Files.ensureFileExt False ext hrefpath) ++ (null hrefanchor |? "" |! ('#':hrefanchor))
     htmlescape =
-        htmlesc $cfg-:htmlEsc where
+        htmlesc $cfg-:xmlEscape where
         htmlesc (False , False) = id
+        htmlesc (True , True) = Util.both' Html.escape
         htmlesc (forhref , fortext) = Util.both ((forhref |? Html.escape |! id) , (fortext |? Html.escape |! id))
     (cfg_relpath , cfg_parsestr) = xreg-:X.cfgSplitOnce
-    (cfgerrmsg , cfglinkatts) = Html.attrClearInner $cfg-:htmlAtts
+    (cfgerrmsg , cfglinkatts) = Html.attrClearInner $cfg-:attr
     cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where
-        defcfg = Cfg { htmlAtts = [] , htmlEsc = (False , False) , uriAutoExt = "" }
-        errcfg = Cfg { htmlAtts = X.htmlErrAttsCfg xreg , htmlEsc = (False , False) , uriAutoExt = "" }
+        defcfg = Cfg { attr = [] , xmlEscape = (False , False) , uriAutoExt = "" }
+        errcfg = Cfg { attr = X.htmlErrAttsCfg xreg , xmlEscape = (False , False) , uriAutoExt = "" }

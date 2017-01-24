@@ -11,14 +11,14 @@ import qualified X
 
 data Tag =
     Cfg {
-        htmlAtts :: Util.StringPairs,
+        attr :: Util.StringPairs,
         itemsFirst :: Util.StringPairs,
         itemsLast :: Util.StringPairs,
         wrapHref :: (String , String)
     }
     | Args {
         items :: Util.StringPairs,
-        htmlAtts :: Util.StringPairs
+        attr :: Util.StringPairs
     }
     deriving Read
 
@@ -30,10 +30,10 @@ registerX _ xreg =
         if waitforpage then Nothing
             else Just$ combine allitems
         where
-        allitems = htmlout (args-:htmlAtts ++ cfghtmlatts) (args-:items)
+        allitems = htmlout (args-:attr ++ cfghtmlatts) (args-:items)
         args = X.tryParseArgs xreg argstr
-                {-empty-} (Just Args { items = [], htmlAtts = [] })
-                {-error-} (Args { items = ["#"=:""], htmlAtts = X.htmlErrAttsArgs (xreg , Util.excerpt 23 argstr) })
+                {-empty-} (Just Args { items = [], attr = [] })
+                {-error-} (Args { items = ["#"=:""], attr = X.htmlErrAttsArgs (xreg , Util.excerpt 23 argstr) })
 
         htmlout atts argitems =
             argitems>~(foreach atts) ~> concat
@@ -58,7 +58,7 @@ registerX _ xreg =
         waitforpage =
             (X.hasNoPageContext maybectxpage) && (needpage4cfg || needpage4args)
             where
-            needpage4args = (X.htmlAttsNeedPage $args-:htmlAtts) || (needpage $args-:htmlAtts)
+            needpage4args = (X.htmlAttsNeedPage $args-:attr) || (needpage $args-:attr)
 
     in X.EarlyOrWait renderer
     where
@@ -70,9 +70,9 @@ registerX _ xreg =
         ispathconditional _ = False
     needpage4cfg = X.htmlAttsNeedPage cfghtmlatts || needpage cfghtmlatts
     (cfg_htmltagname , cfg_parsestr) = xreg-:X.cfgSplitOnce
-    cfghtmlatts =  cfg-:htmlAtts
+    cfghtmlatts =  cfg-:attr
     cfgwraphref = cfg-:wrapHref ~> \(w1,w2) -> (w1++).(++w2)
     cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where
-        defcfg = Cfg { htmlAtts = [], itemsFirst = [], itemsLast = [], wrapHref = ("","") }
-        errcfg = Cfg { htmlAtts = X.htmlErrAttsCfg xreg,
+        defcfg = Cfg { attr = [], itemsFirst = [], itemsLast = [], wrapHref = ("","") }
+        errcfg = Cfg { attr = X.htmlErrAttsCfg xreg,
                         itemsFirst = ["#"=:""], itemsLast = [], wrapHref = ("","") }

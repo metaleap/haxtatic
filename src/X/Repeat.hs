@@ -17,7 +17,7 @@ data Tag
     = Cfg {
         prefix :: String,
         suffix :: String,
-        joinwith :: String,
+        joinVia :: String,
         content :: String
     }
     | Args {
@@ -34,8 +34,8 @@ data Tag
 data Iterate
     = Range Int Int
     | Values [String]
-    | Bloks
-    | Feeds
+    | BlokNames
+    | FeedNames
     | FeedGroups (Maybe Posts.Query) String
     | FeedPosts (Maybe Posts.Query) String Util.StringPairs
     deriving Read
@@ -56,7 +56,7 @@ registerX ctxproj xreg =
         if waitforpage then Nothing
             else Just$ (cfg-:prefix) ++ allcontents ++ (cfg-:suffix)
         where
-        allcontents = Util.join (cfg-:joinwith) (iteratees >~ (foreach $cfg-:content))
+        allcontents = Util.join (cfg-:joinVia) (iteratees >~ (foreach $cfg-:content))
 
         foreach "" (_,v) = v ; foreach "{%v%}" (_,v) = v ; foreach "{%i%}" (i,_) = show i
         foreach cfgcontent (i,v) = Util.replaceSubsFew ["{%i%}" =: show i , "{%v%}" =: v] cfgcontent
@@ -66,9 +66,9 @@ registerX ctxproj xreg =
                 ordered$ values >~ wrapped
             iter (Range from to) =
                 ordered$ [from..to] >~ (show~.wrapped)
-            iter Bloks =
+            iter BlokNames =
                 ordered$ projbloknames >~ wrapped
-            iter Feeds =
+            iter FeedNames =
                 ordered$ (projfeednames ++ projbloknames)
                             >~ wrapped
             iter (FeedGroups maybequery fieldname) =
@@ -139,5 +139,5 @@ registerX ctxproj xreg =
     projbloknames = Data.Map.Strict.keys projbloks
     cfg_parsestr = Tmpl.fixParseStr "content" (xreg-:X.cfgFullStr)
     cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where
-        defcfg = Cfg { prefix = "" , suffix = "" , joinwith = "" , content = "" }
-        errcfg = Cfg { prefix = X.htmlErr (X.clarifyParseCfgError xreg) , suffix = "" , joinwith = "" , content = "" }
+        defcfg = Cfg { prefix = "" , suffix = "" , joinVia = "" , content = "" }
+        errcfg = Cfg { prefix = X.htmlErr (X.clarifyParseCfgError xreg) , suffix = "" , joinVia = "" , content = "" }
