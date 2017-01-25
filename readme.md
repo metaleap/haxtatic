@@ -8,4 +8,5 @@
 
 ## In the `old-sloppy-messy-v0` branch:
 
-The first iteration of this, as a lasting example of a slow unmaintainable and overall verging-on-hideous Haskell-n°°b code base. Many lessons were learned!
+The first iteration of this, as a lasting example of a slow unmaintainable and
+overall verging-on-hideous Haskell-n°°b code base. Many lessons learned.

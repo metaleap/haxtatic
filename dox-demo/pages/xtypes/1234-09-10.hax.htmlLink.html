@@ -1,2 +1,51 @@
 {X|dox-xthead|}
 {T|Xearly|}
+{T|Xpurpose|}
+<p>
+	In a similar spirit to {X|lx:hax.miniTag hax.miniTag|} and {X|lx:hax.htmlImage hax.htmlImage|}, this one is for saving precious
+	keystrokes with {X|c:&lt;a ..&gt;|}-rich HTML contents requiring repetetive use of quickly-becoming-too-verbose markup.
+</p>
+{T|Xcfg|}
+{T|Xdecl|}
+<pre>
+|X|hax.htmlLink:<i>lb</i>: <i>{P<!---->|/basics|<!---->}</i>
+
+|X|hax.htmlLink:<i>lt</i>: <i>/tags</i>:
+	attr = [ <i>("class",
+	"foo-sitelink")</i>],
+	xmlEscape =
+	<i>(True , False)</i>,
+	uriAutoExt = <i>".html"</i>
+
+|X|hax.htmlLink: <i>lx</i>:
+	<i>../xtypes/</i>
+</pre>
+{P|X|dox-xtdecl:	vars= [	("xn" , "hax.htmlLink"),
+							("xf" , "The relative base path for all links from this X-tag (here
+										{X|c:../xtypes|}),")
+							],
+					flags = [],
+					content=>
+	<li>{X|c:attr = [ <i>..</i> ]|} &mdash; a List of all the tag attributes (each denoted in a {X|c:("<i>name</i>","<i>value</i>")|}
+	pair) to <i>always</i> append (in addition to automatic {X|c:href|}) to the {X|c:&lt;a&gt;|} output by all instances of this
+	X-tag</li>
+	<li>{X|c:xmlEscape = (.. , ..)|} &mdash; a tuple of 2 toggles (the first for the {X|c:href|} and the second for the inner
+	content of the {X|c:&lt;a&gt;|} output by all instances of this X-tag) indicating whether to auto-HTML/XML-escape
+	({X|c:True|}) or not ({X|c:False|})</li>
+	<li>{X|c:uriAutoExt = "<i>..</i>"|} &mdash; either {X|c:&nbsp;&quot;&quot;|} (empty) or a file name extension to <i>always</i>
+	append (if missing) to the part of {X|c:href|} prior to {X|c:&nbsp;#|} of the {X|c:&lt;a&gt;|} output by all instances of this
+	X-tag</li>
+
+|}
+{T|Xargs|}
+<p>
+	Usage for the above example: {X|c: {X<!---->|lx:<i>hax.htmlLink.html#args Invocation / Parameters</i> |<!---->} |} would output
+	{X|c: &lt;a href="<i>../xtypes/hax.htmlLink.html#args</i>"&gt;Invocation / Parameters&lt;/a&gt; |}
+	&mdash; it follows that:
+</p>
+<ul>
+	<li>the (X-tag-)relative URI path comes first, followed by</li>
+	<li>a <b>white-space</b> and the link element's inner content;</li>
+	<li>any white-space in the URI path is to be replaced, as is standard, with {X|c:%20|};</li>
+	<li>if {X|c:xmlEscape|} is {X|c:False|} for {X|c:href|}, take care that the combined URI will be HTML-escaped</li>
+</ul>

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
     <url>
+        <loc>http://dox-demo/xtypes/hax.htmlLink.html</loc>
+        <lastmod>1234-09-10</lastmod>
+        <priority>0.4</priority>
+    </url><url>
         <loc>http://dox-demo/xtypes/hax.htmlImage.html</loc>
         <lastmod>1234-08-20</lastmod>
         <priority>0.4</priority>
@@ -11,10 +15,6 @@
     </url><url>
         <loc>http://dox-demo/xtypes/hax.xmlEscape.html</loc>
         <lastmod>1234-09-20</lastmod>
-        <priority>0.4</priority>
-    </url><url>
-        <loc>http://dox-demo/xtypes/hax.htmlLink.html</loc>
-        <lastmod>1234-09-10</lastmod>
         <priority>0.4</priority>
     </url><url>
         <loc>http://dox-demo/xtypes/hax.htmlLinks.html</loc>
@@ -57,6 +57,10 @@
         <lastmod>2016-12-15</lastmod>
         <priority>0.5</priority>
     </url><url>
+        <loc>http://dox-demo/basics/haxproj.html</loc>
+        <lastmod>2016-12-10</lastmod>
+        <priority>0.5</priority>
+    </url><url>
         <loc>http://dox-demo/basics/projdir.html</loc>
         <lastmod>2016-12-21</lastmod>
         <priority>0.5</priority>
@@ -73,10 +77,6 @@
         <lastmod>2016-12-14</lastmod>
         <priority>0.5</priority>
     </url><url>
-        <loc>http://dox-demo/basics/haxproj.html</loc>
-        <lastmod>2016-12-10</lastmod>
-        <priority>0.5</priority>
-    </url><url>
         <loc>http://dox-demo/basics/namedsetups.html</loc>
         <lastmod>2016-12-05</lastmod>
         <priority>0.5</priority>
@@ -90,7 +90,7 @@
         <priority>0.5</priority>
     </url><url>
         <loc>http://dox-demo/index.html</loc>
-        <lastmod>2017-01-24</lastmod>
+        <lastmod>2017-01-25</lastmod>
         <priority>1.0</priority>
     </url><url>
         <loc>http://dox-demo/basics/index.html</loc>

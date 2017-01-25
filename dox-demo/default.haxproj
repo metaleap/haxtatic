@@ -78,6 +78,9 @@ turn on whatever syntax highlighting for eased grokkage..
 |T|Xpurpose:		{X|h: Purpose |}
 |T|Xcfg:			<span id="decl">{X|h: Declaration / Configuration |}</span>
 |T|Xargs:			<span id="args">{X|h: Invocation / Parameters |}</span>
+|T|Xdecl:			<p>To demonstrate valid {X|lb:haxproj#xdecl *.haxproj|} directives declaring <i>{P|fileBaseName|}</i>
+					{X|lt:x X-tags|}:</p>
+
 
 
 
@@ -87,9 +90,12 @@ turn on whatever syntax highlighting for eased grokkage..
 |X|hax.miniTag:h: h2: attr=[ ("id" , "{%:content:%}") ]
 |X|hax.miniTag:note: span: attr=[("class" , "hd-note")]
 |X|hax.miniTag:xli: li
-|X|hax.htmlLink:lb: {P| /basics |}: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
-|X|hax.htmlLink:lt: {P| /tags |}: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
-|X|hax.htmlLink:lx: {P| /xtypes |}: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
+|X|hax.htmlLink:lb: ../basics: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
+|X|hax.htmlLink:lt: ../tags: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
+|X|hax.htmlLink:lx: ../xtypes: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
+|X|hax.htmlLink:_lb: basics: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
+|X|hax.htmlLink:_lt: tags: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
+|X|hax.htmlLink:_lx: xtypes: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
 
 |X|hax.htmlLinks:doxtopnav:li:
 	 attr = [("class","hd-nav"),("&class","hd-nav-sel")],
