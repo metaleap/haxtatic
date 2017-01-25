@@ -14,7 +14,7 @@
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
 		<label for="chk_showtoc">On this page:</label>
 		<ul>
-			<style type='text/css'>.hd-toc { display: none; }</style>
+			<li><a href="#In a nutshell">In a nutshell</a></li><li><a href="#Purpose">Purpose</a></li><li><a href="#Declaration / Configuration">Declaration / Configuration</a></li><li><a href="#Invocation / Parameters">Invocation / Parameters</a></li>
 		</ul>
 	</div>
 
@@ -33,11 +33,29 @@
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: items = [..] , attr = [..] |<!---->}</code></li>
 	</ol>
+<p class="hd-note">This topic is in a compact format for users already familiar with the essentials of
+					<a href="../basics/haxproj.html#xdecl">declaring</a> X-tags and invoking them. If found challenging, return to the
+					<a href="../xtypes/hax.miniTag.html">more</a> <a href="../xtypes/hax.htmlImage.html">exhaustive</a>, <a href="../xtypes/hax.htmlLink.html">more</a>
+					<a href="../xtypes/hax.xmlEscape.html">introductory</a> topics for a better grasp on the basics and overall mechanisms.</p>
 <h3>Stage:</h3><p><a href="../tags/index.html#stages">Early or Page</a> &mdash; this X-renderer determines dynamically whether or not
 					it requires a page context for rendering: so some <i>hax.htmlLinks</i>-invoking X-tags encountered during
 					pre-templating (at start-up time) may be <a href="../tags/index.html#Processing">processed</a> eagerly (for overall-reduced per-page
 					processing load), and others may be skipped over and thus delayed until page time &mdash; depending on the X-tag's
 					configuration and/or parameters.</p>
+<h2 id="Purpose">Purpose</h2>
+<span id="decl"><h2 id="Declaration / Configuration">Declaration / Configuration</h2></span>
+<p>To demonstrate valid <a href="../basics/haxproj.html#xdecl">*.haxproj</a> directives declaring <i>hax.htmlLinks</i>
+					<a href="../tags/x.html">X-tags</a>:</p>
+<pre>
+|X|hax.htmlLinks:<i>mysidenav</i>:<i>li</i>
+
+|X|hax.htmlLinks:<i>mytopnav</i>:<i>div</i>:
+	attr= [ <i>("class","my-nav") , ("&class","my-nav-sel")</i> ],
+	itemsFirst =[ <i>("","Home")</i> ],
+	itemsLast = [<i>("/blog","{T|myBlog|}")</i>],
+	wrapHref = (<i>"/"</i> , <i>"/index.html"</i>)
+</pre>
+<span id="args"><h2 id="Invocation / Parameters">Invocation / Parameters</h2></span>
 
 <!-- end of content source page -->
 <a name="down"></a>

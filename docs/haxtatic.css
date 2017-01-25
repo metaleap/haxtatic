@@ -39,7 +39,10 @@ code, pre {
 	display: inline-block;
 }
 pre {
-	white-space: pre-wrap;
+	white-space: pre;
+	min-width: 98%;
+	max-width: 99%;
+	overflow: scroll;
 }
 code {
 	padding: 0 0.22em 0 2.22em;

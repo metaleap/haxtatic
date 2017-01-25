@@ -80,6 +80,10 @@ turn on whatever syntax highlighting for eased grokkage..
 |T|Xargs:			<span id="args">{X|h: Invocation / Parameters |}</span>
 |T|Xdecl:			<p>To demonstrate valid {X|lb:haxproj#xdecl *.haxproj|} directives declaring <i>{P|fileBaseName|}</i>
 					{X|lt:x X-tags|}:</p>
+|T|Xcompact:		<p class="hd-note">This topic is in a compact format for users already familiar with the essentials of
+					{X|lb:haxproj#xdecl declaring|} X-tags and invoking them. If found challenging, return to the
+					{X|lx:hax.miniTag more|} {X|lx:hax.htmlImage exhaustive|}, {X|lx:hax.htmlLink more|}
+					{X|lx:hax.xmlEscape introductory|} topics for a better grasp on the basics and overall mechanisms.</p>
 
 
 
