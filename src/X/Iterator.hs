@@ -34,6 +34,7 @@ data Iteration
     | FeedGroups (Maybe Posts.Query) String
     | FeedPosts (Maybe Posts.Query) String [String]
     | But Tweak Iteration
+    | With Iteration [Tweak]
     deriving Read
 
 
@@ -64,6 +65,8 @@ registerX ctxproj xreg =
         iteratees = Util.indexed (iter $args-:over) where
 
             --  RECURSIVE TWEAK OPS:
+            iter (With moreover tweaks) =
+                iter (_with2buts moreover tweaks)
             iter (But (WrapEachIn (pref , suff)) moreover) =
                 (iter moreover) >~ ((pref++).(++suff))
             iter (But (LimitTo limit) moreover) =
@@ -121,6 +124,7 @@ registerX ctxproj xreg =
             (not$ hasctxpage maybectxpage) && (needpage4iter $args-:over)
             where
             hasctxpage Nothing = False ; hasctxpage (Just _) = True
+            needpage4iter (With iter buts) = needpage4iter (_with2buts iter buts)
             needpage4iter (But (Ordered (Shuffle perpage)) moreover) = perpage || needpage4iter moreover
             needpage4iter (But _ moreover) = needpage4iter moreover
             needpage4iter (FeedGroups query _) = needpage4feed query
@@ -160,6 +164,8 @@ registerX ctxproj xreg =
 
 
 
+_with2buts iter tweaks =
+    w2b (reverse tweaks) where w2b [] = iter ; w2b (this:nested) = But this (w2b nested)
 
 _repl   (False,False)   txt                         _               = txt
 _repl   _               []                          _               = []

@@ -65,7 +65,7 @@ invocation/parameters. ]</small></p>
 	suffix = "<i>&lt;/li&gt;&lt;/ul&gt;</i>",
 	joinVia = "<i>&lt;/li&gt;&lt;li&gt;</i>",
 	content =&gt;
-<i>&lt;a id="b_link_</i>{%i%}<i>" href="/</i>{%v%}<i>/index.html"&gt;{B<!---->|title: </i>{%v%}<i> |<!---->}&lt;/a&gt;</i>
+<i>&lt;a id="b_link_</i>{%i%}<i>" href="/</i>{%v%}<i>/index.html"&gt;	{B<!---->|title: </i>{%v%}<i> |<!---->}	&lt;/a&gt;</i>
 </pre>
 
 <p>To elaborate, for example the last one of the above, as all <a href="../basics/haxproj.html#xdecl">|X| directives</a> declaring <a href="../tags/x.html">X-tags</a> do:</p>
@@ -89,7 +89,7 @@ invocation/parameters. ]</small></p>
 	</ul>
 
 <span id="args"><h2 id="Invocation / Parameters">Invocation / Parameters</h2></span>
-<p>For example, as per the above example |X| declaration directive:
+<p>For example, given the above example |X| declaration directive:<br/>
 <code>{X<!---->|bloknames: over=BlokNames |<!---->}</code>
 to output (displayed here with added line-wraps for readability)</p>
 <pre>
@@ -106,10 +106,20 @@ to output (displayed here with added line-wraps for readability)</p>
 <i>&lt;ul class="my-blogs"&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>0<i>" href="/</i>basics<i>/index.html"&gt;	</i>Basics<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>1<i>" href="/</i>tags<i>/index.html"&gt;	</i>haXtags<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;/ul&gt;</i>
 </pre>
 <p>Or applying that limit <i>after</i> sorting
-<code><i>{X<!---->|bloknames: over = </i>But(LimitTo 2) (But(Ordered Descending)<i> BlokNames |<!---->}</i>)</code> to output:</p>
+<code><i>{X<!---->|bloknames: over = </i>But(LimitTo 2) (But(Ordered Descending)<i> BlokNames </i>)<i>|<!---->}</i></code> to output:</p>
 <pre>
 <i>&lt;ul class="my-blogs"&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>0<i>" href="/</i>xtypes<i>/index.html"&gt;	</i>X-renderers<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>1<i>" href="/</i>tags<i>/index.html"&gt;	</i>haXtags<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;/ul&gt;</i>
 </pre>
+<p>By now, the required parentheses start to become unwieldy: multiple such nested <code>But</code>'s can become verbose and error-prone, and
+their right-to-left flow (ie. above: first-order-then-limit logic written as <i>first</i> the <i>limit</i> part, <i>then</i> the
+<i>order</i> part) unintuitive. The (functionally equivalent <code>But</code> alternative, the) <code>With</code> clause avoids nested parentheses and flips that right-to-left flow over. So the same
+output as above is produced by:
+<code><i>{X<!---->|bloknames: over = </i>With BlokNames [Ordered Descending , LimitTo 2]<i> |<!---->}</i></code>:</p>
+<pre>
+<i>&lt;ul class="my-blogs"&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>0<i>" href="/</i>xtypes<i>/index.html"&gt;	</i>X-renderers<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>1<i>" href="/</i>tags<i>/index.html"&gt;	</i>haXtags<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;/ul&gt;</i>
+</pre>
+
+</p>
 
 <!-- end of content source page -->
 <a name="down"></a>

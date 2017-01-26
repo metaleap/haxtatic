@@ -23,7 +23,7 @@ invocation/parameters. ]</small></p>
 	suffix = "<i>&lt;/li&gt;&lt;/ul&gt;</i>",
 	joinVia = "<i>&lt;/li&gt;&lt;li&gt;</i>",
 	content =&gt;
-<i>&lt;a id="b_link_</i>{%i%}<i>" href="/</i>{%v%}<i>/index.html"&gt;{B<!---->|title: </i>{%v%}<i> |<!---->}&lt;/a&gt;</i>
+<i>&lt;a id="b_link_</i>{%i%}<i>" href="/</i>{%v%}<i>/index.html"&gt;	{B<!---->|title: </i>{%v%}<i> |<!---->}	&lt;/a&gt;</i>
 </pre>
 
 {X|dox-xtdecl:	vars= [	("xn","hax.iterator"), ("tn","bloknames"), ("xo","{T|Xdeclopt|}"),
@@ -43,7 +43,7 @@ invocation/parameters. ]</small></p>
 |}
 
 {T|Xargs|}
-<p>For example, as per the above example |X| declaration directive:
+<p>For example, given the above example |X| declaration directive:<br/>
 <code>{X<!---->|bloknames: over=BlokNames |<!---->}</code>
 to output (displayed here with added line-wraps for readability)</p>
 <pre>
@@ -60,7 +60,17 @@ to output (displayed here with added line-wraps for readability)</p>
 {X|bloknames: over = But(LimitTo 2) BlokNames |}
 </pre>
 <p>Or applying that limit <i>after</i> sorting
-<code><i>{X<!---->|bloknames: over = </i>But(LimitTo 2) (But(Ordered Descending)<i> BlokNames |<!---->}</i>)</code> to output:</p>
+<code><i>{X<!---->|bloknames: over = </i>But(LimitTo 2) (But(Ordered Descending)<i> BlokNames </i>)<i>|<!---->}</i></code> to output:</p>
 <pre>
 {X|bloknames: over = But(LimitTo 2) (But(Ordered Descending) BlokNames) |}
 </pre>
+<p>By now, the required parentheses start to become unwieldy: multiple such nested {X|c:But|}'s can become verbose and error-prone, and
+their right-to-left flow (ie. above: first-order-then-limit logic written as <i>first</i> the <i>limit</i> part, <i>then</i> the
+<i>order</i> part) unintuitive. The (functionally equivalent {X|c:But|} alternative, the) {X|c:With|} clause avoids nested parentheses and flips that right-to-left flow over. So the same
+output as above is produced by:
+<code><i>{X<!---->|bloknames: over = </i>With BlokNames [Ordered Descending , LimitTo 2]<i> |<!---->}</i></code>:</p>
+<pre>
+{X|bloknames: over = With BlokNames [Ordered Descending , LimitTo 2] |}
+</pre>
+
+</p>
