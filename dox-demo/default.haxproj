@@ -65,25 +65,34 @@ turn on whatever syntax highlighting for eased grokkage..
 					<a href="http://github.com/metaleap/haxtatic/blob/master/src/X/Demo{P|xn|}.hs">code sample</a> to start from when
 					wanting to develop custom X-renderers within the {T|Hax|} code-base in Haskell.</p>
 |T|Xearly:			<h3>Stage:</h3><p>{X|lt:index#stages Early|} &mdash; this X-renderer does not require a page context for
-					rendering: therefore any <i>{P|fileBaseName|}</i>-invoking X-tags encountered during pre-templating (at
-					start-up time) will be {X|lt:index#Processing processed|} eagerly (for overall-reduced per-page processing load).</p>
+					rendering: therefore many <i>{P|fileBaseName|}</i>-invoking X-tags encountered during pre-templating (at
+					start-up time) may be eagerly {X|lt:index#Processing processed|} immediately in-place (for overall-reduced
+					per-page processing loads).</p>
 |T|Xpage:			<h3>Stage:</h3><p>{X|lt:index#stages Page|} &mdash; this X-renderer requires a page context for rendering: therefore
 					any <i>{P|fileBaseName|}</i>-invoking X-tags encountered during pre-templating (at start-up time) will be
-					skipped over and thus delayed until page time.</p>
-|T|Xearlyorpage:	<h3>Stage:</h3><p>{X|lt:index#stages Early or Page|} &mdash; this X-renderer determines dynamically whether or not
-					it requires a page context for rendering: so some <i>{P|fileBaseName|}</i>-invoking X-tags encountered during
-					pre-templating (at start-up time) may be {X|lt:index#Processing processed|} eagerly (for overall-reduced per-page
-					processing load), and others may be skipped over and thus delayed until page time &mdash; depending on the X-tag's
-					configuration and/or parameters.</p>
+					skipped over, thus only process per-page, once present.</p>
+|T|Xearlyorpage:	<h3>Stage:</h3><p>{X|lt:index#stages Early or Page|} &mdash; this X-renderer determines dynamically (documented
+					further below) whether or not it requires a page context for rendering, so depending on each
+					<i>{P|fileBaseName|}</i>-invoking X-tag's configuration and/or parameters:</p><ul><li><i>some</i> encountered
+					during pre-templating (at start-up time) may be eagerly {X|lt:index#Processing processed|} immediately in-place
+					(for overall-reduced per-page processing loads),</li> <li> and <i>others</i> will be skipped over, thus only
+					process per-page, once present.</li></ul>
 |T|Xpurpose:		{X|h: Purpose |}
 |T|Xcfg:			<span id="decl">{X|h: Declaration / Configuration |}</span>
 |T|Xargs:			<span id="args">{X|h: Invocation / Parameters |}</span>
 |T|Xdecl:			<p>To demonstrate valid {X|lb:haxproj#xdecl *.haxproj|} directives declaring <i>{P|fileBaseName|}</i>
 					{X|lt:x X-tags|}:</p>
+|T|Xdeclnameopt:	followed by a {X|c:&nbsp;:|} colon if an <b>optional</b> {X|``lb:syntax syntax-sensitive|} properties block follows,
+					comprised (if present at all) of <i>all</i> the following properties in <i>this</i> very order:
+|T|Xdeclnotopt:		a <b>mandatory</b> and {X|``lb:syntax syntax-sensitive|} properties block,
+					comprised of <i>all</i> the following properties in <i>this</i> very order:
+|T|Xdeclopt:		a {X|``lb:syntax syntax-sensitive|} but <b>optional</b> properties block,
+					comprised of <i>all</i> the following properties in <i>this</i> very order:
 |T|Xcompact:		<p class="hd-note">This topic is in a compact format for users already familiar with the essentials of
-					{X|lb:haxproj#xdecl declaring|} X-tags and invoking them. If found challenging, return to the
-					{X|lx:hax.miniTag more|} {X|lx:hax.htmlImage exhaustive|}, {X|lx:hax.htmlLink more|}
-					{X|lx:hax.xmlEscape introductory|} topics for a better grasp on the basics and overall mechanisms.</p>
+					{X|lb:haxproj#xdecl declaring|} X-tags and invoking them. If found challenging, try the
+					{X|lx:hax.miniTag more|}-{X|lx:hax.htmlImage elaborate|}-{X|lx:hax.htmlLink and|}-{X|lx:hax.xmlEscape introductory|}
+					topics first to form a better grasp on the basics and overall mechanisms.</p>
+|T|Xnoesc:			No HTML/XML/etc.-escaping of inputs is performed, provide correct values for the intended output format.
 
 
 
@@ -133,9 +142,9 @@ turn on whatever syntax highlighting for eased grokkage..
 
 |P|xdesc:
 	dt = "1234-11-15", cat = "demoCfgArgs", title = "", link = "",
-	more = [ ("declmore" , "</code> or <code>|X|demoCfgArgs:<i>myXtag</i>:<i>greetname</i>"),
+	more = [ ("declmore" , "</code> or <code>|X|demoCfgArgs:<i>myTag</i>:<i>greetname</i>"),
 			 ("cfgmore" , "(no other settings)"),
-			 ("usage" , "|<!---->}</code> or <code>{X<!---->|<i>myXtag</i>:<i>greetname</i>") ],
+			 ("usage" , "|<!---->}</code> or <code>{X<!---->|<i>myTag</i>:<i>greetname</i>") ],
 	content=>
 	Outputs <code>&lt;h4&gt;Hello, &lt;b&gt;<i>greetname</i>!&lt;/b&gt;&lt;/h4&gt;</code>.
 
@@ -178,8 +187,9 @@ turn on whatever syntax highlighting for eased grokkage..
 			 ("cfgmore" , "{X|c:attr|}, {X|c:itemsFirst|}, {X|c:itemsLast|}, {X|c:wrapHref|}"),
 			 ("usage" , ": items = [..] , attr = [..]") ],
 	content=>
-	Outputs a sequence of {X|c: &lt;a ..&gt; .. &lt;/a&gt; |} or
-	{X|c: &nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt; |} in a uniform manner.
+	Helps with site navigation: outputs a sequence of {X|c: &lt;a href=&quot;..&quot;&gt; .. &lt;/a&gt; |} or
+	{X|c: &nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a href=&quot;..&quot;&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt; |}
+	in a uniform manner.
 
 |P|xdesc:
 	dt = "1234-07-15", cat = "hax.htmlAnchors", title = "", link = "",
@@ -187,17 +197,19 @@ turn on whatever syntax highlighting for eased grokkage..
 			 ("cfgmore" , "{X|c:considerEmpty|}, {X|c:outputIfEmpty|}, {X|c:xmlEscapeHref|}"),
 			 ("usage" , ":<i>outerhtmltag</i>: attr = [..]") ],
 	content=>
-	Outputs a sequence of
-	{X|c: &nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a href=&quot;#..&quot; ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt; |},
-	one per {X|c: &nbsp;&lt;<i>gatherhtmltag</i>&gt; |} element found in the page's content source.
+	Helps with page-level tables-of-content: outputs a sequence of
+	{X|c: &nbsp;&lt;a href=&quot;#..&quot;&gt; .. &lt;/a&gt; |} or
+	{X|c: &nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a href=&quot;#..&quot;&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt; |}
+	&mdash; one per {X|c: &nbsp;&lt;<i>gatherhtmltag</i>&gt; |} element found in the content source file.
 
 |P|xdesc:
 	dt = "1234-06-15", cat = "hax.snippet", title = "", link = "",
 	more = [ ("declmore" , ": <i>..</i>"),
-			 ("cfgmore" , "{X|c:vars|}, {X|c:flags|}, {X|c:content|}"),
-			 ("usage" , ": vars = [..], flags = [..], content = &quot;..&quot;") ],
+			 ("cfgmore" , "{X|c:vars|}, {X|c:content|}"),
+			 ("usage" , ": vars = [..], content = &quot;..&quot;") ],
 	content=>
-	Outputs the content of the named snippet with the specified variable substitutions.
+	Renders the named "snippet" (aka. "controls" / "components" / "sub-templates") substituting the specified
+	named-parameter values.
 
 |P|xdesc:
 	dt = "1234-05-15", cat = "hax.iterator", title = "", link = "",
@@ -205,4 +217,4 @@ turn on whatever syntax highlighting for eased grokkage..
 			 ("cfgmore" , "{X|c:prefix|}, {X|c:suffix|}, {X|c:joinVia|}, {X|c:content|}"),
 			 ("usage" , ": over = .. , wrapEach = .. , order = .. , skip = .. , limit = .. , more = ..") ],
 	content=>
-	Outputs a sequence of contents enumerated by the specified iterator.
+	Renders a sequence of values enumerated by the specified iterator, applying the specified filtering/ordering/limits.

@@ -27,16 +27,17 @@
 	<h2 id="In a nutshell">In a nutshell</h2>
 	<ol>
 		<li class="up">
-			<a href="../xtypes/demoCfgArgs.html#decl">Declaration</a> of an <code>|X|demoCfgArgs:<i>myTag</i></code> or <code>|X|demoCfgArgs:<i>myXtag</i>:<i>greetname</i></code> directive in a
+			<a href="../xtypes/demoCfgArgs.html#decl">Declaration</a> of an <code>|X|demoCfgArgs:<i>myTag</i></code> or <code>|X|demoCfgArgs:<i>myTag</i>:<i>greetname</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
 			<ul><li>further configuring: (no other settings)</li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>|<!---->}</code> or <code>{X<!---->|<i>myXtag</i>:<i>greetname</i> |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>|<!---->}</code> or <code>{X<!---->|<i>myTag</i>:<i>greetname</i> |<!---->}</code></li>
 	</ol>
 <span id="decl">
 <h3>Stage:</h3><p><a href="../tags/index.html#stages">Early</a> &mdash; this X-renderer does not require a page context for
-					rendering: therefore any <i>demoCfgArgs</i>-invoking X-tags encountered during pre-templating (at
-					start-up time) will be <a href="../tags/index.html#Processing">processed</a> eagerly (for overall-reduced per-page processing load).</p>
+					rendering: therefore many <i>demoCfgArgs</i>-invoking X-tags encountered during pre-templating (at
+					start-up time) may be eagerly <a href="../tags/index.html#Processing">processed</a> immediately in-place (for overall-reduced
+					per-page processing loads).</p>
 </span>
 <h2 id="Purpose">Purpose</h2><p>This "verging on useless" X-renderer exists solely to serve as a
 					<a href="http://github.com/metaleap/haxtatic/blob/master/src/X/DemoCfgArgs.hs">code sample</a> to start from when

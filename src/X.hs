@@ -108,7 +108,7 @@ tagHandler xtags ctxpage tagcontent =
     renderwhen$ Data.Map.Strict.lookup xtagname xtags
     where
     renderargs = (ctxpage , Util.trimStart argstr)
-    (xtagname , argstr) = (Util.splitOn1st_ ':' tagcontent) -- Util.both (Util.trimEnd , Util.trimStart)
+    (xtagname , argstr) = (Util.splitOn1st_ ':' tagcontent)
 
     renderwhen (Just (Early xrend)) =
         xrend renderargs
@@ -117,6 +117,7 @@ tagHandler xtags ctxpage tagcontent =
             Nothing -> Just$ "{P|X|"++tagcontent++"|}"
             Just _ -> xrend renderargs
     renderwhen (Just (EarlyOrWait xrend)) =
+        --  xrend with ctxpage=Nothing *might* give Nothing if early-not-on, only then trigger delay-tag
         Just$ ("{P|X|"++tagcontent++"|}") -|= (xrend renderargs)
     renderwhen _ =
         Nothing

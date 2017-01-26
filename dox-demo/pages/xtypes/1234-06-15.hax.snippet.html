@@ -1,2 +1,45 @@
 {X|dox-xthead|}
+
+{T|Xcompact|}
+
 {T|Xearly|}
+
+{T|Xcfg|}
+{T|Xdecl|}
+<pre>
+|X|hax.snippet:<i>greeting</i>:
+	vars = [(<i>"<u>greetname</u>","Mr. No-Name"</i>)],
+	content=>
+<i>Hello, &lt;b&gt;</i>{%<i><u>greetname</u></i>%}<i>&lt;/b&gt;!</i>
+</pre>
+
+{X|dox-xtdecl:	vars= [	("xn","hax.snippet"), ("tn","greeting"), ("xo","{T|Xdeclnotopt|}"),
+						("xf","") ],
+				content=>
+<li>{X|c:vars|} &mdash; a list of 0 or more name-value pairs declaring the names and default values of placeholders contained
+in {X|c:content|} to be substituted as instructed by the calling {X|c:{X<!---->|greeting ..|<!---->}|} X-tag during rendering</li>
+<li>{X|c:content|} &mdash; the principal content that this X-tag renders; other than any haXtags this may also contain special
+placeholder notation referencing the so-declared {X|c:vars|}</li>
+|}
+
+<p class="hd-note">Any such <b>hax.snippet</b> declaration may also be stored in its own external file (specifically
+{X|lb:tmplsnip#snippets tmpl/*.haxsnip.html|}), in which case the |X| directive header (up to and including the X-tag name) is
+<i>omitted</i> and hence that file is to begin <i>directly</i> with the properties block.</p>
+
+<span id="subst">{X|h: Placeholder substitution |}</span>
+<p>Those {X|c:{%<i>varname</i>%}|} placeholders that {X|c:content|} may contain are no proper {X|lt:index haXtags|} with their
+typical versatile processing pipeline. On the contrary, these notations just signal very simple rudimentary text-for-text
+(or value-for-name) substitutions, as such must not have extraneous white-space and indeed must consist of nothing-but: the
+variable-parameter name (correct case/spelling with respect to its above declaration in {X|c:vars|}) inside the delimiters.</p>
+<p>Of course, their values (or default values) <i>can</i> contain anything including other placeholder references or haXtags. Just
+be careful to ensure properly escaped outputs of anything that might produce {X|lb:syntax quote marks|} in such scenarios.</p>
+<p><b>Special inner-content placeholder</b>: in addition to those custom ones declared in {X|c:vars|} there is a special
+predefined placeholder, {X|c:{%:content:%}|}, which outputs in-place the {X|c:content|} specified and passed by the calling X-tag:</p>
+
+{T|Xargs|}
+<p>For example: <code>{X<!---->|greeting: vars = [ <i>("greetname" , "<u>Mr. Curry</u>")</i> ], content=> |<!---->}</code> to
+output as per the above example |X| declaration directive: {X|c: Hello, &lt;b&gt;<i><u>Mr. Curry</u></i>&lt;/b&gt;! |}</p>
+<p>The properties block after the X-tag name is (once again) {X|lb:syntax|}-sensitive. The {X|c:vars|} supply any named
+variable-parameter values for <a href="#subst">placeholder substitution</a> and {X|c:content|} defines the value of the snippet's
+{X|c: {%:content:%} |} special-placeholder (as described further above, required whether the snippet's <i>own</i> {X|c:content|}
+uses it or not, may be empty of course).</p>

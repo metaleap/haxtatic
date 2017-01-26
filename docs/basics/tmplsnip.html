@@ -55,9 +55,9 @@
 	<li>then, at processing time (of an <a href="../tags/x.html">X-tag</a> anywhere that's invoking this snippet), replacing any references to themselves inside <code>content=&gt;</code> that are enclosed within <code>{%</code> and <code>%}</code>.
 </ul>
 <h3>Directives first, then *.haxsnip.html files</h3>
-<p>These <code>tmpl/*.haxsnip.html</code> files are really no different from bog-standard <code>|X|hax.snippet:<i>&lt;some-name&gt;</i>:</code> <a href="../basics/haxproj.html#xdecl">directives in a <i>*.haxproj</i></a>, so best to start with those at first (and delaying out-"sourcing" them to individual <code>tmpl/*.haxsnip.html</code> files) until correct results are achieved with ease.</p>
-<p>In fact, this is how all the <code>tmpl/*.haxsnip.html</code> files are loaded: exactly right after loading the current <a href="../basics/haxproj.html">*.haxproj</a> files during start-up, with every such <code>tmpl/<i>some-name</i>.haxsnip.html</code> being appended (in memory, on-the-fly, to the entire combined loaded <i>*.haxproj</i> source) as one individual <code>|X|hax.snippet:<i>some-name</i>:</code> <a href="../basics/haxproj.html#xdecl">directive</a>.</p>
-<p>So the support for separate <code>tmpl/*.haxsnip.html</code> files is really just icing on the <code>|X|hax.snippet:<i>my-component</i>:</code> cake.</p>
+<p>These <code>tmpl/*.haxsnip.html</code> files are really no different from bog-standard <code>|X|hax.snippet:<i>&lt;some-name&gt;</i>:</code> <a href="../basics/haxproj.html#xdecl">directives in a <i>*.haxproj</i></a>, so best to start <a href="../xtypes/hax.snippet.html">with those</a> at first (and delaying out-"sourcing" them to individual <code>tmpl/*.haxsnip.html</code> files) until correct results are achieved with ease.</p>
+<p>In fact, this is how all the <code>tmpl/*.haxsnip.html</code> files are loaded: exactly right after loading the current <a href="../basics/haxproj.html">*.haxproj</a> files during start-up, with every such <code>tmpl/<i>some-name</i>.haxsnip.html</code> being appended (in memory, on-the-fly, to the entire combined loaded <i>*.haxproj</i> source) as one individual <code>|X|hax.snippet:<i>some-name</i>:</code> directive.</p>
+<p>So the support for separate <code>tmpl/*.haxsnip.html</code> files is really just icing on the <code>|X|hax.snippet:<i>my-component</i>:</code> <a href="../xtypes/hax.snippet.html">cake</a>.</p>
 
 <!-- end of content source page -->
 <a name="down"></a>

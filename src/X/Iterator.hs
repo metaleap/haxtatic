@@ -54,12 +54,9 @@ registerX ctxproj xreg =
 
     renderer (maybectxpage , argstr) =
         if waitforpage then Nothing
-            else Just$ (cfg-:prefix) ++ allcontents ++ (cfg-:suffix)
+            else Just$ cfgwrap allcontents
         where
-        allcontents = Util.join (cfg-:joinVia) (iteratees >~ (foreach $cfg-:content))
-
-        foreach "" (_,v) = v ; foreach "{%v%}" (_,v) = v ; foreach "{%i%}" (i,_) = show i
-        foreach cfgcontent (i,v) = Util.replaceSubsFew ["{%i%}" =: show i , "{%v%}" =: v] cfgcontent
+        allcontents = cfgjoin (iteratees >~ foreach)
 
         iteratees = Util.indexed (droptake (args-:skip) (args-:limit) (iter $args-:over)) where
             iter (Values values) =
@@ -123,21 +120,41 @@ registerX ctxproj xreg =
             needpage4iter (FeedPosts query _ _) = needpage4feed query
             needpage4iter _ = False
             needpage4feed (Just (Posts.Filter feednames@(_:_) _ _)) =
-                not$ any (`elem` projfeednames) feednames -- not known yet (or other placeholder), so postpone til page
+                not$ all (`elem` projfeednames) feednames -- not all known as |P| feeds (yet), so postpone til page
             needpage4feed _ =
                 has projbloknames
             -- _likelyinsnippet =
             --     let i1 = Util.indexOfSub argstr "{%" ; i2 = Util.indexOfSub argstr "%}"
             --     in i1 >= 0 && i2 > i1
 
+        projposts = ctxproj-:Proj.setup-:Proj.posts
+        projfeednames = ctxproj-:Proj.setup-:Proj.feeds
     in X.EarlyOrWait renderer
     where
 
-    projfeednames = ctxproj-:Proj.setup-:Proj.feeds
-    projposts = ctxproj-:Proj.setup-:Proj.posts
     projbloks = ctxproj-:Proj.setup-:Proj.bloks
     projbloknames = Data.Map.Strict.keys projbloks
+    foreach | (null txt)=   \ (_,v) -> v
+            | (otherwise)=  _repl (hasi,hasv) txt
+            where txt = cfg-:content ; hasi = _hasi txt ; hasv = _hasv txt
+    cfgjoin = if null $cfg-:joinVia then concat else Util.join $cfg-:joinVia
+    cfgwrap | (null $cfg-:prefix) && (null $cfg-:suffix) = id
+            | otherwise = (((cfg-:prefix))++).(++((cfg-:suffix)))
+
+
     cfg_parsestr = Tmpl.fixParseStr "content" (xreg-:X.cfgFullStr)
     cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where
         defcfg = Cfg { prefix = "" , suffix = "" , joinVia = "" , content = "" }
         errcfg = Cfg { prefix = X.htmlErr (X.clarifyParseCfgError xreg) , suffix = "" , joinVia = "" , content = "" }
+
+
+
+
+_repl   (False,False)   txt                         _               = txt
+_repl   _               []                          _               = []
+_repl   iv@(True,_)     ('{':'%':'i':'%':'}':rest)  both@(i , _)    = (show i) ++ _repl iv rest both
+_repl   iv@(_,True)     ('{':'%':'v':'%':'}':rest)  both@(_ , v)    = v ++ _repl iv rest both
+_repl   iv              (this : rest)               both            = this : _repl iv rest both
+
+_hasi [] = False ; _hasi ('{':'%':'i':'%':'}':_) = True ; _hasi (_:rest) = _hasi rest
+_hasv [] = False ; _hasv ('{':'%':'v':'%':'}':_) = True ; _hasv (_:rest) = _hasv rest

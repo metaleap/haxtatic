@@ -23,7 +23,7 @@
 </p>
 <ul>
 	<li>the content of the {X|c:tmpl/_hax_blokindex.haxsnip.html|} {X|lb:tmplsnip#snippets snippet file|} is applied in-place by</li>
-	<li>invoking an (on-the-fly in-memory) {X|lt:x X-tag|} of the form {X|c:{X<!---->|_hax_blokindex: vars=[ ("bname","<i>&lt;blok-name&gt;</i>") ], flags=[], content="" |<!---->}|}.
+	<li>invoking an (on-the-fly in-memory) {X|lt:x X-tag|} of the form {X|c:{X<!---->|_hax_blokindex: vars=[ ("bname","<i>&lt;blok-name&gt;</i>") ], content="" |<!---->}|}.
 		<ul><li>The "factory-default" (auto-generated whenever missing) {X|c:tmpl/_hax_blokindex.haxsnip.html|}, as a starter template by way of example,</li>
 		<li>dynamically embeds the so-{X|c:bname|}d Blok's {X|c:title|} and {X|c:desc|} {X|lb:haxproj#bdecl properties|}</li>
 		<li>via {X|c:{B<!---->|title:{%<i>bname</i>%}|<!---->}|} and {X|c:{B<!---->|desc:{%<i>bname</i>%}|<!---->}|} respectively.</li></ul>

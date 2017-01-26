@@ -45,7 +45,7 @@
 </p>
 <ul>
 	<li>the content of the <code>tmpl/_hax_blokindex.haxsnip.html</code> <a href="../basics/tmplsnip.html#snippets">snippet file</a> is applied in-place by</li>
-	<li>invoking an (on-the-fly in-memory) <a href="../tags/x.html">X-tag</a> of the form <code>{X<!---->|_hax_blokindex: vars=[ ("bname","<i>&lt;blok-name&gt;</i>") ], flags=[], content="" |<!---->}</code>.
+	<li>invoking an (on-the-fly in-memory) <a href="../tags/x.html">X-tag</a> of the form <code>{X<!---->|_hax_blokindex: vars=[ ("bname","<i>&lt;blok-name&gt;</i>") ], content="" |<!---->}</code>.
 		<ul><li>The "factory-default" (auto-generated whenever missing) <code>tmpl/_hax_blokindex.haxsnip.html</code>, as a starter template by way of example,</li>
 		<li>dynamically embeds the so-<code>bname</code>d Blok's <code>title</code> and <code>desc</code> <a href="../basics/haxproj.html#bdecl">properties</a></li>
 		<li>via <code>{B<!---->|title:{%<i>bname</i>%}|<!---->}</code> and <code>{B<!---->|desc:{%<i>bname</i>%}|<!---->}</code> respectively.</li></ul>

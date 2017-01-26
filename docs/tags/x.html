@@ -56,11 +56,11 @@
 	
 	<ol>
 		<li class="up">
-			<a href="../xtypes/demoCfgArgs.html#decl">Declaration</a> of an <code>|X|demoCfgArgs:<i>myTag</i></code> or <code>|X|demoCfgArgs:<i>myXtag</i>:<i>greetname</i></code> directive in a
+			<a href="../xtypes/demoCfgArgs.html#decl">Declaration</a> of an <code>|X|demoCfgArgs:<i>myTag</i></code> or <code>|X|demoCfgArgs:<i>myTag</i>:<i>greetname</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
 			<ul><li>further configuring: (no other settings)</li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>|<!---->}</code> or <code>{X<!---->|<i>myXtag</i>:<i>greetname</i> |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>|<!---->}</code> or <code>{X<!---->|<i>myTag</i>:<i>greetname</i> |<!---->}</code></li>
 	</ol><h2 id="hax.miniTag">hax.miniTag</h2>
 	<p class="up">Outputs <code>&nbsp;&lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt;</code>.</p>
 	
@@ -103,8 +103,9 @@
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i>rel-to-base/path/no/whitespace and then the link text text</i> |<!---->}</code></li>
 	</ol><h2 id="hax.htmlLinks">hax.htmlLinks</h2>
-	<p class="up">Outputs a sequence of <code>&lt;a ..&gt; .. &lt;/a&gt;</code> or
-	<code>&nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code> in a uniform manner.</p>
+	<p class="up">Helps with site navigation: outputs a sequence of <code>&lt;a href=&quot;..&quot;&gt; .. &lt;/a&gt;</code> or
+	<code>&nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a href=&quot;..&quot;&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code>
+	in a uniform manner.</p>
 	
 	<ol>
 		<li class="up">
@@ -114,9 +115,10 @@
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: items = [..] , attr = [..] |<!---->}</code></li>
 	</ol><h2 id="hax.htmlAnchors">hax.htmlAnchors</h2>
-	<p class="up">Outputs a sequence of
-	<code>&nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a href=&quot;#..&quot; ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code>,
-	one per <code>&nbsp;&lt;<i>gatherhtmltag</i>&gt;</code> element found in the page's content source.</p>
+	<p class="up">Helps with page-level tables-of-content: outputs a sequence of
+	<code>&nbsp;&lt;a href=&quot;#..&quot;&gt; .. &lt;/a&gt;</code> or
+	<code>&nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a href=&quot;#..&quot;&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code>
+	&mdash; one per <code>&nbsp;&lt;<i>gatherhtmltag</i>&gt;</code> element found in the content source file.</p>
 	
 	<ol>
 		<li class="up">
@@ -126,17 +128,18 @@
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i>outerhtmltag</i>: attr = [..] |<!---->}</code></li>
 	</ol><h2 id="hax.snippet">hax.snippet</h2>
-	<p class="up">Outputs the content of the named snippet with the specified variable substitutions.</p>
+	<p class="up">Renders the named "snippet" (aka. "controls" / "components" / "sub-templates") substituting the specified
+	named-parameter values.</p>
 	
 	<ol>
 		<li class="up">
 			<a href="../xtypes/hax.snippet.html#decl">Declaration</a> of an <code>|X|hax.snippet:<i>myTag</i>: <i>..</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: <code>vars</code>, <code>flags</code>, <code>content</code></li></ul>
+			<ul><li>further configuring: <code>vars</code>, <code>content</code></li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: vars = [..], flags = [..], content = &quot;..&quot; |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: vars = [..], content = &quot;..&quot; |<!---->}</code></li>
 	</ol><h2 id="hax.iterator">hax.iterator</h2>
-	<p class="up">Outputs a sequence of contents enumerated by the specified iterator.</p>
+	<p class="up">Renders a sequence of values enumerated by the specified iterator, applying the specified filtering/ordering/limits.</p>
 	
 	<ol>
 		<li class="up">

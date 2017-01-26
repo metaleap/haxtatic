@@ -1,16 +1,46 @@
 {X|dox-xthead|}
 {T|Xcompact|}
 {T|Xearlyorpage|}
-{T|Xpurpose|}
 {T|Xcfg|}
 {T|Xdecl|}
 <pre>
 |X|hax.htmlLinks:<i>mysidenav</i>:<i>li</i>
 
 |X|hax.htmlLinks:<i>mytopnav</i>:<i>div</i>:
-	attr= [ <i>("class","my-nav") , ("&class","my-nav-sel")</i> ],
+	attr= [ <i>("class","my-nav") , ("&amp;class","my-nav-sel")</i> ],
 	itemsFirst =[ <i>("","Home")</i> ],
-	itemsLast = [<i>("/blog","{T|myBlog|}")</i>],
-	wrapHref = (<i>"/"</i> , <i>"/index.html"</i>)
+	itemsLast = [<i>("blog/","{T|myBlog|}")</i>],
+	wrapHref = (<i>"/"</i> , <i>"index.html"</i>)
 </pre>
+{X|dox-xtdecl:	vars= [	("xn","hax.htmlLinks"), ("tn","mytopnav"),
+						("xf","The output <u>outer</u> markup-tag name (can be empty to skip such) to contain every output
+								{X|c:&lt;a&gt;|} element") ],
+				content=>
+<li>{X|c:attr = [("<i>name</i>","<i>value</i>") , <i>..</i>]|}
+	&mdash; the output <u>outer</u>-tag's markup attributes as name-value pairs
+		<ul><li>Attribute names starting with {X|c:&nbsp;&amp;|} ampersand are only output (without it, of course) for path-wise
+		"current/selected/active" links with respect to the current page-context (see below paragraph for the approximate logic used
+		here)</li><li>use of any such dynamic {X|c:&nbsp;&amp;|} attribute names switches this X-tag's {X|lt:index#stages stage|}
+		from <i>Early</i> (the default) into <i>Page</i>.</li></ul>
+	</li>
+<li>{X|c:itemsFirst = [("<i>uri</i>","<i>text</i>") , <i>..</i>]|}
+	&mdash; the links to <i>always</i> render first</li>
+<li>{X|c:itemsLast = [("<i>uri</i>","<i>text</i>") , <i>..</i>]|}
+	&mdash; the links to <i>always</i> render last</li>
+<li>{X|c:wrapHref = ("","")|}
+	&mdash; the prefix-to-prepend &amp; suffix-to-append to every rendered {X|c:&lt;a&gt;|} element's {X|c:href|} attribute value</li>
+<li>{T|Xnoesc|}</li>
+|}
 {T|Xargs|}
+<p>For example, <code>{X<!---->|mysidenav: items=[("foo","Foo"),("bar","Bar")] , attr=[("class","my-foo")] |<!---->}</code> to output:</p>
+<pre>
+&lt;li class="my-foo"&gt;&lt;a href="foo"&gt;Foo&lt;/a&gt;&lt;/li&gt;
+&lt;li class="my-foo"&gt;&lt;a href="bar"&gt;Bar&lt;/a&gt;&lt;/li&gt;
+</pre>
+<p>For example, <code>{X<!---->|mytopnav|<!---->}</code> to render in all generated {X|c:/blog/*|} output files:</p>
+<pre>
+&lt;div class="my-nav"&gt;&lt;a href="/index.html"&gt;Home&lt;/a&gt;&lt;/div&gt;
+&lt;div class="my-nav my-nav-sel"&gt;&lt;a href="/blog/index.html"&gt;My Blog&lt;/a&gt;&lt;/div&gt;
+</pre>
+<p>&mdash; whereas all others would see the same, minus the {X|c:my-nav-sel|} appendum.</p>
+<p>{T|Xnoesc|}</p>

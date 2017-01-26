@@ -1,10 +1,9 @@
 vars = [],
-flags = [],
 content=>
 <h1>{P|fileBaseName|}</h1>
 {X|xdescs:	over = FeedPosts (Just Filter {feeds=["xdesc"], cats=["{P|fileBaseName|}"], dates=Nothing}) "" [],
 			wrapEach = (	"X|dox-xtdesc: vars=["
-						,	"], flags=[], content=\"\" |"
+						,	"], content=\"\" |"
 						),
 			order = None, skip = 0, limit = 1,
 			more = [ "declmore" , "cfgmore" , "usage" ]

@@ -27,7 +27,7 @@ registerX _ xreg =
         argsplit = Util.splitOn1stSpace argstr
         atts uriattname descattname =
             [   uriattname =: Html.joinUri cfg_relpath (uriautoext linkhref),
-                descattname =: Util.ifNo cfgerrmsg linktext ]
+                descattname =: Util.ifNo cfgerrmsg (Util.ifNo linktext (fst$ Util.splitOn1st '#' linkhref)) ]
 
 
     in X.Early renderer

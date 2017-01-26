@@ -14,7 +14,7 @@
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
 		<label for="chk_showtoc">On this page:</label>
 		<ul>
-			<style type='text/css'>.hd-toc { display: none; }</style>
+			<li><a href="#In a nutshell">In a nutshell</a></li><li><a href="#Declaration / Configuration">Declaration / Configuration</a></li><li><a href="#Invocation / Parameters">Invocation / Parameters</a></li>
 		</ul>
 	</div>
 
@@ -22,7 +22,7 @@
 <!-- begins content source page -->
 <h1>hax.iterator</h1>
 	
-	<p class="up">Outputs a sequence of contents enumerated by the specified iterator.</p>
+	<p class="up">Renders a sequence of values enumerated by the specified iterator, applying the specified filtering/ordering/limits.</p>
 	<h2 id="In a nutshell">In a nutshell</h2>
 	<ol>
 		<li class="up">
@@ -32,11 +32,70 @@
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: over = .. , wrapEach = .. , order = .. , skip = .. , limit = .. , more = .. |<!---->}</code></li>
 	</ol>
-<h3>Stage:</h3><p><a href="../tags/index.html#stages">Early or Page</a> &mdash; this X-renderer determines dynamically whether or not
-					it requires a page context for rendering: so some <i>hax.iterator</i>-invoking X-tags encountered during
-					pre-templating (at start-up time) may be <a href="../tags/index.html#Processing">processed</a> eagerly (for overall-reduced per-page
-					processing load), and others may be skipped over and thus delayed until page time &mdash; depending on the X-tag's
-					configuration and/or parameters.</p>
+
+<p>Hence, formatting and structure of the output is mostly defined in the X-tag's one-off
+<a href="#decl">declaration / configuration</a>, while the per-tag <a href="#args">invocation / parameters</a> define
+<i>what values</i> to enumerate, which ones to show, in what order etc.</p>
+<p><small>[ Most invocations of <i>hax.iterator</i> X-tags are anticipated to occur in one-off definitions within <a href="../basics/haxproj.html">central</a>
+<a href="../basics/tmplsnip.html">project</a> <a href="../basics/tmplsnip.html#snippets">files</a> anyway, rather than select-but-multiple-individual content source files;
+however: in such unexpected cases of course, a simple <a href="../xtypes/hax.snippet.html">hax.snippet</a> &mdash;or even just a <a href="../tags/t.html">T-tag</a> if not
+dynamic/parametric at all&mdash; will easily let one avoid any unnecessary duplication of specific combinations of
+invocation/parameters. ]</small></p>
+
+<p class="hd-note">This topic is in a compact format for users already familiar with the essentials of
+					<a href="../basics/haxproj.html#xdecl">declaring</a> X-tags and invoking them. If found challenging, try the
+					<a href="../xtypes/hax.miniTag.html">more</a>-<a href="../xtypes/hax.htmlImage.html">elaborate</a>-<a href="../xtypes/hax.htmlLink.html">and</a>-<a href="../xtypes/hax.xmlEscape.html">introductory</a>
+					topics first to form a better grasp on the basics and overall mechanisms.</p>
+
+<h3>Stage:</h3><p><a href="../tags/index.html#stages">Early or Page</a> &mdash; this X-renderer determines dynamically (documented
+					further below) whether or not it requires a page context for rendering, so depending on each
+					<i>hax.iterator</i>-invoking X-tag's configuration and/or parameters:</p><ul><li><i>some</i> encountered
+					during pre-templating (at start-up time) may be eagerly <a href="../tags/index.html#Processing">processed</a> immediately in-place
+					(for overall-reduced per-page processing loads),</li> <li> and <i>others</i> will be skipped over, thus only
+					process per-page, once present.</li></ul>
+
+<span id="decl"><h2 id="Declaration / Configuration">Declaration / Configuration</h2></span>
+<p>To demonstrate valid <a href="../basics/haxproj.html#xdecl">*.haxproj</a> directives declaring <i>hax.iterator</i>
+					<a href="../tags/x.html">X-tags</a>:</p>
+<pre>
+|X|hax.iterator:<i>numbers</i>
+
+|X|hax.iterator:<i>bloknames</i>:
+	prefix = "<i>&lt;ul class=\"my-blogs\">&lt;li&gt;</i>",
+	suffix = "<i>&lt;/li&gt;&lt;/ul&gt;</i>",
+	joinVia = "<i>&lt;/li&gt;&lt;li&gt;</i>",
+	content =&gt;
+<i>&lt;a id="b_link_</i>{%i%}<i>" href="/</i>{%v%}<i>/index.html"&gt;{B<!---->|title: </i>{%v%}<i> |<!---->}&lt;/a&gt;
+&lt;div&gt;{B<!---->|desc: </i>{%v%}<i> |<!---->}&lt;/div&gt;</i>
+</pre>
+
+<p>To elaborate, for example the last one of the above, as all <a href="../basics/haxproj.html#xdecl">|X| directives</a> declaring <a href="../tags/x.html">X-tags</a> do:</p>
+	<ul>
+		<li>begins with <code>|X|</code> followed by the X-renderer identifier (here <code>hax.iterator</code>)</li>
+		<li>followed by <code>&nbsp;:</code> colon and the desired X-tag name to be used to invoke it (here <code>bloknames</code>),</li>
+		<li>followed by <code>&nbsp;:</code> colon and now <i>hax.iterator</i>-<b>specific</b> configuration:</li>
+		
+		<li>a <a href="../basics/syntax.html">syntax-sensitive</a> but <b>optional</b> properties block,
+					comprised of <i>all</i> the following properties in <i>this</i> very order:<ol><li><code>prefix</code> &mdash; the output to produce once immediately prior to enumeration</li>
+<li><code>suffix</code> &mdash; the output to produce once immediately following enumeration</li>
+<li><code>joinVia</code> &mdash; the output to produce in-between all enumerated items</li>
+<li><code>content</code> &mdash; the principal content output for each enumerated item<ul>
+	<li>The placeholder <code>&nbsp;{<!---->%i%<!---->}</code> outputs an iteration index: 0 for the first enumerated item and afterwards
+		increments by 1 for each further item, regardless of its value or which ordering/filtering was active.</li>
+	<li>The placeholder <code>&nbsp;{<!---->%v%<!---->}</code> outputs the current item in plain-text form as returned by the chosen
+		enumerator.</li>
+	<li>If <code>content</code> is empty, this is equivalent to it being <code>&nbsp;{<!---->%v%<!---->}</code>.</li>
+	<li>If <code>content</code> does not contain any of these 2 placeholders, it is obviously output identically for each item.</li>
+	</ul></li></ol></li>
+	</ul>
+
+<span id="args"><h2 id="Invocation / Parameters">Invocation / Parameters</h2></span>
+<p>For example: <code>{X<!---->|greeting: vars = [ <i>("greetname" , "<u>Mr. Curry</u>")</i> ], content=> |<!---->}</code> to
+output as per the above example |X| declaration directive: <code>Hello, &lt;b&gt;<i><u>Mr. Curry</u></i>&lt;/b&gt;!</code></p>
+<p>The properties block after the X-tag name is (once again) <a href="../basics/syntax.html">syntax</a>-sensitive. The <code>vars</code> supply any named
+variable-parameter values for <a href="#subst">placeholder substitution</a> and <code>content</code> defines the value of the snippet's
+<code>{%:content:%}</code> special-placeholder (as described further above, required whether the snippet's <i>own</i> <code>content</code>
+uses it or not, may be empty of course).</p>
 
 <!-- end of content source page -->
 <a name="down"></a>

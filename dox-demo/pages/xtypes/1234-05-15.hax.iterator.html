@@ -1,2 +1,52 @@
 {X|dox-xthead|}
+
+<p>Hence, formatting and structure of the output is mostly defined in the X-tag's one-off
+<a href="#decl">declaration / configuration</a>, while the per-tag <a href="#args">invocation / parameters</a> define
+<i>what values</i> to enumerate, which ones to show, in what order etc.</p>
+<p><small>[ Most invocations of <i>hax.iterator</i> X-tags are anticipated to occur in one-off definitions within {X|lb:haxproj central|}
+{X|lb:tmplsnip project|} {X|lb:tmplsnip#snippets files|} anyway, rather than select-but-multiple-individual content source files;
+however: in such unexpected cases of course, a simple {X|lx:hax.snippet|} &mdash;or even just a {X|lt:t T-tag|} if not
+dynamic/parametric at all&mdash; will easily let one avoid any unnecessary duplication of specific combinations of
+invocation/parameters. ]</small></p>
+
+{T|Xcompact|}
+
 {T|Xearlyorpage|}
+
+{T|Xcfg|}
+{T|Xdecl|}
+<pre>
+|X|hax.iterator:<i>numbers</i>
+
+|X|hax.iterator:<i>bloknames</i>:
+	prefix = "<i>&lt;ul class=\"my-blogs\">&lt;li&gt;</i>",
+	suffix = "<i>&lt;/li&gt;&lt;/ul&gt;</i>",
+	joinVia = "<i>&lt;/li&gt;&lt;li&gt;</i>",
+	content =&gt;
+<i>&lt;a id="b_link_</i>{%i%}<i>" href="/</i>{%v%}<i>/index.html"&gt;{B<!---->|title: </i>{%v%}<i> |<!---->}&lt;/a&gt;
+&lt;div&gt;{B<!---->|desc: </i>{%v%}<i> |<!---->}&lt;/div&gt;</i>
+</pre>
+
+{X|dox-xtdecl:	vars= [	("xn","hax.iterator"), ("tn","bloknames"), ("xo","{T|Xdeclopt|}"),
+						("xf","") ],
+				content=>
+<li>{X|c:prefix|} &mdash; the output to produce once immediately prior to enumeration</li>
+<li>{X|c:suffix|} &mdash; the output to produce once immediately following enumeration</li>
+<li>{X|c:joinVia|} &mdash; the output to produce in-between all enumerated items</li>
+<li>{X|c:content|} &mdash; the principal content output for each enumerated item<ul>
+	<li>The placeholder {X|c:&nbsp;{<!---->%i%<!---->}|} outputs an iteration index: 0 for the first enumerated item and afterwards
+		increments by 1 for each further item, regardless of its value or which ordering/filtering was active.</li>
+	<li>The placeholder {X|c:&nbsp;{<!---->%v%<!---->}|} outputs the current item in plain-text form as returned by the chosen
+		enumerator.</li>
+	<li>If {X|c:content|} is empty, this is equivalent to it being {X|c:&nbsp;{<!---->%v%<!---->}|}.</li>
+	<li>If {X|c:content|} does not contain any of these 2 placeholders, it is obviously output identically for each item.</li>
+	</ul></li>
+|}
+
+{T|Xargs|}
+<p>For example: <code>{X<!---->|greeting: vars = [ <i>("greetname" , "<u>Mr. Curry</u>")</i> ], content=> |<!---->}</code> to
+output as per the above example |X| declaration directive: {X|c: Hello, &lt;b&gt;<i><u>Mr. Curry</u></i>&lt;/b&gt;! |}</p>
+<p>The properties block after the X-tag name is (once again) {X|lb:syntax|}-sensitive. The {X|c:vars|} supply any named
+variable-parameter values for <a href="#subst">placeholder substitution</a> and {X|c:content|} defines the value of the snippet's
+{X|c: {%:content:%} |} special-placeholder (as described further above, required whether the snippet's <i>own</i> {X|c:content|}
+uses it or not, may be empty of course).</p>

@@ -1,23 +1,16 @@
 vars = [	("xn",""),
-			("xf","")
+			("tn",""),
+			("xf",""),
+			("xo","{T|Xdeclnameopt|}")
 		],
-
-flags = [],
 
 content=>
 
 <p>To elaborate, for example the last one of the above, as all {X|lb:haxproj#xdecl |X| directives|} declaring {X|lt:x X-tags|} do:</p>
 <ul>
 	<li>begins with {X|c: |X| |} followed by the X-renderer identifier (here {X|c:{%xn%}|})</li>
-	<li>followed by {X|c:&nbsp;:|} colon and the desired X-tag name to be used to invoke it (here {X|c:photo|}),</li>
-	<li>followed by {X|c:&nbsp;:|} colon and now <b><i>{%xn%}</i>-specific</b> configuration:
-		<ul>
-			{X|xli:{%xf%}|}
-			<li>followed by a {X|c:&nbsp;:|} colon if an <b>optional</b> {X|lb:syntax syntax-sensitive|} properties block follows,
-			comprised of all of the following properties in this very order:
-				<ol>{%:content:%}</ol>
-			</li>
-		</ul>
-
-	</li>
+	<li>followed by {X|c:&nbsp;:|} colon and the desired X-tag name to be used to invoke it (here {X|c:{%tn%}|}),</li>
+	<li>followed by {X|c:&nbsp;:|} colon and now <i>{%xn%}</i>-<b>specific</b> configuration:</li>
+	{P|X|xli:{%xf%}|}
+	<li>{%xo%}<ol>{%:content:%}</ol></li>
 </ul>

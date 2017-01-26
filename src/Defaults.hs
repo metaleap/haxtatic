@@ -118,7 +118,6 @@ _index_html dircur sitename dirproj dirpages pathpage pathtmpl pathfinal =
 
 _tmpl_html_blok =
     "vars = [(\"bname\",\"\")],\n\
-    \flags = [],\n\
     \content=>\n\
     \<h1>{B|title:{%bname%}|}</h1>\n\
     \<p>{B|desc:{%bname%}|}</p>\n\

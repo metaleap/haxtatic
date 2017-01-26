@@ -1,5 +1,4 @@
 vars = [ ("bname" , "") ],
-flags = [],
 content=>
 <h1>{B|title: {%bname%} |}</h1>
 {B|desc: {%bname%} |}
@@ -7,7 +6,7 @@ content=>
 
 {X|doxindex:	over = FeedPosts (Just Filter {feeds=["{%bname%}"], cats=[], dates=Nothing}) "" [],
 				wrapEach = (	"X|dox-bloklink: vars=["
-							,	"], flags=[], content=\"\" |"
+							,	"], content=\"\" |"
 							),
 				order = None, skip = 0, limit = 0, more = []
 			|}

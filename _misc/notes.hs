@@ -1,4 +1,4 @@
-E°IOS
+http://elm-lang.org/blog/blazing-fast-html-round-two#technical-details
 https://channel9.msdn.com/tags/monad
 https://ocharles.org.uk/blog/posts/2014-12-08-type-operators.html
 

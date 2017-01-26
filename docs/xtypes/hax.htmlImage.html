@@ -33,8 +33,9 @@
 		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i>rel-to-base/path/no/whitespace and optionally some description text</i> |<!---->}</code></li>
 	</ol>
 <h3>Stage:</h3><p><a href="../tags/index.html#stages">Early</a> &mdash; this X-renderer does not require a page context for
-					rendering: therefore any <i>hax.htmlImage</i>-invoking X-tags encountered during pre-templating (at
-					start-up time) will be <a href="../tags/index.html#Processing">processed</a> eagerly (for overall-reduced per-page processing load).</p>
+					rendering: therefore many <i>hax.htmlImage</i>-invoking X-tags encountered during pre-templating (at
+					start-up time) may be eagerly <a href="../tags/index.html#Processing">processed</a> immediately in-place (for overall-reduced
+					per-page processing loads).</p>
 <h2 id="Purpose">Purpose</h2>
 <p>
 	In a similar spirit to <a href="../xtypes/hax.miniTag.html">hax.miniTag</a> and <a href="../xtypes/hax.htmlLink.html">hax.htmlLink</a>, this one is for saving precious
@@ -58,14 +59,12 @@
 	<ul>
 		<li>begins with <code>|X|</code> followed by the X-renderer identifier (here <code>hax.htmlImage</code>)</li>
 		<li>followed by <code>&nbsp;:</code> colon and the desired X-tag name to be used to invoke it (here <code>photo</code>),</li>
-		<li>followed by <code>&nbsp;:</code> colon and now <b><i>hax.htmlImage</i>-specific</b> configuration:
-			<ul>
-				<li>The relative base path for all images from this X-tag (here
+		<li>followed by <code>&nbsp;:</code> colon and now <i>hax.htmlImage</i>-<b>specific</b> configuration:</li>
+		<li>The relative base path for all images from this X-tag (here
 										<a href="../tags/p.html#relpaths">ensuring root-relative</a>:
 										<code>{P<!---->| /pics/photos |<!---->}</code>),</li>
-				<li>followed by a <code>&nbsp;:</code> colon if an <b>optional</b> <a href="../basics/syntax.html">syntax-sensitive</a> properties block follows,
-				comprised of all of the following properties in this very order:
-					<ol><li><code>attrLink = [ <i>..</i> ]</code> &mdash; a List of all the tag attributes (each denoted in a
+		<li>followed by a <code>&nbsp;:</code> colon if an <b>optional</b> <a href="../basics/syntax.html">syntax-sensitive</a> properties block follows,
+					comprised (if present at all) of <i>all</i> the following properties in <i>this</i> very order:<ol><li><code>attrLink = [ <i>..</i> ]</code> &mdash; a List of all the tag attributes (each denoted in a
 	<code>("<i>name</i>","<i>value</i>")</code> pair) to <i>always</i> append (in addition to automatic <code>href</code> and <code>title</code>)
 	to the outer <code>&lt;a&gt;</code> element <ul><li>if empty (the default), no such outer <code>&lt;a&gt;</code> element will be rendered
 	(only the <code>&lt;img&gt;</code> element itself)</li></ul></li>
@@ -73,11 +72,7 @@
 	pair) to <i>always</i> append (in addition to automatic <code>src</code> and <code>alt</code>) to the inner <code>&lt;img&gt;</code> output by
 	all instances of this X-tag</li>
 	<li><code>xmlEscape = ..</code> &mdash; either <code>False</code> (the default) or <code>True</code>; whether to auto-HTML/XML-escape
-	the automatic <code>title</code> / <code>alt</code> attribute values</li></ol>
-				</li>
-			</ul>
-	
-		</li>
+	the automatic <code>title</code> / <code>alt</code> attribute values</li></ol></li>
 	</ul>
 <span id="args"><h2 id="Invocation / Parameters">Invocation / Parameters</h2></span>
 <p>

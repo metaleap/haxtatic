@@ -67,31 +67,34 @@
 			("cat" , "")
 	-->
 	<a class="hd-feed-title" href="../xtypes/hax.htmlLinks.html">hax.htmlLinks</a>
-	<blockquote class="hd-feed-desc">Outputs a sequence of <code>&lt;a ..&gt; .. &lt;/a&gt;</code> or
-	<code>&nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code> in a uniform manner.</blockquote></li><li><!--
+	<blockquote class="hd-feed-desc">Helps with site navigation: outputs a sequence of <code>&lt;a href=&quot;..&quot;&gt; .. &lt;/a&gt;</code> or
+	<code>&nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a href=&quot;..&quot;&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code>
+	in a uniform manner.</blockquote></li><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
 			("dt" , ""),
 			("cat" , "")
 	-->
 	<a class="hd-feed-title" href="../xtypes/hax.htmlAnchors.html">hax.htmlAnchors</a>
-	<blockquote class="hd-feed-desc">Outputs a sequence of
-	<code>&nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a href=&quot;#..&quot; ..&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code>,
-	one per <code>&nbsp;&lt;<i>gatherhtmltag</i>&gt;</code> element found in the page's content source.</blockquote></li><li><!--
+	<blockquote class="hd-feed-desc">Helps with page-level tables-of-content: outputs a sequence of
+	<code>&nbsp;&lt;a href=&quot;#..&quot;&gt; .. &lt;/a&gt;</code> or
+	<code>&nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a href=&quot;#..&quot;&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code>
+	&mdash; one per <code>&nbsp;&lt;<i>gatherhtmltag</i>&gt;</code> element found in the content source file.</blockquote></li><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
 			("dt" , ""),
 			("cat" , "")
 	-->
 	<a class="hd-feed-title" href="../xtypes/hax.snippet.html">hax.snippet</a>
-	<blockquote class="hd-feed-desc">Outputs the content of the named snippet with the specified variable substitutions.</blockquote></li><li><!--
+	<blockquote class="hd-feed-desc">Renders the named "snippet" (aka. "controls" / "components" / "sub-templates") substituting the specified
+	named-parameter values.</blockquote></li><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
 			("dt" , ""),
 			("cat" , "")
 	-->
 	<a class="hd-feed-title" href="../xtypes/hax.iterator.html">hax.iterator</a>
-	<blockquote class="hd-feed-desc">Outputs a sequence of contents enumerated by the specified iterator.</blockquote></li><li><!--
+	<blockquote class="hd-feed-desc">Renders a sequence of values enumerated by the specified iterator, applying the specified filtering/ordering/limits.</blockquote></li><li><!--
 		other possible `vars` that can be added above and used below:
 			("feed" , ""),
 			("dt" , ""),
