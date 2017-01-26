@@ -40,7 +40,8 @@ data Ctx
 
 
 
-_isfsnameok = not.(Data.List.isPrefixOf ".")
+_isfsnameok ('.':_) = False
+_isfsnameok _ = True
 
 
 
@@ -90,6 +91,12 @@ filesInDir dir =
 hasAnyFileExt exts filename =
     any ((==) (System.FilePath.takeExtension filename)) exts
 
+
+
+hasPathBlokIndexPrefix (':':'B':'|':'/':_) = True
+hasPathBlokIndexPrefix _ = False
+
+prependPathBlokIndexPrefix fauxpath = ':':'B':'|':'/':fauxpath
 
 
 listAllFiles rootdirpath reldirs modtimer =
@@ -178,7 +185,7 @@ simpleFilePathMatch relpath dumbpattern =
     let testcontains = patternstarts && patternends
         teststarts = (not testcontains) && patternends
         testends = (not testcontains) && patternstarts
-        patternstarts = Util.startsWith dumbpattern "*"
+        patternstarts = Util.begins '*' dumbpattern
         patternends = Util.endsWith dumbpattern "*"
     in (testcontains && Util.contains relpath (Util.crop 1 1 dumbpattern))
     || (teststarts && Util.startsWith relpath (Util.crop 0 1 dumbpattern))

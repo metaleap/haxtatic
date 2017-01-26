@@ -23,8 +23,7 @@ invocation/parameters. ]</small></p>
 	suffix = "<i>&lt;/li&gt;&lt;/ul&gt;</i>",
 	joinVia = "<i>&lt;/li&gt;&lt;li&gt;</i>",
 	content =&gt;
-<i>&lt;a id="b_link_</i>{%i%}<i>" href="/</i>{%v%}<i>/index.html"&gt;{B<!---->|title: </i>{%v%}<i> |<!---->}&lt;/a&gt;
-&lt;div&gt;{B<!---->|desc: </i>{%v%}<i> |<!---->}&lt;/div&gt;</i>
+<i>&lt;a id="b_link_</i>{%i%}<i>" href="/</i>{%v%}<i>/index.html"&gt;{B<!---->|title: </i>{%v%}<i> |<!---->}&lt;/a&gt;</i>
 </pre>
 
 {X|dox-xtdecl:	vars= [	("xn","hax.iterator"), ("tn","bloknames"), ("xo","{T|Xdeclopt|}"),
@@ -44,9 +43,24 @@ invocation/parameters. ]</small></p>
 |}
 
 {T|Xargs|}
-<p>For example: <code>{X<!---->|greeting: vars = [ <i>("greetname" , "<u>Mr. Curry</u>")</i> ], content=> |<!---->}</code> to
-output as per the above example |X| declaration directive: {X|c: Hello, &lt;b&gt;<i><u>Mr. Curry</u></i>&lt;/b&gt;! |}</p>
-<p>The properties block after the X-tag name is (once again) {X|lb:syntax|}-sensitive. The {X|c:vars|} supply any named
-variable-parameter values for <a href="#subst">placeholder substitution</a> and {X|c:content|} defines the value of the snippet's
-{X|c: {%:content:%} |} special-placeholder (as described further above, required whether the snippet's <i>own</i> {X|c:content|}
-uses it or not, may be empty of course).</p>
+<p>For example, as per the above example |X| declaration directive:
+<code>{X<!---->|bloknames: over=BlokNames |<!---->}</code>
+to output (displayed here with added line-wraps for readability)</p>
+<pre>
+{X|bloknames: over = BlokNames |}
+</pre>
+<p>Now, the same applying a sort order
+<code><i>{X<!---->|bloknames: over = </i>But(Ordered Descending)<i> BlokNames |<!---->}</i></code> to output:</p>
+<pre>
+{X|bloknames: over = But(Ordered Descending) BlokNames |}
+</pre>
+<p>Or applying a limit
+<code><i>{X<!---->|bloknames: over = </i>But(LimitTo 2)<i> BlokNames |<!---->}</i></code> to output:</p>
+<pre>
+{X|bloknames: over = But(LimitTo 2) BlokNames |}
+</pre>
+<p>Or applying that limit <i>after</i> sorting
+<code><i>{X<!---->|bloknames: over = </i>But(LimitTo 2) (But(Ordered Descending)<i> BlokNames |<!---->}</i>)</code> to output:</p>
+<pre>
+{X|bloknames: over = But(LimitTo 2) (But(Ordered Descending) BlokNames) |}
+</pre>

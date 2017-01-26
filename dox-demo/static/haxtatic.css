@@ -43,6 +43,7 @@ pre {
 	min-width: 98%;
 	max-width: 99%;
 	overflow: scroll;
+	margin: 0;
 }
 code {
 	padding: 0 0.22em 0 2.22em;

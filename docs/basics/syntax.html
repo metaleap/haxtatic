@@ -50,9 +50,15 @@ Certain <b>directives</b> (placed in <a href="../basics/haxproj.html">*.haxproj<
 		or <code>{X<!---->|<i>myctl:</i>|<!---->}</code><br/>into <code>{T<!---->|``<i>sometextname</i>|<!---->}</code>, <code>{P<!---->|``1st:<i>div</i>|<!---->}</code>
 		or <code>{X<!---->|``<i>myctl:</i>|<!---->}</code> respectively</li></ul></li></ul>
 	</li>
-	<li>A <b>tuple</b> is a name-value pair enclosed within <code>( )</code> parentheses: two text-values associated together (such as an URL
-		and its caption, or an attribute's name and its value), separated by a <code>&nbsp;,</code> comma:
-		<ul><li><code>wrapEach = ("<i>prefix here</i>" , "<i>suffix here</i>")</code></li></ul></li>
+	<li>A <b>tuple</b> is a name-value pair or a 2-values pair, ie. two parts enclosed within <code>( )</code> parentheses, both separated with
+		a <code>&nbsp;,</code> comma, such as:
+		<ul>
+			<li>two text-values associated together, eg. an URL and its caption, or an attribute's name and its value:
+				<ul><li><code>wrapHref = ("<i>prefix here</i>" , "<i>suffix here</i>")</code></li></ul></li>
+			<li>two related on/off toggles:
+				<ul><li><code>xmlEscape = (<i>False</i> , <i>True</i>)</code></li></ul></li>
+		</ul>
+	</li>
 	<li>
 		A <b>list</b> is enclosed by <code>&nbsp;[</code> and <code>&nbsp;]</code> and may contain any number of either <b>text values</b> (each
 		separated from the next by a <code>&nbsp;,</code> comma), or <b>tuples</b> (dito), or nothing at all:

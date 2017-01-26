@@ -3,7 +3,7 @@ turn on whatever syntax highlighting for eased grokkage..
 		very haxtatic-codebase-developer-specific |C| directives)
 
 	no special comments syntax supported,
-	no random comments after the first |_| directive,
+	no random inline comments like this after the first |_| directive,
 	which follows:
 
 
@@ -129,6 +129,12 @@ turn on whatever syntax highlighting for eased grokkage..
 	prefix = "{", suffix = "}", joinVia = "}{",
 	content = ""
 
+|X|hax.iterator:bloknames:
+	prefix = "<i>&lt;ul class=\"my-blogs\"&gt;<br/>&lt;li&gt;",
+	suffix = "&lt;/li&gt;<br/>&lt;/ul&gt;</i>",
+	joinVia = "&lt;/li&gt;<br/>&lt;li&gt;",
+	content=>
+&lt;a id="b_link_</i>{%i%}<i>" href="/</i>{%v%}<i>/index.html"&gt;	</i>{B|title: {%v%} |}<i>	&lt;/a&gt;
 
 
 
@@ -215,6 +221,6 @@ turn on whatever syntax highlighting for eased grokkage..
 	dt = "1234-05-15", cat = "hax.iterator", title = "", link = "",
 	more = [ ("declmore" , ": <i>..</i>"),
 			 ("cfgmore" , "{X|c:prefix|}, {X|c:suffix|}, {X|c:joinVia|}, {X|c:content|}"),
-			 ("usage" , ": over = .. , wrapEach = .. , order = .. , skip = .. , limit = .. , more = ..") ],
+			 ("usage" , ": over = .. ") ],
 	content=>
 	Renders a sequence of values enumerated by the specified iterator, applying the specified filtering/ordering/limits.

@@ -19,5 +19,10 @@
 		selector&rarr;rearranger&rarr;reformatter&rarr;renderer</li>
 </ul>
 <span id="demo">
-{X|xdescs: over = FeedPosts (Just Filter {feeds=["xdesc"], cats=[], dates=Nothing}) "" [] , wrapEach = ("X|dox-xtdesc: vars=[(\"hsub\",\"\") , (\"htop\" , \"{%cat%}\"), " , "], content=\"\" |"), order = None, skip = 0, limit = 0, more = ["declmore" , "cfgmore" , "usage"] |}
+{X|xdescs:
+	over = But (WrapEachIn	(	"X|dox-xtdesc: vars=[(\"hsub\",\"\") , (\"htop\" , \"{%cat%}\"), "
+							,	"], content=\"\" |"
+							))
+			(FeedPosts (Just Filter {feeds=["xdesc"], cats=[], dates=Nothing}) "" ["declmore" , "cfgmore" , "usage"])
+	|}
 </span>

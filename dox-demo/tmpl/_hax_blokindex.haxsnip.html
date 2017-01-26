@@ -4,11 +4,11 @@ content=>
 {B|desc: {%bname%} |}
 {X|h: Topics |}
 
-{X|doxindex:	over = FeedPosts (Just Filter {feeds=["{%bname%}"], cats=[], dates=Nothing}) "" [],
-				wrapEach = (	"X|dox-bloklink: vars=["
-							,	"], content=\"\" |"
-							),
-				order = None, skip = 0, limit = 0, more = []
+{X|doxindex:	over =
+						But (WrapEachIn	(	"X|dox-bloklink: vars=["
+										,	"], content=\"\" |"
+										))
+						(FeedPosts (Just Filter {feeds=["{%bname%}"], cats=[], dates=Nothing}) "" [])
 			|}
 
 {T|blokIntroMore_{%bname%}|}

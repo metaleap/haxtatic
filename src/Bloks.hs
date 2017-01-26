@@ -2,7 +2,6 @@
 module Bloks where
 
 import Base
-import qualified Defaults
 import qualified Files
 import qualified ProjC
 import qualified Tmpl
@@ -44,7 +43,7 @@ blokByName bloks blokname =
 
 blokNameFromIndexPagePath possiblefakepath =
     -- possiblefakepath possibly sth like :B|/2016-12-18.tags
-    (not$ Data.List.isPrefixOf Defaults.blokIndexPrefix possiblefakepath)
+    (not$ Files.hasPathBlokIndexPrefix possiblefakepath)
         |? "" |! drop 1 (System.FilePath.takeExtension possiblefakepath) -- cringe
 
 
@@ -74,10 +73,8 @@ buildPlan (modtimeproj,modtimetmpl) projcfg allpagesfiles bloks =
                 fdatelatest = maximum (allblokpagefiles >~ snd >~ Files.modTime)
             in ( Files.pathSepSlashToSystem fakepath ,
                 (null fakepath) |? Files.NoFile |! Files.FileInfo {
-                                                    Files.path =
-                                                        Defaults.blokIndexPrefix++"/"
-                                                        ++(ProjC.dtPageDateFormat projcfg cdatelatest)
-                                                        ++"."++bname,
+                                                    Files.path = Files.prependPathBlokIndexPrefix$
+                                                                    (ProjC.dtPageDateFormat projcfg cdatelatest)++('.' : bname),
                                                     Files.modTime = max fdatelatest modtime } )
 
 

@@ -63,7 +63,7 @@ buildPlan modtimeproj relpathpostatoms feednames =
         ( dstfilerelpath , file )
         where
         file = if null dstfilerelpath then Files.NoFile else
-                Files.FileInfo { Files.modTime = modtimeproj , Files.path = Defaults.feedIndexPrefix++"/"++"."++feedname }
+                Files.FileInfo { Files.modTime = modtimeproj , Files.path = ":F|/."++feedname }
         dstfilename = feedname++".atom"
         dstfilerelpath
             |(relpathpostatoms==Defaults.dir_PostAtoms_None)= ""
@@ -107,7 +107,13 @@ feedGroups maybectxbuild projposts projbloks maybequery postfield =
 
 
 moreFromHtmlFieldName (htmltag , htmlattr) =
-    htmltag ++ ('_':htmlattr)
+    ('<':htmltag) ++ ('>':htmlattr)
+
+moreFromHtmlSplit ('<':morename) =
+    let htmltagandattr = Util.splitOn1st_ '>' morename
+    in (elem '>' morename) |? Just htmltagandattr |! Nothing
+moreFromHtmlSplit _ =
+    Nothing
 
 
 

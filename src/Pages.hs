@@ -158,7 +158,7 @@ pageVars cfgproj pagesrc contentdate =
 
 
 tagHandler ctxmain cfgproj ctxpage ctxtmpl outjob ptagcontent
-    | Util.startsWith ptagcontent "X|"
+    | isxdelay ptagcontent
         = Just$ Tmpl.processXtagDelayed xtaghandler (drop 2 ptagcontent)
     | ptagcontent == "date"
         = fordate "" contentdate
@@ -170,6 +170,7 @@ tagHandler ctxmain cfgproj ctxpage ctxtmpl outjob ptagcontent
         = (Data.List.lookup ptagcontent (ctxpage-:Tmpl.pVars)) <|> (for ptagcontent)
 
     where
+    isxdelay ('X':'|':_) = True ; isxdelay _ = False
     xtaghandler = (ctxtmpl-:Tmpl.xTagHandler) (Just ctxpage)
     contentdate = ctxpage-:Tmpl.pDate
     (split1st , splitrest) = Util.bothTrim (Util.splitOn1st_ ':' ptagcontent)

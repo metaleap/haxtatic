@@ -21,12 +21,7 @@ data Tag
         content :: String
     }
     | Args {
-        over :: Iteration,
-        wrapEach :: (String , String),
-        order :: SortOrder,
-        skip :: Int,
-        limit :: Int,
-        more :: [String]
+        over :: Iteration
     }
     deriving Read
 
@@ -37,7 +32,8 @@ data Iteration
     | BlokNames
     | FeedNames
     | FeedGroups (Maybe Posts.Query) String
-    | FeedPosts (Maybe Posts.Query) String Util.StringPairs
+    | FeedPosts (Maybe Posts.Query) String [String]
+    | But Tweak Iteration
     deriving Read
 
 
@@ -47,6 +43,13 @@ data SortOrder
     | Descending
     | Shuffle Bool
     deriving (Eq, Read)
+
+data Tweak
+    = WrapEachIn (String , String)
+    | LimitTo Int
+    | Skip Int
+    | Ordered SortOrder
+    deriving Read
 
 
 registerX ctxproj xreg =
@@ -58,51 +61,55 @@ registerX ctxproj xreg =
         where
         allcontents = cfgjoin (iteratees >~ foreach)
 
-        iteratees = Util.indexed (droptake (args-:skip) (args-:limit) (iter $args-:over)) where
+        iteratees = Util.indexed (iter $args-:over) where
+
+            --  RECURSIVE TWEAK OPS:
+            iter (But (WrapEachIn (pref , suff)) moreover) =
+                (iter moreover) >~ ((pref++).(++suff))
+            iter (But (LimitTo limit) moreover) =
+                take limit (iter moreover)
+            iter (But (Skip skip) moreover) =
+                drop skip (iter moreover)
+            iter (But (Ordered None) moreover) =
+                iter moreover
+            iter (But (Ordered (Shuffle perpage)) moreover) =
+                shuffle perpage (iter moreover)
+            iter (But (Ordered Descending) moreover) =
+                (s moreover) (iter moreover) where -- feed stuff comes pre-sorted descending, so:
+                    s (FeedGroups _ _) = id ; s (FeedPosts _ _ _) = id ; s _ = Data.List.sortBy (flip compare)
+            iter (But (Ordered Ascending) moreover) =
+                (s moreover) (iter moreover) where -- feed stuff comes pre-sorted descending, so:
+                    s (FeedGroups _ _) = reverse ; s (FeedPosts _ _ _) = reverse ; s _ = Data.List.sortBy compare
+
+            --  ACTUAL ENUMERATIONS:
             iter (Values values) =
-                ordered$ values >~ wrapped
+                values
             iter (Range from to) =
-                ordered$ [from..to] >~ (show~.wrapped)
+                [from..to] >~ show
             iter BlokNames =
-                ordered$ projbloknames >~ wrapped
+                projbloknames
             iter FeedNames =
-                ordered$ (projfeednames ++ projbloknames)
-                            >~ wrapped
+                (projfeednames ++ projbloknames)
             iter (FeedGroups maybequery fieldname) =
                 maybefieldfunc~>((Posts.feedGroups maybectxbuild projposts projbloks maybequery) =|- [])
-                    ~> (feedord $args-:order) >~ wrapped
                 where
                 maybefieldfunc =
                     Data.List.lookup fieldname (Posts.wellKnownFields True)
-            iter (FeedPosts maybequery dtformat morehtmls) =
-                (Posts.feedPosts maybectxbuild projposts projbloks (maybequery) dtformat morehtmls)
-                    ~> (feedord $args-:order) >~ (fields2pairs ~. show ~. (Util.crop 1 1) ~. wrapped)
+            iter (FeedPosts maybequery dtformat more) =
+                (Posts.feedPosts maybectxbuild projposts projbloks (maybequery) dtformat (morefromhtml>=~Posts.moreFromHtmlSplit))
+                    >~ (fields2pairs ~. show ~. (Util.crop 1 1))
                 where
+                morefromhtml = more ~| is where is ('<':val) = elem '>' val ; is _ = False
                 fields2pairs post =
                     ((Posts.wellKnownFields False) ++ morefields) >~ (Util.both (id , (post-:)))
-                morefields = (morehtmls>~Posts.moreFromHtmlFieldName ++ args-:more) >~ topair where
+                morefields = more >~ topair where
                     topair mfield =
                         mfield =: Posts.more~.(Util.lookup mfield $"{!|"++mfield++"|!}")
-            feedord None = id
-            feedord Descending = id
-            feedord Ascending = reverse
-            feedord (Shuffle perpage) = shuffle perpage
         maybectxbuild = maybectxpage =>- \ctxpage -> Posts.BuildContext (ctxpage-:Tmpl.lookupCachedPageRender)
                                                                         (ctxpage-:Tmpl.allPagesFiles) projbloks
                                                                         projposts (ctxproj-:Proj.setup-:Proj.cfg)
-        wrapped = args-:wrapEach ~> \(w1,w2) -> (w1++).(++w2)
-        droptake 0 0 = id
-        droptake 0 t = (take t)
-        droptake d 0 = (drop d)
-        droptake d t = (drop d) ~. (take t)
-        ordered = case args-:order of
-                    Ascending       -> Data.List.sortBy compare
-                    Descending      -> Data.List.sortBy (flip compare)
-                    Shuffle perpage -> shuffle perpage
-                    None            -> id
-        args = X.tryParseArgs xreg argstr (Just defargs) errargs where
-            defargs = Args { over = Values [], wrapEach = ("",""), order = None, skip = 0, limit = 0, more = [] }
-            errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))], wrapEach = ("",""), order = None, skip = 0, limit = 0, more = [] }
+        args = X.tryParseArgs xreg argstr Nothing errargs where
+            errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))] }
 
         shuffle perpage = Util.shuffleExtra (randseeds maybectxpage perpage)
         randseeds (Just pagectx) True =
@@ -111,21 +118,18 @@ registerX ctxproj xreg =
             ctxproj-:Proj.setup-:Proj.randSeed
 
         waitforpage =
-            (not$ hasctxpage maybectxpage)
-                && ( (needpage4iter $args-:over) || (needpage4ord $args-:order) )
+            (not$ hasctxpage maybectxpage) && (needpage4iter $args-:over)
             where
             hasctxpage Nothing = False ; hasctxpage (Just _) = True
-            needpage4ord (Shuffle perpage) = perpage ; needpage4ord _ = False
+            needpage4iter (But (Ordered (Shuffle perpage)) moreover) = perpage || needpage4iter moreover
+            needpage4iter (But _ moreover) = needpage4iter moreover
             needpage4iter (FeedGroups query _) = needpage4feed query
             needpage4iter (FeedPosts query _ _) = needpage4feed query
             needpage4iter _ = False
             needpage4feed (Just (Posts.Filter feednames@(_:_) _ _)) =
-                not$ all (`elem` projfeednames) feednames -- not all known as |P| feeds (yet), so postpone til page
+                not$ all (`elem` projfeednames) feednames
             needpage4feed _ =
                 has projbloknames
-            -- _likelyinsnippet =
-            --     let i1 = Util.indexOfSub argstr "{%" ; i2 = Util.indexOfSub argstr "%}"
-            --     in i1 >= 0 && i2 > i1
 
         projposts = ctxproj-:Proj.setup-:Proj.posts
         projfeednames = ctxproj-:Proj.setup-:Proj.feeds
@@ -140,6 +144,13 @@ registerX ctxproj xreg =
     cfgjoin = if null $cfg-:joinVia then concat else Util.join $cfg-:joinVia
     cfgwrap | (null $cfg-:prefix) && (null $cfg-:suffix) = id
             | otherwise = (((cfg-:prefix))++).(++((cfg-:suffix)))
+
+    -- feedsort moreover ifisfeed ifnofeed =
+    --     let stream = iter moreover
+    --     in case moreover of
+    --         FeedGroups _ _ -> ifisfeed stream
+    --         FeedPosts _ _ _ -> ifisfeed stream
+    --         _ -> ifnofeed stream
 
 
     cfg_parsestr = Tmpl.fixParseStr "content" (xreg-:X.cfgFullStr)

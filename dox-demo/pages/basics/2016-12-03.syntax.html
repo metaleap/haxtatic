@@ -28,9 +28,15 @@ Certain <b>directives</b> (placed in {X|lb:haxproj *.haxproj|} files or implied 
 		or {X|c:{X<!---->|<i>myctl:</i>|<!---->}|}<br/>into {X|c:{T<!---->|``<i>sometextname</i>|<!---->}|}, {X|c:{P<!---->|``1st:<i>div</i>|<!---->}|}
 		or {X|c:{X<!---->|``<i>myctl:</i>|<!---->}|} respectively</li></ul></li></ul>
 	</li>
-	<li>A <b>tuple</b> is a name-value pair enclosed within {X|c:( )|} parentheses: two text-values associated together (such as an URL
-		and its caption, or an attribute's name and its value), separated by a {X|c:&nbsp;,|} comma:
-		<ul><li>{X|c:wrapEach = ("<i>prefix here</i>" , "<i>suffix here</i>")|}</li></ul></li>
+	<li>A <b>tuple</b> is a name-value pair or a 2-values pair, ie. two parts enclosed within {X|c:( )|} parentheses, both separated with
+		a {X|c:&nbsp;,|} comma, such as:
+		<ul>
+			<li>two text-values associated together, eg. an URL and its caption, or an attribute's name and its value:
+				<ul><li>{X|c:wrapHref = ("<i>prefix here</i>" , "<i>suffix here</i>")|}</li></ul></li>
+			<li>two related on/off toggles:
+				<ul><li>{X|c:xmlEscape = (<i>False</i> , <i>True</i>)|}</li></ul></li>
+		</ul>
+	</li>
 	<li>
 		A <b>list</b> is enclosed by {X|c:&nbsp;[|} and {X|c:&nbsp;]|} and may contain any number of either <b>text values</b> (each
 		separated from the next by a {X|c:&nbsp;,|} comma), or <b>tuples</b> (dito), or nothing at all:

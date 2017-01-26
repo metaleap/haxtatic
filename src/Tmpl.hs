@@ -163,7 +163,7 @@ tagMismatches src =
     Util.countSubVsSubs src (tag_Close , tags_All)
 
 warnIfTagMismatches ctxmain filename (numtagends , numtagbegins) =
-    if Util.startsWith filename Defaults.blokIndexPrefix || numtagbegins == numtagends
+    if Files.hasPathBlokIndexPrefix filename || numtagbegins == numtagends
         then return ()
         else
         let maindirpath = ctxmain-:Files.dirPath
