@@ -48,13 +48,17 @@ data Feed =
 
 data Query
     = All
-    | Filter {
+    | Some {
         feeds :: [String],
         cats :: [String],
-        dates :: Maybe (String , String)
+        dates :: QueryDate
     }
     deriving Read
 
+data QueryDate
+    = Any
+    | Between String String
+    deriving Read
 
 
 buildPlan modtimeproj relpathpostatoms feednames =
@@ -78,12 +82,12 @@ dtYear post =
 
 
 
-feedPosts maybectxbuild projposts projbloks query dtformat morefromhtmls =
+feedPosts maybectxbuild projposts projbloks query morefromhtmls =
     if everything query then allposts else allposts ~| match
     where
-    everything All = True ; everything (Filter [] [] Nothing) = True ; everything _ = False
+    everything All = True ; everything (Some [] [] Any) = True ; everything (Some [] [] (Between [] [])) = True ; everything _ = False
     allposts = projposts ++ (concat$ bloknames>~postsfromblok)
-    postsfromblok blokname = (postsFromBlok maybectxbuild dtformat morefromhtmls blokname) >~ snd
+    postsfromblok blokname = (postsFromBlok maybectxbuild morefromhtmls blokname) >~ snd
     bloknames = let bnames = Data.Map.Strict.keys projbloks in
                     if everything query then bnames else bnames ~|(`elem` (query-:feeds))
     match post =
@@ -92,15 +96,17 @@ feedPosts maybectxbuild projposts projbloks query dtformat morefromhtmls =
         where
         check field criteria =
             null criteria || any ((post-:field)==) criteria
-        checkdate (Just (mindate,maxdate)) =
+        checkdate (Between mindate maxdate) =
             (post-:dt) >= mindate && (post-:dt) <= maxdate
         checkdate _ =
             True
 
-feedGroups maybectxbuild projposts projbloks query dtformat morefromhtmls postfield =
-    Util.unique (allposts >~ postfield)
+feedGroups maybectxbuild projposts projbloks query fieldname =
+    Util.unique$ case Data.List.lookup fieldname (wellKnownFields True) of
+        Nothing -> (allposts >~ ((Data.List.lookup fieldname).more)) ~> Util.noMaybes
+        Just field -> allposts >~ field
     where
-    allposts = feedPosts maybectxbuild projposts projbloks query dtformat morefromhtmls
+    allposts = feedPosts maybectxbuild projposts projbloks query []
 
 
 
@@ -141,7 +147,7 @@ parseProjChunks projcfg chunkssplits =
 
 
 
-postsFromBlok (Just ctxbuild) dtformat morefromhtmls blokname =
+postsFromBlok (Just ctxbuild) morefromhtmls blokname =
     allblokpages >~ topost
     where
     (allblokpages , cdatelatest) = Bloks.allBlokPageFiles (ctxbuild-:projCfg) (ctxbuild-:allPagesFiles) blokname
@@ -163,7 +169,7 @@ postsFromBlok (Just ctxbuild) dtformat morefromhtmls blokname =
             post = From {
                 feed = blokname,
                 dt = formatdt "",
-                cat = formatdt dtformat,
+                cat = "",
                 title = htmlinner1st "h1" relpath,
                 link = Files.sanitizeUriRelPathForJoin relpath,
                 more = morefromhtmls >~ morefromhtml,
@@ -171,7 +177,7 @@ postsFromBlok (Just ctxbuild) dtformat morefromhtmls blokname =
             }
         in (htmlcontent , post)
 
-postsFromBlok _ _ _ _ =
+postsFromBlok _ _ _ =
     []
 
 
@@ -189,7 +195,7 @@ writeAtoms ctxbuild domainname outjobs =
     outjobs >>~ writeatom >> return ()
     where
 
-    postsfromblok = postsFromBlok (Just ctxbuild) "" []
+    postsfromblok = postsFromBlok (Just ctxbuild) []
 
     writeatom outjob =
         Files.writeTo (outjob-:outPathBuild) relpath xmlatomfull >>= \nowarnings

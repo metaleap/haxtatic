@@ -31,14 +31,10 @@ data Iteration
     | Values [String]
     | BlokNames
     | FeedNames Bool
-    | FeedValues FeedSelect String
-    | FeedPosts FeedSelect
+    | FeedValues Posts.Query String
+    | FeedPosts Posts.Query [String]
     | But Tweak Iteration
     | With Iteration [Tweak]
-    deriving Read
-
-data FeedSelect
-    = Pick Posts.Query String [String]
     deriving Read
 
 data SortOrder
@@ -82,10 +78,10 @@ registerX ctxproj xreg =
                 shuffle perpage (iter moreover)
             iter (But (Ordered Descending) moreover) =
                 (s moreover) (iter moreover) where -- feed stuff comes pre-sorted descending, so:
-                    s (FeedValues _ _) = id ; s (FeedPosts _) = id ; s _ = Data.List.sortBy (flip compare)
+                    s (FeedValues _ _) = id ; s (FeedPosts _ _) = id ; s _ = Data.List.sortBy (flip compare)
             iter (But (Ordered Ascending) moreover) =
                 (s moreover) (iter moreover) where -- feed stuff comes pre-sorted descending, so:
-                    s (FeedValues _ _) = reverse ; s (FeedPosts _) = reverse ; s _ = Data.List.sortBy compare
+                    s (FeedValues _ _) = reverse ; s (FeedPosts _ _) = reverse ; s _ = Data.List.sortBy compare
 
             --  ACTUAL ENUMERATIONS:
             iter (Values values) =
@@ -97,12 +93,10 @@ registerX ctxproj xreg =
                 projbloknames
             iter (FeedNames bloks) =
                 (not bloks) |? projfeednames |! (projfeednames ++ projbloknames)
-            iter (FeedValues (Pick query dtformat more) fieldname) =
-                case Data.List.lookup fieldname (Posts.wellKnownFields True) of
-                    Nothing -> []
-                    Just field -> feedgroups query dtformat ((morefromhtml more)>=~Posts.moreFromHtmlSplit) field
-            iter (FeedPosts (Pick query dtformat more)) =
-                (feedposts query dtformat ((morefromhtml more)>=~Posts.moreFromHtmlSplit))
+            iter (FeedValues query fieldname) =
+                feedgroups query fieldname
+            iter (FeedPosts query more) =
+                (feedposts query ((morefromhtml more)>=~Posts.moreFromHtmlSplit))
                     >~ (fields2pairs ~. show ~. (Util.crop 1 1))
                 where
                 fields2pairs post =
@@ -132,10 +126,10 @@ registerX ctxproj xreg =
             needpage4iter (With iter buts) = needpage4iter (_with2buts iter buts)
             needpage4iter (But (Ordered (Shuffle perpage)) moreover) = perpage || needpage4iter moreover
             needpage4iter (But _ moreover) = needpage4iter moreover
-            needpage4iter (FeedValues (Pick query _ _) _) = needpage4feed query
-            needpage4iter (FeedPosts (Pick query _ _)) = needpage4feed query
+            needpage4iter (FeedValues query _) = needpage4feed query
+            needpage4iter (FeedPosts query _) = needpage4feed query
             needpage4iter _ = False
-            needpage4feed (Posts.Filter feednames@(_:_) _ _) =
+            needpage4feed (Posts.Some feednames@(_:_) _ _) =
                 not$ all (`elem` projfeednames) feednames
             needpage4feed _ =
                 has projbloknames
