@@ -46,8 +46,9 @@ data Feed =
     }
 
 
-data Query =
-    Filter {
+data Query
+    = All
+    | Filter {
         feeds :: [String],
         cats :: [String],
         dates :: Maybe (String , String)
@@ -77,18 +78,15 @@ dtYear post =
 
 
 
-feedPosts maybectxbuild projposts projbloks maybequery dtformat morefromhtmls =
-    case maybequery of
-        Nothing -> allposts
-        Just (Filter [] [] Nothing) -> allposts
-        Just query -> allposts ~| match query
+feedPosts maybectxbuild projposts projbloks query dtformat morefromhtmls =
+    if everything query then allposts else allposts ~| match
     where
+    everything All = True ; everything (Filter [] [] Nothing) = True ; everything _ = False
     allposts = projposts ++ (concat$ bloknames>~postsfromblok)
     postsfromblok blokname = (postsFromBlok maybectxbuild dtformat morefromhtmls blokname) >~ snd
-    bloknames = case maybequery of
-        Nothing -> Data.Map.Strict.keys projbloks
-        Just query -> (Data.Map.Strict.keys projbloks) ~|(`elem` (query-:feeds))
-    match query post =
+    bloknames = let bnames = Data.Map.Strict.keys projbloks in
+                    if everything query then bnames else bnames ~|(`elem` (query-:feeds))
+    match post =
         (check feed (query-:feeds) && check cat (query-:cats) && (checkdate $query-:dates))
             || (post-:cat == "_hax_cat") || (post-:dt) == "9999-12-31"
         where
@@ -99,10 +97,10 @@ feedPosts maybectxbuild projposts projbloks maybequery dtformat morefromhtmls =
         checkdate _ =
             True
 
-feedGroups maybectxbuild projposts projbloks maybequery postfield =
+feedGroups maybectxbuild projposts projbloks query dtformat morefromhtmls postfield =
     Util.unique (allposts >~ postfield)
     where
-    allposts = feedPosts maybectxbuild projposts projbloks maybequery "" []
+    allposts = feedPosts maybectxbuild projposts projbloks query dtformat morefromhtmls
 
 
 

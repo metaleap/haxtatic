@@ -31,12 +31,15 @@ data Iteration
     | Values [String]
     | BlokNames
     | FeedNames Bool
-    | FeedGroups (Maybe Posts.Query) String
-    | FeedPosts (Maybe Posts.Query) String [String]
+    | FeedValues FeedSelect String
+    | FeedPosts FeedSelect
     | But Tweak Iteration
     | With Iteration [Tweak]
     deriving Read
 
+data FeedSelect
+    = Pick Posts.Query String [String]
+    deriving Read
 
 data SortOrder
     = None
@@ -79,10 +82,10 @@ registerX ctxproj xreg =
                 shuffle perpage (iter moreover)
             iter (But (Ordered Descending) moreover) =
                 (s moreover) (iter moreover) where -- feed stuff comes pre-sorted descending, so:
-                    s (FeedGroups _ _) = id ; s (FeedPosts _ _ _) = id ; s _ = Data.List.sortBy (flip compare)
+                    s (FeedValues _ _) = id ; s (FeedPosts _) = id ; s _ = Data.List.sortBy (flip compare)
             iter (But (Ordered Ascending) moreover) =
                 (s moreover) (iter moreover) where -- feed stuff comes pre-sorted descending, so:
-                    s (FeedGroups _ _) = reverse ; s (FeedPosts _ _ _) = reverse ; s _ = Data.List.sortBy compare
+                    s (FeedValues _ _) = reverse ; s (FeedPosts _) = reverse ; s _ = Data.List.sortBy compare
 
             --  ACTUAL ENUMERATIONS:
             iter (Values values) =
@@ -94,21 +97,21 @@ registerX ctxproj xreg =
                 projbloknames
             iter (FeedNames bloks) =
                 (not bloks) |? projfeednames |! (projfeednames ++ projbloknames)
-            iter (FeedGroups maybequery fieldname) =
-                maybefieldfunc~>((Posts.feedGroups maybectxbuild projposts projbloks maybequery) =|- [])
-                where
-                maybefieldfunc =
-                    Data.List.lookup fieldname (Posts.wellKnownFields True)
-            iter (FeedPosts maybequery dtformat more) =
-                (Posts.feedPosts maybectxbuild projposts projbloks (maybequery) dtformat (morefromhtml>=~Posts.moreFromHtmlSplit))
+            iter (FeedValues (Pick query dtformat more) fieldname) =
+                case Data.List.lookup fieldname (Posts.wellKnownFields True) of
+                    Nothing -> []
+                    Just field -> feedgroups query dtformat ((morefromhtml more)>=~Posts.moreFromHtmlSplit) field
+            iter (FeedPosts (Pick query dtformat more)) =
+                (feedposts query dtformat ((morefromhtml more)>=~Posts.moreFromHtmlSplit))
                     >~ (fields2pairs ~. show ~. (Util.crop 1 1))
                 where
-                morefromhtml = more ~| is where is ('<':val) = elem '>' val ; is _ = False
                 fields2pairs post =
                     ((Posts.wellKnownFields False) ++ morefields) >~ (Util.both (id , (post-:)))
                 morefields = more >~ topair where
                     topair mfield =
                         mfield =: Posts.more~.(Util.lookup mfield $"{!|"++mfield++"|!}")
+        (feedgroups,feedposts) = (ff Posts.feedGroups , ff Posts.feedPosts) where ff f = f maybectxbuild projposts projbloks
+        morefromhtml more = more ~| is where is ('<':val) = elem '>' val ; is _ = False
         maybectxbuild = maybectxpage =>- \ctxpage -> Posts.BuildContext (ctxpage-:Tmpl.lookupCachedPageRender)
                                                                         (ctxpage-:Tmpl.allPagesFiles) projbloks
                                                                         projposts (ctxproj-:Proj.setup-:Proj.cfg)
@@ -129,10 +132,10 @@ registerX ctxproj xreg =
             needpage4iter (With iter buts) = needpage4iter (_with2buts iter buts)
             needpage4iter (But (Ordered (Shuffle perpage)) moreover) = perpage || needpage4iter moreover
             needpage4iter (But _ moreover) = needpage4iter moreover
-            needpage4iter (FeedGroups query _) = needpage4feed query
-            needpage4iter (FeedPosts query _ _) = needpage4feed query
+            needpage4iter (FeedValues (Pick query _ _) _) = needpage4feed query
+            needpage4iter (FeedPosts (Pick query _ _)) = needpage4feed query
             needpage4iter _ = False
-            needpage4feed (Just (Posts.Filter feednames@(_:_) _ _)) =
+            needpage4feed (Posts.Filter feednames@(_:_) _ _) =
                 not$ all (`elem` projfeednames) feednames
             needpage4feed _ =
                 has projbloknames

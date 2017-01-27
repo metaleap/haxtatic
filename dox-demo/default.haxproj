@@ -72,7 +72,7 @@ turn on whatever syntax highlighting for eased grokkage..
 					any <i>{P|fileBaseName|}</i>-invoking X-tags encountered during pre-templating (at start-up time) will be
 					skipped over, thus only process per-page, once present.</p>
 |T|Xearlyorpage:	<h3>Stage:</h3><p>{X|lt:index#stages Early or Page|} &mdash; this X-renderer determines dynamically (documented
-					further below) whether or not it requires a page context for rendering, so depending on each
+					further <a href="#dynstage">below</a>) whether or not it requires a page context for rendering, so depending on each
 					<i>{P|fileBaseName|}</i>-invoking X-tag's configuration and/or parameters:</p><ul><li><i>some</i> encountered
 					during pre-templating (at start-up time) may be eagerly {X|lt:index#Processing processed|} immediately in-place
 					(for overall-reduced per-page processing loads),</li> <li> and <i>others</i> will be skipped over, thus only
@@ -225,4 +225,4 @@ turn on whatever syntax highlighting for eased grokkage..
 			 ("cfgmore" , "{X|c:prefix|}, {X|c:suffix|}, {X|c:joinVia|}, {X|c:content|}"),
 			 ("usage" , ": .. ") ],
 	content=>
-	Renders a sequence of values enumerated by the specified iterator, applying the specified filtering/ordering/limits.
+	Renders a sequence of values from the specified enumerator, applying the specified filtering/ordering/limits.

@@ -39,7 +39,7 @@
 					<a href="../xtypes/hax.miniTag.html">more</a>-<a href="../xtypes/hax.htmlImage.html">elaborate</a>-<a href="../xtypes/hax.htmlLink.html">and</a>-<a href="../xtypes/hax.xmlEscape.html">introductory</a>
 					topics first to form a better grasp on the basics and overall mechanisms.</p>
 <h3>Stage:</h3><p><a href="../tags/index.html#stages">Early or Page</a> &mdash; this X-renderer determines dynamically (documented
-					further below) whether or not it requires a page context for rendering, so depending on each
+					further <a href="#dynstage">below</a>) whether or not it requires a page context for rendering, so depending on each
 					<i>hax.htmlLinks</i>-invoking X-tag's configuration and/or parameters:</p><ul><li><i>some</i> encountered
 					during pre-templating (at start-up time) may be eagerly <a href="../tags/index.html#Processing">processed</a> immediately in-place
 					(for overall-reduced per-page processing loads),</li> <li> and <i>others</i> will be skipped over, thus only
@@ -64,7 +64,7 @@
 		<li>The output <u>outer</u> markup-tag name (can be empty to skip such) to contain every output
 								<code>&lt;a&gt;</code> element</li>
 		<li>followed by a <code>&nbsp;:</code> colon if an <b>optional</b> <a href="../basics/syntax.html">syntax-sensitive</a> properties block follows,
-					comprised (if present at all) of <i>all</i> the following properties in <i>this</i> very order:<ol><li><code>attr = [("<i>name</i>","<i>value</i>") , <i>..</i>]</code>
+					comprised (if present at all) of <i>all</i> the following properties in <i>this</i> very order:<ol><li id="dynstage"><code>attr = [("<i>name</i>","<i>value</i>") , <i>..</i>]</code>
 	&mdash; the output <u>outer</u>-tag's markup attributes as name-value pairs
 		<ul><li>Attribute names starting with <code>&nbsp;&amp;</code> ampersand are only output (without it, of course) for path-wise
 		"current/selected/active" links with respect to the current page-context (see below paragraph for the approximate logic used

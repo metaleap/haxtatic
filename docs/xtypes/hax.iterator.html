@@ -22,7 +22,7 @@
 <!-- begins content source page -->
 <h1>hax.iterator</h1>
 	
-	<p class="up">Renders a sequence of values enumerated by the specified iterator, applying the specified filtering/ordering/limits.</p>
+	<p class="up">Renders a sequence of values from the specified enumerator, applying the specified filtering/ordering/limits.</p>
 	<h2 id="In a nutshell">In a nutshell</h2>
 	<ol>
 		<li class="up">
@@ -36,11 +36,6 @@
 <p>Hence, formatting and structure of the output is mostly defined in the X-tag's one-off
 <a href="#decl">declaration / configuration</a>, while the per-tag <a href="#args">invocation / parameters</a> define
 <i>what values</i> to enumerate, which ones to show, in what order etc.</p>
-<p><small>[ Most invocations of <i>hax.iterator</i> X-tags are anticipated to occur in one-off definitions within <a href="../basics/haxproj.html">central</a>
-<a href="../basics/tmplsnip.html">project</a> <a href="../basics/tmplsnip.html#snippets">files</a> anyway, rather than select-but-multiple-individual content source files;
-however: in such unexpected cases of course, a simple <a href="../xtypes/hax.snippet.html">hax.snippet</a> &mdash;or even just a <a href="../tags/t.html">T-tag</a> if not
-dynamic/parametric at all&mdash; will easily let one avoid any unnecessary duplication of specific combinations of
-invocation/parameters. ]</small></p>
 
 <p class="hd-note">This topic is in a compact format for users already familiar with the essentials of
 					<a href="../basics/haxproj.html#xdecl">declaring</a> X-tags and invoking them. If found challenging, try the
@@ -48,7 +43,7 @@ invocation/parameters. ]</small></p>
 					topics first to form a better grasp on the basics and overall mechanisms.</p>
 
 <h3>Stage:</h3><p><a href="../tags/index.html#stages">Early or Page</a> &mdash; this X-renderer determines dynamically (documented
-					further below) whether or not it requires a page context for rendering, so depending on each
+					further <a href="#dynstage">below</a>) whether or not it requires a page context for rendering, so depending on each
 					<i>hax.iterator</i>-invoking X-tag's configuration and/or parameters:</p><ul><li><i>some</i> encountered
 					during pre-templating (at start-up time) may be eagerly <a href="../tags/index.html#Processing">processed</a> immediately in-place
 					(for overall-reduced per-page processing loads),</li> <li> and <i>others</i> will be skipped over, thus only
@@ -113,11 +108,11 @@ built-in such <i>modifiers</i>. Another is <code>LimitTo</code> for applying a l
 <pre>
 <i>&lt;ul class="my-blogs"&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>0<i>" href="/</i>xtypes<i>/index.html"&gt;	</i>X-renderers<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>1<i>" href="/</i>tags<i>/index.html"&gt;	</i>haXtags<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;/ul&gt;</i>
 </pre>
-<p><b>By now, this is starting to become unwieldy:</b> multiple such nested <code>But</code>s is somewhat verbose and keeping track of correct
-parenthesis placement easily error-prone, plus their right-to-left flow (ie. above: first-sort-then-limit logic written as <i>first</i>
-the <i>limit</i> part, <i>then</i> the <i>sort</i> part) possibly counterintuitive for non-programmers. The (functionally equivalent
-<code>But</code> <i>alternative</i>, the) <code>With</code> clause avoids such nesting-via-parens and flips that right-to-left flow over. So the same
-output as above can be achieved with a much simpler notation:
+<p><b>By now, this is starting to become unwieldy:</b> multiple such nested <code>But</code>s can be somewhat verbose and keeping track of
+correct parenthesis placement easily error-prone, plus their right-to-left flow (ie. above: first-sort-then-limit logic written as
+<i>first</i> the <i>limit</i> part, <i>then</i> the <i>sort</i> part) possibly counterintuitive for non-programmers. The (functionally
+equivalent <code>But</code> <i>alternative</i>, the) <code>With</code> clause avoids such nesting-via-parens and flips that right-to-left flow over.
+So the same output as above can be achieved with a much simpler notation:
 <code><i>{X<!---->|myenumlist: </i>With BlokNames [Ordered Descending , LimitTo 2]<i> |<!---->}</i></code> &mdash; ie. "with the
 enumerated values, but ordered this way: give us the first 2":</p>
 <pre>
@@ -143,12 +138,20 @@ enumerated values, but ordered this way: give us the first 2":</p>
 		gives: <code>xdesc, basics, tags, xtypes</code></li>
 		<li>eg. <code>{X<!---->|myenum: FeedNames <i>False</i> |<!---->}</code>
 		gives: <code>xdesc</code></li></ul></li>
-	<li><code>FeedPosts</code> and <code>FeedGroups</code> &mdash; a bit more involved:</li>
+	<li><code>FeedPosts</code> and <code>FeedValues</code> &mdash; a bit more involved:</li>
 </ul>
-<h3>FeedGroups</h3>
+<h3>FeedValues</h3>
 <p>todo</p>
 <h3>FeedPosts</h3>
 <p>todo</p>
+<h3 id="dynstage">Render stage</h3>
+<p>An X-tag of type <code>hax.iterator</code> defaults to <a href="../tags/index.html#stages">Early</a> but is delayed to <a href="../tags/index.html#stages">Page</a> stage
+whenever:</p>
+<ul>
+	<li>it contains an <code>Ordered (Shuffle True)</code> modifier (see below)</li>
+	<li>the project has <a href="../basics/bloks.html">Blok</a> pages <b>and</b> the X-tag uses a <code>FeedValues</code> or <code>FeedPosts</code> enumerator (see
+	above) with a <code>Filter</code> of <code>All</code> or one effectively selecting such Bloks within the specified <code>feeds</code>.</li>
+</ul>
 <h2 id="Modifiers">Modifiers</h2>
 <p>Modifiers "tweak"/mangle/slice/dice/etc the result-set of values returned by the specified <i>enumerator</i>. As explained
 <a href="#args">above</a>, any such modifiers can be expressed either one-per-<code>But</code> (which in turn can be nested), or stated as
@@ -156,6 +159,11 @@ an ordered sequence of multiple such modifiers per <code>With</code> clause.</p>
 <p><small>(Technically, one <i>could</i> also specify a complete <code>But</code> clause (in parens) as the
 <i>enumerator</i> in a <code>With</code> clause, or one <i>could</i> also specify a complete <code>With</code> clause (in parens) as the
 <i>enumerator</i> in a <code>But</code> clause, but practically there's no good reason one should want to.)</small></p>
+<p>
+	Syntax: using <code>With (<i>enumerator</i>) [<i>modifier 1</i> , <i>modifier 2</i> , .. , <i>modifier n</i>]</code> always wrap the
+	<i>enumerator</i> in parentheses and all <i>modifiers</i> in square brackets. Using <code>But (<i>modifier 1</i>)
+	(<i>enumerator-or-another-</i>But)</code>, always wrap the <i>modifier</i> in parentheses and the <i>enumerator</i> too.
+</p>
 <!--
 	<li><code><i>{X-|myenum: But (Foo) Enum |-} </i></code>
 	produces <code>{X-|myenum: But (Foo) Enum |-}</code>
@@ -178,7 +186,7 @@ an ordered sequence of multiple such modifiers per <code>With</code> clause.</p>
 <h3>WrapEachIn <i>(&lt;prefix&gt; , &lt;suffix&gt;)</i></h3>
 <p>Encloses every item within a given prefix and suffix:</p>
 <ul>
-	<li><code><i>{X<!---->|myenum: But </i>( WrapEachIn ("/" , "/index.html") )<i> BlokNames |<!---->}</i></code>
+	<li><code><i>{X<!---->|myenum: But </i>( WrapEachIn ("/" , "/index.html") )<i> (BlokNames) |<!---->}</i></code>
 	produces <code>/basics/index.html, /tags/index.html, /xtypes/index.html</code>
 	instead of <code>basics, tags, xtypes</code></li>
 </ul>
@@ -191,8 +199,8 @@ an ordered sequence of multiple such modifiers per <code>With</code> clause.</p>
 	<li><code><i>{X<!---->|myenum: But </i>(Ordered Ascending)<i> (Values ["zeta","phi","gamma","beta","alpha"]) |<!---->}</i></code>
 	produces <code>alpha, beta, gamma, phi, zeta</code>
 	instead of <code>zeta, phi, gamma, beta, alpha</code></li>
-	<li><code><i>{X<!---->|myenum: With (Range 1 23) </i>[Ordered (Shuffle False) , LimitTo 6]<i> |<!---->}</i></code>
-	produces <code>2, 4, 12, 7, 15, 8</code>
+	<li><code><i>{X<!---->|myenum: With (Range 1 23) </i>[Ordered (Shuffle False) , LimitTo 6, WrapEachIn ("#",". ")]<i> |<!---->}</i></code>
+	produces <code>#23. , #16. , #21. , #18. , #20. , #9.</code>
 	instead of <code>1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23</code>
 		<ul><li>Only either <code>(Shuffle True)</code> or <code>(Shuffle False)</code> are valid. When used in a central project file such as a
 		<a href="../basics/haxproj.html">*.haxproj</a>, a <a href="../basics/tmplsnip.html">template</a> or a <a href="../basics/tmplsnip.html#snippets">snippet</a> (rather than directly inside a
@@ -200,9 +208,12 @@ an ordered sequence of multiple such modifiers per <code>With</code> clause.</p>
 		identically for all output files during this processing run (but still varying with each processing run).</li></ul></li>
 	<li><code><i>{X<!---->|myenum: With (Values ["foo","bar"]) </i>[Ordered None]<i> |<!---->}</i></code>
 	"produces" <code>foo, bar</code>
-	"instead of" <code>foo, bar</code> &mdash; ie. it does not touch the items at all: useless, except
-	perhaps for example when quickly and temporarily wanting to disable reordering somewhere inside some <code>But</code> nesting.</li>
+	"instead of" <code>foo, bar</code> &mdash; ie. <code>None</code> does not touch the items at all: useless perhaps,
+	except for example when quickly and temporarily wanting to disable reordering somewhere inside some <code>But</code> nesting.</li>
 </ul>
+<p>As noted earlier, the <code>FeedPosts</code> and <code>FeedValues</code> enumerators order not alphabetically but by post date, and they
+<i>always</i> do so: defaulting to <i>descending</i> absent an <code>Ordered</code> to the contrary. So <code>Ordered Descending</code>,
+<code>Ordered None</code> or no <code>Ordered</code> modifier whatsoever all result in identical outputs.</p>
 
 <!-- end of content source page -->
 <a name="down"></a>

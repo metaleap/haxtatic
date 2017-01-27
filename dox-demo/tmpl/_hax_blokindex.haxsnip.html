@@ -7,7 +7,7 @@ content=>
 {X|doxindex:	But (WrapEachIn	(	"X|dox-bloklink: vars=["
 										,	"], content=\"\" |"
 										))
-						(FeedPosts (Just Filter {feeds=["{%bname%}"], cats=[], dates=Nothing}) "" [])
+						(FeedPosts (Pick (Filter {feeds=["{%bname%}"], cats=[], dates=Nothing}) "" []))
 			|}
 
 {T|blokIntroMore_{%bname%}|}

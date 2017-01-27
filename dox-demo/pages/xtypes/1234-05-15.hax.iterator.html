@@ -3,11 +3,6 @@
 <p>Hence, formatting and structure of the output is mostly defined in the X-tag's one-off
 <a href="#decl">declaration / configuration</a>, while the per-tag <a href="#args">invocation / parameters</a> define
 <i>what values</i> to enumerate, which ones to show, in what order etc.</p>
-<p><small>[ Most invocations of <i>hax.iterator</i> X-tags are anticipated to occur in one-off definitions within {X|lb:haxproj central|}
-{X|lb:tmplsnip project|} {X|lb:tmplsnip#snippets files|} anyway, rather than select-but-multiple-individual content source files;
-however: in such unexpected cases of course, a simple {X|lx:hax.snippet|} &mdash;or even just a {X|lt:t T-tag|} if not
-dynamic/parametric at all&mdash; will easily let one avoid any unnecessary duplication of specific combinations of
-invocation/parameters. ]</small></p>
 
 {T|Xcompact|}
 
@@ -67,11 +62,11 @@ built-in such <i>modifiers</i>. Another is {X|c:LimitTo|} for applying a limit
 <pre>
 {X|myenumlist: But(LimitTo 2) (But(Ordered Descending) BlokNames) |}
 </pre>
-<p><b>By now, this is starting to become unwieldy:</b> multiple such nested {X|c:But|}s is somewhat verbose and keeping track of correct
-parenthesis placement easily error-prone, plus their right-to-left flow (ie. above: first-sort-then-limit logic written as <i>first</i>
-the <i>limit</i> part, <i>then</i> the <i>sort</i> part) possibly counterintuitive for non-programmers. The (functionally equivalent
-{X|c:But|} <i>alternative</i>, the) {X|c:With|} clause avoids such nesting-via-parens and flips that right-to-left flow over. So the same
-output as above can be achieved with a much simpler notation:
+<p><b>By now, this is starting to become unwieldy:</b> multiple such nested {X|c:But|}s can be somewhat verbose and keeping track of
+correct parenthesis placement easily error-prone, plus their right-to-left flow (ie. above: first-sort-then-limit logic written as
+<i>first</i> the <i>limit</i> part, <i>then</i> the <i>sort</i> part) possibly counterintuitive for non-programmers. The (functionally
+equivalent {X|c:But|} <i>alternative</i>, the) {X|c:With|} clause avoids such nesting-via-parens and flips that right-to-left flow over.
+So the same output as above can be achieved with a much simpler notation:
 <code><i>{X<!---->|myenumlist: </i>With BlokNames [Ordered Descending , LimitTo 2]<i> |<!---->}</i></code> &mdash; ie. "with the
 enumerated values, but ordered this way: give us the first 2":</p>
 <pre>
@@ -97,12 +92,20 @@ enumerated values, but ordered this way: give us the first 2":</p>
 		gives: {X|c: {X|myenum: FeedNames True |} |}</li>
 		<li>eg. {X|c: {X<!---->|myenum: FeedNames <i>False</i> |<!---->} |}
 		gives: {X|c: {X|myenum: FeedNames False |} |}</li></ul></li>
-	<li>{X|c:FeedPosts|} and {X|c:FeedGroups|} &mdash; a bit more involved:</li>
+	<li>{X|c:FeedPosts|} and {X|c:FeedValues|} &mdash; a bit more involved:</li>
 </ul>
-<h3>FeedGroups</h3>
+<h3>FeedValues</h3>
 <p>todo</p>
 <h3>FeedPosts</h3>
 <p>todo</p>
+<h3 id="dynstage">Render stage</h3>
+<p>An X-tag of type {X|c:hax.iterator|} defaults to {X|lt:index#stages Early|} but is delayed to {X|lt:index#stages Page|} stage
+whenever:</p>
+<ul>
+	<li>it contains an {X|c: Ordered (Shuffle True) |} modifier (see below)</li>
+	<li>the project has {X|lb:bloks Blok|} pages <b>and</b> the X-tag uses a {X|c:FeedValues|} or {X|c:FeedPosts|} enumerator (see
+	above) with a {X|c:Filter|} of {X|c:All|} or one effectively selecting such Bloks within the specified {X|c:feeds|}.</li>
+</ul>
 {X|h: Modifiers |}
 <p>Modifiers "tweak"/mangle/slice/dice/etc the result-set of values returned by the specified <i>enumerator</i>. As explained
 <a href="#args">above</a>, any such modifiers can be expressed either one-per-{X|c:But|} (which in turn can be nested), or stated as
@@ -110,6 +113,11 @@ an ordered sequence of multiple such modifiers per {X|c:With|} clause.</p>
 <p><small>(Technically, one <i>could</i> also specify a complete {X|c:But|} clause (in parens) as the
 <i>enumerator</i> in a {X|c:With|} clause, or one <i>could</i> also specify a complete {X|c:With|} clause (in parens) as the
 <i>enumerator</i> in a {X|c:But|} clause, but practically there's no good reason one should want to.)</small></p>
+<p>
+	Syntax: using {X|c:With (<i>enumerator</i>) [<i>modifier 1</i> , <i>modifier 2</i> , .. , <i>modifier n</i>] |} always wrap the
+	<i>enumerator</i> in parentheses and all <i>modifiers</i> in square brackets. Using {X|c: But (<i>modifier 1</i>)
+	(<i>enumerator-or-another-</i>But) |}, always wrap the <i>modifier</i> in parentheses and the <i>enumerator</i> too.
+</p>
 <!--
 	<li>{X|c: <i>{X-|myenum: But (Foo) Enum |-} </i>|}
 	produces {X|c: {X-|myenum: But (Foo) Enum |-} |}
@@ -132,9 +140,9 @@ an ordered sequence of multiple such modifiers per {X|c:With|} clause.</p>
 <h3>WrapEachIn <i>(&lt;prefix&gt; , &lt;suffix&gt;)</i></h3>
 <p>Encloses every item within a given prefix and suffix:</p>
 <ul>
-	<li>{X|c: <i>{X<!---->|myenum: But </i>( WrapEachIn ("/" , "/index.html") )<i> BlokNames |<!---->}</i> |}
-	produces {X|c: {X|myenum: But ( WrapEachIn ("/" , "/index.html") ) BlokNames |} |}
-	instead of {X|c: {X|myenum: BlokNames |} |}</li>
+	<li>{X|c: <i>{X<!---->|myenum: But </i>( WrapEachIn ("/" , "/index.html") )<i> (BlokNames) |<!---->}</i> |}
+	produces {X|c: {X|myenum: But ( WrapEachIn ("/" , "/index.html") ) (BlokNames) |} |}
+	instead of {X|c: {X|myenum: (BlokNames) |} |}</li>
 </ul>
 <h3>Ordered <i>&lt;sortorder&gt;</i></h3>
 <p>Re-orders the items either {X|c:Ascending|} or {X|c:Descending|} or {X|c:Shuffle|}d:</p>
@@ -145,8 +153,8 @@ an ordered sequence of multiple such modifiers per {X|c:With|} clause.</p>
 	<li>{X|c: <i>{X<!---->|myenum: But </i>(Ordered Ascending)<i> (Values ["zeta","phi","gamma","beta","alpha"]) |<!---->}</i> |}
 	produces {X|c: {X|myenum: But (Ordered Ascending) (Values ["zeta","phi","gamma","beta","alpha"]) |} |}
 	instead of {X|c: {X|myenum: Values ["zeta","phi","gamma","beta","alpha"] |} |}</li>
-	<li>{X|c: <i>{X<!---->|myenum: With (Range 1 23) </i>[Ordered (Shuffle False) , LimitTo 6]<i> |<!---->}</i> |}
-	produces {X|c: {X|myenum: With (Range 1 23) [Ordered (Shuffle False) , LimitTo 6] |} |}
+	<li>{X|c: <i>{X<!---->|myenum: With (Range 1 23) </i>[Ordered (Shuffle False) , LimitTo 6, WrapEachIn ("#",". ")]<i> |<!---->}</i> |}
+	produces {X|c: {X|myenum: With (Range 1 23) [Ordered (Shuffle False) , LimitTo 6, WrapEachIn ("#",". ")] |} |}
 	instead of {X|c: {X|myenum: (Range 1 23) |} |}
 		<ul><li>Only either {X|c:(Shuffle True)|} or {X|c:(Shuffle False)|} are valid. When used in a central project file such as a
 		{X|lb:haxproj *.haxproj|}, a {X|lb:tmplsnip template|} or a {X|lb:tmplsnip#snippets snippet|} (rather than directly inside a
@@ -154,6 +162,9 @@ an ordered sequence of multiple such modifiers per {X|c:With|} clause.</p>
 		identically for all output files during this processing run (but still varying with each processing run).</li></ul></li>
 	<li>{X|c: <i>{X<!---->|myenum: With (Values ["foo","bar"]) </i>[Ordered None]<i> |<!---->}</i> |}
 	"produces" {X|c: {X|myenum: With (Values ["foo","bar"]) [Ordered None] |} |}
-	"instead of" {X|c: {X|myenum: (Values ["foo","bar"]) |} |} &mdash; ie. it does not touch the items at all: useless, except
-	perhaps for example when quickly and temporarily wanting to disable reordering somewhere inside some {X|c:But|} nesting.</li>
+	"instead of" {X|c: {X|myenum: (Values ["foo","bar"]) |} |} &mdash; ie. {X|c:None|} does not touch the items at all: useless perhaps,
+	except for example when quickly and temporarily wanting to disable reordering somewhere inside some {X|c:But|} nesting.</li>
 </ul>
+<p>As noted earlier, the {X|c:FeedPosts|} and {X|c:FeedValues|} enumerators order not alphabetically but by post date, and they
+<i>always</i> do so: defaulting to <i>descending</i> absent an {X|c:Ordered|} to the contrary. So {X|c:Ordered Descending|},
+{X|c:Ordered None|} or no {X|c:Ordered|} modifier whatsoever all result in identical outputs.</p>
