@@ -31,7 +31,7 @@
 	<li>The placeholder {X|c:&nbsp;{<!---->%i%<!---->}|} outputs an iteration index: 0 for the first enumerated item and afterwards
 		increments by 1 for each further item, regardless of its value or which ordering/filtering was active.</li>
 	<li>The placeholder {X|c:&nbsp;{<!---->%v%<!---->}|} outputs the current item in plain-text form as returned by the chosen
-		enumerator.</li>
+		<a href="#Enumerators">enumerator</a>.</li>
 	<li>If {X|c:content|} is empty (the default), this is equivalent to it being {X|c:&nbsp;{<!---->%v%<!---->}|}.</li>
 	<li>If {X|c:content|} does not contain any of these 2 placeholders, it will obviously be output repeatedly, identically,
 	once per item.</li>
@@ -77,94 +77,192 @@ enumerated values, but ordered this way: give us the first 2":</p>
 	<li>{X|c:Range <i>startnum</i> <i>endnum</i>|}
 		&mdash; a range of numbers,<ul><li>
 		eg. {X|c: {X<!---->|myenum: Range <i>2 7</i> |<!---->} |}
-		gives: {X|c: {X|myenum: Range 2 7 |} |}</li></ul></li>
+		gives: {X|note: {X|myenum: Range 2 7 |} |}</li></ul></li>
 	<li>{X|c:Values [<i>..</i>] |}
 		&mdash; a given list of text values,<ul><li>
 		eg. {X|c: {X<!---->|myenum: Values [<i>"Hudak", "Wadler", "Peyton-Jones", "Bird", "Okasaki"</i>] |<!---->} |}
-		gives: {X|c: {X|myenum: Values ["Hudak", "Wadler", "Peyton-Jones", "Bird", "Okasaki"] |} |}</li></ul></li>
+		gives: {X|note: {X|myenum: Values ["Hudak", "Wadler", "Peyton-Jones", "Bird", "Okasaki"] |} |}</li></ul></li>
 	<li>{X|c:BlokNames|}
 		&mdash; names of all {X|lb:bloks Bloks |} defined in the project,<ul><li>
 		eg. {X|c: {X<!---->|myenum: BlokNames |<!---->} |}
-		gives: {X|c: {X|myenum: BlokNames |} |}</li></ul></li>
+		gives: {X|note: {X|myenum: BlokNames |} |}</li></ul></li>
 	<li>{X|c:FeedNames <i>blokstoo?</i> |}
-		&mdash; names of all {X|lb:haxproj#pdecl "feeds"|} known in the project, including or excluding the above {X|c:BlokNames|}<ul><li>
-		eg. {X|c: {X<!---->|myenum: FeedNames <i>True</i> |<!---->} |}
-		gives: {X|c: {X|myenum: FeedNames True |} |}</li>
+		&mdash; names of all {X|lb:haxproj#pdecl "feeds"|} known in the project, including or excluding the above {X|c:BlokNames|}
+		<ul><li>eg. {X|c: {X<!---->|myenum: FeedNames <i>True</i> |<!---->} |}
+		gives: {X|note: {X|myenum: FeedNames True |} |}</li>
 		<li>eg. {X|c: {X<!---->|myenum: FeedNames <i>False</i> |<!---->} |}
-		gives: {X|c: {X|myenum: FeedNames False |} |}</li></ul></li>
+		gives: {X|note: {X|myenum: FeedNames False |} |}</li></ul></li>
 	<li>{X|c:FeedPosts|} and {X|c:FeedValues|} &mdash; a bit more involved:</li>
 </ul>
-<h3>FeedValues</h3>
-<p>todo</p>
-<h3>FeedPosts</h3>
-<p>todo</p>
-<h3 id="dynstage">Render stage</h3>
-<p>An X-tag of type {X|c:hax.iterator|} defaults to {X|lt:index#stages Early|} but is delayed to {X|lt:index#stages Page|} stage
-whenever:</p>
+{X|h: Feed enumerators|}
+<p>In addition to the simpler enumerators outlined above, {X|c:FeedValues|} and {X|c:FeedPosts|} enumerate items derived on the fly
+from the project's {X|lb:bloks Blok|} pages (if any) and/or the project's {X|lb:haxproj#pdecl "feed-posts"|} (if any). These 2
+enumerators have quite a few commonalities:</p>
 <ul>
-	<li>it contains an {X|c: Ordered (Shuffle True) |} modifier (see below)</li>
-	<li>the project has {X|lb:bloks Blok|} pages <b>and</b> the X-tag uses a {X|c:FeedValues|} or {X|c:FeedPosts|} enumerator (see
-	above) with a {X|c:Filter|} of {X|c:All|} or one effectively selecting such Bloks within the specified {X|c:feeds|}.</li>
+	<li>A <i>filter query</i> and another 2nd parameter, the full forms being:<ul>
+		<li>{X|c:FeedPosts <i>&lt;filter&gt;</i> [] |} and</li>
+		<li>{X|c:FeedValues <i>&lt;filter&gt;</i> "<i>&lt;fieldname&gt;</i>" |}</li></ul></li>
+	<li>The first (the <i>filter</i>) part is either simply {X|c:All|} (no filtering, anything goes), or the functionally exactly
+		equivalent {X|c:Some{ feeds=[], cats=[], dates=<i>Any</i> }|} (also no filtering), or the same form but with some or all of
+		these 3 properties set:<ul>
+			<li><i>feeds</i> &mdash; a list of {X|lb:haxproj#pdecl "feed" names|} and/or {X|lb:haxproj#bdecl Blok names|} to include
+				when enumerating items (empty {X|c:&nbsp;[]|} means "all of them")</li>
+			<li><i>cats</i> &mdash; the list of <nobr>{X|c:cat|}egories</nobr> to include (only for {X|lb:haxproj#pdecl "feed"posts|}, not
+				Bloks; empty {X|c:&nbsp;[]|} means "all of them")</li>
+			<li><i>dates</i> &mdash; either {X|c:Any|} to indicate "from any date" or
+				{X|c:Between "<i>from</i>" "<i>up-until</i>"|} with both text values of course encoding dates in the well-known,
+				machine-friendly format {X|c: "YYYY-MM-DD" |}</li>
+	</ul></li>
+	<li>The second part gives:<ul>
+		<li>for {X|c:FeedPosts|} the list of {X|lb:haxproj#pdecl custom|} field names to include (in addition to the
+			<a href="#fields">standard</a> ones) in the syntactic de-facto {X|c:vars|} output (explained further below)</li>
+		<li>for {X|c:FeedValues|} the name of the "post" ({X|lb:haxproj#pdecl custom|} or standard) <a href="#fields">field</a> whose
+			value should be output (at most once per iteration)</li>
+	</ul></li>
+</ul>
+<p class="hd-note"><b>In the current version, a known issue:</b> in a project <i>with</i> {X|lb:bloks Blok|} pages, using <b><i>in</i>
+Blok pages</b> either {X|c:All|} or any {X|c:Some|} that effectively selects <i>any</i> Bloks as <i>feeds</i> is "not currently supported"
+(ie. expect incorrect, inconsistent or missing results). <b>All other pages are OK</b> for such uses, however, as are all
+{X|lb:bloks#auto auto-generated blog 'index' pages|} (if any). To be rectified in a future release &mdash; still, the functionality as-is
+is valuable enough for the already-working-today use cases.</p>
+<h3>FeedValues</h3>
+<p>In this site, {X|c: <i>{X<!---->|myenum: FeedValues </i>All "cat"<i> |<!---->}</i>|} produces some peculiar outputs:
+{X|note: {X|myenum: FeedValues All "cat" |} |} &mdash;that final comma baffles, for one&mdash; here's how and why:</p>
+<ul>
+	<li>{X|c:All|} uses as <i>input</i> feeds essentially what the described-earlier {X|c:FeedNames True|} enumerator
+	<i>outputs</i>: {X|c: {X|myenum: FeedNames True|} |} &mdash; in this site there are 3 {X|lb:bloks Bloks|} defined and 1
+	{X|lb:haxproj#pdecl "feed"|} (named {X|c:xdesc|}, in the bottom ~80-90 lines of
+	<a href="http://github.com/metaleap/haxtatic/blob/master/dox-demo/default.haxproj">default.haxproj</a>).</li>
+	<li>The latter's numerous individual "posts" in {X|c:xdesc|} all have (perhaps somewhat-unusually-so) each a unique
+	<nobr>{X|c:cat|}egory</nobr> set (all beginning with {X|c:hax.*|} but that's simply due to the content semantics of this site:
+	<i>documenting</i> {T|Hax|}) &mdash; Blok pages however don't have such <nobr>{X|c:cat|}egories</nobr> and hence the final (seemingly
+	superfluous) comma in the output above: from also outputting that empty value once.</li>
+	<li>The final implication then is that {X|c:FeedValues|} in particular <b>doesn't output duplicate values</b> (only 1
+	faux-{X|c:cat|} was output from a few dozen Blok "posts") &mdash; making {X|c:FeedValues|} the appropriate choice for <b>grouping</b>
+	for example <i>actual</i> posts together in individual (to be dynamically assembled from such unique-value outputs) sub-ordinate
+	{X|c:hax.iterator|}s.</li>
+</ul>
+<p>So much for {X|c:All|}, now to demonstrate {X|c:Some|} more examples:</p>
+<ul>
+<li>{X|c:<i>{X<!---->|myenum: FeedValues </i>Some{ feeds=[],cats=[],dates=Any }<i> "</i>dt:year<i>"|<!---->}</i> |}
+	&mdash; as mentioned, such a {X|c:Some|} is identical to {X|c:All|}, but here instead of a post's {X|c:cat|}, its date's year
+	&rarr; {X|note: {X|myenum: FeedValues Some{feeds=[],cats=[],dates=Any} "dt:year" |} |}</li>
+<li>{X|c:<i>{X<!---->|myenum: FeedValues Some{ feeds=[</i>"xdesc"<i>],cats=[],dates=Any } "dt:year"|<!---->}</i>|}
+	&rarr; {X|note: {X|myenum: FeedValues Some{feeds=["xdesc"],cats=[],dates=Any} "dt:year" |} |}</li>
+<li>{X|c:<i>{X<!---->|myenum: FeedValues Some{ feeds=["xdesc"],cats=[],dates=Any } </i>"cat"<i> |<!---->}</i>|}
+	&mdash; as we saw, {X|c:xdesc|} has 10 "posts" but each has a uniquely distinct {X|c:cat|}:
+	&rarr; {X|note: {X|myenum: FeedValues Some{feeds=["xdesc"],cats=[],dates=Any} "cat" |} |}</li>
+<li>{X|c:<i>{X<!---->|myenum: FeedValues Some{ feeds=["xdesc"],cats=[],dates=Any } </i>"link"<i>|<!---->}</i>|}
+	&mdash; however, most of them share the same (empty, hence the extra comma below) {X|c:link|}:
+	&rarr; {X|note: {X|myenum: FeedValues Some{feeds=["xdesc"],cats=[],dates=Any} "link" |} |}</li>
+<li>{X|c:<i>{X<!---->|myenum: FeedValues Some{ feeds=["xdesc"],cats=[],dates=</i>Between "1234-11-" "1234-12-31"<i> } "dt"|<!---->}</i>|}
+	&mdash; filtering by date range:
+	&rarr; {X|note: {X|myenum: FeedValues Some{feeds=["xdesc"],cats=[],dates=Between "1234-11-01" "1234-12-31"} "dt" |} |}</li>
+<li>{X|c:<i>{X<!---->|myenum: FeedValues Some{ feeds=["xdesc"],cats=[],dates=Between "1234-11-" "1234-12-31"} "</i>cfgmore<i>"|<!---->}</i>|}
+	&mdash; but both these results from that date-range filter <a href="http://github.com/metaleap/haxtatic/blob/master/dox-demo/default.haxproj">share</a> the same {X|c:cfgmore|} ({X|lb:haxproj#pdecl custom|} {X|c:more|} field) value:
+	&rarr; {X|note: {X|myenum: FeedValues Some{feeds=["xdesc"],cats=[],dates=Between "1234-11-01" "1234-12-31"} "cfgmore" |} |}</li>
+</ul>
+<h3>FeedPosts</h3>
+<p>So the above outlines exhaustively how {X|c:FeedValues|} operates, hoes does {X|c:FeedPosts|} differ?</p>
+<ul>
+	<li>Whereas {X|c:FeedValues|} enumerated unique <b>single-field</b> values for all "posts" selected,</li>
+	<li>with {X|c:FeedPosts|} the <i>entire</i> (if passing the <i>filter</i>) post (<b>all</b> its field values) is output.</li>
+</ul>
+<p>For this, clearly {X|c:FeedPosts|} shouldn't just dictate some particular output formatting or other for such data records! Instead,
+all that it outputs for each item is a syntactic notation of {X|c:vars|} to then be fed directly into an outer {X|lx:hax.snippet|}. So
+just a moderate grasp of {X|lb:tmplsnip#snippets snippets|} and how to populate their {X|c:vars|} when invoking them via X-tags, plus
+the above {X|c:joinVia|}/{X|c:content|} <a href="#decl">directive properties</a> as well as the below {X|c:WrapEachIn|}
+<a href="#Modifiers">modifier</a> clears the path to infinitely versatile micro-content rendering.</p>
+<p>To give an impression of this in practice, here's just the output produced when selecting only <b>this very X-renderer</b> via
+{X|c:<i>{X<!---->|myenum: FeedPosts Some{ feeds=["</i>xdesc<i>"], cats=["</i>hax.iterator<i>"], dates=Any} ["</i>cfgmore<i>"] |<!---->}</i>|} &mdash; ie. selecting from this site's {X|c:xdesc|} "feed" just the "post" describing <b>hax.iterator</b> with not just all standard
+fields (more <a href="#fields">below</a>) but also the {X|lb:haxproj#pdecl custom|} {X|c:more|} field <b>cfgmore</b>:</p>
+<p>{X|c:{X|xesc:{X|myenum: FeedPosts Some{ feeds=["xdesc"], cats=["hax.iterator"], dates=Any} ["cfgmore"] |}|}|}</p>
+<p>A simple {X|lb:syntax list of name-value-pair tuples|} &mdash; just without the enclosing {X|c:&nbsp;[]|} square brackets that are
+not to be forgotten when ensuring the wrapping of these per-item outputs inside what will typically (effectively have to) end up amounting
+to both {X|c: {X<!---->|<i>mysnippet</i>: vars=[ |} and {X|c:], content=> |<!---->} |}.</p>
+<p><b>"That sounds more complicated than necessary, wouldn't it be nicer if</b> one could specify just-the-<i>name</i> of any
+{X|lb:tmplsnip#snippets snippet|} and {X|c:FeedPosts|} then invoked it directly, instead of outputting syntax to then wrap other syntax
+around?" Certainly true, but this would lose the flexibility to include further additional {X|c:vars|} (or even {X|c:content=>|}, or
+future parameters) with the snippet's X-tag. Maybe such a shortcut will appear in a future release.</p>
+<h3 id="fields">"Post" field names</h3>
+<p>In addition to the specified {X|lb:haxproj#pdecl|} custom {X|c:more|} fields, the following standard fields are always returned (even
+if empty) as de-facto {X|c:vars|} by {X|c:FeedPosts|}, and also all understood by {X|c:FeedValues|}:</p>
+<ul>
+	<li>{X|c:feed|} &mdash; the post's "feed" name or Blok name</li>
+	<li>{X|c:dt|} &mdash; post date in the standard format {X|c:YYYY-MM-DD|}</li>
+	<li>{X|c:cat|} &mdash; for Blok "posts": empty &mdash; otherwise: as {X|lb:haxproj#pdecl set|} for the post</li>
+	<li>{X|c:title|} &mdash; for Blok "posts": detected from {X|c:&lt;h1&gt;|} {X|lt:p like|} {X|c:{P<!---->|title|<!---->}|} &mdash;
+		otherwise: as {X|lb:haxproj#pdecl set|} for the post</li>
+	<li>{X|c:link|} &mdash; for Blok "posts": relative URI path to the page &mdash;
+		otherwise: as {X|lb:haxproj#pdecl set|} for the post</li>
+	<li>{X|c:content|} &mdash; for Blok "posts": content of the first {X|c:&lt;p&gt;|} if any &mdash;
+		otherwise: as {X|lb:haxproj#pdecl set|} for the post</li>
 </ul>
 {X|h: Modifiers |}
-<p>Modifiers "tweak"/mangle/slice/dice/etc the result-set of values returned by the specified <i>enumerator</i>. As explained
-<a href="#args">above</a>, any such modifiers can be expressed either one-per-{X|c:But|} (which in turn can be nested), or stated as
-an ordered sequence of multiple such modifiers per {X|c:With|} clause.</p>
+<p>So <i>enumerators</i> are built-in routines that know how to iterate certain ranges, collections, lists, etc. Can their result sets be
+"tweaked"/mangled/sliced/diced/etc prior to the final output? This is achieved by adding to the 1 enumerator possible per
+<b>hax.iterator</b> X-tag any number of <i>modifiers</i>.</p>
+<p>As explained <a href="#args">above</a>, any such modifiers can be expressed either one-per-{X|c:But|} (which in turn can be nested),
+or stated as an ordered sequence of multiple such modifiers per {X|c:With|} clause.</p>
 <p><small>(Technically, one <i>could</i> also specify a complete {X|c:But|} clause (in parens) as the
 <i>enumerator</i> in a {X|c:With|} clause, or one <i>could</i> also specify a complete {X|c:With|} clause (in parens) as the
 <i>enumerator</i> in a {X|c:But|} clause, but practically there's no good reason one should want to.)</small></p>
 <p>
-	Syntax: using {X|c:With (<i>enumerator</i>) [<i>modifier 1</i> , <i>modifier 2</i> , .. , <i>modifier n</i>] |} always wrap the
+	Syntax: using {X|c:With (<i>enumerator</i>) [<i>modifier 1</i> , <i>modifier 2</i> , .. , <i>modifier n</i>] |}, always wrap the
 	<i>enumerator</i> in parentheses and all <i>modifiers</i> in square brackets. Using {X|c: But (<i>modifier 1</i>)
 	(<i>enumerator-or-another-</i>But) |}, always wrap the <i>modifier</i> in parentheses and the <i>enumerator</i> too.
 </p>
-<!--
-	<li>{X|c: <i>{X-|myenum: But (Foo) Enum |-} </i>|}
-	produces {X|c: {X-|myenum: But (Foo) Enum |-} |}
-	instead of {X|c: {X-|myenum: Enum |-} |}</li>
--->
 <h3>LimitTo <i>&lt;number&gt;</i></h3>
 <p>Limits the number of items:</p>
 <ul>
 	<li>{X|c: <i>{X<!---->|myenum: But </i>(LimitTo 2)<i> (FeedNames True) |<!---->}</i> |}
-	produces {X|c: {X|myenum: But (LimitTo 2) (FeedNames True) |} |}
-	instead of {X|c: {X|myenum: (FeedNames True) |} |}</li>
+	produces {X|note: {X|myenum: But (LimitTo 2) (FeedNames True) |} |}
+	instead of {X|note: {X|myenum: (FeedNames True) |} |}</li>
 </ul>
 <h3>Skip <i>&lt;number&gt;</i></h3>
 <p>Skips a number of items:</p>
 <ul>
 	<li>{X|c: <i>{X<!---->|myenum: With (Range 12 3) </i>[Skip 4]<i> |<!---->}</i> |}
-	produces {X|c: {X|myenum: With (Range 12 3) [Skip 4] |} |}
-	instead of {X|c: {X|myenum: Range 12 3 |} |}</li>
+	produces {X|note: {X|myenum: With (Range 12 3) [Skip 4] |} |}
+	instead of {X|note: {X|myenum: Range 12 3 |} |}</li>
 </ul>
 <h3>WrapEachIn <i>(&lt;prefix&gt; , &lt;suffix&gt;)</i></h3>
 <p>Encloses every item within a given prefix and suffix:</p>
 <ul>
 	<li>{X|c: <i>{X<!---->|myenum: But </i>( WrapEachIn ("/" , "/index.html") )<i> (BlokNames) |<!---->}</i> |}
-	produces {X|c: {X|myenum: But ( WrapEachIn ("/" , "/index.html") ) (BlokNames) |} |}
-	instead of {X|c: {X|myenum: (BlokNames) |} |}</li>
+	produces {X|note: {X|myenum: But ( WrapEachIn ("/" , "/index.html") ) (BlokNames) |} |}
+	instead of {X|note: {X|myenum: (BlokNames) |} |}</li>
 </ul>
 <h3>Ordered <i>&lt;sortorder&gt;</i></h3>
 <p>Re-orders the items either {X|c:Ascending|} or {X|c:Descending|} or {X|c:Shuffle|}d:</p>
 <ul>
 	<li>{X|c: <i>{X<!---->|myenum: With (FeedNames True) </i>[Ordered Descending]<i> |<!---->}</i> |}
-	produces {X|c: {X|myenum: With (FeedNames True) [Ordered Descending] |} |}
-	instead of {X|c: {X|myenum: (FeedNames True) |} |}</li>
+	produces {X|note: {X|myenum: With (FeedNames True) [Ordered Descending] |} |}
+	instead of {X|note: {X|myenum: (FeedNames True) |} |}</li>
 	<li>{X|c: <i>{X<!---->|myenum: But </i>(Ordered Ascending)<i> (Values ["zeta","phi","gamma","beta","alpha"]) |<!---->}</i> |}
-	produces {X|c: {X|myenum: But (Ordered Ascending) (Values ["zeta","phi","gamma","beta","alpha"]) |} |}
-	instead of {X|c: {X|myenum: Values ["zeta","phi","gamma","beta","alpha"] |} |}</li>
+	produces {X|note: {X|myenum: But (Ordered Ascending) (Values ["zeta","phi","gamma","beta","alpha"]) |} |}
+	instead of {X|note: {X|myenum: Values ["zeta","phi","gamma","beta","alpha"] |} |}</li>
 	<li>{X|c: <i>{X<!---->|myenum: With (Range 1 23) </i>[Ordered (Shuffle False) , LimitTo 6, WrapEachIn ("#",". ")]<i> |<!---->}</i> |}
-	produces {X|c: {X|myenum: With (Range 1 23) [Ordered (Shuffle False) , LimitTo 6, WrapEachIn ("#",". ")] |} |}
-	instead of {X|c: {X|myenum: (Range 1 23) |} |}
+	produces {X|note: {X|myenum: With (Range 1 23) [Ordered (Shuffle False) , LimitTo 6, WrapEachIn ("#",". ")] |} |}
+	instead of {X|note: {X|myenum: (Range 1 23) |} |}
 		<ul><li>Only either {X|c:(Shuffle True)|} or {X|c:(Shuffle False)|} are valid. When used in a central project file such as a
 		{X|lb:haxproj *.haxproj|}, a {X|lb:tmplsnip template|} or a {X|lb:tmplsnip#snippets snippet|} (rather than directly inside a
 		content source file), {X|c:Shuffle True|} shuffles differently for each output file while {X|c:Shuffle False|} shuffles
 		identically for all output files during this processing run (but still varying with each processing run).</li></ul></li>
 	<li>{X|c: <i>{X<!---->|myenum: With (Values ["foo","bar"]) </i>[Ordered None]<i> |<!---->}</i> |}
-	"produces" {X|c: {X|myenum: With (Values ["foo","bar"]) [Ordered None] |} |}
-	"instead of" {X|c: {X|myenum: (Values ["foo","bar"]) |} |} &mdash; ie. {X|c:None|} does not touch the items at all: useless perhaps,
-	except for example when quickly and temporarily wanting to disable reordering somewhere inside some {X|c:But|} nesting.</li>
+	"produces" {X|note: {X|myenum: With (Values ["foo","bar"]) [Ordered None] |} |}
+	"instead of" {X|note: {X|myenum: (Values ["foo","bar"]) |} |} &mdash; ie. {X|c:None|} does not touch the items at all: useless
+	perhaps, except for example when quickly and temporarily wanting to disable reordering somewhere inside some {X|c:But|} nesting.</li>
 </ul>
-<p>As noted earlier, the {X|c:FeedPosts|} and {X|c:FeedValues|} enumerators order not alphabetically but by post date, and they
-<i>always</i> do so: defaulting to <i>descending</i> absent an {X|c:Ordered|} to the contrary. So {X|c:Ordered Descending|},
-{X|c:Ordered None|} or no {X|c:Ordered|} modifier whatsoever all result in identical outputs.</p>
+<p>As noted <a href="#Feed enumerators">earlier</a>, the {X|c:FeedPosts|} and {X|c:FeedValues|} enumerators order not alphabetically
+but by post date, and they <i>always</i> do so: defaulting to <i>descending</i> absent an {X|c:Ordered|} to the contrary. So
+{X|c:Ordered Descending|}, {X|c:Ordered None|} or no {X|c:Ordered|} modifier whatsoever all result in identical outputs.</p>
+<span id="dynstage">{X|h: Render stage |}</span>
+<p>An X-tag of type {X|c:hax.iterator|} defaults to {X|lt:index#stages Early|} but is delayed to {X|lt:index#stages Page|} stage
+whenever:</p>
+<ul>
+	<li>it contains an {X|c: Ordered (Shuffle True) |} modifier (see <a href="#Modifiers">above</a>)</li>
+	<li>the project has {X|lb:bloks Blok|} pages <b>and</b> the X-tag uses a {X|c:FeedValues|} or {X|c:FeedPosts|} enumerator (see
+	<a href="#Feed enumerators">above</a>) selecting <i>either</i> {X|c:All|} <i>or</i> {X|c:Some|} that will effectively
+	include such Bloks via its specified {X|c:feeds|} property.</li>
+</ul>

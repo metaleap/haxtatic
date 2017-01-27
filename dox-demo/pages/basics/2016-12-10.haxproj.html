@@ -81,7 +81,7 @@
 </ol>
 <span id="pdecl">{X|h: |P| directives: for &quot;postings&quot; |}</span>
 <p>
-	Create "micro-content records" with <b>|P|</b> directives. All such "posts" are categorized first into "feed names" (or think arbitrary "primary category", really) and a further sub-level of "cat"(egory). The general format is as the following 2 examples illustrate:
+	Create "micro-content records" with <b>|P|</b> directives. All such "posts" are categorized first into "feed names" (or think arbitrary "primary category", really) and a further sub-level of <nobr>"cat"(egory)</nobr>. The general format is as the following 2 examples illustrate:
 </p>
 <pre>
 |P|<i>quotes</i>:
@@ -106,7 +106,7 @@
     <i>I have gotten much more bullish about pure functional programming.</i>
 </pre>
 <p>{X|lb:syntax Stringent syntactic rules|} apply here! The property names should be self-explanatory, except {X|c:more|} (normally not needed and then best kept {X|c:&nbsp;[]|} empty &mdash; when such custom "record data" fields become a serious consideration, check out the <i>default.haxproj</i> for this very site for usage). The above example constitutes:</p>
-<ul><li>1 "feed" (aka. arbitrary primary category) named {X|c:quotes|}</li><li>made up of 2 "posts" (aka. micro-content records),</li><li>both in the "cat"(egory) of {X|c:Programming|}.</li></ul>
+<ul><li>1 "feed" (aka. arbitrary primary category) named {X|c:quotes|}</li><li>made up of 2 "posts" (aka. micro-content records),</li><li>both in the <nobr>"cat"(egory)</nobr> of {X|c:Programming|}.</li></ul>
 <h3>Usage</h3>
 <p>
 	Such "feeds" can be output as <i>*.atom</i> XML files (just add a <a href="#cmisc">|C|_hax_relpath_postatoms</a> directive) but other than that no separate pages or other files will be auto-generated from them. To embed such micro-contents in the project's generated output pages in versatile ways (<i>without</i> coding up a custom X-renderer from scratch), use the "feed"-related iterators of the built-in {X|lx:hax.iterator hax.iterator|} X-renderer (those, incidentally, treat |P| "feeds" and Bloks as (for their purposes) functionally equivalent types of content sources, allowing for some neat mixing-and-mashing).

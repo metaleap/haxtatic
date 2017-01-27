@@ -4,6 +4,6 @@ content=>
 {X|xdescs:	But (WrapEachIn	(	"X|dox-xtdesc: vars=["
 									,	"], content=\"\" |"
 									))
-					(FeedPosts (Pick (Filter {feeds=["xdesc"], cats=["{P|fileBaseName|}"], dates=Nothing})
-																		"" ["declmore","cfgmore","usage"]))
+					(FeedPosts (Some {feeds=["xdesc"], cats=["{P|fileBaseName|}"], dates=Any})
+																["declmore","cfgmore","usage"])
 		|}

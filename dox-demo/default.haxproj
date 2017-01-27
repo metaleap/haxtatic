@@ -141,15 +141,15 @@ turn on whatever syntax highlighting for eased grokkage..
 
 
 |P|xdesc:
-	dt = "1234-12-15", cat = "demoSimplest", title = "", link = "",
+	dt = "1234-12-15", cat = "demoSimplest", title = "", link = "http://github.com/metaleap/haxtatic/blob/master/src/X/DemoSimplest.hs",
 	more = [ ("declmore" , ""),
-			 ("cfgmore" , "(no settings)"),
+			 ("cfgmore" , "(no other settings)"),
 			 ("usage" , "") ],
 	content=>
 	Outputs <code>&lt;h1&gt;Hello World!&lt;/h1&gt;</code>.
 
 |P|xdesc:
-	dt = "1234-11-15", cat = "demoCfgArgs", title = "", link = "",
+	dt = "1234-11-15", cat = "demoCfgArgs", title = "", link = "http://github.com/metaleap/haxtatic/blob/master/src/X/DemoCfgArgs.hs",
 	more = [ ("declmore" , "</code> or <code>|X|demoCfgArgs:<i>myTag</i>:<i>greetname</i>"),
 			 ("cfgmore" , "(no other settings)"),
 			 ("usage" , "|<!---->}</code> or <code>{X<!---->|<i>myTag</i>:<i>greetname</i>") ],
@@ -175,7 +175,7 @@ turn on whatever syntax highlighting for eased grokkage..
 |P|xdesc:
 	dt = "1234-09-10", cat = "hax.xmlEscape", title = "", link = "",
 	more = [ ("declmore" , ""),
-			 ("cfgmore" , "(no settings)"),
+			 ("cfgmore" , "(no other settings)"),
 			 ("usage" , ": <i>any &quot;content&apos; to &lt;&gt; XML&amp;HTML-escape</i>") ],
 	content=>
 	Outputs the given content with all occurrences of any of {X|c: &amp; &lt; &gt; &quot; &apos; |} each appropriately

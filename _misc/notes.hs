@@ -1,3 +1,7 @@
+sort/nub via discr https://www.youtube.com/watch?v=cB8DapKQz-I
+bin-serialize https://www.youtube.com/watch?v=60gUaOuZZsE
+propagators https://www.youtube.com/watch?v=acZkF6Q2XKs
+
 http://elm-lang.org/blog/blazing-fast-html-round-two#technical-details
 https://channel9.msdn.com/tags/monad
 https://ocharles.org.uk/blog/posts/2014-12-08-type-operators.html
@@ -9,7 +13,8 @@ http://bobkonf.de/2016/loeh-servant.html
 Lenses, Folds, and Traversals
 https://www.youtube.com/watch?v=cefnmjtAolY&feature=youtu.be&hd=1
 https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation
-
+https://www.youtube.com/watch?v=6GNDzrgFhGM
+https://www.youtube.com/watch?v=Bxcz23GOJqc
 Monad transformer stacks / MTL
 https://www.youtube.com/watch?v=GZPup5Iuaqw&feature=youtu.be
 https://www.youtube.com/watch?v=pzouxmWiemg
