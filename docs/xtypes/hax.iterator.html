@@ -14,7 +14,7 @@
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
 		<label for="chk_showtoc">On this page:</label>
 		<ul>
-			<li><a href="#In a nutshell">In a nutshell</a></li><li><a href="#Declaration / Configuration">Declaration / Configuration</a></li><li><a href="#Invocation / Parameters">Invocation / Parameters</a></li>
+			<li><a href="#In a nutshell">In a nutshell</a></li><li><a href="#Declaration / Configuration">Declaration / Configuration</a></li><li><a href="#Invocation / Parameters">Invocation / Parameters</a></li><li><a href="#Enumerators">Enumerators</a></li><li><a href="#Modifiers">Modifiers</a></li>
 		</ul>
 	</div>
 
@@ -30,7 +30,7 @@
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
 			<ul><li>further configuring: <code>prefix</code>, <code>suffix</code>, <code>joinVia</code>, <code>content</code></li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: over = ..  |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: ..  |<!---->}</code></li>
 	</ol>
 
 <p>Hence, formatting and structure of the output is mostly defined in the X-tag's one-off
@@ -58,9 +58,9 @@ invocation/parameters. ]</small></p>
 <p>To demonstrate valid <a href="../basics/haxproj.html#xdecl">*.haxproj</a> directives declaring <i>hax.iterator</i>
 					<a href="../tags/x.html">X-tags</a>:</p>
 <pre>
-|X|hax.iterator:<i>numbers</i>
+|X|hax.iterator:<i>myenum</i>
 
-|X|hax.iterator:<i>bloknames</i>:
+|X|hax.iterator:<i>myenumlist</i>:
 	prefix = "<i>&lt;ul class=\"my-blogs\">&lt;li&gt;</i>",
 	suffix = "<i>&lt;/li&gt;&lt;/ul&gt;</i>",
 	joinVia = "<i>&lt;/li&gt;&lt;li&gt;</i>",
@@ -71,55 +71,138 @@ invocation/parameters. ]</small></p>
 <p>To elaborate, for example the last one of the above, as all <a href="../basics/haxproj.html#xdecl">|X| directives</a> declaring <a href="../tags/x.html">X-tags</a> do:</p>
 	<ul>
 		<li>begins with <code>|X|</code> followed by the X-renderer identifier (here <code>hax.iterator</code>)</li>
-		<li>followed by <code>&nbsp;:</code> colon and the desired X-tag name to be used to invoke it (here <code>bloknames</code>),</li>
+		<li>followed by <code>&nbsp;:</code> colon and the desired X-tag name to be used to invoke it (here <code>myenumlist</code>),</li>
 		<li>followed by <code>&nbsp;:</code> colon and now <i>hax.iterator</i>-<b>specific</b> configuration:</li>
 		
 		<li>a <a href="../basics/syntax.html">syntax-sensitive</a> but <b>optional</b> properties block,
-					comprised of <i>all</i> the following properties in <i>this</i> very order:<ol><li><code>prefix</code> &mdash; the output to produce once immediately prior to enumeration</li>
-<li><code>suffix</code> &mdash; the output to produce once immediately following enumeration</li>
-<li><code>joinVia</code> &mdash; the output to produce in-between all enumerated items</li>
+					comprised of <i>all</i> the following properties in <i>this</i> very order:<ol><li><code>prefix</code> &mdash; (empty by default) the output to produce once immediately prior to enumeration</li>
+<li><code>suffix</code> &mdash; (empty by default) the output to produce once immediately following enumeration</li>
+<li><code>joinVia</code> &mdash; (<code>,&nbsp;</code> by default) the output to produce in-between all enumerated items</li>
 <li><code>content</code> &mdash; the principal content output for each enumerated item<ul>
 	<li>The placeholder <code>&nbsp;{<!---->%i%<!---->}</code> outputs an iteration index: 0 for the first enumerated item and afterwards
 		increments by 1 for each further item, regardless of its value or which ordering/filtering was active.</li>
 	<li>The placeholder <code>&nbsp;{<!---->%v%<!---->}</code> outputs the current item in plain-text form as returned by the chosen
 		enumerator.</li>
-	<li>If <code>content</code> is empty, this is equivalent to it being <code>&nbsp;{<!---->%v%<!---->}</code>.</li>
-	<li>If <code>content</code> does not contain any of these 2 placeholders, it is obviously output identically for each item.</li>
+	<li>If <code>content</code> is empty (the default), this is equivalent to it being <code>&nbsp;{<!---->%v%<!---->}</code>.</li>
+	<li>If <code>content</code> does not contain any of these 2 placeholders, it will obviously be output repeatedly, identically,
+	once per item.</li>
 	</ul></li></ol></li>
 	</ul>
 
 <span id="args"><h2 id="Invocation / Parameters">Invocation / Parameters</h2></span>
 <p>For example, given the above example |X| declaration directive:<br/>
-<code>{X<!---->|bloknames: over=BlokNames |<!---->}</code>
+<code>{X<!---->|myenumlist: BlokNames |<!---->}</code>
 to output (displayed here with added line-wraps for readability)</p>
 <pre>
 <i>&lt;ul class="my-blogs"&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>0<i>" href="/</i>basics<i>/index.html"&gt;	</i>Basics<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>1<i>" href="/</i>tags<i>/index.html"&gt;	</i>haXtags<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>2<i>" href="/</i>xtypes<i>/index.html"&gt;	</i>X-renderers<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;/ul&gt;</i>
 </pre>
-<p>Now, the same applying a sort order
-<code><i>{X<!---->|bloknames: over = </i>But(Ordered Descending)<i> BlokNames |<!---->}</i></code> to output:</p>
+<p><code>BlokNames</code> is one of a handful of built-in <i>enumerators</i> &mdash; full list <a href="#Enumerators">below</a>. But for now,
+continuing this first exploration, to apply a sort order to the very same <i>enumerator</i>, prepend a so-called <i>modifier</i>:
+<code><i>{X<!---->|myenumlist: </i>But(Ordered Descending)<i> BlokNames |<!---->}</i></code>, this will instead output:</p>
 <pre>
 <i>&lt;ul class="my-blogs"&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>0<i>" href="/</i>xtypes<i>/index.html"&gt;	</i>X-renderers<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>1<i>" href="/</i>tags<i>/index.html"&gt;	</i>haXtags<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>2<i>" href="/</i>basics<i>/index.html"&gt;	</i>Basics<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;/ul&gt;</i>
 </pre>
-<p>Or applying a limit
-<code><i>{X<!---->|bloknames: over = </i>But(LimitTo 2)<i> BlokNames |<!---->}</i></code> to output:</p>
+<p>Here, the <code>But</code> clause allows expressing the <code>Ordered</code> <i>modifier</i>, one of <a href="#Modifiers">a handful</a> of
+built-in such <i>modifiers</i>. Another is <code>LimitTo</code> for applying a limit
+<code><i>{X<!---->|myenumlist: </i>But(LimitTo 2)<i> BlokNames |<!---->}</i></code> to output:</p>
 <pre>
 <i>&lt;ul class="my-blogs"&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>0<i>" href="/</i>basics<i>/index.html"&gt;	</i>Basics<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>1<i>" href="/</i>tags<i>/index.html"&gt;	</i>haXtags<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;/ul&gt;</i>
 </pre>
 <p>Or applying that limit <i>after</i> sorting
-<code><i>{X<!---->|bloknames: over = </i>But(LimitTo 2) (But(Ordered Descending)<i> BlokNames </i>)<i>|<!---->}</i></code> to output:</p>
+<code><i>{X<!---->|myenumlist: </i>But(LimitTo 2) (But(Ordered Descending)<i> BlokNames </i>)<i>|<!---->}</i></code> to output:</p>
 <pre>
 <i>&lt;ul class="my-blogs"&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>0<i>" href="/</i>xtypes<i>/index.html"&gt;	</i>X-renderers<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>1<i>" href="/</i>tags<i>/index.html"&gt;	</i>haXtags<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;/ul&gt;</i>
 </pre>
-<p>By now, the required parentheses start to become unwieldy: multiple such nested <code>But</code>'s can become verbose and error-prone, and
-their right-to-left flow (ie. above: first-order-then-limit logic written as <i>first</i> the <i>limit</i> part, <i>then</i> the
-<i>order</i> part) unintuitive. The (functionally equivalent <code>But</code> alternative, the) <code>With</code> clause avoids nested parentheses and flips that right-to-left flow over. So the same
-output as above is produced by:
-<code><i>{X<!---->|bloknames: over = </i>With BlokNames [Ordered Descending , LimitTo 2]<i> |<!---->}</i></code>:</p>
+<p><b>By now, this is starting to become unwieldy:</b> multiple such nested <code>But</code>s is somewhat verbose and keeping track of correct
+parenthesis placement easily error-prone, plus their right-to-left flow (ie. above: first-sort-then-limit logic written as <i>first</i>
+the <i>limit</i> part, <i>then</i> the <i>sort</i> part) possibly counterintuitive for non-programmers. The (functionally equivalent
+<code>But</code> <i>alternative</i>, the) <code>With</code> clause avoids such nesting-via-parens and flips that right-to-left flow over. So the same
+output as above can be achieved with a much simpler notation:
+<code><i>{X<!---->|myenumlist: </i>With BlokNames [Ordered Descending , LimitTo 2]<i> |<!---->}</i></code> &mdash; ie. "with the
+enumerated values, but ordered this way: give us the first 2":</p>
 <pre>
 <i>&lt;ul class="my-blogs"&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>0<i>" href="/</i>xtypes<i>/index.html"&gt;	</i>X-renderers<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;li&gt;&lt;a id="b_link_</i>1<i>" href="/</i>tags<i>/index.html"&gt;	</i>haXtags<i>	&lt;/a&gt;&lt;/li&gt;<br/>&lt;/ul&gt;</i>
 </pre>
-
-</p>
+<h2 id="Enumerators">Enumerators</h2>
+<ul>
+	<li><code>Range <i>startnum</i> <i>endnum</i></code>
+		&mdash; a range of numbers,<ul><li>
+		eg. <code>{X<!---->|myenum: Range <i>2 7</i> |<!---->}</code>
+		gives: <code>2, 3, 4, 5, 6, 7</code></li></ul></li>
+	<li><code>Values [<i>..</i>]</code>
+		&mdash; a given list of text values,<ul><li>
+		eg. <code>{X<!---->|myenum: Values [<i>"Hudak", "Wadler", "Peyton-Jones", "Bird", "Okasaki"</i>] |<!---->}</code>
+		gives: <code>Hudak, Wadler, Peyton-Jones, Bird, Okasaki</code></li></ul></li>
+	<li><code>BlokNames</code>
+		&mdash; names of all <a href="../basics/bloks.html">Bloks</a> defined in the project,<ul><li>
+		eg. <code>{X<!---->|myenum: BlokNames |<!---->}</code>
+		gives: <code>basics, tags, xtypes</code></li></ul></li>
+	<li><code>FeedNames <i>blokstoo?</i></code>
+		&mdash; names of all <a href="../basics/haxproj.html#pdecl">"feeds"</a> known in the project, including or excluding the above <code>BlokNames</code><ul><li>
+		eg. <code>{X<!---->|myenum: FeedNames <i>True</i> |<!---->}</code>
+		gives: <code>xdesc, basics, tags, xtypes</code></li>
+		<li>eg. <code>{X<!---->|myenum: FeedNames <i>False</i> |<!---->}</code>
+		gives: <code>xdesc</code></li></ul></li>
+	<li><code>FeedPosts</code> and <code>FeedGroups</code> &mdash; a bit more involved:</li>
+</ul>
+<h3>FeedGroups</h3>
+<p>todo</p>
+<h3>FeedPosts</h3>
+<p>todo</p>
+<h2 id="Modifiers">Modifiers</h2>
+<p>Modifiers "tweak"/mangle/slice/dice/etc the result-set of values returned by the specified <i>enumerator</i>. As explained
+<a href="#args">above</a>, any such modifiers can be expressed either one-per-<code>But</code> (which in turn can be nested), or stated as
+an ordered sequence of multiple such modifiers per <code>With</code> clause.</p>
+<p><small>(Technically, one <i>could</i> also specify a complete <code>But</code> clause (in parens) as the
+<i>enumerator</i> in a <code>With</code> clause, or one <i>could</i> also specify a complete <code>With</code> clause (in parens) as the
+<i>enumerator</i> in a <code>But</code> clause, but practically there's no good reason one should want to.)</small></p>
+<!--
+	<li><code><i>{X-|myenum: But (Foo) Enum |-} </i></code>
+	produces <code>{X-|myenum: But (Foo) Enum |-}</code>
+	instead of <code>{X-|myenum: Enum |-}</code></li>
+-->
+<h3>LimitTo <i>&lt;number&gt;</i></h3>
+<p>Limits the number of items:</p>
+<ul>
+	<li><code><i>{X<!---->|myenum: But </i>(LimitTo 2)<i> (FeedNames True) |<!---->}</i></code>
+	produces <code>xdesc, basics</code>
+	instead of <code>xdesc, basics, tags, xtypes</code></li>
+</ul>
+<h3>Skip <i>&lt;number&gt;</i></h3>
+<p>Skips a number of items:</p>
+<ul>
+	<li><code><i>{X<!---->|myenum: With (Range 12 3) </i>[Skip 4]<i> |<!---->}</i></code>
+	produces <code>8, 7, 6, 5, 4, 3</code>
+	instead of <code>12, 11, 10, 9, 8, 7, 6, 5, 4, 3</code></li>
+</ul>
+<h3>WrapEachIn <i>(&lt;prefix&gt; , &lt;suffix&gt;)</i></h3>
+<p>Encloses every item within a given prefix and suffix:</p>
+<ul>
+	<li><code><i>{X<!---->|myenum: But </i>( WrapEachIn ("/" , "/index.html") )<i> BlokNames |<!---->}</i></code>
+	produces <code>/basics/index.html, /tags/index.html, /xtypes/index.html</code>
+	instead of <code>basics, tags, xtypes</code></li>
+</ul>
+<h3>Ordered <i>&lt;sortorder&gt;</i></h3>
+<p>Re-orders the items either <code>Ascending</code> or <code>Descending</code> or <code>Shuffle</code>d:</p>
+<ul>
+	<li><code><i>{X<!---->|myenum: With (FeedNames True) </i>[Ordered Descending]<i> |<!---->}</i></code>
+	produces <code>xtypes, xdesc, tags, basics</code>
+	instead of <code>xdesc, basics, tags, xtypes</code></li>
+	<li><code><i>{X<!---->|myenum: But </i>(Ordered Ascending)<i> (Values ["zeta","phi","gamma","beta","alpha"]) |<!---->}</i></code>
+	produces <code>alpha, beta, gamma, phi, zeta</code>
+	instead of <code>zeta, phi, gamma, beta, alpha</code></li>
+	<li><code><i>{X<!---->|myenum: With (Range 1 23) </i>[Ordered (Shuffle False) , LimitTo 6]<i> |<!---->}</i></code>
+	produces <code>2, 4, 12, 7, 15, 8</code>
+	instead of <code>1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23</code>
+		<ul><li>Only either <code>(Shuffle True)</code> or <code>(Shuffle False)</code> are valid. When used in a central project file such as a
+		<a href="../basics/haxproj.html">*.haxproj</a>, a <a href="../basics/tmplsnip.html">template</a> or a <a href="../basics/tmplsnip.html#snippets">snippet</a> (rather than directly inside a
+		content source file), <code>Shuffle True</code> shuffles differently for each output file while <code>Shuffle False</code> shuffles
+		identically for all output files during this processing run (but still varying with each processing run).</li></ul></li>
+	<li><code><i>{X<!---->|myenum: With (Values ["foo","bar"]) </i>[Ordered None]<i> |<!---->}</i></code>
+	"produces" <code>foo, bar</code>
+	"instead of" <code>foo, bar</code> &mdash; ie. it does not touch the items at all: useless, except
+	perhaps for example when quickly and temporarily wanting to disable reordering somewhere inside some <code>But</code> nesting.</li>
+</ul>
 
 <!-- end of content source page -->
 <a name="down"></a>

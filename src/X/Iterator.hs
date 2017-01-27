@@ -30,7 +30,7 @@ data Iteration
     = Range Int Int
     | Values [String]
     | BlokNames
-    | FeedNames
+    | FeedNames Bool
     | FeedGroups (Maybe Posts.Query) String
     | FeedPosts (Maybe Posts.Query) String [String]
     | But Tweak Iteration
@@ -88,11 +88,12 @@ registerX ctxproj xreg =
             iter (Values values) =
                 values
             iter (Range from to) =
-                [from..to] >~ show
+                let range | (from > to) = reverse [to..from] | otherwise = [from..to]
+                in range >~ show
             iter BlokNames =
                 projbloknames
-            iter FeedNames =
-                (projfeednames ++ projbloknames)
+            iter (FeedNames bloks) =
+                (not bloks) |? projfeednames |! (projfeednames ++ projbloknames)
             iter (FeedGroups maybequery fieldname) =
                 maybefieldfunc~>((Posts.feedGroups maybectxbuild projposts projbloks maybequery) =|- [])
                 where
@@ -111,10 +112,11 @@ registerX ctxproj xreg =
         maybectxbuild = maybectxpage =>- \ctxpage -> Posts.BuildContext (ctxpage-:Tmpl.lookupCachedPageRender)
                                                                         (ctxpage-:Tmpl.allPagesFiles) projbloks
                                                                         projposts (ctxproj-:Proj.setup-:Proj.cfg)
-        args = X.tryParseArgs xreg argstr Nothing errargs where
+        args = X.tryParseArgs xreg ("over="++argstr) Nothing errargs where
             errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))] }
 
-        shuffle perpage = Util.shuffleExtra (randseeds maybectxpage perpage)
+        shuffle perpage =
+            Util.times 3 (Util.shuffleExtra (randseeds maybectxpage perpage))
         randseeds (Just pagectx) True =
             (pagectx-:Tmpl.randSeed) ++ (randseeds Nothing False)
         randseeds _ _ =
@@ -148,18 +150,9 @@ registerX ctxproj xreg =
     cfgjoin = if null $cfg-:joinVia then concat else Util.join $cfg-:joinVia
     cfgwrap | (null $cfg-:prefix) && (null $cfg-:suffix) = id
             | otherwise = (((cfg-:prefix))++).(++((cfg-:suffix)))
-
-    -- feedsort moreover ifisfeed ifnofeed =
-    --     let stream = iter moreover
-    --     in case moreover of
-    --         FeedGroups _ _ -> ifisfeed stream
-    --         FeedPosts _ _ _ -> ifisfeed stream
-    --         _ -> ifnofeed stream
-
-
     cfg_parsestr = Tmpl.fixParseStr "content" (xreg-:X.cfgFullStr)
     cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where
-        defcfg = Cfg { prefix = "" , suffix = "" , joinVia = "" , content = "" }
+        defcfg = Cfg { prefix = "" , suffix = "" , joinVia = ", " , content = "" }
         errcfg = Cfg { prefix = X.htmlErr (X.clarifyParseCfgError xreg) , suffix = "" , joinVia = "" , content = "" }
 
 

@@ -16,9 +16,9 @@ invocation/parameters. ]</small></p>
 {T|Xcfg|}
 {T|Xdecl|}
 <pre>
-|X|hax.iterator:<i>numbers</i>
+|X|hax.iterator:<i>myenum</i>
 
-|X|hax.iterator:<i>bloknames</i>:
+|X|hax.iterator:<i>myenumlist</i>:
 	prefix = "<i>&lt;ul class=\"my-blogs\">&lt;li&gt;</i>",
 	suffix = "<i>&lt;/li&gt;&lt;/ul&gt;</i>",
 	joinVia = "<i>&lt;/li&gt;&lt;li&gt;</i>",
@@ -26,51 +26,134 @@ invocation/parameters. ]</small></p>
 <i>&lt;a id="b_link_</i>{%i%}<i>" href="/</i>{%v%}<i>/index.html"&gt;	{B<!---->|title: </i>{%v%}<i> |<!---->}	&lt;/a&gt;</i>
 </pre>
 
-{X|dox-xtdecl:	vars= [	("xn","hax.iterator"), ("tn","bloknames"), ("xo","{T|Xdeclopt|}"),
+{X|dox-xtdecl:	vars= [	("xn","hax.iterator"), ("tn","myenumlist"), ("xo","{T|Xdeclopt|}"),
 						("xf","") ],
 				content=>
-<li>{X|c:prefix|} &mdash; the output to produce once immediately prior to enumeration</li>
-<li>{X|c:suffix|} &mdash; the output to produce once immediately following enumeration</li>
-<li>{X|c:joinVia|} &mdash; the output to produce in-between all enumerated items</li>
+<li>{X|c:prefix|} &mdash; (empty by default) the output to produce once immediately prior to enumeration</li>
+<li>{X|c:suffix|} &mdash; (empty by default) the output to produce once immediately following enumeration</li>
+<li>{X|c:joinVia|} &mdash; ({X|c:,&nbsp;|} by default) the output to produce in-between all enumerated items</li>
 <li>{X|c:content|} &mdash; the principal content output for each enumerated item<ul>
 	<li>The placeholder {X|c:&nbsp;{<!---->%i%<!---->}|} outputs an iteration index: 0 for the first enumerated item and afterwards
 		increments by 1 for each further item, regardless of its value or which ordering/filtering was active.</li>
 	<li>The placeholder {X|c:&nbsp;{<!---->%v%<!---->}|} outputs the current item in plain-text form as returned by the chosen
 		enumerator.</li>
-	<li>If {X|c:content|} is empty, this is equivalent to it being {X|c:&nbsp;{<!---->%v%<!---->}|}.</li>
-	<li>If {X|c:content|} does not contain any of these 2 placeholders, it is obviously output identically for each item.</li>
+	<li>If {X|c:content|} is empty (the default), this is equivalent to it being {X|c:&nbsp;{<!---->%v%<!---->}|}.</li>
+	<li>If {X|c:content|} does not contain any of these 2 placeholders, it will obviously be output repeatedly, identically,
+	once per item.</li>
 	</ul></li>
 |}
 
 {T|Xargs|}
 <p>For example, given the above example |X| declaration directive:<br/>
-<code>{X<!---->|bloknames: over=BlokNames |<!---->}</code>
+<code>{X<!---->|myenumlist: BlokNames |<!---->}</code>
 to output (displayed here with added line-wraps for readability)</p>
 <pre>
-{X|bloknames: over = BlokNames |}
+{X|myenumlist: BlokNames |}
 </pre>
-<p>Now, the same applying a sort order
-<code><i>{X<!---->|bloknames: over = </i>But(Ordered Descending)<i> BlokNames |<!---->}</i></code> to output:</p>
+<p>{X|c:BlokNames|} is one of a handful of built-in <i>enumerators</i> &mdash; full list <a href="#Enumerators">below</a>. But for now,
+continuing this first exploration, to apply a sort order to the very same <i>enumerator</i>, prepend a so-called <i>modifier</i>:
+<code><i>{X<!---->|myenumlist: </i>But(Ordered Descending)<i> BlokNames |<!---->}</i></code>, this will instead output:</p>
 <pre>
-{X|bloknames: over = But(Ordered Descending) BlokNames |}
+{X|myenumlist: But(Ordered Descending) BlokNames |}
 </pre>
-<p>Or applying a limit
-<code><i>{X<!---->|bloknames: over = </i>But(LimitTo 2)<i> BlokNames |<!---->}</i></code> to output:</p>
+<p>Here, the {X|c:But|} clause allows expressing the {X|c:Ordered|} <i>modifier</i>, one of <a href="#Modifiers">a handful</a> of
+built-in such <i>modifiers</i>. Another is {X|c:LimitTo|} for applying a limit
+<code><i>{X<!---->|myenumlist: </i>But(LimitTo 2)<i> BlokNames |<!---->}</i></code> to output:</p>
 <pre>
-{X|bloknames: over = But(LimitTo 2) BlokNames |}
+{X|myenumlist: But(LimitTo 2) BlokNames |}
 </pre>
 <p>Or applying that limit <i>after</i> sorting
-<code><i>{X<!---->|bloknames: over = </i>But(LimitTo 2) (But(Ordered Descending)<i> BlokNames </i>)<i>|<!---->}</i></code> to output:</p>
+<code><i>{X<!---->|myenumlist: </i>But(LimitTo 2) (But(Ordered Descending)<i> BlokNames </i>)<i>|<!---->}</i></code> to output:</p>
 <pre>
-{X|bloknames: over = But(LimitTo 2) (But(Ordered Descending) BlokNames) |}
+{X|myenumlist: But(LimitTo 2) (But(Ordered Descending) BlokNames) |}
 </pre>
-<p>By now, the required parentheses start to become unwieldy: multiple such nested {X|c:But|}'s can become verbose and error-prone, and
-their right-to-left flow (ie. above: first-order-then-limit logic written as <i>first</i> the <i>limit</i> part, <i>then</i> the
-<i>order</i> part) unintuitive. The (functionally equivalent {X|c:But|} alternative, the) {X|c:With|} clause avoids nested parentheses and flips that right-to-left flow over. So the same
-output as above is produced by:
-<code><i>{X<!---->|bloknames: over = </i>With BlokNames [Ordered Descending , LimitTo 2]<i> |<!---->}</i></code>:</p>
+<p><b>By now, this is starting to become unwieldy:</b> multiple such nested {X|c:But|}s is somewhat verbose and keeping track of correct
+parenthesis placement easily error-prone, plus their right-to-left flow (ie. above: first-sort-then-limit logic written as <i>first</i>
+the <i>limit</i> part, <i>then</i> the <i>sort</i> part) possibly counterintuitive for non-programmers. The (functionally equivalent
+{X|c:But|} <i>alternative</i>, the) {X|c:With|} clause avoids such nesting-via-parens and flips that right-to-left flow over. So the same
+output as above can be achieved with a much simpler notation:
+<code><i>{X<!---->|myenumlist: </i>With BlokNames [Ordered Descending , LimitTo 2]<i> |<!---->}</i></code> &mdash; ie. "with the
+enumerated values, but ordered this way: give us the first 2":</p>
 <pre>
-{X|bloknames: over = With BlokNames [Ordered Descending , LimitTo 2] |}
+{X|myenumlist: With BlokNames [Ordered Descending , LimitTo 2] |}
 </pre>
-
-</p>
+{X|h: Enumerators |}
+<ul>
+	<li>{X|c:Range <i>startnum</i> <i>endnum</i>|}
+		&mdash; a range of numbers,<ul><li>
+		eg. {X|c: {X<!---->|myenum: Range <i>2 7</i> |<!---->} |}
+		gives: {X|c: {X|myenum: Range 2 7 |} |}</li></ul></li>
+	<li>{X|c:Values [<i>..</i>] |}
+		&mdash; a given list of text values,<ul><li>
+		eg. {X|c: {X<!---->|myenum: Values [<i>"Hudak", "Wadler", "Peyton-Jones", "Bird", "Okasaki"</i>] |<!---->} |}
+		gives: {X|c: {X|myenum: Values ["Hudak", "Wadler", "Peyton-Jones", "Bird", "Okasaki"] |} |}</li></ul></li>
+	<li>{X|c:BlokNames|}
+		&mdash; names of all {X|lb:bloks Bloks |} defined in the project,<ul><li>
+		eg. {X|c: {X<!---->|myenum: BlokNames |<!---->} |}
+		gives: {X|c: {X|myenum: BlokNames |} |}</li></ul></li>
+	<li>{X|c:FeedNames <i>blokstoo?</i> |}
+		&mdash; names of all {X|lb:haxproj#pdecl "feeds"|} known in the project, including or excluding the above {X|c:BlokNames|}<ul><li>
+		eg. {X|c: {X<!---->|myenum: FeedNames <i>True</i> |<!---->} |}
+		gives: {X|c: {X|myenum: FeedNames True |} |}</li>
+		<li>eg. {X|c: {X<!---->|myenum: FeedNames <i>False</i> |<!---->} |}
+		gives: {X|c: {X|myenum: FeedNames False |} |}</li></ul></li>
+	<li>{X|c:FeedPosts|} and {X|c:FeedGroups|} &mdash; a bit more involved:</li>
+</ul>
+<h3>FeedGroups</h3>
+<p>todo</p>
+<h3>FeedPosts</h3>
+<p>todo</p>
+{X|h: Modifiers |}
+<p>Modifiers "tweak"/mangle/slice/dice/etc the result-set of values returned by the specified <i>enumerator</i>. As explained
+<a href="#args">above</a>, any such modifiers can be expressed either one-per-{X|c:But|} (which in turn can be nested), or stated as
+an ordered sequence of multiple such modifiers per {X|c:With|} clause.</p>
+<p><small>(Technically, one <i>could</i> also specify a complete {X|c:But|} clause (in parens) as the
+<i>enumerator</i> in a {X|c:With|} clause, or one <i>could</i> also specify a complete {X|c:With|} clause (in parens) as the
+<i>enumerator</i> in a {X|c:But|} clause, but practically there's no good reason one should want to.)</small></p>
+<!--
+	<li>{X|c: <i>{X-|myenum: But (Foo) Enum |-} </i>|}
+	produces {X|c: {X-|myenum: But (Foo) Enum |-} |}
+	instead of {X|c: {X-|myenum: Enum |-} |}</li>
+-->
+<h3>LimitTo <i>&lt;number&gt;</i></h3>
+<p>Limits the number of items:</p>
+<ul>
+	<li>{X|c: <i>{X<!---->|myenum: But </i>(LimitTo 2)<i> (FeedNames True) |<!---->}</i> |}
+	produces {X|c: {X|myenum: But (LimitTo 2) (FeedNames True) |} |}
+	instead of {X|c: {X|myenum: (FeedNames True) |} |}</li>
+</ul>
+<h3>Skip <i>&lt;number&gt;</i></h3>
+<p>Skips a number of items:</p>
+<ul>
+	<li>{X|c: <i>{X<!---->|myenum: With (Range 12 3) </i>[Skip 4]<i> |<!---->}</i> |}
+	produces {X|c: {X|myenum: With (Range 12 3) [Skip 4] |} |}
+	instead of {X|c: {X|myenum: Range 12 3 |} |}</li>
+</ul>
+<h3>WrapEachIn <i>(&lt;prefix&gt; , &lt;suffix&gt;)</i></h3>
+<p>Encloses every item within a given prefix and suffix:</p>
+<ul>
+	<li>{X|c: <i>{X<!---->|myenum: But </i>( WrapEachIn ("/" , "/index.html") )<i> BlokNames |<!---->}</i> |}
+	produces {X|c: {X|myenum: But ( WrapEachIn ("/" , "/index.html") ) BlokNames |} |}
+	instead of {X|c: {X|myenum: BlokNames |} |}</li>
+</ul>
+<h3>Ordered <i>&lt;sortorder&gt;</i></h3>
+<p>Re-orders the items either {X|c:Ascending|} or {X|c:Descending|} or {X|c:Shuffle|}d:</p>
+<ul>
+	<li>{X|c: <i>{X<!---->|myenum: With (FeedNames True) </i>[Ordered Descending]<i> |<!---->}</i> |}
+	produces {X|c: {X|myenum: With (FeedNames True) [Ordered Descending] |} |}
+	instead of {X|c: {X|myenum: (FeedNames True) |} |}</li>
+	<li>{X|c: <i>{X<!---->|myenum: But </i>(Ordered Ascending)<i> (Values ["zeta","phi","gamma","beta","alpha"]) |<!---->}</i> |}
+	produces {X|c: {X|myenum: But (Ordered Ascending) (Values ["zeta","phi","gamma","beta","alpha"]) |} |}
+	instead of {X|c: {X|myenum: Values ["zeta","phi","gamma","beta","alpha"] |} |}</li>
+	<li>{X|c: <i>{X<!---->|myenum: With (Range 1 23) </i>[Ordered (Shuffle False) , LimitTo 6]<i> |<!---->}</i> |}
+	produces {X|c: {X|myenum: With (Range 1 23) [Ordered (Shuffle False) , LimitTo 6] |} |}
+	instead of {X|c: {X|myenum: (Range 1 23) |} |}
+		<ul><li>Only either {X|c:(Shuffle True)|} or {X|c:(Shuffle False)|} are valid. When used in a central project file such as a
+		{X|lb:haxproj *.haxproj|}, a {X|lb:tmplsnip template|} or a {X|lb:tmplsnip#snippets snippet|} (rather than directly inside a
+		content source file), {X|c:Shuffle True|} shuffles differently for each output file while {X|c:Shuffle False|} shuffles
+		identically for all output files during this processing run (but still varying with each processing run).</li></ul></li>
+	<li>{X|c: <i>{X<!---->|myenum: With (Values ["foo","bar"]) </i>[Ordered None]<i> |<!---->}</i> |}
+	"produces" {X|c: {X|myenum: With (Values ["foo","bar"]) [Ordered None] |} |}
+	"instead of" {X|c: {X|myenum: (Values ["foo","bar"]) |} |} &mdash; ie. it does not touch the items at all: useless, except
+	perhaps for example when quickly and temporarily wanting to disable reordering somewhere inside some {X|c:But|} nesting.</li>
+</ul>

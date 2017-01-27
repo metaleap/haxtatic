@@ -1,7 +1,7 @@
 vars = [],
 content=>
 <h1>{P|fileBaseName|}</h1>
-{X|xdescs:	over = But (WrapEachIn	(	"X|dox-xtdesc: vars=["
+{X|xdescs:	But (WrapEachIn	(	"X|dox-xtdesc: vars=["
 									,	"], content=\"\" |"
 									))
 					(FeedPosts (Just Filter {feeds=["xdesc"], cats=["{P|fileBaseName|}"], dates=Nothing})
