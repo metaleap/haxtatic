@@ -22,7 +22,8 @@ data Reg
     }
 
 
-data Render r = Early r | EarlyOrWait r | WaitForPage r
+data Render = Early Renderer | EarlyOrWait Renderer | WaitForPage Renderer
+type Renderer = ((Maybe Tmpl.CtxPage , String) -> Maybe String)
 
 
 
