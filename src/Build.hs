@@ -138,13 +138,12 @@ plan ctxmain ctxproj =
         sitemapbuildpath = ctxproj-:Proj.dirPathBuild </> sitemaprelpath
     in _filterOutFiles (const False) allstatics cfgprocstatic >>= \outcopyfiles
     -> _filterOutFiles (const False) allatoms cfgprocposts >>= \outatomfiles
-    -> let shouldforcepage file =
-            shouldfor `any` outatomfiles where
-            shouldfor atomoutjob =
-                file-:blokName == atomoutjob-:blokName
-    in _filterOutFiles shouldforcepage allpages cfgprocpages >>= \outpagefiles
-    -> _filterOutFiles (const False) (dynpages >~ outfileinfopage) cfgprocpages >>= \abitwasteful_justtogetanum
+    -> _filterOutFiles (const False) (dynpages >~ outfileinfopage) cfgprocpages >>= \outdynpagefiles
     -> _filterOutFiles (const True) allpages cfgprocpages >>= \sitemapfiles
+    -> let shouldforce file =
+            any dueto outatomfiles || any dueto outdynpagefiles where
+                dueto = ((file-:blokName ==).blokName)
+    in _filterOutFiles shouldforce allpages cfgprocpages >>= \outpagefiles
     -> System.Directory.doesFileExist sitemapbuildpath >>= \sitemapexists
     -> let
         anyprocessing = outpagefiles~>length > 0
@@ -166,7 +165,7 @@ plan ctxmain ctxproj =
                 outStatics = outcopyfiles,
                 numOutFilesTotal = (sitemap~>fst == NoOutput |? 0 |! 1) +
                                     outcopyfiles~>length + outpagefiles~>length + outatomfiles~>length,
-                numDynPages = abitwasteful_justtogetanum~>length,
+                numDynPages = outdynpagefiles~>length,
                 numSkippedStatic = allstatics~>length - outcopyfiles~>length,
                 numSkippedPages = allpages~>length - outpagefiles~>length,
                 numSkippedAtoms = allatoms~>length - outatomfiles~>length,

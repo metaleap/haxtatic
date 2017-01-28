@@ -11,14 +11,14 @@ import qualified X
 registerX ctxproj xreg =
     let
     renderer (_ , argstr) =
-        (str2utc argstr <|> str2utc' argstr) >~ utc2str
+        (str2utc argstr <|> str2utc' argstr) =>- utc2str
 
     in X.Early renderer
     where
 
     projcfg = ctxproj-:Proj.setup-:Proj.cfg
-    str2utc str = ProjC.dtStr2Utc projcfg dtfnfrom str
-    str2utc' str = ProjC.dtStr2Utc projcfg "" str
-    utc2str utc = ProjC.dtUtc2Str projcfg dtfnto utc
+    str2utc = ProjC.dtStr2Utc projcfg dtfnfrom
+    str2utc' = ProjC.dtStr2Utc projcfg ""
+    utc2str = ProjC.dtUtc2Str projcfg dtfnto
 
     (dtfnfrom , dtfnto) = xreg-:X.cfgSplitOnce

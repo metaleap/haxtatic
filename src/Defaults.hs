@@ -141,5 +141,5 @@ _tmpl_html_main =
     \    <div><!-- begin {P|fileUri|} content generated from {P|srcPath|} -->\n\n\n\
     \{P|:content:|}\n\n\
     \    </div><!-- end of generated content -->\n\
-    \    <hr/><small>Generated with <a href=\"http://metaleap.github.io/HaXtatic\">{P|demo_hax|}</a> on {P|date|}</small>\n\
+    \    <hr/><small>Generated with <a href=\"http://metaleap.github.io/haxtatic\">{P|demo_hax|}</a> on {P|date|}</small>\n\
     \</body></html>"

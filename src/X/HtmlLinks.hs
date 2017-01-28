@@ -8,6 +8,8 @@ import qualified Tmpl
 import qualified Util
 import qualified X
 
+import qualified System.FilePath
+
 
 data Tag =
     Cfg {
@@ -45,9 +47,11 @@ registerX _ xreg =
             outattr (Just ctxpage) (('&':name) , value) =
                 if pathmatch then Just (name , value) else Nothing
                 where
-                pathmatch = (curdir == dstdir)
-                curdir = Files.sanitizeUriRelPathForJoin url
-                dstdir = ((ctxpage-:Tmpl.pTagHandler) "dirUri") ~> (Files.sanitizeUriRelPathForJoin =|- "")
+                pathmatch = (has dstbaseuri && Util.startsWith dstbaseuri ((System.FilePath.takeBaseName dstlinkuri)++"."))
+                                || (has pagediruri && Util.startsWith dstlinkuri pagediruri) || (dstlinkuri == pagediruri)
+                dstlinkuri = Files.sanitizeUriRelPathForJoin url
+                dstbaseuri = ((ctxpage-:Tmpl.pTagHandler) "fileBaseName") ~> ((++ ".") =|- "")
+                pagediruri = ((ctxpage-:Tmpl.pTagHandler) "dirUri") ~> (Files.sanitizeUriRelPathForJoin =|- "")
             outattr _ other =
                 Just other
 

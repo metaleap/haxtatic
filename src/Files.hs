@@ -26,7 +26,7 @@ data File
         modTime :: Data.Time.Clock.UTCTime,
         content :: String
     }
-    deriving (Eq)
+    deriving Eq
 
 
 data Ctx
@@ -133,7 +133,7 @@ listAllFiles rootdirpath reldirs modtimer =
             foreachsrcdir reldirpath =
                 if Util.startsWith srcfilepath reldirpath
                 then Just$ drop (1 + reldirpath~>length) srcfilepath else Nothing
-        newest (_,mt1) (_,mt2) = compare mt2 mt1
+        newest (_,modtime1) (_,modtime2) = compare modtime2 modtime1
     in return$ (Data.List.sortBy newest allfiletuples)>~foreachfiletuple
 
 

@@ -23,6 +23,7 @@ main ::
 main =
     Data.Time.Clock.getCurrentTime >>= \starttime
     -> putStrLn "\n\n==== HAXTATIC ====\n"
+    >> System.IO.hFlush System.IO.stdout
     >> System.Environment.getArgs >>= \cmdargs
     -> System.Directory.getCurrentDirectory >>= \curdir
     -> if null cmdargs

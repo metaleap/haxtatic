@@ -46,7 +46,7 @@ xregs = [ "demoSimplest" =: X.DemoSimplest.registerX
 
 processAll ctxmain projfilename custfilenames =
     let nameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
-        projname = System.FilePath.takeBaseName (ctxmain-:Files.dirPath)
+        projname = nameonly (ctxmain-:Files.dirPath)
     in putStrLn "\n1/6\tReading essential project files (or creating them).."
     >> System.IO.hFlush System.IO.stdout
     >> System.Directory.createDirectoryIfMissing False (ctxmain-:Files.dirPath)
