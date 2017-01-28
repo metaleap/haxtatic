@@ -123,5 +123,5 @@ tagHandler bloks curbname str =
         (fname, bn) = Util.bothTrim (Util.splitOn1st_ ':' str)
     in (null fname) |? Nothing
         |! (fname=="name" && has bname) |? Just bname
-            |! (blokByName bloks bname) =>= \blok ->
+            |! (blokByName bloks bname) >>= \blok ->
                 (Data.List.lookup fname fields) =>- \fieldval -> blok-:fieldval

@@ -7,7 +7,7 @@ content=>
 	<li>Any haXtags may embed/output any other haXtags freely both in their definitions and invocations but
 		<ul><li>an otherwise-correct outer tag will typically not render with a (directly embedded) unprocessable inner tag (a
 		"known non-issue", incidentally helping ensure <a href="#stages">later-stage</a> inner tags provide correct input to their
-		outer tags), and this can of course bubble outwards for deeper nestings</li>
+		outer tags), and this can of course bubble outwards with deeper nestings</li>
 		<li>a direct-or-indirect recursive self-reference (self-invocation inside the "defining portion" of a haXtag's related
 		{X|lb:haxproj declaration directive|}) will hang (and usually eventually prematurely abort with a
 		{X|c:&lt;&lt;loop&gt;&gt;|} farewell message) the entire generating process</li></ul></li>

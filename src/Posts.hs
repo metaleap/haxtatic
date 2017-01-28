@@ -104,7 +104,7 @@ feedPosts maybectxbuild projposts projbloks query morefromhtmls =
 feedGroups maybectxbuild projposts projbloks query fieldname =
     Util.unique$ case findfield (wellKnownFields True) of
         Just field -> allposts >~ field
-        Nothing -> (allposts >~ (findfield.more)) ~> Util.noMaybes
+        Nothing -> allposts >=~ (findfield.more)
     where
     findfield = Data.List.lookup fieldname
     allposts = feedPosts maybectxbuild projposts projbloks query []

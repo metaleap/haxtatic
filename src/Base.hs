@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
-module Base where
+module Base (module Base , (<|>)  ) where
 
+import Control.Applicative ( (<|>) )
 import qualified Control.Monad
 import qualified Data.Maybe
 import Data.Function ( (&) )
@@ -46,14 +47,6 @@ infixl 9 >~
     f a -> (a -> b) -> f b
 infixl 9 =>-
 (=>-) = flip fmap
-
-
-
-infixl 9 =>=
-(=>=) Nothing _ =
-    Nothing
-(=>=) (Just sth) func =
-    func sth
 
 
 

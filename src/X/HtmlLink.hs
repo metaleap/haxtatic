@@ -24,10 +24,10 @@ registerX _ xreg =
         where
         tag = Html.T "a" (cfglinkatts ++ (atts "href" "")) []
         (linkhref,linktext) = argsplit ~> Util.bothTrim ~> htmlescape
-        argsplit = Util.splitOn1stSpace argstr
+        argsplit = Util.splitOn1st_ '\v' argstr -- not really for \v but mostly-equivalent to Util.splitOn1stSpace argstr
         atts uriattname descattname =
             [   uriattname =: Html.joinUri cfg_relpath (uriautoext linkhref),
-                descattname =: Util.ifNo cfgerrmsg (Util.ifNo linktext (fst$ Util.splitOn1st '#' linkhref)) ]
+                descattname =: Util.ifNo cfgerrmsg (Util.ifNo linktext (fst$ Util.splitOn1st_ '#' linkhref)) ]
 
 
     in X.Early renderer
@@ -39,7 +39,7 @@ registerX _ xreg =
         where
         for "" href = href
         for ext href =
-            let (hrefpath , hrefanchor) = Util.splitOn1st '#' href
+            let (hrefpath , hrefanchor) = Util.splitOn1st_ '#' href
             in (Files.ensureFileExt False ext hrefpath) ++ (null hrefanchor |? "" |! ('#':hrefanchor))
     htmlescape =
         htmlesc $cfg-:xmlEscape where

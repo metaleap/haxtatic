@@ -13,6 +13,7 @@ import qualified Util
 
 import qualified X.DemoSimplest (registerX)
 import qualified X.DemoCfgArgs (registerX)
+import qualified X.FormatDateTime (registerX)
 import qualified X.HtmlAnchors (registerX)
 import qualified X.HtmlImage (registerX)
 import qualified X.HtmlLink (registerX)
@@ -31,6 +32,7 @@ import qualified Text.Printf
 
 xregs = [ "demoSimplest" =: X.DemoSimplest.registerX
         , "demoCfgArgs" =: X.DemoCfgArgs.registerX
+        , "hax.formatDateTime" =: X.FormatDateTime.registerX
         , "hax.htmlAnchors" =: X.HtmlAnchors.registerX
         , "hax.htmlImage" =: X.HtmlImage.registerX
         , "hax.htmlLink" =: X.HtmlLink.registerX

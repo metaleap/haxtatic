@@ -97,18 +97,18 @@ turn on whatever syntax highlighting for eased grokkage..
 
 
 
-|X|hax.htmlImage:doxpic: {P| /pics/otiosely/long/path |}: attrLink=[], attrImg=[], xmlEscape=False
-|X|hax.xmlEscape:xesc
-|X|hax.miniTag:c: code
-|X|hax.miniTag:h: h2: attr=[ ("id" , "{%:content:%}") ]
-|X|hax.miniTag:note: span: attr=[("class" , "hd-note")]
-|X|hax.miniTag:xli: li
 |X|hax.htmlLink:lb: ../basics: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
 |X|hax.htmlLink:lt: ../tags: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
 |X|hax.htmlLink:lx: ../xtypes: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
 |X|hax.htmlLink:_lb: basics: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
 |X|hax.htmlLink:_lt: tags: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
 |X|hax.htmlLink:_lx: xtypes: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
+|X|hax.htmlImage:doxpic: {P| /pics/otiosely/long/path |}: attrLink=[], attrImg=[], xmlEscape=False
+|X|hax.xmlEscape:xesc
+|X|hax.miniTag:c: code
+|X|hax.miniTag:h: h2: attr=[ ("id" , "{%:content:%}") ]
+|X|hax.miniTag:note: span: attr=[("class" , "hd-note")]
+|X|hax.miniTag:xli: li
 
 |X|hax.htmlLinks:doxtopnav:li:
 	 attr = [("class","hd-nav"),("&class","hd-nav-sel")],

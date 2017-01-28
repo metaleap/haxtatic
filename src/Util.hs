@@ -506,14 +506,15 @@ splitOn1st_ delim list
     |(otherwise) = (take i list , rest)
     where
     (i , rest) = spliton delim list ; spliton ':' = colon ; spliton '>' = gt ; spliton '\"' = quote
-    spliton '=' = eq ; spliton ',' = comma ; spliton ' ' = space ; spliton '\v' = white
+    spliton '#' = sharp ; spliton '=' = eq ; spliton ',' = comma ; spliton ' ' = space ; spliton '\v' = white
     spliton _ = error ("splitOn1st_ is hard-coded and doesn't support "++(show delim) ++ ", fix that or use splitOn1st")
     n = (_intmin , []) ; y l = (0 , l) ; b (j,l) = (j+1,l)
     colon [] = n ; colon (':':xs) = y xs ; colon (_:xs) = b (colon xs)
+    sharp [] = n ; sharp ('#':xs) = y xs ; sharp (_:xs) = b (sharp xs)
     comma [] = n ; comma (',':xs) = y xs ; comma (_:xs) = b (comma xs)
     space [] = n ; space (' ':xs) = y xs ; space (_:xs) = b (space xs)
     quote [] = n ; quote ('\"':xs) = y xs ; quote (_:xs) = b (quote xs)
-    white [] = n ; white ('\t':xs) = y xs ; white ('\r':xs) = y xs ; white ('\n':xs) = y xs ; white ('\v':xs) = y xs ; white ('\b':xs) = y xs ; white ('\f':xs) = y xs ; white (_:xs) = b (white xs)
+    white [] = n ; white (' ':xs) = y xs ; white ('\t':xs) = y xs ; white ('\r':xs) = y xs ; white ('\n':xs) = y xs ; white ('\v':xs) = y xs ; white ('\b':xs) = y xs ; white ('\f':xs) = y xs ; white (_:xs) = b (white xs)
     eq [] = n ; eq ('=':xs) = y xs ; eq (_:xs) = b (eq xs)
     gt [] = n ; gt ('>':xs) = y xs ; gt (_:xs) = b (gt xs)
 
