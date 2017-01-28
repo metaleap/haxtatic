@@ -239,6 +239,7 @@ writeAtoms ctxbuild domainname outjobs =
         (pageuri , feedtitle , feeddesc) = case maybeblok of
                     Just blok -> ( '/':(urify (blok-:Bloks.blokIndexPageFile)) , blok-:Bloks.title , blok-:Bloks.desc )
                     Nothing -> ( '/':(feedname++".html") , feedname , "" )
+        pageuri' = drop 1 pageuri
 
         xmlesc = Html.escape
         sanitize = Util.replaceSubsMany ["<link " =: "<hax_link style=\"display:none\" " , "<script" =: "<!--hax_script" ,
@@ -247,15 +248,15 @@ writeAtoms ctxbuild domainname outjobs =
                     ]
 
         xmlatompost (htmlcontent , post) =
-            let posttitle = xmlesc (post-:title)
+            let posttitle = xmlesc$ Util.ifNo (post-:title) (post-:cat)
                 postdesc = xmlesc (post-:(has blokname |? content |! cat))
                 postfull = xmlesc (has blokname |? (sanitize htmlcontent) |! (post-:content))
                 postdt = post-:dt
-                posturl = Util.ifNo (post-:link) (pageuri++('#':postdt))
+                posturl = Util.ifNo (post-:link) (pageuri'++('#':postdt))
             in ("<entry>\n\
                 \        <title type=\"html\">"++posttitle++"</title>\n\
                 \        <summary type=\"html\">"++postdesc++"</summary>\n\
-                \        <link href=\""++(root2rel posturl)++"\"/><author><name>"++domain++"</name></author>\n\
+                \        <link href=\""++((Util.contains posturl "://") |? posturl |! root2rel posturl)++"\"/><author><name>"++domain++"</name></author>\n\
                 \        <id>tag:"++domain++(',':postdt)++(':':domainwtf)++('/':posturl)++"</id>\n\
                 \        <updated>"++postdt++"T00:00:00Z</updated>\n\
                 \        <content type=\"html\">"++postfull++"</content>\n\

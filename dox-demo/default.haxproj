@@ -18,6 +18,7 @@ turn on whatever syntax highlighting for eased grokkage..
 
 |C|_hax_dir_cache:
 |C|_hax_relpath_sitemap: _xml/sitemap.xml
+|C|_hax_relpath_postatoms: _xml
 |C|_hax_domainname: metaleap.github.io/haxtatic
 
 

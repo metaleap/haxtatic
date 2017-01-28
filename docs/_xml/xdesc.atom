@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <link rel="self" type="application/rss+xml" href="http://metaleap.github.io/haxtatic/_xml/xdesc.atom" />
+    <title>metaleap.github.io xdesc</title>
+    <subtitle>metaleap.github.io/haxtatic/xdesc.html</subtitle>
+    <id>http://metaleap.github.io/haxtatic/xdesc.html</id>
+    <link href="http://metaleap.github.io/haxtatic/xdesc.html"/>
+    <updated>1234-12-15T00:00:00Z</updated>
+    <entry>
+        <title type="html">demoSimplest</title>
+        <summary type="html">demoSimplest</summary>
+        <link href="http://github.com/metaleap/haxtatic/blob/master/src/X/DemoSimplest.hs"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-12-15:haxtatic/http://github.com/metaleap/haxtatic/blob/master/src/X/DemoSimplest.hs</id>
+        <updated>1234-12-15T00:00:00Z</updated>
+        <content type="html">Outputs &lt;code&gt;&amp;lt;h1&amp;gt;Hello World!&amp;lt;/h1&amp;gt;&lt;/code&gt;.</content>
+    </entry><entry>
+        <title type="html">demoCfgArgs</title>
+        <summary type="html">demoCfgArgs</summary>
+        <link href="http://github.com/metaleap/haxtatic/blob/master/src/X/DemoCfgArgs.hs"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-11-15:haxtatic/http://github.com/metaleap/haxtatic/blob/master/src/X/DemoCfgArgs.hs</id>
+        <updated>1234-11-15T00:00:00Z</updated>
+        <content type="html">Outputs &lt;code&gt;&amp;lt;h4&amp;gt;Hello, &amp;lt;b&amp;gt;&lt;i&gt;greetname&lt;/i&gt;!&amp;lt;/b&amp;gt;&amp;lt;/h4&amp;gt;&lt;/code&gt;.</content>
+    </entry><entry>
+        <title type="html">hax.miniTag</title>
+        <summary type="html">hax.miniTag</summary>
+        <link href="../xdesc.html#1234-10-15"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-10-15:haxtatic/xdesc.html#1234-10-15</id>
+        <updated>1234-10-15T00:00:00Z</updated>
+        <content type="html">Outputs &lt;code&gt;&amp;nbsp;&amp;lt;&lt;i&gt;somehtmltag ..&lt;/i&gt;&amp;gt;&lt;i&gt;tag&apos;s inner-markup content&lt;/i&gt;&amp;lt;/&lt;i&gt;somehtmltag&lt;/i&gt;&amp;gt;&lt;/code&gt;.</content>
+    </entry><entry>
+        <title type="html">hax.htmlImage</title>
+        <summary type="html">hax.htmlImage</summary>
+        <link href="../xdesc.html#1234-09-10"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-09-10:haxtatic/xdesc.html#1234-09-10</id>
+        <updated>1234-09-10T00:00:00Z</updated>
+        <content type="html">Outputs &lt;code&gt;&amp;lt;img &lt;i&gt;..&lt;/i&gt; /&amp;gt;&lt;/code&gt; or &lt;code&gt;&amp;lt;a &lt;i&gt;..&lt;/i&gt;&amp;gt;&amp;lt;img &lt;i&gt;..&lt;/i&gt; /&amp;gt;&amp;lt;/a&amp;gt;&lt;/code&gt;.</content>
+    </entry><entry>
+        <title type="html">hax.htmlLink</title>
+        <summary type="html">hax.htmlLink</summary>
+        <link href="../xdesc.html#1234-08-25"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-08-25:haxtatic/xdesc.html#1234-08-25</id>
+        <updated>1234-08-25T00:00:00Z</updated>
+        <content type="html">Outputs &lt;code&gt;&amp;lt;a &lt;i&gt;..&lt;/i&gt;&amp;gt;&lt;i&gt;..&lt;/i&gt;&amp;lt;/a&amp;gt;&lt;/code&gt;.</content>
+    </entry><entry>
+        <title type="html">hax.htmlLinks</title>
+        <summary type="html">hax.htmlLinks</summary>
+        <link href="../xdesc.html#1234-08-15"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-08-15:haxtatic/xdesc.html#1234-08-15</id>
+        <updated>1234-08-15T00:00:00Z</updated>
+        <content type="html">Helps with site navigation: outputs a sequence of &lt;code&gt;&amp;lt;a href=&amp;quot;..&amp;quot;&amp;gt; .. &amp;lt;/a&amp;gt;&lt;/code&gt; or
+	&lt;code&gt;&amp;nbsp;&amp;lt;&lt;i&gt;outerhtmltag&lt;/i&gt; ..&amp;gt;&amp;lt;a href=&amp;quot;..&amp;quot;&amp;gt; .. &amp;lt;/a&amp;gt;&amp;lt;/&lt;i&gt;outerhtmltag&lt;/i&gt;&amp;gt;&lt;/code&gt;
+	in a uniform manner.</content>
+    </entry><entry>
+        <title type="html">hax.htmlAnchors</title>
+        <summary type="html">hax.htmlAnchors</summary>
+        <link href="../xdesc.html#1234-07-20"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-07-20:haxtatic/xdesc.html#1234-07-20</id>
+        <updated>1234-07-20T00:00:00Z</updated>
+        <content type="html">Helps with page-level tables-of-content: outputs a sequence of
+	&lt;code&gt;&amp;nbsp;&amp;lt;a href=&amp;quot;#..&amp;quot;&amp;gt; .. &amp;lt;/a&amp;gt;&lt;/code&gt; or
+	&lt;code&gt;&amp;nbsp;&amp;lt;&lt;i&gt;outerhtmltag&lt;/i&gt; ..&amp;gt;&amp;lt;a href=&amp;quot;#..&amp;quot;&amp;gt; .. &amp;lt;/a&amp;gt;&amp;lt;/&lt;i&gt;outerhtmltag&lt;/i&gt;&amp;gt;&lt;/code&gt;
+	&amp;mdash; one per &lt;code&gt;&amp;nbsp;&amp;lt;&lt;i&gt;gatherhtmltag&lt;/i&gt;&amp;gt;&lt;/code&gt; element found in the content source file.</content>
+    </entry><entry>
+        <title type="html">hax.xmlEscape</title>
+        <summary type="html">hax.xmlEscape</summary>
+        <link href="../xdesc.html#1234-07-10"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-07-10:haxtatic/xdesc.html#1234-07-10</id>
+        <updated>1234-07-10T00:00:00Z</updated>
+        <content type="html">Outputs the given content with all occurrences of any of &lt;code&gt;&amp;amp; &amp;lt; &amp;gt; &amp;quot; &amp;apos;&lt;/code&gt; each appropriately
+	entity-escaped for safe inclusion in HTML/XML/etc. markup.</content>
+    </entry><entry>
+        <title type="html">hax.dtFormat</title>
+        <summary type="html">hax.dtFormat</summary>
+        <link href="../xdesc.html#1234-06-30"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-06-30:haxtatic/xdesc.html#1234-06-30</id>
+        <updated>1234-06-30T00:00:00Z</updated>
+        <content type="html">Outputs in a designated output format any input date/time text-values encoded in a designated input format.</content>
+    </entry><entry>
+        <title type="html">hax.snippet</title>
+        <summary type="html">hax.snippet</summary>
+        <link href="../xdesc.html#1234-06-15"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-06-15:haxtatic/xdesc.html#1234-06-15</id>
+        <updated>1234-06-15T00:00:00Z</updated>
+        <content type="html">Renders the named &quot;snippet&quot; (aka. &quot;controls&quot; / &quot;components&quot; / &quot;sub-templates&quot;) substituting the specified
+	named-parameter values.</content>
+    </entry><entry>
+        <title type="html">hax.iterator</title>
+        <summary type="html">hax.iterator</summary>
+        <link href="../xdesc.html#1234-05-15"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-05-15:haxtatic/xdesc.html#1234-05-15</id>
+        <updated>1234-05-15T00:00:00Z</updated>
+        <content type="html">Renders a sequence of values from the specified enumerator, applying the specified filtering/ordering/limits.</content>
+    </entry>
+</feed>
