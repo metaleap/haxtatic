@@ -32,7 +32,7 @@ import qualified Text.Printf
 
 xregs = [ "demoSimplest" =: X.DemoSimplest.registerX
         , "demoCfgArgs" =: X.DemoCfgArgs.registerX
-        , "hax.formatDateTime" =: X.FormatDateTime.registerX
+        , "hax.dtFormat" =: X.FormatDateTime.registerX
         , "hax.htmlAnchors" =: X.HtmlAnchors.registerX
         , "hax.htmlImage" =: X.HtmlImage.registerX
         , "hax.htmlLink" =: X.HtmlLink.registerX

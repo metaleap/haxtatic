@@ -1,7 +1,7 @@
+{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module X.FormatDateTime where
 
 import Base
-import qualified Html
 import qualified Proj
 import qualified ProjC
 import qualified X

@@ -1,5 +1,5 @@
 {-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
-module Base (module Base , (<|>)  ) where
+module Base (module Base , (<|>) ) where
 
 import Control.Applicative ( (<|>) )
 import qualified Control.Monad

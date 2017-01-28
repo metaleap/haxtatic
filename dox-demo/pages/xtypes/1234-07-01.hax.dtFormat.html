@@ -1,0 +1,37 @@
+{X|dox-xthead|}
+{T|Xcompact|}
+{T|Xearly|}
+{T|Xcfg|}
+<p><b>Assuming <i>first</i>,</b> the existence of the following (exemplary) {X|lb:datetime#dtformats named custom date-time formats|}:</p>
+<pre>
+|C|dtformat:<i><u>mydtf_germanstyle</u></i>:	%d.%m.%Y
+|C|dtformat:<i><u>mydtf_longmonth</u></i>:	%d %B
+|C|dtformat:<i><u>mydtf_shortmonth</u></i>:	%b %d
+</pre>
+{T|Xdecl|}
+<pre>
+|X|hax.dtFormat:<i>dt_std2german</i>:
+	: <u>mydtf_germanstyle</u>
+|X|hax.dtFormat:<i>dt_short2long</i>:
+	<u>mydtf_shortmonth</u> : <u>mydtf_longmonth</u>
+|X|hax.dtFormat:<i>dt_std2short</i>:
+	: <u>mydtf_shortmonth</u>
+|X|hax.dtFormat:<i>dt_german2iso</i>:
+	<u>mydtf_germanstyle</u> : _hax_dtformat_iso8601
+|X|hax.dtFormat:<i>dt_long2std</i>:
+	<u>mydtf_longmonth</u> :
+</pre>
+{T|Xargs|}
+<p>To test the above X-tag declarations:</p>
+<ul>
+	<li>{X|c:{X<!---->|dt_std2german<i>: {P<!---->|srcTime|<!---->} </i>|<!---->}|}
+	&rarr; {X|note: {X|dt_std2german:{P|srcTime|}|} |}</li>
+	<li>{X|c:{X<!---->|dt_short2long<i>: Mar 14 </i>|<!---->}|}
+	&rarr; {X|note: {X|dt_short2long:Mar 14|} |}</li>
+	<li>{X|c:{X<!---->|dt_std2short<i>: 1982-02-19 </i>|<!---->}|}
+	&rarr; {X|note: {X|dt_std2short:1982-02-19|} |}</li>
+	<li>{X|c:{X<!---->|dt_german2iso<i>: 19.02.1982 </i>|<!---->}|}
+	&rarr; {X|note: {X|dt_german2iso:19.02.1982|} |}</li>
+	<li>{X|c:{X<!---->|dt_long2std<i>: December 24 </i>|<!---->}|}
+	&rarr; {X|note: {X|dt_long2std:24 December|} |}</li>
+</ul>

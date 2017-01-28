@@ -14,7 +14,7 @@
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
 		<label for="chk_showtoc">On this page:</label>
 		<ul>
-			<li><a href="#demoSimplest">demoSimplest</a></li><li><a href="#demoCfgArgs">demoCfgArgs</a></li><li><a href="#hax.miniTag">hax.miniTag</a></li><li><a href="#hax.htmlImage">hax.htmlImage</a></li><li><a href="#hax.xmlEscape">hax.xmlEscape</a></li><li><a href="#hax.htmlLink">hax.htmlLink</a></li><li><a href="#hax.htmlLinks">hax.htmlLinks</a></li><li><a href="#hax.htmlAnchors">hax.htmlAnchors</a></li><li><a href="#hax.snippet">hax.snippet</a></li><li><a href="#hax.iterator">hax.iterator</a></li>
+			<li><a href="#demoSimplest">demoSimplest</a></li><li><a href="#demoCfgArgs">demoCfgArgs</a></li><li><a href="#hax.miniTag">hax.miniTag</a></li><li><a href="#hax.htmlImage">hax.htmlImage</a></li><li><a href="#hax.htmlLink">hax.htmlLink</a></li><li><a href="#hax.htmlLinks">hax.htmlLinks</a></li><li><a href="#hax.htmlAnchors">hax.htmlAnchors</a></li><li><a href="#hax.xmlEscape">hax.xmlEscape</a></li><li><a href="#hax.dtFormat">hax.dtFormat</a></li><li><a href="#hax.snippet">hax.snippet</a></li><li><a href="#hax.iterator">hax.iterator</a></li>
 		</ul>
 	</div>
 
@@ -30,11 +30,12 @@
 	<li><a href="#demoSimplest">demoSimplest</a> &mdash; "Hello World!"</li>
 	<li><a href="#demoCfgArgs">demoCfgArgs</a> &mdash; "Hello, <i>foo</i>!"</li>
 	<li><a href="#hax.miniTag">hax.miniTag</a> &mdash; eliminate verbosity of repetetive markup</li>
-	<li><a href="#hax.xmlEscape">hax.xmlEscape</a> &mdash; HTML/XML/etc.-escape given content</li>
 	<li><a href="#hax.htmlLink">hax.htmlLink</a> &mdash; less-verbose hyperlinks</li>
 	<li><a href="#hax.htmlImage">hax.htmlImage</a> &mdash; less-verbose images</li>
 	<li><a href="#hax.htmlLinks">hax.htmlLinks</a> &mdash; lean &amp; handy navigation helper</li>
 	<li><a href="#hax.htmlAnchors">hax.htmlAnchors</a> &mdash; gather and link to in-page contents</li>
+	<li><a href="#hax.xmlEscape">hax.xmlEscape</a> &mdash; HTML/XML/etc.-escape given content</li>
+	<li><a href="#hax.dtFormat">hax.dtFormat</a> &mdash; dates formatted as desired</li>
 	<li><a href="#hax.snippet">hax.snippet</a> &mdash; elsewhere known as "custom controls", "components", "sub-templates", or
 		"<i>thing</i>lets"..</li>
 	<li><a href="#hax.iterator">hax.iterator</a> &mdash; versatile content/record
@@ -46,62 +47,51 @@
 	
 	<ol>
 		<li class="up">
-			<a href="../xtypes/demoSimplest.html#decl">Declaration</a> of an <code>|X|demoSimplest:<i>myTag</i></code> directive in a
+			<a href="../xtypes/demoSimplest.html#decl">Declaration</a> of an <code>|X|demoSimplest:<u><i>myTag</i></u></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: (no other settings)</li></ul>
+			<ul><li>further configuring: <i>(no other settings)</i></li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i> |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u> |<!---->}</code></li>
 	</ol><h2 id="demoCfgArgs">demoCfgArgs</h2>
 	<p class="up">Outputs <code>&lt;h4&gt;Hello, &lt;b&gt;<i>greetname</i>!&lt;/b&gt;&lt;/h4&gt;</code>.</p>
 	
 	<ol>
 		<li class="up">
-			<a href="../xtypes/demoCfgArgs.html#decl">Declaration</a> of an <code>|X|demoCfgArgs:<i>myTag</i></code> or <code>|X|demoCfgArgs:<i>myTag</i>:<i>greetname</i></code> directive in a
+			<a href="../xtypes/demoCfgArgs.html#decl">Declaration</a> of an <code>|X|demoCfgArgs:<u><i>myTag</i></u></code> or <code>|X|demoCfgArgs:<i>myTag</i>:<i>greetname</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: (no other settings)</li></ul>
+			<ul><li>further configuring: <i>(no other settings)</i></li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>|<!---->}</code> or <code>{X<!---->|<i>myTag</i>:<i>greetname</i> |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>|<!---->}</code> or <code>{X<!---->|<i>myTag</i>:<i>greetname</i> |<!---->}</code></li>
 	</ol><h2 id="hax.miniTag">hax.miniTag</h2>
 	<p class="up">Outputs <code>&nbsp;&lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt;</code>.</p>
 	
 	<ol>
 		<li class="up">
-			<a href="../xtypes/hax.miniTag.html#decl">Declaration</a> of an <code>|X|hax.miniTag:<i>myTag</i>:<i>somehtmltag</i>: <i>..</i></code> directive in a
+			<a href="../xtypes/hax.miniTag.html#decl">Declaration</a> of an <code>|X|hax.miniTag:<u><i>myTag</i></u>:<i>somehtmltag</i>: <i>..</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
 			<ul><li>further configuring: <code>attr</code></li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i> tag's inner-markup content </i> |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>:<i> tag's inner-markup content </i> |<!---->}</code></li>
 	</ol><h2 id="hax.htmlImage">hax.htmlImage</h2>
 	<p class="up">Outputs <code>&lt;img <i>..</i> /&gt;</code> or <code>&lt;a <i>..</i>&gt;&lt;img <i>..</i> /&gt;&lt;/a&gt;</code>.</p>
 	
 	<ol>
 		<li class="up">
-			<a href="../xtypes/hax.htmlImage.html#decl">Declaration</a> of an <code>|X|hax.htmlImage:<i>myTag</i>:<i>some/rel/base/path</i>: <i>..</i></code> directive in a
+			<a href="../xtypes/hax.htmlImage.html#decl">Declaration</a> of an <code>|X|hax.htmlImage:<u><i>myTag</i></u>:<i>some/rel/base/path</i>: <i>..</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
 			<ul><li>further configuring: <code>attrLink</code>, <code>attrImg</code>, <code>xmlEscape</code></li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i>rel-to-base/path/no/whitespace and optionally some description text</i> |<!---->}</code></li>
-	</ol><h2 id="hax.xmlEscape">hax.xmlEscape</h2>
-	<p class="up">Outputs the given content with all occurrences of any of <code>&amp; &lt; &gt; &quot; &apos;</code> each appropriately
-	entity-escaped for safe inclusion in HTML/XML/etc. markup.</p>
-	
-	<ol>
-		<li class="up">
-			<a href="../xtypes/hax.xmlEscape.html#decl">Declaration</a> of an <code>|X|hax.xmlEscape:<i>myTag</i></code> directive in a
-			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
-			<ul><li>further configuring: (no other settings)</li></ul>
-		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: <i>any &quot;content&apos; to &lt;&gt; XML&amp;HTML-escape</i> |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>:<i>rel-to-base/path/no/whitespace and optionally some description text</i> |<!---->}</code></li>
 	</ol><h2 id="hax.htmlLink">hax.htmlLink</h2>
 	<p class="up">Outputs <code>&lt;a <i>..</i>&gt;<i>..</i>&lt;/a&gt;</code>.</p>
 	
 	<ol>
 		<li class="up">
-			<a href="../xtypes/hax.htmlLink.html#decl">Declaration</a> of an <code>|X|hax.htmlLink:<i>myTag</i>:<i>some/rel/base/path</i>: <i>..</i></code> directive in a
+			<a href="../xtypes/hax.htmlLink.html#decl">Declaration</a> of an <code>|X|hax.htmlLink:<u><i>myTag</i></u>:<i>some/rel/base/path</i>: <i>..</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
 			<ul><li>further configuring: <code>attr</code> , <code>xmlEscape</code> , <code>uriAutoExt</code> </li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i>rel-to-base/path/no/whitespace and then the link text text</i> |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>:<i>rel-to-base/path/no/whitespace and then the link text text</i> |<!---->}</code></li>
 	</ol><h2 id="hax.htmlLinks">hax.htmlLinks</h2>
 	<p class="up">Helps with site navigation: outputs a sequence of <code>&lt;a href=&quot;..&quot;&gt; .. &lt;/a&gt;</code> or
 	<code>&nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a href=&quot;..&quot;&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code>
@@ -109,11 +99,11 @@
 	
 	<ol>
 		<li class="up">
-			<a href="../xtypes/hax.htmlLinks.html#decl">Declaration</a> of an <code>|X|hax.htmlLinks:<i>myTag</i>:<i>outerhtmltag</i>: <i>..</i></code> directive in a
+			<a href="../xtypes/hax.htmlLinks.html#decl">Declaration</a> of an <code>|X|hax.htmlLinks:<u><i>myTag</i></u>:<i>outerhtmltag</i>: <i>..</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
 			<ul><li>further configuring: <code>attr</code>, <code>itemsFirst</code>, <code>itemsLast</code>, <code>wrapHref</code></li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: items = [..] , attr = [..] |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>: items = [..] , attr = [..] |<!---->}</code></li>
 	</ol><h2 id="hax.htmlAnchors">hax.htmlAnchors</h2>
 	<p class="up">Helps with page-level tables-of-content: outputs a sequence of
 	<code>&nbsp;&lt;a href=&quot;#..&quot;&gt; .. &lt;/a&gt;</code> or
@@ -122,32 +112,53 @@
 	
 	<ol>
 		<li class="up">
-			<a href="../xtypes/hax.htmlAnchors.html#decl">Declaration</a> of an <code>|X|hax.htmlAnchors:<i>myTag</i>:<i>gatherhtmltag</i>: <i>..</i></code> directive in a
+			<a href="../xtypes/hax.htmlAnchors.html#decl">Declaration</a> of an <code>|X|hax.htmlAnchors:<u><i>myTag</i></u>:<i>gatherhtmltag</i>: <i>..</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
 			<ul><li>further configuring: <code>considerEmpty</code>, <code>outputIfEmpty</code>, <code>xmlEscapeHref</code></li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>:<i>outerhtmltag</i>: attr = [..] |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>:<i>outerhtmltag</i>: attr = [..] |<!---->}</code></li>
+	</ol><h2 id="hax.xmlEscape">hax.xmlEscape</h2>
+	<p class="up">Outputs the given content with all occurrences of any of <code>&amp; &lt; &gt; &quot; &apos;</code> each appropriately
+	entity-escaped for safe inclusion in HTML/XML/etc. markup.</p>
+	
+	<ol>
+		<li class="up">
+			<a href="../xtypes/hax.xmlEscape.html#decl">Declaration</a> of an <code>|X|hax.xmlEscape:<u><i>myTag</i></u></code> directive in a
+			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
+			<ul><li>further configuring: <i>(no other settings)</i></li></ul>
+		</li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>: <i>any &quot;content&apos; to &lt;&gt; XML&amp;HTML-escape</i> |<!---->}</code></li>
+	</ol><h2 id="hax.dtFormat">hax.dtFormat</h2>
+	<p class="up">Outputs in a designated output format any input date/time text-values encoded in a designated input format.</p>
+	
+	<ol>
+		<li class="up">
+			<a href="../xtypes/hax.dtFormat.html#decl">Declaration</a> of an <code>|X|hax.dtFormat:<u><i>myTag</i></u>:<i>dtf_in</i>:<i>dtf_out</i></code> directive in a
+			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
+			<ul><li>further configuring: <i>(no other settings)</i></li></ul>
+		</li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>: <i>any date/time value currently formatted as inputdtfname or as YYYY-MM-DD</i> |<!---->}</code></li>
 	</ol><h2 id="hax.snippet">hax.snippet</h2>
 	<p class="up">Renders the named "snippet" (aka. "controls" / "components" / "sub-templates") substituting the specified
 	named-parameter values.</p>
 	
 	<ol>
 		<li class="up">
-			<a href="../xtypes/hax.snippet.html#decl">Declaration</a> of an <code>|X|hax.snippet:<i>myTag</i>: <i>..</i></code> directive in a
+			<a href="../xtypes/hax.snippet.html#decl">Declaration</a> of an <code>|X|hax.snippet:<u><i>myTag</i></u>: <i>..</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
 			<ul><li>further configuring: <code>vars</code>, <code>content</code></li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: vars = [..], content = &quot;..&quot; |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>: vars = [..], content = &quot;..&quot; |<!---->}</code></li>
 	</ol><h2 id="hax.iterator">hax.iterator</h2>
 	<p class="up">Renders a sequence of values from the specified enumerator, applying the specified filtering/ordering/limits.</p>
 	
 	<ol>
 		<li class="up">
-			<a href="../xtypes/hax.iterator.html#decl">Declaration</a> of an <code>|X|hax.iterator:<i>myTag</i>: <i>..</i></code> directive in a
+			<a href="../xtypes/hax.iterator.html#decl">Declaration</a> of an <code>|X|hax.iterator:<u><i>myTag</i></u>: <i>..</i></code> directive in a
 			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
 			<ul><li>further configuring: <code>prefix</code>, <code>suffix</code>, <code>joinVia</code>, <code>content</code></li></ul>
 		</li>
-		<li>Usage anywhere: <code>{X<!---->|<i>myTag</i>: ..  |<!---->}</code></li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>: ..  |<!---->}</code></li>
 	</ol>
 </span>
 

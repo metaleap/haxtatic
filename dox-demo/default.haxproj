@@ -12,6 +12,10 @@ turn on whatever syntax highlighting for eased grokkage..
 
 |C|_hax_onparseerror: abort
 
+|C|dtformat:mydtf_germanstyle: %d.%m.%Y
+|C|dtformat:mydtf_longmonth: %d %B
+|C|dtformat:mydtf_shortmonth: %b %d
+
 |C|_hax_dir_cache:
 
 
@@ -110,6 +114,12 @@ turn on whatever syntax highlighting for eased grokkage..
 |X|hax.miniTag:note: span: attr=[("class" , "hd-note")]
 |X|hax.miniTag:xli: li
 
+|X|hax.dtFormat:dt_std2german: :mydtf_germanstyle
+|X|hax.dtFormat:dt_short2long: mydtf_shortmonth:mydtf_longmonth
+|X|hax.dtFormat:dt_std2short: :mydtf_shortmonth
+|X|hax.dtFormat:dt_german2iso: mydtf_germanstyle:_hax_dtformat_iso8601
+|X|hax.dtFormat:dt_long2std: mydtf_longmonth:
+
 |X|hax.htmlLinks:doxtopnav:li:
 	 attr = [("class","hd-nav"),("&class","hd-nav-sel")],
 		 itemsFirst = [("" , "Intro")],
@@ -142,68 +152,59 @@ turn on whatever syntax highlighting for eased grokkage..
 
 |P|xdesc:
 	dt = "1234-12-15", cat = "demoSimplest", title = "", link = "http://github.com/metaleap/haxtatic/blob/master/src/X/DemoSimplest.hs",
-	more = [ ("declmore" , ""),
-			 ("cfgmore" , "(no other settings)"),
-			 ("usage" , "") ],
+	more = [("declmore" , ""),
+			("cfgmore" , "<i>(no other settings)</i>"),
+			("usage" , "") ],
 	content=>
 	Outputs <code>&lt;h1&gt;Hello World!&lt;/h1&gt;</code>.
 
 |P|xdesc:
 	dt = "1234-11-15", cat = "demoCfgArgs", title = "", link = "http://github.com/metaleap/haxtatic/blob/master/src/X/DemoCfgArgs.hs",
-	more = [ ("declmore" , "</code> or <code>|X|demoCfgArgs:<i>myTag</i>:<i>greetname</i>"),
-			 ("cfgmore" , "(no other settings)"),
-			 ("usage" , "|<!---->}</code> or <code>{X<!---->|<i>myTag</i>:<i>greetname</i>") ],
+	more = [("declmore" , "</code> or <code>|X|demoCfgArgs:<i>myTag</i>:<i>greetname</i>"),
+			("cfgmore" , "<i>(no other settings)</i>"),
+			("usage" , "|<!---->}</code> or <code>{X<!---->|<i>myTag</i>:<i>greetname</i>") ],
 	content=>
 	Outputs <code>&lt;h4&gt;Hello, &lt;b&gt;<i>greetname</i>!&lt;/b&gt;&lt;/h4&gt;</code>.
 
 |P|xdesc:
 	dt = "1234-10-15", cat = "hax.miniTag", title = "", link = "",
-	more = [ ("declmore" , ":<i>somehtmltag</i>: <i>..</i>"),
-			 ("cfgmore" , "{X|c:attr|}"),
-			 ("usage" , ":<i> tag's inner-markup content </i>") ],
+	more = [("declmore" , ":<i>somehtmltag</i>: <i>..</i>"),
+			("cfgmore" , "{X|c:attr|}"),
+			("usage" , ":<i> tag's inner-markup content </i>") ],
 	content=>
 	Outputs {X|c: &nbsp;&lt;<i>somehtmltag ..</i>&gt;<i>tag's inner-markup content</i>&lt;/<i>somehtmltag</i>&gt; |}.
 
 |P|xdesc:
-	dt = "1234-09-15", cat = "hax.htmlImage", title = "", link = "",
-	more = [ ("declmore" , ":<i>some/rel/base/path</i>: <i>..</i>"),
-			 ("cfgmore" , "{X|c:attrLink|}, {X|c:attrImg|}, {X|c:xmlEscape|}"),
-			 ("usage" , ":<i>rel-to-base/path/no/whitespace and optionally some description text</i>") ],
+	dt = "1234-09-10", cat = "hax.htmlImage", title = "", link = "",
+	more = [("declmore" , ":<i>some/rel/base/path</i>: <i>..</i>"),
+			("cfgmore" , "{X|c:attrLink|}, {X|c:attrImg|}, {X|c:xmlEscape|}"),
+			("usage" , ":<i>rel-to-base/path/no/whitespace and optionally some description text</i>") ],
 	content=>
 	Outputs {X|c: &lt;img <i>..</i> /&gt; |} or {X|c: &lt;a <i>..</i>&gt;&lt;img <i>..</i> /&gt;&lt;/a&gt; |}.
 
 |P|xdesc:
-	dt = "1234-09-10", cat = "hax.xmlEscape", title = "", link = "",
-	more = [ ("declmore" , ""),
-			 ("cfgmore" , "(no other settings)"),
-			 ("usage" , ": <i>any &quot;content&apos; to &lt;&gt; XML&amp;HTML-escape</i>") ],
-	content=>
-	Outputs the given content with all occurrences of any of {X|c: &amp; &lt; &gt; &quot; &apos; |} each appropriately
-	entity-escaped for safe inclusion in HTML/XML/etc. markup.
-
-|P|xdesc:
 	dt = "1234-08-25", cat = "hax.htmlLink", title = "", link = "",
-	more = [ ("declmore" , ":<i>some/rel/base/path</i>: <i>..</i>"),
-			 ("cfgmore" , "{X|c:attr|} , {X|c:xmlEscape|} , {X|c:uriAutoExt|} "),
-			 ("usage" , ":<i>rel-to-base/path/no/whitespace and then the link text text</i>") ],
+	more = [("declmore" , ":<i>some/rel/base/path</i>: <i>..</i>"),
+			("cfgmore" , "{X|c:attr|} , {X|c:xmlEscape|} , {X|c:uriAutoExt|} "),
+			("usage" , ":<i>rel-to-base/path/no/whitespace and then the link text text</i>") ],
 	content=>
 	Outputs {X|c: &lt;a <i>..</i>&gt;<i>..</i>&lt;/a&gt; |}.
 
 |P|xdesc:
 	dt = "1234-08-15", cat = "hax.htmlLinks", title = "", link = "",
-	more = [ ("declmore" , ":<i>outerhtmltag</i>: <i>..</i>"),
-			 ("cfgmore" , "{X|c:attr|}, {X|c:itemsFirst|}, {X|c:itemsLast|}, {X|c:wrapHref|}"),
-			 ("usage" , ": items = [..] , attr = [..]") ],
+	more = [("declmore" , ":<i>outerhtmltag</i>: <i>..</i>"),
+			("cfgmore" , "{X|c:attr|}, {X|c:itemsFirst|}, {X|c:itemsLast|}, {X|c:wrapHref|}"),
+			("usage" , ": items = [..] , attr = [..]") ],
 	content=>
 	Helps with site navigation: outputs a sequence of {X|c: &lt;a href=&quot;..&quot;&gt; .. &lt;/a&gt; |} or
 	{X|c: &nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a href=&quot;..&quot;&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt; |}
 	in a uniform manner.
 
 |P|xdesc:
-	dt = "1234-07-15", cat = "hax.htmlAnchors", title = "", link = "",
-	more = [ ("declmore" , ":<i>gatherhtmltag</i>: <i>..</i>"),
-			 ("cfgmore" , "{X|c:considerEmpty|}, {X|c:outputIfEmpty|}, {X|c:xmlEscapeHref|}"),
-			 ("usage" , ":<i>outerhtmltag</i>: attr = [..]") ],
+	dt = "1234-07-20", cat = "hax.htmlAnchors", title = "", link = "",
+	more = [("declmore" , ":<i>gatherhtmltag</i>: <i>..</i>"),
+			("cfgmore" , "{X|c:considerEmpty|}, {X|c:outputIfEmpty|}, {X|c:xmlEscapeHref|}"),
+			("usage" , ":<i>outerhtmltag</i>: attr = [..]") ],
 	content=>
 	Helps with page-level tables-of-content: outputs a sequence of
 	{X|c: &nbsp;&lt;a href=&quot;#..&quot;&gt; .. &lt;/a&gt; |} or
@@ -211,18 +212,35 @@ turn on whatever syntax highlighting for eased grokkage..
 	&mdash; one per {X|c: &nbsp;&lt;<i>gatherhtmltag</i>&gt; |} element found in the content source file.
 
 |P|xdesc:
+	dt = "1234-07-10", cat = "hax.xmlEscape", title = "", link = "",
+	more = [("declmore" , ""),
+			("cfgmore" , "<i>(no other settings)</i>"),
+			("usage" , ": <i>any &quot;content&apos; to &lt;&gt; XML&amp;HTML-escape</i>") ],
+	content=>
+	Outputs the given content with all occurrences of any of {X|c: &amp; &lt; &gt; &quot; &apos; |} each appropriately
+	entity-escaped for safe inclusion in HTML/XML/etc. markup.
+
+|P|xdesc:
+	dt="1234-06-30", cat = "hax.dtFormat", title = "", link = "",
+	more = [("declmore" , ":<i>dtf_in</i>:<i>dtf_out</i>"),
+			("cfgmore" , "<i>(no other settings)</i>"),
+			("usage" , ": <i>any date/time value currently formatted as inputdtfname or as YYYY-MM-DD</i>")],
+	content=>
+	Outputs in a designated output format any input date/time text-values encoded in a designated input format.
+
+|P|xdesc:
 	dt = "1234-06-15", cat = "hax.snippet", title = "", link = "",
-	more = [ ("declmore" , ": <i>..</i>"),
-			 ("cfgmore" , "{X|c:vars|}, {X|c:content|}"),
-			 ("usage" , ": vars = [..], content = &quot;..&quot;") ],
+	more = [("declmore" , ": <i>..</i>"),
+			("cfgmore" , "{X|c:vars|}, {X|c:content|}"),
+			("usage" , ": vars = [..], content = &quot;..&quot;") ],
 	content=>
 	Renders the named "snippet" (aka. "controls" / "components" / "sub-templates") substituting the specified
 	named-parameter values.
 
 |P|xdesc:
 	dt = "1234-05-15", cat = "hax.iterator", title = "", link = "",
-	more = [ ("declmore" , ": <i>..</i>"),
-			 ("cfgmore" , "{X|c:prefix|}, {X|c:suffix|}, {X|c:joinVia|}, {X|c:content|}"),
-			 ("usage" , ": .. ") ],
+	more = [("declmore" , ": <i>..</i>"),
+			("cfgmore" , "{X|c:prefix|}, {X|c:suffix|}, {X|c:joinVia|}, {X|c:content|}"),
+			("usage" , ": .. ") ],
 	content=>
 	Renders a sequence of values from the specified enumerator, applying the specified filtering/ordering/limits.
