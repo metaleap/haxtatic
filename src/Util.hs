@@ -505,11 +505,12 @@ splitOn1st_ delim list
     |(i < 0)= (list , [])
     |(otherwise) = (take i list , rest)
     where
-    (i , rest) = spliton delim list ; spliton ':' = colon ; spliton '>' = gt ; spliton '\"' = quote
+    (i , rest) = spliton delim list ; spliton ':' = colon ; spliton '.' = dot ; spliton '>' = gt ; spliton '\"' = quote
     spliton '#' = sharp ; spliton '=' = eq ; spliton ',' = comma ; spliton ' ' = space ; spliton '\v' = white
     spliton _ = error ("splitOn1st_ is hard-coded and doesn't support "++(show delim) ++ ", fix that or use splitOn1st")
     n = (_intmin , []) ; y l = (0 , l) ; b (j,l) = (j+1,l)
     colon [] = n ; colon (':':xs) = y xs ; colon (_:xs) = b (colon xs)
+    dot [] = n ; dot ('.':xs) = y xs ; dot (_:xs) = b (dot xs)
     sharp [] = n ; sharp ('#':xs) = y xs ; sharp (_:xs) = b (sharp xs)
     comma [] = n ; comma (',':xs) = y xs ; comma (_:xs) = b (comma xs)
     space [] = n ; space (' ':xs) = y xs ; space (_:xs) = b (space xs)

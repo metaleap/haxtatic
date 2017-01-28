@@ -30,32 +30,43 @@ registerX _ xreg =
     let
     renderer (maybectxpage , argstr) =
         if waitforpage then Nothing
-            else Just$ combine allitems
+            else Just$ cfgitemscombine allitems
         where
         allitems = htmlout (args-:attr ++ cfghtmlatts) (args-:items)
         args = X.tryParseArgs xreg argstr
                 {-empty-} (Just Args { items = [], attr = [] })
                 {-error-} (Args { items = ["#"=:""], attr = X.htmlErrAttsArgs (xreg , Util.excerpt 23 argstr) })
 
-        htmlout atts argitems =
-            argitems>~(foreach atts) ~> concat
-        foreach attribs (url,text) =
+        htmlout attribs argitems =
+            concat$ argitems>~(foreach Nothing attribs)
+        foreach maybname attribs (('&':burl) , btext) =
+            case maybectxpage of
+                Nothing -> foreach maybname attribs (burl , btext)
+                Just ctxpage ->
+                    let blokname = ctxpage-:Tmpl.blokName
+                    in if null blokname
+                        then foreach maybname attribs (burl , btext)
+                        else foreach (Just "") attribs (blokname++".html" , blokname)
+        foreach maybname attribs (url,text) =
             Html.out cfg_htmltagname
                         (attribs >=~ (outattr maybectxpage))
-                            [ Html.T "a" ["" =: text , "href" =: cfgwraphref url] [] ]
+                            [ Html.T "a" [  "" =: text,
+                                            "id" =: "__hax_htmlLinks__" ++ (dstbaseuri -|= maybname),
+                                            "href" =: cfgwraphref url] [] ]
             where
+            dstlinkuri = Files.sanitizeUriRelPathForJoin url
+            dstbaseuri = System.FilePath.takeBaseName dstlinkuri
             outattr (Just ctxpage) (('&':name) , value) =
                 if pathmatch then Just (name , value) else Nothing
                 where
-                pathmatch = (has dstbaseuri && Util.startsWith dstbaseuri ((System.FilePath.takeBaseName dstlinkuri)++"."))
+                pathmatch = (has pagebfname && Util.startsWith pagebfname (dstbaseuri++"."))
                                 || (has pagediruri && Util.startsWith dstlinkuri pagediruri) || (dstlinkuri == pagediruri)
-                dstlinkuri = Files.sanitizeUriRelPathForJoin url
-                dstbaseuri = ((ctxpage-:Tmpl.pTagHandler) "fileBaseName") ~> ((++ ".") =|- "")
+                pagebfname = ((ctxpage-:Tmpl.pTagHandler) "fileBaseName") ~> ((++ ".") =|- "")
                 pagediruri = ((ctxpage-:Tmpl.pTagHandler) "dirUri") ~> (Files.sanitizeUriRelPathForJoin =|- "")
             outattr _ other =
                 Just other
 
-        combine = (cfgitemspre++).(++cfgitemspost)
+        cfgitemscombine = (cfgitemspre++).(++cfgitemspost)
         cfgitemspre = htmlout cfghtmlatts $cfg-:itemsFirst
         cfgitemspost = htmlout cfghtmlatts $cfg-:itemsLast
 
