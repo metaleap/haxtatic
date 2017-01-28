@@ -35,7 +35,7 @@ data Item
         more :: Util.StringPairs,
         content :: String
     }
-    deriving (Eq, Read)
+    deriving (Eq, Read, Ord)
 
 data Feed =
     BuildTask {
@@ -102,10 +102,11 @@ feedPosts maybectxbuild projposts projbloks query morefromhtmls =
             True
 
 feedGroups maybectxbuild projposts projbloks query fieldname =
-    Util.unique$ case Data.List.lookup fieldname (wellKnownFields True) of
-        Nothing -> (allposts >~ ((Data.List.lookup fieldname).more)) ~> Util.noMaybes
+    Util.unique$ case findfield (wellKnownFields True) of
         Just field -> allposts >~ field
+        Nothing -> (allposts >~ (findfield.more)) ~> Util.noMaybes
     where
+    findfield = Data.List.lookup fieldname
     allposts = feedPosts maybectxbuild projposts projbloks query []
 
 

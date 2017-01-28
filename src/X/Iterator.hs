@@ -63,7 +63,7 @@ registerX ctxproj xreg =
 
         iteratees = Util.indexed (iter $args-:over) where
 
-            --  RECURSIVE TWEAK OPS:
+            --  RECURSIVE TWEAK-OPS:
             iter (With moreover tweaks) =
                 iter (_with2buts moreover tweaks)
             iter (But (WrapEachIn (pref , suff)) moreover) =
@@ -77,11 +77,11 @@ registerX ctxproj xreg =
             iter (But (Ordered (Shuffle perpage)) moreover) =
                 shuffle perpage (iter moreover)
             iter (But (Ordered Descending) moreover) =
-                (s moreover) (iter moreover) where -- feed stuff comes pre-sorted descending, so:
-                    s (FeedValues _ _) = id ; s (FeedPosts _ _) = id ; s _ = Data.List.sortBy (flip compare)
+                (s moreover) (iter moreover) where
+                    s (FeedPosts _ _) = id ; s _ = Data.List.sortBy (flip compare)
             iter (But (Ordered Ascending) moreover) =
-                (s moreover) (iter moreover) where -- feed stuff comes pre-sorted descending, so:
-                    s (FeedValues _ _) = reverse ; s (FeedPosts _ _) = reverse ; s _ = Data.List.sortBy compare
+                (s moreover) (iter moreover) where
+                    s (FeedPosts _ _) = reverse ; s _ = Data.List.sortBy compare
 
             --  ACTUAL ENUMERATIONS:
             iter (Values values) =
@@ -96,9 +96,12 @@ registerX ctxproj xreg =
             iter (FeedValues query fieldname) =
                 feedgroups query fieldname
             iter (FeedPosts query more) =
-                (feedposts query ((morefromhtml more)>=~Posts.moreFromHtmlSplit))
-                    >~ (fields2pairs ~. show ~. (Util.crop 1 1))
+                feedposts query ((morefromhtml more)>=~Posts.moreFromHtmlSplit)
+                    ~> Data.List.sortBy presort
+                    >~ (fields2pairs ~. show ~. (Util.crop 1 1)) -- to `vars` string, then snip off `[` and `]`
                 where
+                presort p1 p2 | (cdt==EQ) = compare p1 p2 | (otherwise) = cdt where
+                    cdt = compare (p2-:Posts.dt) (p1-:Posts.dt)
                 fields2pairs post =
                     ((Posts.wellKnownFields False) ++ morefields) >~ (Util.both (id , (post-:)))
                 morefields = more >~ topair where
