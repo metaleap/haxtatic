@@ -67,7 +67,7 @@
 		<li>Any haXtags may embed/output any other haXtags freely both in their definitions and invocations but
 			<ul><li>an otherwise-correct outer tag will typically not render with a (directly embedded) unprocessable inner tag (a
 			"known non-issue", incidentally helping ensure <a href="#stages">later-stage</a> inner tags provide correct input to their
-			outer tags)</li>
+			outer tags), and this can of course bubble outwards for deeper nestings</li>
 			<li>a direct-or-indirect recursive self-reference (self-invocation inside the "defining portion" of a haXtag's related
 			<a href="../basics/haxproj.html">declaration directive</a>) will hang (and usually eventually prematurely abort with a
 			<code>&lt;&lt;loop&gt;&gt;</code> farewell message) the entire generating process</li></ul></li>
@@ -85,8 +85,8 @@
 	<p>Early stage by default: <a href="../tags/t.html">T-tags</a>, <i>named</i> <a href="../tags/b.html">B-tags</a>, <i>most</i> <a href="../tags/x.html">X-tags</a></p>
 	<p>Page stage by default: <a href="../tags/p.html">P-tags</a>, <i>unnamed</i> <a href="../tags/b.html">B-tags</a>, <i>a few</i> <a href="../tags/x.html">X-tags</a></p>
 	<p><a href="#Processing">Recall</a> that as a general rule, a directly embedded unprocessable inner tag prevents processing
-	of its outer tag. This reality both allows for the staged processing to function smoothly in the first place, and also suggests
-	keeping in mind that Early-<i>capable</i> haXtags in non-page project files may <i>still</i> only process at page time.</p>
+	of its outer tag(s). This reality both allows for the staged processing to function smoothly (usually/mostly) in the first place, and
+	also suggests keeping in mind that Early-<i>capable</i> haXtags in non-page project files may <i>still</i> only process at page time.</p>
 	<h3>For X-tags:</h3>
 	<ul>
 		<li>They can be <a href="../tags/p.html#delay">force-delayed to Page stage</a> while investigating unexpected outputs.</li>

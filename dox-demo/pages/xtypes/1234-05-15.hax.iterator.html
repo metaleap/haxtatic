@@ -103,8 +103,8 @@ enumerators have quite a few commonalities:</p>
 		<li>{X|c:FeedPosts <i>&lt;filter&gt;</i> [] |} and</li>
 		<li>{X|c:FeedValues <i>&lt;filter&gt;</i> "<i>&lt;fieldname&gt;</i>" |}</li></ul></li>
 	<li>The first (the <i>filter</i>) part is either simply {X|c:All|} (no filtering, anything goes), or the functionally exactly
-		equivalent {X|c:Some{ feeds=[], cats=[], dates=<i>Any</i> }|} (also no filtering), or the same form but with some or all of
-		these 3 properties set:<ul>
+		equivalent {X|c:Some{ feeds=[], cats=[], dates=<i>Any</i> }|} (also no filtering), or the same {X|lb:syntax|}-sensitive form but
+		with some or all of these 3 properties set:<ul>
 			<li><i>feeds</i> &mdash; a list of {X|lb:haxproj#pdecl "feed" names|} and/or {X|lb:haxproj#bdecl Blok names|} to include
 				when enumerating items (empty {X|c:&nbsp;[]|} means "all of them")</li>
 			<li><i>cats</i> &mdash; the list of <nobr>{X|c:cat|}egories</nobr> to include (only for {X|lb:haxproj#pdecl "feed"posts|}, not
@@ -115,15 +115,15 @@ enumerators have quite a few commonalities:</p>
 	</ul></li>
 	<li>The second part gives:<ul>
 		<li>for {X|c:FeedPosts|} the list of {X|lb:haxproj#pdecl custom|} field names to include (in addition to the
-			<a href="#fields">standard</a> ones) in the syntactic de-facto {X|c:vars|} output (explained further below)</li>
-		<li>for {X|c:FeedValues|} the name of the "post" ({X|lb:haxproj#pdecl custom|} or standard) <a href="#fields">field</a> whose
+			<a href="#fields">standard</a> ones) in the syntactic de-facto {X|c:vars|} that will be output (explained further below)</li>
+		<li>for {X|c:FeedValues|} the name of the "post" <a href="#fields">field</a> ({X|lb:haxproj#pdecl custom|} or standard) whose
 			value should be output (at most once per iteration)</li>
 	</ul></li>
 </ul>
 <p class="hd-note"><b>In the current version, a known issue:</b> in a project <i>with</i> {X|lb:bloks Blok|} pages, using <b><i>in</i>
 Blok pages</b> either {X|c:All|} or any {X|c:Some|} that effectively selects <i>any</i> Bloks as <i>feeds</i> is "not currently supported"
 (ie. expect incorrect, inconsistent or missing results). <b>All other pages are OK</b> for such uses, however, as are all
-{X|lb:bloks#auto auto-generated blog 'index' pages|} (if any). To be rectified in a future release &mdash; still, the functionality as-is
+{X|lb:bloks#auto auto-generated Blok 'index' pages|} (if any). To be rectified in a future release &mdash; still, the functionality as-is
 is valuable enough for the already-working-today use cases.</p>
 <h3>FeedValues</h3>
 <p>In this site, {X|c: <i>{X<!---->|myenum: FeedValues </i>All "cat"<i> |<!---->}</i>|} produces some peculiar outputs:
@@ -162,21 +162,23 @@ is valuable enough for the already-working-today use cases.</p>
 	&mdash; but both these results from that date-range filter <a href="http://github.com/metaleap/haxtatic/blob/master/dox-demo/default.haxproj">share</a> the same {X|c:cfgmore|} ({X|lb:haxproj#pdecl custom|} {X|c:more|} field) value:
 	&rarr; {X|note: {X|myenum: FeedValues Some{feeds=["xdesc"],cats=[],dates=Between "1234-11-01" "1234-12-31"} "cfgmore" |} |}</li>
 </ul>
-<h3>FeedPosts</h3>
+<h3 id="feedposts">FeedPosts</h3>
 <p>So the above outlines exhaustively how {X|c:FeedValues|} operates, hoes does {X|c:FeedPosts|} differ?</p>
 <ul>
 	<li>Whereas {X|c:FeedValues|} enumerated unique <b>single-field</b> values for all "posts" selected,</li>
 	<li>with {X|c:FeedPosts|} the <i>entire</i> (if passing the <i>filter</i>) post (<b>all</b> its field values) is output.</li>
+	<li>All selected "posts" from selected "feeds" are enumerated pre-sorted "newest/latest first" according to the post date
+	<a href="#fields">field</a>, unless an {X|c:Ordered|} <a href="#modord">modifier</a> overrides this order.</li>
 </ul>
 <p>For this, clearly {X|c:FeedPosts|} shouldn't just dictate some particular output formatting or other for such data records! Instead,
 all that it outputs for each item is a syntactic notation of {X|c:vars|} to then be fed directly into an outer {X|lx:hax.snippet|}. So
 just a moderate grasp of {X|lb:tmplsnip#snippets snippets|} and how to populate their {X|c:vars|} when invoking them via X-tags, plus
 the above {X|c:joinVia|}/{X|c:content|} <a href="#decl">directive properties</a> as well as the below {X|c:WrapEachIn|}
 <a href="#Modifiers">modifier</a> clears the path to infinitely versatile micro-content rendering.</p>
-<p>To give an impression of this in practice, here's just the output produced when selecting only <b>this very X-renderer</b> via
-{X|c:<i>{X<!---->|myenum: FeedPosts Some{ feeds=["</i>xdesc<i>"], cats=["</i>hax.iterator<i>"], dates=Any} ["</i>cfgmore<i>"] |<!---->}</i>|} &mdash; ie. selecting from this site's {X|c:xdesc|} "feed" just the "post" describing <b>hax.iterator</b> with not just all standard
-fields (more <a href="#fields">below</a>) but also the {X|lb:haxproj#pdecl custom|} {X|c:more|} field <b>cfgmore</b>:</p>
-<p>{X|c:{X|xesc:{X|myenum: FeedPosts Some{ feeds=["xdesc"], cats=["hax.iterator"], dates=Any} ["cfgmore"] |}|}|}</p>
+<p>To give an impression of this in practice, here's just the output produced when selecting:
+{X|c:<i>{X<!---->|myenum: FeedPosts Some{ feeds=["</i>xdesc<i>"], cats=["</i>hax.snippet<i>"], dates=Any} ["</i>cfgmore<i>"] |<!---->}</i>|} &mdash; ie. selecting from this site's {X|c:xdesc|} "feed" just the "post" describing <b>hax.snippet</b> with not-only all standard
+fields (more <a href="#fields">below</a>) but-also the {X|lb:haxproj#pdecl custom|} {X|c:more|} field <b>cfgmore</b>:</p>
+<p>{X|c:{X|xesc:{X|myenum: FeedPosts Some{ feeds=["xdesc"], cats=["hax.snippet"], dates=Any} ["cfgmore"] |}|}|}</p>
 <p>A simple {X|lb:syntax list of name-value-pair tuples|} &mdash; just without the enclosing {X|c:&nbsp;[]|} square brackets that are
 not to be forgotten when ensuring the wrapping of these per-item outputs inside what will typically (effectively have to) end up amounting
 to both {X|c: {X<!---->|<i>mysnippet</i>: vars=[ |} and {X|c:], content=> |<!---->} |}.</p>
@@ -200,7 +202,7 @@ if empty) as de-facto {X|c:vars|} by {X|c:FeedPosts|}, and also all understood b
 </ul>
 {X|h: Modifiers |}
 <p>So <i>enumerators</i> are built-in routines that know how to iterate certain ranges, collections, lists, etc. Can their result sets be
-"tweaked"/mangled/sliced/diced/etc prior to the final output? This is achieved by adding to the 1 enumerator possible per
+"tweaked"/mangled/sliced/diced/etc prior to the final output? This is achieved by adding to the 1 <i>enumerator</i> possible per
 <b>hax.iterator</b> X-tag any number of <i>modifiers</i>.</p>
 <p>As explained <a href="#args">above</a>, any such modifiers can be expressed either one-per-{X|c:But|} (which in turn can be nested),
 or stated as an ordered sequence of multiple such modifiers per {X|c:With|} clause.</p>
@@ -208,7 +210,7 @@ or stated as an ordered sequence of multiple such modifiers per {X|c:With|} clau
 <i>enumerator</i> in a {X|c:With|} clause, or one <i>could</i> also specify a complete {X|c:With|} clause (in parens) as the
 <i>enumerator</i> in a {X|c:But|} clause, but practically there's no good reason one should want to.)</small></p>
 <p>
-	Syntax: using {X|c:With (<i>enumerator</i>) [<i>modifier 1</i> , <i>modifier 2</i> , .. , <i>modifier n</i>] |}, always wrap the
+	Syntax: using {X|c:With (<i>enumerator</i>) [<i>modifier 1st</i> , <i>modifier 2nd</i> , .. , <i>modifier last</i>] |}, always wrap the
 	<i>enumerator</i> in parentheses and all <i>modifiers</i> in square brackets. Using {X|c: But (<i>modifier 1</i>)
 	(<i>enumerator-or-another-</i>But) |}, always wrap the <i>modifier</i> in parentheses and the <i>enumerator</i> too.
 </p>
@@ -233,8 +235,8 @@ or stated as an ordered sequence of multiple such modifiers per {X|c:With|} clau
 	produces {X|note: {X|myenum: But ( WrapEachIn ("/" , "/index.html") ) (BlokNames) |} |}
 	instead of {X|note: {X|myenum: (BlokNames) |} |}</li>
 </ul>
-<h3>Ordered <i>&lt;sortorder&gt;</i></h3>
-<p>Re-orders the items either {X|c:Ascending|} or {X|c:Descending|} or {X|c:Shuffle|}d:</p>
+<h3 id="modord">Ordered <i>&lt;sortorder&gt;</i></h3>
+<p>Re-orders the items either {X|c:Ascending|} or {X|c:Descending|} or <nobr>{X|c:Shuffle|}d</nobr>:</p>
 <ul>
 	<li>{X|c: <i>{X<!---->|myenum: With (FeedNames True) </i>[Ordered Descending]<i> |<!---->}</i> |}
 	produces {X|note: {X|myenum: With (FeedNames True) [Ordered Descending] |} |}
@@ -254,14 +256,15 @@ or stated as an ordered sequence of multiple such modifiers per {X|c:With|} clau
 	"instead of" {X|note: {X|myenum: (Values ["foo","bar"]) |} |} &mdash; ie. {X|c:None|} does not touch the items at all: useless
 	perhaps, except for example when quickly and temporarily wanting to disable reordering somewhere inside some {X|c:But|} nesting.</li>
 </ul>
-<p>As noted <a href="#Feed enumerators">earlier</a>, the {X|c:FeedPosts|} and {X|c:FeedValues|} enumerators order not alphabetically
-but by post date, and they <i>always</i> do so: defaulting to <i>descending</i> absent an {X|c:Ordered|} to the contrary. So
-{X|c:Ordered Descending|}, {X|c:Ordered None|} or no {X|c:Ordered|} modifier whatsoever all result in identical outputs.</p>
+<p>As noted <a href="#feedposts">earlier</a>, the {X|c:FeedPosts|} enumerator already orders items returned (not alphabetically
+but by post date), and <i>always</i> does so: defaulting to <i>descending</i> absent any {X|c:Ordered|} placed to the contrary. So
+{X|c:Ordered Descending|}, {X|c:Ordered None|} or no {X|c:Ordered|} modifier whatsoever all result in identical outputs, while
+{X|c:Ordered Ascending|} shows "oldest first" and of course a {X|c:Shuffle|} just randomizes the sort order as described above.</p>
 <span id="dynstage">{X|h: Render stage |}</span>
 <p>An X-tag of type {X|c:hax.iterator|} defaults to {X|lt:index#stages Early|} but is delayed to {X|lt:index#stages Page|} stage
 whenever:</p>
 <ul>
-	<li>it contains an {X|c: Ordered (Shuffle True) |} modifier (see <a href="#Modifiers">above</a>)</li>
+	<li>it contains an {X|c: Ordered (Shuffle True) |} modifier (see <a href="#modord">above</a>)</li>
 	<li>the project has {X|lb:bloks Blok|} pages <b>and</b> the X-tag uses a {X|c:FeedValues|} or {X|c:FeedPosts|} enumerator (see
 	<a href="#Feed enumerators">above</a>) selecting <i>either</i> {X|c:All|} <i>or</i> {X|c:Some|} that will effectively
 	include such Bloks via its specified {X|c:feeds|} property.</li>

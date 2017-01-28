@@ -57,10 +57,6 @@
         <lastmod>2016-12-15</lastmod>
         <priority>0.5</priority>
     </url><url>
-        <loc>http://dox-demo/basics/haxproj.html</loc>
-        <lastmod>2016-12-10</lastmod>
-        <priority>0.5</priority>
-    </url><url>
         <loc>http://dox-demo/basics/projdir.html</loc>
         <lastmod>2016-12-21</lastmod>
         <priority>0.5</priority>
@@ -77,6 +73,10 @@
         <lastmod>2016-12-14</lastmod>
         <priority>0.5</priority>
     </url><url>
+        <loc>http://dox-demo/basics/haxproj.html</loc>
+        <lastmod>2016-12-10</lastmod>
+        <priority>0.5</priority>
+    </url><url>
         <loc>http://dox-demo/basics/namedsetups.html</loc>
         <lastmod>2016-12-05</lastmod>
         <priority>0.5</priority>
@@ -90,7 +90,7 @@
         <priority>0.5</priority>
     </url><url>
         <loc>http://dox-demo/index.html</loc>
-        <lastmod>2017-01-27</lastmod>
+        <lastmod>2017-01-28</lastmod>
         <priority>1.0</priority>
     </url><url>
         <loc>http://dox-demo/basics/index.html</loc>

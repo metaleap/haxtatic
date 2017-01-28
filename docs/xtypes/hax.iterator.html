@@ -149,8 +149,8 @@ enumerators have quite a few commonalities:</p>
 		<li><code>FeedPosts <i>&lt;filter&gt;</i> []</code> and</li>
 		<li><code>FeedValues <i>&lt;filter&gt;</i> "<i>&lt;fieldname&gt;</i>"</code></li></ul></li>
 	<li>The first (the <i>filter</i>) part is either simply <code>All</code> (no filtering, anything goes), or the functionally exactly
-		equivalent <code>Some{ feeds=[], cats=[], dates=<i>Any</i> }</code> (also no filtering), or the same form but with some or all of
-		these 3 properties set:<ul>
+		equivalent <code>Some{ feeds=[], cats=[], dates=<i>Any</i> }</code> (also no filtering), or the same <a href="../basics/syntax.html">syntax</a>-sensitive form but
+		with some or all of these 3 properties set:<ul>
 			<li><i>feeds</i> &mdash; a list of <a href="../basics/haxproj.html#pdecl">"feed" names</a> and/or <a href="../basics/haxproj.html#bdecl">Blok names</a> to include
 				when enumerating items (empty <code>&nbsp;[]</code> means "all of them")</li>
 			<li><i>cats</i> &mdash; the list of <nobr><code>cat</code>egories</nobr> to include (only for <a href="../basics/haxproj.html#pdecl">"feed"posts</a>, not
@@ -161,15 +161,15 @@ enumerators have quite a few commonalities:</p>
 	</ul></li>
 	<li>The second part gives:<ul>
 		<li>for <code>FeedPosts</code> the list of <a href="../basics/haxproj.html#pdecl">custom</a> field names to include (in addition to the
-			<a href="#fields">standard</a> ones) in the syntactic de-facto <code>vars</code> output (explained further below)</li>
-		<li>for <code>FeedValues</code> the name of the "post" (<a href="../basics/haxproj.html#pdecl">custom</a> or standard) <a href="#fields">field</a> whose
+			<a href="#fields">standard</a> ones) in the syntactic de-facto <code>vars</code> that will be output (explained further below)</li>
+		<li>for <code>FeedValues</code> the name of the "post" <a href="#fields">field</a> (<a href="../basics/haxproj.html#pdecl">custom</a> or standard) whose
 			value should be output (at most once per iteration)</li>
 	</ul></li>
 </ul>
 <p class="hd-note"><b>In the current version, a known issue:</b> in a project <i>with</i> <a href="../basics/bloks.html">Blok</a> pages, using <b><i>in</i>
 Blok pages</b> either <code>All</code> or any <code>Some</code> that effectively selects <i>any</i> Bloks as <i>feeds</i> is "not currently supported"
 (ie. expect incorrect, inconsistent or missing results). <b>All other pages are OK</b> for such uses, however, as are all
-<a href="../basics/bloks.html#auto">auto-generated blog 'index' pages</a> (if any). To be rectified in a future release &mdash; still, the functionality as-is
+<a href="../basics/bloks.html#auto">auto-generated Blok 'index' pages</a> (if any). To be rectified in a future release &mdash; still, the functionality as-is
 is valuable enough for the already-working-today use cases.</p>
 <h3>FeedValues</h3>
 <p>In this site, <code><i>{X<!---->|myenum: FeedValues </i>All "cat"<i> |<!---->}</i></code> produces some peculiar outputs:
@@ -208,21 +208,23 @@ is valuable enough for the already-working-today use cases.</p>
 	&mdash; but both these results from that date-range filter <a href="http://github.com/metaleap/haxtatic/blob/master/dox-demo/default.haxproj">share</a> the same <code>cfgmore</code> (<a href="../basics/haxproj.html#pdecl">custom</a> <code>more</code> field) value:
 	&rarr; <span class="hd-note">(no other settings)</span></li>
 </ul>
-<h3>FeedPosts</h3>
+<h3 id="feedposts">FeedPosts</h3>
 <p>So the above outlines exhaustively how <code>FeedValues</code> operates, hoes does <code>FeedPosts</code> differ?</p>
 <ul>
 	<li>Whereas <code>FeedValues</code> enumerated unique <b>single-field</b> values for all "posts" selected,</li>
 	<li>with <code>FeedPosts</code> the <i>entire</i> (if passing the <i>filter</i>) post (<b>all</b> its field values) is output.</li>
+	<li>All selected "posts" from selected "feeds" are enumerated pre-sorted "newest/latest first" according to the post date
+	<a href="#fields">field</a>, unless an <code>Ordered</code> <a href="#modord">modifier</a> overrides this order.</li>
 </ul>
 <p>For this, clearly <code>FeedPosts</code> shouldn't just dictate some particular output formatting or other for such data records! Instead,
 all that it outputs for each item is a syntactic notation of <code>vars</code> to then be fed directly into an outer <a href="../xtypes/hax.snippet.html">hax.snippet</a>. So
 just a moderate grasp of <a href="../basics/tmplsnip.html#snippets">snippets</a> and how to populate their <code>vars</code> when invoking them via X-tags, plus
 the above <code>joinVia</code>/<code>content</code> <a href="#decl">directive properties</a> as well as the below <code>WrapEachIn</code>
 <a href="#Modifiers">modifier</a> clears the path to infinitely versatile micro-content rendering.</p>
-<p>To give an impression of this in practice, here's just the output produced when selecting only <b>this very X-renderer</b> via
-<code><i>{X<!---->|myenum: FeedPosts Some{ feeds=["</i>xdesc<i>"], cats=["</i>hax.iterator<i>"], dates=Any} ["</i>cfgmore<i>"] |<!---->}</i></code> &mdash; ie. selecting from this site's <code>xdesc</code> "feed" just the "post" describing <b>hax.iterator</b> with not just all standard
-fields (more <a href="#fields">below</a>) but also the <a href="../basics/haxproj.html#pdecl">custom</a> <code>more</code> field <b>cfgmore</b>:</p>
-<p><code>(&quot;feed&quot;,&quot;xdesc&quot;),(&quot;dt&quot;,&quot;1234-05-15&quot;),(&quot;cat&quot;,&quot;hax.iterator&quot;),(&quot;title&quot;,&quot;&quot;),(&quot;link&quot;,&quot;&quot;),(&quot;content&quot;,&quot;Renders a sequence of values from the specified enumerator, applying the specified filtering/ordering/limits.&quot;),(&quot;cfgmore&quot;,&quot;&lt;code&gt;prefix&lt;/code&gt;, &lt;code&gt;suffix&lt;/code&gt;, &lt;code&gt;joinVia&lt;/code&gt;, &lt;code&gt;content&lt;/code&gt;&quot;)</code></p>
+<p>To give an impression of this in practice, here's just the output produced when selecting:
+<code><i>{X<!---->|myenum: FeedPosts Some{ feeds=["</i>xdesc<i>"], cats=["</i>hax.snippet<i>"], dates=Any} ["</i>cfgmore<i>"] |<!---->}</i></code> &mdash; ie. selecting from this site's <code>xdesc</code> "feed" just the "post" describing <b>hax.snippet</b> with not-only all standard
+fields (more <a href="#fields">below</a>) but-also the <a href="../basics/haxproj.html#pdecl">custom</a> <code>more</code> field <b>cfgmore</b>:</p>
+<p><code>(&quot;feed&quot;,&quot;xdesc&quot;),(&quot;dt&quot;,&quot;1234-06-15&quot;),(&quot;cat&quot;,&quot;hax.snippet&quot;),(&quot;title&quot;,&quot;&quot;),(&quot;link&quot;,&quot;&quot;),(&quot;content&quot;,&quot;Renders the named \&quot;snippet\&quot; (aka. \&quot;controls\&quot; / \&quot;components\&quot; / \&quot;sub-templates\&quot;) substituting the specified\n\tnamed-parameter values.&quot;),(&quot;cfgmore&quot;,&quot;&lt;code&gt;vars&lt;/code&gt;, &lt;code&gt;content&lt;/code&gt;&quot;)</code></p>
 <p>A simple <a href="../basics/syntax.html">list of name-value-pair tuples</a> &mdash; just without the enclosing <code>&nbsp;[]</code> square brackets that are
 not to be forgotten when ensuring the wrapping of these per-item outputs inside what will typically (effectively have to) end up amounting
 to both <code>{X<!---->|<i>mysnippet</i>: vars=[</code> and <code>], content=> |<!---->}</code>.</p>
@@ -246,7 +248,7 @@ if empty) as de-facto <code>vars</code> by <code>FeedPosts</code>, and also all 
 </ul>
 <h2 id="Modifiers">Modifiers</h2>
 <p>So <i>enumerators</i> are built-in routines that know how to iterate certain ranges, collections, lists, etc. Can their result sets be
-"tweaked"/mangled/sliced/diced/etc prior to the final output? This is achieved by adding to the 1 enumerator possible per
+"tweaked"/mangled/sliced/diced/etc prior to the final output? This is achieved by adding to the 1 <i>enumerator</i> possible per
 <b>hax.iterator</b> X-tag any number of <i>modifiers</i>.</p>
 <p>As explained <a href="#args">above</a>, any such modifiers can be expressed either one-per-<code>But</code> (which in turn can be nested),
 or stated as an ordered sequence of multiple such modifiers per <code>With</code> clause.</p>
@@ -254,7 +256,7 @@ or stated as an ordered sequence of multiple such modifiers per <code>With</code
 <i>enumerator</i> in a <code>With</code> clause, or one <i>could</i> also specify a complete <code>With</code> clause (in parens) as the
 <i>enumerator</i> in a <code>But</code> clause, but practically there's no good reason one should want to.)</small></p>
 <p>
-	Syntax: using <code>With (<i>enumerator</i>) [<i>modifier 1</i> , <i>modifier 2</i> , .. , <i>modifier n</i>]</code>, always wrap the
+	Syntax: using <code>With (<i>enumerator</i>) [<i>modifier 1st</i> , <i>modifier 2nd</i> , .. , <i>modifier last</i>]</code>, always wrap the
 	<i>enumerator</i> in parentheses and all <i>modifiers</i> in square brackets. Using <code>But (<i>modifier 1</i>)
 	(<i>enumerator-or-another-</i>But)</code>, always wrap the <i>modifier</i> in parentheses and the <i>enumerator</i> too.
 </p>
@@ -279,8 +281,8 @@ or stated as an ordered sequence of multiple such modifiers per <code>With</code
 	produces <span class="hd-note">/basics/index.html, /tags/index.html, /xtypes/index.html</span>
 	instead of <span class="hd-note">basics, tags, xtypes</span></li>
 </ul>
-<h3>Ordered <i>&lt;sortorder&gt;</i></h3>
-<p>Re-orders the items either <code>Ascending</code> or <code>Descending</code> or <code>Shuffle</code>d:</p>
+<h3 id="modord">Ordered <i>&lt;sortorder&gt;</i></h3>
+<p>Re-orders the items either <code>Ascending</code> or <code>Descending</code> or <nobr><code>Shuffle</code>d</nobr>:</p>
 <ul>
 	<li><code><i>{X<!---->|myenum: With (FeedNames True) </i>[Ordered Descending]<i> |<!---->}</i></code>
 	produces <span class="hd-note">xtypes, xdesc, tags, basics</span>
@@ -289,7 +291,7 @@ or stated as an ordered sequence of multiple such modifiers per <code>With</code
 	produces <span class="hd-note">alpha, beta, gamma, phi, zeta</span>
 	instead of <span class="hd-note">zeta, phi, gamma, beta, alpha</span></li>
 	<li><code><i>{X<!---->|myenum: With (Range 1 23) </i>[Ordered (Shuffle False) , LimitTo 6, WrapEachIn ("#",". ")]<i> |<!---->}</i></code>
-	produces <span class="hd-note">#12. , #21. , #11. , #4. , #22. , #20.</span>
+	produces <span class="hd-note">#6. , #9. , #21. , #20. , #10. , #18.</span>
 	instead of <span class="hd-note">1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23</span>
 		<ul><li>Only either <code>(Shuffle True)</code> or <code>(Shuffle False)</code> are valid. When used in a central project file such as a
 		<a href="../basics/haxproj.html">*.haxproj</a>, a <a href="../basics/tmplsnip.html">template</a> or a <a href="../basics/tmplsnip.html#snippets">snippet</a> (rather than directly inside a
@@ -300,14 +302,15 @@ or stated as an ordered sequence of multiple such modifiers per <code>With</code
 	"instead of" <span class="hd-note">foo, bar</span> &mdash; ie. <code>None</code> does not touch the items at all: useless
 	perhaps, except for example when quickly and temporarily wanting to disable reordering somewhere inside some <code>But</code> nesting.</li>
 </ul>
-<p>As noted <a href="#Feed enumerators">earlier</a>, the <code>FeedPosts</code> and <code>FeedValues</code> enumerators order not alphabetically
-but by post date, and they <i>always</i> do so: defaulting to <i>descending</i> absent an <code>Ordered</code> to the contrary. So
-<code>Ordered Descending</code>, <code>Ordered None</code> or no <code>Ordered</code> modifier whatsoever all result in identical outputs.</p>
+<p>As noted <a href="#feedposts">earlier</a>, the <code>FeedPosts</code> enumerator already orders items returned (not alphabetically
+but by post date), and <i>always</i> does so: defaulting to <i>descending</i> absent any <code>Ordered</code> placed to the contrary. So
+<code>Ordered Descending</code>, <code>Ordered None</code> or no <code>Ordered</code> modifier whatsoever all result in identical outputs, while
+<code>Ordered Ascending</code> shows "oldest first" and of course a <code>Shuffle</code> just randomizes the sort order as described above.</p>
 <span id="dynstage"><h2 id="Render stage">Render stage</h2></span>
 <p>An X-tag of type <code>hax.iterator</code> defaults to <a href="../tags/index.html#stages">Early</a> but is delayed to <a href="../tags/index.html#stages">Page</a> stage
 whenever:</p>
 <ul>
-	<li>it contains an <code>Ordered (Shuffle True)</code> modifier (see <a href="#Modifiers">above</a>)</li>
+	<li>it contains an <code>Ordered (Shuffle True)</code> modifier (see <a href="#modord">above</a>)</li>
 	<li>the project has <a href="../basics/bloks.html">Blok</a> pages <b>and</b> the X-tag uses a <code>FeedValues</code> or <code>FeedPosts</code> enumerator (see
 	<a href="#Feed enumerators">above</a>) selecting <i>either</i> <code>All</code> <i>or</i> <code>Some</code> that will effectively
 	include such Bloks via its specified <code>feeds</code> property.</li>
