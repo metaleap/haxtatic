@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-    <link rel="self" type="application/rss+xml" href="http://metaleap.github.io/haxtatic/_xml/tags.atom" />
+    <link rel="self" type="application/rss+xml" href="http://metaleap.github.io/haxtatic/-xml/tags.atom" />
     <title>metaleap.github.io haXtags</title>
     <subtitle>Embed    HaXtatic     tags anywhere in source contents,                                   templates    ,                                            snippets    
 	or                                  *.haxproj     files with a simple notation:       {   Prefix    |   Name    |       }        or

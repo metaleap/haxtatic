@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-    <link rel="self" type="application/rss+xml" href="http://metaleap.github.io/haxtatic/_xml/xdesc.atom" />
+    <link rel="self" type="application/rss+xml" href="http://metaleap.github.io/haxtatic/-xml/xdesc.atom" />
     <title>metaleap.github.io xdesc</title>
     <subtitle>metaleap.github.io/haxtatic/xdesc.html</subtitle>
     <id>http://metaleap.github.io/haxtatic/xdesc.html</id>

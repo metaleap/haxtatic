@@ -17,13 +17,13 @@ turn on whatever syntax highlighting for eased grokkage..
 |C|dtformat:mydtf_shortmonth: %b %d
 
 |C|_hax_dir_cache:
-|C|_hax_relpath_sitemap: _xml/sitemap.xml
-|C|_hax_relpath_postatoms: _xml
+|C|_hax_relpath_sitemap: -xml/sitemap.xml
+|C|_hax_relpath_postatoms: -xml
 |C|_hax_domainname: metaleap.github.io/haxtatic
 
 
 |B|basics:
-	title="Basics", atomFile="_xml/basics.atom", blokIndexPageFile="basics/index.html", inSitemap=True, desc=>
+	title="Basics", atomFile="-xml/basics.atom", blokIndexPageFile="basics/index.html", inSitemap=True, desc=>
 	<p>This material may appear "unduly exhaustive" at
 	first glance, but this is all blatantly-simple-stuff
 	and mostly just spelled out in (almost) every last
@@ -38,7 +38,7 @@ turn on whatever syntax highlighting for eased grokkage..
 
 
 |B|tags:
-	title="haXtags", atomFile="_xml/tags.atom", blokIndexPageFile="tags/index.html", inSitemap=True, desc=>
+	title="haXtags", atomFile="-xml/tags.atom", blokIndexPageFile="tags/index.html", inSitemap=True, desc=>
 
 	<p class="up">Embed {T|Hax|} tags anywhere in source contents, {X|lb:tmplsnip templates|}, {X|lb:tmplsnip#snippets snippets|}
 	or {X|lb:haxproj *.haxproj|} files with a simple notation: <code>{<i>Prefix</i>|<i>Name</i>|<!---->}</code> or
@@ -49,7 +49,7 @@ turn on whatever syntax highlighting for eased grokkage..
 
 
 |B|xtypes:
-	title="X-renderers", atomFile="_xml/xtypes.atom", blokIndexPageFile="xtypes/index.html", inSitemap=True, desc=>
+	title="X-renderers", atomFile="-xml/xtypes.atom", blokIndexPageFile="xtypes/index.html", inSitemap=True, desc=>
 	<p>Any {X|lt:x X-tag|} {X|lb:haxproj#xdecl declared and defined|} in a project always invokes a so-called "X-renderer":</p>
 	<ul><li>a specific, specialized programmatic output-rendering routine integrated into the {T|Hax|} code-base,</li>
 	<li>each offering its own degree of configurability (the once-per-tag-definition settings) and parameterization (the
@@ -110,7 +110,7 @@ turn on whatever syntax highlighting for eased grokkage..
 |X|hax.htmlLink:_lb: basics: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
 |X|hax.htmlLink:_lt: tags: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
 |X|hax.htmlLink:_lx: xtypes: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
-|X|hax.htmlImage:doxpic: {P| /_pics/otiosely/long/path |}: attrLink=[], attrImg=[], xmlEscape=False
+|X|hax.htmlImage:doxpic: {P| /-pics/otiosely/long/path |}: attrLink=[], attrImg=[], xmlEscape=False
 |X|hax.xmlEscape:xesc
 |X|hax.miniTag:c: code
 |X|hax.miniTag:h: h2: attr=[ ("id" , "{%:content:%}") ]

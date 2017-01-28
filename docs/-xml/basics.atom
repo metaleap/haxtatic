@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-    <link rel="self" type="application/rss+xml" href="http://metaleap.github.io/haxtatic/_xml/basics.atom" />
+    <link rel="self" type="application/rss+xml" href="http://metaleap.github.io/haxtatic/-xml/basics.atom" />
     <title>metaleap.github.io Basics</title>
     <subtitle>This material may appear "unduly exhaustive" at
 	first glance, but this is all blatantly-simple-stuff
@@ -37,7 +37,7 @@ equally apply to any customized project-directory structurings.&lt;/p&gt;
 &lt;span id=&quot;run&quot;&gt;&lt;h2 id=&quot;Get started&quot;&gt;Get started&lt;/h2&gt;&lt;/span&gt;
 &lt;p&gt;As &lt;a href=&quot;../index.html#Quick start&quot;&gt;described earlier&lt;/a&gt;, one runs &lt;i&gt;HaXtatic&lt;/i&gt; specifying &quot;the project-directory to process&quot; and any missing parts from the above essentials will be (re)created in-place.&lt;/p&gt;
 &lt;p&gt;Example, to create a new site project named &lt;b&gt;mydemosite.foo&lt;/b&gt; (inside the existing &lt;i&gt;~/dev/&lt;/i&gt; directory in this case) &lt;ul&gt;&lt;li&gt;just run from inside the &lt;i&gt;HaXtatic&lt;/i&gt; code-base&apos;s &lt;i&gt;src&lt;/i&gt; directory:&lt;br/&gt;&lt;code&gt;&lt;a href=&quot;http://www.haskell.org/downloads#stack&quot;&gt;stack&lt;/a&gt; ./@HaxMain.hs ~/dev/mydemosite.foo&lt;/code&gt;&lt;/li&gt;&lt;li&gt;or with a compiled executable binary (eg. for extra speed if so inclined), of course&lt;br/&gt;&lt;code&gt;my-haxtatic-exe ~/dev/mydemosite.foo&lt;/code&gt; works equally&lt;/li&gt;&lt;/ul&gt; and the following is generated:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;../_pics/otiosely/long/path/fresh%20project-directory.png&quot; alt=&quot;A &apos;freshly made&apos; project-directory&quot;/&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../-pics/otiosely/long/path/fresh%20project-directory.png&quot; alt=&quot;A &apos;freshly made&apos; project-directory&quot;/&gt;&lt;/p&gt;
 &lt;p&gt;The on-screen output will be something like:&lt;/p&gt;
 &lt;pre&gt;
 ==== HAXTATIC ====
@@ -278,7 +278,7 @@ Wrote 2 files in 0.07s:
 &lt;pre&gt;
 |B|&lt;i&gt;basics&lt;/i&gt;:
     title=&quot;&lt;i&gt;Basics&lt;/i&gt;&quot;,
-    atomFile = &quot;&lt;i&gt;_xml/basics.atom&lt;/i&gt;&quot;,
+    atomFile = &quot;&lt;i&gt;-xml/basics.atom&lt;/i&gt;&quot;,
     blokIndexPageFile=&quot;&lt;i&gt;basics/index.html&lt;/i&gt;&quot;,
     inSitemap = &lt;i&gt;True&lt;/i&gt;,
     desc=&amp;gt;
