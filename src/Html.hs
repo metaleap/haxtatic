@@ -117,10 +117,11 @@ out tname tatts tchildren =
 
 
 
-rootPathToRel currelpath dstrootpath =
-    let walktoroot = take (Util.count '/' (Files.sanitizeUriRelPathForJoin currelpath)) infinity
-        infinity = iterate (++ "../") "../"
-    in ( null walktoroot |? dstrootpath |! ((last walktoroot) ++ dstrootpath) )
+rootPathToRel currelpath =
+    if null walktoroot then id else ((last walktoroot) ++)
+    where
+    walktoroot = take (Util.count '/' (Files.sanitizeUriRelPathForJoin currelpath)) infinity
+    infinity = iterate (++ "../") "../"
 
 
 
@@ -129,14 +130,20 @@ stripMarkup::
     String->
     String
 stripMarkup substchar markup =
-    stripmarkup False markup
+    stripmarkup (False , False) markup
     where
     stripmarkup _ [] = []
-    stripmarkup intagis (curchar:rest) =
-        nextchar:(stripmarkup intagnext rest)
+    stripmarkup (intagis , inentis) (curchar:rest) =
+        nextchar:(stripmarkup (intagnext , inentnext) rest)
         where
-        nextchar = intagnow |? substchar |! curchar
-        intagnow = intagis || istagopen -- || istagclose
+        nextchar = (intagnow || inentnow) |? substchar |! curchar
+
+        intagnow = intagis || istagopen
         intagnext = intagnow && not istagclose
         istagopen = curchar=='<'
         istagclose = curchar=='>'
+
+        inentnow = inentis || isentopen
+        inentnext = inentnow && not isentclose
+        isentopen = curchar=='&'
+        isentclose = curchar==';'

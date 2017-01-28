@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: http://metaleap.github.io/haxtatic/_xml/sitemap.xml

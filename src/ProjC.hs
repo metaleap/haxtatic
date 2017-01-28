@@ -78,7 +78,7 @@ parseProjChunks chunkssplits =
                     Defaults.dir_Deploy "_hax_dir_deploy" cfgmisc
     dircache = dirnameonly$ Data.Map.Strict.findWithDefault
                     "_cache_tmp" "_hax_dir_cache" cfgmisc
-    domainname = dirnameonly$ Data.Map.Strict.findWithDefault
+    domainname = Files.sanitizeUriRelPathForJoin$ Data.Map.Strict.findWithDefault
                     "" "_hax_domainname" cfgmisc
     parsingfailearly = "abort" == (Data.Map.Strict.findWithDefault "" "_hax_onparseerror" cfgmisc)
     relpathsitemap = Files.sanitizeRelPath$ Data.Map.Strict.findWithDefault

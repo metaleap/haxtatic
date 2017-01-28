@@ -173,10 +173,11 @@ tagHandler ctxmain cfgproj ctxpage ctxtmpl outjob ptagcontent
     xtaghandler = (ctxtmpl-:Tmpl.xTagHandler) (Just ctxpage)
     contentdate = ctxpage-:Tmpl.pDate
     (split1st , splitrest) = Util.bothTrim (Util.splitOn1st_ ':' ptagcontent)
+    root2rel = Html.rootPathToRel (outjob-:Build.relPathSlashes)
     fordate dtfn datetime =
         Just$ ProjC.dtUtc2Str cfgproj dtfn datetime
     for ('/':path) =
-        Just$ Html.rootPathToRel (outjob-:Build.relPathSlashes) path
+        Just$ root2rel path
     for ('1':'s':'t':':':htmltagname) =
         Just$ (ctxpage-:Tmpl.htmlInner1st) (Util.trim htmltagname) ""
     for name =

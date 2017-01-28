@@ -196,6 +196,7 @@ writeAtoms ctxbuild domainname outjobs =
     outjobs >>~ writeatom >> return ()
     where
 
+    (domain,domainwtf) = Util.splitOn1st '/' domainname
     postsfromblok = postsFromBlok (Just ctxbuild) []
 
     writeatom outjob =
@@ -215,17 +216,18 @@ writeAtoms ctxbuild domainname outjobs =
                 xmlintro = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
                             \<feed xmlns=\"http://www.w3.org/2005/Atom\">\n\
                             \    <link rel=\"self\" type=\"application/rss+xml\" href=\"http://"++domainname++"/"++(urify relpath)++"\" />\n\
-                            \    <title>"++domainname++" "++feedtitle++"</title>\n\
+                            \    <title>"++domain++" "++feedtitle++"</title>\n\
                             \    <subtitle>"++(has feedname |? (domainname++pageuri) |! (Util.trim$ Html.stripMarkup ' ' feeddesc))++"</subtitle>\n\
                             \    <id>http://"++domainname++pageuri++"</id>\n\
                             \    <link href=\"http://"++domainname++pageuri++"\"/>\n\
                             \    <updated>"++updated++"T00:00:00Z</updated>\n    "
-                xmlinner = concat$ allposts >~ xmlatompost
+                xmlinner = concat$ allposts>~xmlatompost
                 nowarn = i1 < 0 || i2 < (i1 + 4) where
                     i1 = Util.indexOfSub xmlinner "{!|"
                     i2 = Util.indexOfSub xmlinner "|!}"
             in return (xmlintro++xmlinner++"\n</feed>" , nowarn)
 
+        root2rel = Html.rootPathToRel relpath
         urify = Files.pathSepSystemToSlash
         blokname = outjob-:blokName
         feedname = has blokname |? "" |!
@@ -239,7 +241,7 @@ writeAtoms ctxbuild domainname outjobs =
                     Nothing -> ( '/':(feedname++".html") , feedname , "" )
 
         xmlesc = Html.escape
-        sanitize = Util.replaceSubsFew ["<link " =: "<hax_link style=\"display:none\" " , "<script" =: "<!--hax_script" ,
+        sanitize = Util.replaceSubsMany ["<link " =: "<hax_link style=\"display:none\" " , "<script" =: "<!--hax_script" ,
                     "<input " =: "<hax_input style=\"display:none\"" , "</link" =: "</hax_link" ,
                     "</script>" =: "</hax_script-->" , "</input" =: "</hax_input" , " style=\"" =: " hax_style=\""
                     ]
@@ -249,12 +251,12 @@ writeAtoms ctxbuild domainname outjobs =
                 postdesc = xmlesc (post-:(has blokname |? content |! cat))
                 postfull = xmlesc (has blokname |? (sanitize htmlcontent) |! (post-:content))
                 postdt = post-:dt
-                posturl = Util.ifNo (post-:link) (pageuri++"#"++postdt)
+                posturl = Util.ifNo (post-:link) (pageuri++('#':postdt))
             in ("<entry>\n\
                 \        <title type=\"html\">"++posttitle++"</title>\n\
                 \        <summary type=\"html\">"++postdesc++"</summary>\n\
-                \        <link href=\""++posturl++"\"/><author><name>"++domainname++"</name></author>\n\
-                \        <id>tag:"++domainname++","++postdt++":"++posturl++"</id>\n\
+                \        <link href=\""++(root2rel posturl)++"\"/><author><name>"++domain++"</name></author>\n\
+                \        <id>tag:"++domain++(',':postdt)++(':':domainwtf)++('/':posturl)++"</id>\n\
                 \        <updated>"++postdt++"T00:00:00Z</updated>\n\
                 \        <content type=\"html\">"++postfull++"</content>\n\
                 \    </entry>")
