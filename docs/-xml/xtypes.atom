@@ -72,10 +72,9 @@
 					comprised (if present at all) of &lt;i&gt;all&lt;/i&gt; the following properties in &lt;i&gt;this&lt;/i&gt; very order:&lt;ol&gt;&lt;li&gt;&lt;code&gt;attr = [ &lt;i&gt;..&lt;/i&gt; ]&lt;/code&gt; &amp;mdash; a List of all the tag attributes (each denoted in a
 	&lt;code&gt;(&quot;&lt;i&gt;name&lt;/i&gt;&quot;,&quot;&lt;i&gt;value&lt;/i&gt;&quot;)&lt;/code&gt; pair) to &lt;i&gt;always&lt;/i&gt; append to the markup-language tag output by
 	all instances of this
-	X-tag &lt;ul&gt;&lt;li&gt;The special attribute &lt;i&gt;value&lt;/i&gt; &lt;code&gt;&amp;nbsp;{&lt;!----&gt;%:content:%&lt;!----&gt;}&lt;/code&gt; will replicate the
-	X-tag content inside this
-	attribute (not specially escaped &amp;mdash; effect this by wrapping inside a &lt;a href=&quot;../tags/p.html#delay&quot;&gt;page-delayed&lt;/a&gt; X-tag invoking
-	&lt;a href=&quot;../xtypes/hax.xmlEscape.html&quot;&gt;hax.xmlEscape&lt;/a&gt;) &lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ol&gt;&lt;/li&gt;
+	X-tag &lt;ul&gt;&lt;li&gt;The special attribute &lt;i&gt;value&lt;/i&gt; placeholder &lt;code&gt;&amp;nbsp;{&lt;!----&gt;:c:&lt;!----&gt;}&lt;/code&gt; will replicate the
+	X-tag content inside this attribute (not specially escaped: if this is needed, wrap inside a &lt;a href=&quot;../tags/p.html#delay&quot;&gt;page-delayed&lt;/a&gt; X-tag
+	invoking &lt;a href=&quot;../xtypes/hax.xmlEscape.html&quot;&gt;hax.xmlEscape&lt;/a&gt; as usual) &lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ol&gt;&lt;/li&gt;
 	&lt;/ul&gt;
 
 &lt;span id=&quot;args&quot;&gt;&lt;h2 id=&quot;Invocation / Parameters&quot;&gt;Invocation / Parameters&lt;/h2&gt;&lt;/span&gt;
@@ -477,7 +476,7 @@ gathered elements, only their entire inner contents, so the only way for &lt;b&g
 &lt;p&gt;To test the above X-tag declarations:&lt;/p&gt;
 &lt;ul&gt;
 	&lt;li&gt;&lt;code&gt;{X&lt;!----&gt;|dt_std2german&lt;i&gt;: {P&lt;!----&gt;|srcTime|&lt;!----&gt;} &lt;/i&gt;|&lt;!----&gt;}&lt;/code&gt;
-	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;28.01.2017&lt;/span&gt;&lt;/li&gt;
+	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;29.01.2017&lt;/span&gt;&lt;/li&gt;
 	&lt;li&gt;&lt;code&gt;{X&lt;!----&gt;|dt_short2long&lt;i&gt;: Mar 14 &lt;/i&gt;|&lt;!----&gt;}&lt;/code&gt;
 	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;14 March&lt;/span&gt;&lt;/li&gt;
 	&lt;li&gt;&lt;code&gt;{X&lt;!----&gt;|dt_std2short&lt;i&gt;: 1982-02-19 &lt;/i&gt;|&lt;!----&gt;}&lt;/code&gt;
@@ -554,14 +553,14 @@ variable-parameter name (correct case/spelling with respect to its above declara
 &lt;p&gt;Of course, their values (or default values) &lt;i&gt;can&lt;/i&gt; contain anything including other placeholder references or haXtags. Just
 be careful to ensure properly escaped outputs of anything that might produce &lt;a href=&quot;../basics/syntax.html&quot;&gt;quote marks&lt;/a&gt; in such scenarios.&lt;/p&gt;
 &lt;p&gt;&lt;b&gt;Special inner-content placeholder&lt;/b&gt;: in addition to those custom ones declared in &lt;code&gt;vars&lt;/code&gt; there is a special
-predefined placeholder, &lt;code&gt;{%:content:%}&lt;/code&gt;, which outputs in-place the &lt;code&gt;content&lt;/code&gt; specified and passed by the calling X-tag:&lt;/p&gt;
+predefined placeholder, &lt;code&gt;{:c:}&lt;/code&gt;, which outputs in-place the &lt;code&gt;content&lt;/code&gt; specified and passed by the calling X-tag:&lt;/p&gt;
 
 &lt;span id=&quot;args&quot;&gt;&lt;h2 id=&quot;Invocation / Parameters&quot;&gt;Invocation / Parameters&lt;/h2&gt;&lt;/span&gt;
 &lt;p&gt;For example: &lt;code&gt;{X&lt;!----&gt;|greeting: vars = [ &lt;i&gt;(&quot;greetname&quot; , &quot;&lt;u&gt;Mr. Curry&lt;/u&gt;&quot;)&lt;/i&gt; ], content=&gt; |&lt;!----&gt;}&lt;/code&gt; to
 output as per the above example |X| declaration directive: &lt;code&gt;Hello, &amp;lt;b&amp;gt;&lt;i&gt;&lt;u&gt;Mr. Curry&lt;/u&gt;&lt;/i&gt;&amp;lt;/b&amp;gt;!&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;The properties block after the X-tag name is (once again) &lt;a href=&quot;../basics/syntax.html&quot;&gt;syntax&lt;/a&gt;-sensitive. The &lt;code&gt;vars&lt;/code&gt; supply any named
 variable-parameter values for &lt;a href=&quot;#subst&quot;&gt;placeholder substitution&lt;/a&gt; and &lt;code&gt;content&lt;/code&gt; defines the value of the snippet&apos;s
-&lt;code&gt;{%:content:%}&lt;/code&gt; special-placeholder (as described further above, required whether the snippet&apos;s &lt;i&gt;own&lt;/i&gt; &lt;code&gt;content&lt;/code&gt;
+&lt;code&gt;{:c:}&lt;/code&gt; special-placeholder (as described further above, required whether the snippet&apos;s &lt;i&gt;own&lt;/i&gt; &lt;code&gt;content&lt;/code&gt;
 uses it or not, may be empty of course).&lt;/p&gt;
 </content>
     </entry><entry>
@@ -610,7 +609,7 @@ uses it or not, may be empty of course).&lt;/p&gt;
 	suffix = &quot;&lt;i&gt;&amp;lt;/li&amp;gt;&amp;lt;/ul&amp;gt;&lt;/i&gt;&quot;,
 	joinVia = &quot;&lt;i&gt;&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;&lt;/i&gt;&quot;,
 	content =&amp;gt;
-&lt;i&gt;&amp;lt;a id=&quot;b_link_&lt;/i&gt;{%i%}&lt;i&gt;&quot; href=&quot;/&lt;/i&gt;{%v%}&lt;i&gt;/index.html&quot;&amp;gt;	{B&lt;!----&gt;|title: &lt;/i&gt;{%v%}&lt;i&gt; |&lt;!----&gt;}	&amp;lt;/a&amp;gt;&lt;/i&gt;
+&lt;i&gt;&amp;lt;a id=&quot;b_link_&lt;/i&gt;{:i:}&lt;i&gt;&quot; href=&quot;/&lt;/i&gt;{:v:}&lt;i&gt;/index.html&quot;&amp;gt;	{B&lt;!----&gt;|title: &lt;/i&gt;{:v:}&lt;i&gt; |&lt;!----&gt;}	&amp;lt;/a&amp;gt;&lt;/i&gt;
 &lt;/pre&gt;
 
 &lt;p&gt;To elaborate, for example the last one of the above, as all &lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;|X| directives&lt;/a&gt; declaring &lt;a href=&quot;../tags/x.html&quot;&gt;X-tags&lt;/a&gt; do:&lt;/p&gt;
@@ -624,11 +623,15 @@ uses it or not, may be empty of course).&lt;/p&gt;
 &lt;li&gt;&lt;code&gt;suffix&lt;/code&gt; &amp;mdash; (empty by default) the output to produce once immediately following enumeration&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;joinVia&lt;/code&gt; &amp;mdash; (&lt;code&gt;,&amp;nbsp;&lt;/code&gt; by default) the output to produce in-between all enumerated items&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;content&lt;/code&gt; &amp;mdash; the principal content output for each enumerated item&lt;ul&gt;
-	&lt;li&gt;The placeholder &lt;code&gt;&amp;nbsp;{&lt;!----&gt;%i%&lt;!----&gt;}&lt;/code&gt; outputs an iteration index: 0 for the first enumerated item and afterwards
-		increments by 1 for each further item, regardless of its value or which ordering/filtering was active.&lt;/li&gt;
-	&lt;li&gt;The placeholder &lt;code&gt;&amp;nbsp;{&lt;!----&gt;%v%&lt;!----&gt;}&lt;/code&gt; outputs the current item in plain-text form as returned by the chosen
+	&lt;li&gt;The placeholder &lt;code&gt;&amp;nbsp;{&lt;!----&gt;:i:&lt;!----&gt;}&lt;/code&gt; outputs an iteration index: 0 for the first enumerated item and afterwards
+		increments by 1 for each further item, regardless of its value or which ordering/filtering was active (ie. no gaps ever
+		between successive such increments).&lt;/li&gt;
+	&lt;li&gt;The placeholder &lt;code&gt;&amp;nbsp;{&lt;!----&gt;:v:&lt;!----&gt;}&lt;/code&gt; outputs the current item in plain-text form as returned by the chosen
 		&lt;a href=&quot;#Enumerators&quot;&gt;enumerator&lt;/a&gt;.&lt;/li&gt;
-	&lt;li&gt;If &lt;code&gt;content&lt;/code&gt; is empty (the default), this is equivalent to it being &lt;code&gt;&amp;nbsp;{&lt;!----&gt;%v%&lt;!----&gt;}&lt;/code&gt;.&lt;/li&gt;
+	&lt;li&gt;The placeholder &lt;code&gt;&amp;nbsp;{&lt;!----&gt;:n:&lt;!----&gt;}&lt;/code&gt; outputs the equivalent to &lt;code&gt;&amp;nbsp;{&lt;!----&gt;:i:&lt;!----&gt;}&lt;/code&gt; + 1.&lt;/li&gt;
+	&lt;li&gt;The placeholder &lt;code&gt;&amp;nbsp;{&lt;!----&gt;:l:&lt;!----&gt;}&lt;/code&gt; outputs the total number (&quot;&lt;b&gt;l&lt;/b&gt;ength of list&quot;) of all items being
+		currently enumerated.&lt;/li&gt;
+	&lt;li&gt;If &lt;code&gt;content&lt;/code&gt; is empty (the default), this is equivalent to it being &lt;code&gt;&amp;nbsp;{&lt;!----&gt;:v:&lt;!----&gt;}&lt;/code&gt;.&lt;/li&gt;
 	&lt;li&gt;If &lt;code&gt;content&lt;/code&gt; does not contain any of these 2 placeholders, it will obviously be output repeatedly, identically,
 	once per item.&lt;/li&gt;
 	&lt;/ul&gt;&lt;/li&gt;&lt;/ol&gt;&lt;/li&gt;
@@ -749,7 +752,7 @@ is valuable enough for the already-working-today use cases.&lt;/p&gt;
 	&amp;mdash; as we saw, &lt;code&gt;xdesc&lt;/code&gt; has 11 &quot;posts&quot; but each has a uniquely distinct &lt;code&gt;cat&lt;/code&gt;:
 	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;demoSimplest, demoCfgArgs, hax.miniTag, hax.htmlImage, hax.htmlLink, hax.htmlLinks, hax.htmlAnchors, hax.xmlEscape, hax.dtFormat, hax.snippet, hax.iterator&lt;/span&gt;&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: FeedValues Some{ feeds=[&quot;xdesc&quot;],cats=[],dates=Any } &lt;/i&gt;&quot;link&quot;&lt;i&gt;|&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
-	&amp;mdash; however, most of them share the same (empty, hence the extra comma below) &lt;code&gt;link&lt;/code&gt;:
+	&amp;mdash; however, most of them share the same (empty, hence the below extra comma) &lt;code&gt;link&lt;/code&gt;:
 	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;http://github.com/metaleap/haxtatic/blob/master/src/X/DemoSimplest.hs, http://github.com/metaleap/haxtatic/blob/master/src/X/DemoCfgArgs.hs,&lt;/span&gt;&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: FeedValues Some{ feeds=[&quot;xdesc&quot;],cats=[],dates=&lt;/i&gt;Between &quot;1234-11-&quot; &quot;1234-12-31&quot;&lt;i&gt; } &quot;dt&quot;|&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
 	&amp;mdash; filtering by date range:
@@ -843,7 +846,7 @@ or stated as an ordered sequence of multiple such modifiers per &lt;code&gt;With
 	produces &lt;span class=&quot;hd-note&quot;&gt;alpha, beta, gamma, phi, zeta&lt;/span&gt;
 	instead of &lt;span class=&quot;hd-note&quot;&gt;zeta, phi, gamma, beta, alpha&lt;/span&gt;&lt;/li&gt;
 	&lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: With (Range 1 23) &lt;/i&gt;[Ordered (Shuffle False) , LimitTo 6, WrapEachIn (&quot;#&quot;,&quot;. &quot;)]&lt;i&gt; |&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
-	produces &lt;span class=&quot;hd-note&quot;&gt;#1. , #7. , #16. , #12. , #23. , #18.&lt;/span&gt;
+	produces &lt;span class=&quot;hd-note&quot;&gt;#14. , #22. , #15. , #21. , #9. , #20.&lt;/span&gt;
 	instead of &lt;span class=&quot;hd-note&quot;&gt;1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23&lt;/span&gt;
 		&lt;ul&gt;&lt;li&gt;Only either &lt;code&gt;(Shuffle True)&lt;/code&gt; or &lt;code&gt;(Shuffle False)&lt;/code&gt; are valid. When used in a central project file such as a
 		&lt;a href=&quot;../basics/haxproj.html&quot;&gt;*.haxproj&lt;/a&gt;, a &lt;a href=&quot;../basics/tmplsnip.html&quot;&gt;template&lt;/a&gt; or a &lt;a href=&quot;../basics/tmplsnip.html#snippets&quot;&gt;snippet&lt;/a&gt; (rather than directly inside a

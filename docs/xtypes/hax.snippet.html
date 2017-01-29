@@ -79,14 +79,14 @@ variable-parameter name (correct case/spelling with respect to its above declara
 <p>Of course, their values (or default values) <i>can</i> contain anything including other placeholder references or haXtags. Just
 be careful to ensure properly escaped outputs of anything that might produce <a href="../basics/syntax.html">quote marks</a> in such scenarios.</p>
 <p><b>Special inner-content placeholder</b>: in addition to those custom ones declared in <code>vars</code> there is a special
-predefined placeholder, <code>{%:content:%}</code>, which outputs in-place the <code>content</code> specified and passed by the calling X-tag:</p>
+predefined placeholder, <code>{:c:}</code>, which outputs in-place the <code>content</code> specified and passed by the calling X-tag:</p>
 
 <span id="args"><h2 id="Invocation / Parameters">Invocation / Parameters</h2></span>
 <p>For example: <code>{X<!---->|greeting: vars = [ <i>("greetname" , "<u>Mr. Curry</u>")</i> ], content=> |<!---->}</code> to
 output as per the above example |X| declaration directive: <code>Hello, &lt;b&gt;<i><u>Mr. Curry</u></i>&lt;/b&gt;!</code></p>
 <p>The properties block after the X-tag name is (once again) <a href="../basics/syntax.html">syntax</a>-sensitive. The <code>vars</code> supply any named
 variable-parameter values for <a href="#subst">placeholder substitution</a> and <code>content</code> defines the value of the snippet's
-<code>{%:content:%}</code> special-placeholder (as described further above, required whether the snippet's <i>own</i> <code>content</code>
+<code>{:c:}</code> special-placeholder (as described further above, required whether the snippet's <i>own</i> <code>content</code>
 uses it or not, may be empty of course).</p>
 
 <!-- end of content source page -->

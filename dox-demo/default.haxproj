@@ -113,7 +113,7 @@ turn on whatever syntax highlighting for eased grokkage..
 |X|hax.htmlImage:doxpic: {P| /-pics/otiosely/long/path |}: attrLink=[], attrImg=[], xmlEscape=False
 |X|hax.xmlEscape:xesc
 |X|hax.miniTag:c: code
-|X|hax.miniTag:h: h2: attr=[ ("id" , "{%:content:%}") ]
+|X|hax.miniTag:h: h2: attr=[ ("id" , "{:c:}") ]
 |X|hax.miniTag:note: span: attr=[("class" , "hd-note")]
 |X|hax.miniTag:xli: li
 
@@ -149,7 +149,7 @@ turn on whatever syntax highlighting for eased grokkage..
 	suffix = "&lt;/li&gt;<br/>&lt;/ul&gt;</i>",
 	joinVia = "&lt;/li&gt;<br/>&lt;li&gt;",
 	content=>
-&lt;a id="b_link_</i>{%i%}<i>" href="/</i>{%v%}<i>/index.html"&gt;	</i>{B|title: {%v%} |}<i>	&lt;/a&gt;
+&lt;a id="b_link_</i>{:i:}<i>" href="/</i>{:v:}<i>/index.html"&gt;	</i>{B|title: {:v:} |}<i>	&lt;/a&gt;
 
 
 

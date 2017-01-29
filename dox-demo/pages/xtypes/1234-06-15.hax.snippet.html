@@ -34,12 +34,12 @@ variable-parameter name (correct case/spelling with respect to its above declara
 <p>Of course, their values (or default values) <i>can</i> contain anything including other placeholder references or haXtags. Just
 be careful to ensure properly escaped outputs of anything that might produce {X|lb:syntax quote marks|} in such scenarios.</p>
 <p><b>Special inner-content placeholder</b>: in addition to those custom ones declared in {X|c:vars|} there is a special
-predefined placeholder, {X|c:{%:content:%}|}, which outputs in-place the {X|c:content|} specified and passed by the calling X-tag:</p>
+predefined placeholder, {X|c:{:c:}|}, which outputs in-place the {X|c:content|} specified and passed by the calling X-tag:</p>
 
 {T|Xargs|}
 <p>For example: <code>{X<!---->|greeting: vars = [ <i>("greetname" , "<u>Mr. Curry</u>")</i> ], content=> |<!---->}</code> to
 output as per the above example |X| declaration directive: {X|c: Hello, &lt;b&gt;<i><u>Mr. Curry</u></i>&lt;/b&gt;! |}</p>
 <p>The properties block after the X-tag name is (once again) {X|lb:syntax|}-sensitive. The {X|c:vars|} supply any named
 variable-parameter values for <a href="#subst">placeholder substitution</a> and {X|c:content|} defines the value of the snippet's
-{X|c: {%:content:%} |} special-placeholder (as described further above, required whether the snippet's <i>own</i> {X|c:content|}
+{X|c: {:c:} |} special-placeholder (as described further above, required whether the snippet's <i>own</i> {X|c:content|}
 uses it or not, may be empty of course).</p>

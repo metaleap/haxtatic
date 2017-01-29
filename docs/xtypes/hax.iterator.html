@@ -60,7 +60,7 @@
 	suffix = "<i>&lt;/li&gt;&lt;/ul&gt;</i>",
 	joinVia = "<i>&lt;/li&gt;&lt;li&gt;</i>",
 	content =&gt;
-<i>&lt;a id="b_link_</i>{%i%}<i>" href="/</i>{%v%}<i>/index.html"&gt;	{B<!---->|title: </i>{%v%}<i> |<!---->}	&lt;/a&gt;</i>
+<i>&lt;a id="b_link_</i>{:i:}<i>" href="/</i>{:v:}<i>/index.html"&gt;	{B<!---->|title: </i>{:v:}<i> |<!---->}	&lt;/a&gt;</i>
 </pre>
 
 <p>To elaborate, for example the last one of the above, as all <a href="../basics/haxproj.html#xdecl">|X| directives</a> declaring <a href="../tags/x.html">X-tags</a> do:</p>
@@ -74,11 +74,15 @@
 <li><code>suffix</code> &mdash; (empty by default) the output to produce once immediately following enumeration</li>
 <li><code>joinVia</code> &mdash; (<code>,&nbsp;</code> by default) the output to produce in-between all enumerated items</li>
 <li><code>content</code> &mdash; the principal content output for each enumerated item<ul>
-	<li>The placeholder <code>&nbsp;{<!---->%i%<!---->}</code> outputs an iteration index: 0 for the first enumerated item and afterwards
-		increments by 1 for each further item, regardless of its value or which ordering/filtering was active.</li>
-	<li>The placeholder <code>&nbsp;{<!---->%v%<!---->}</code> outputs the current item in plain-text form as returned by the chosen
+	<li>The placeholder <code>&nbsp;{<!---->:i:<!---->}</code> outputs an iteration index: 0 for the first enumerated item and afterwards
+		increments by 1 for each further item, regardless of its value or which ordering/filtering was active (ie. no gaps ever
+		between successive such increments).</li>
+	<li>The placeholder <code>&nbsp;{<!---->:v:<!---->}</code> outputs the current item in plain-text form as returned by the chosen
 		<a href="#Enumerators">enumerator</a>.</li>
-	<li>If <code>content</code> is empty (the default), this is equivalent to it being <code>&nbsp;{<!---->%v%<!---->}</code>.</li>
+	<li>The placeholder <code>&nbsp;{<!---->:n:<!---->}</code> outputs the equivalent to <code>&nbsp;{<!---->:i:<!---->}</code> + 1.</li>
+	<li>The placeholder <code>&nbsp;{<!---->:l:<!---->}</code> outputs the total number ("<b>l</b>ength of list") of all items being
+		currently enumerated.</li>
+	<li>If <code>content</code> is empty (the default), this is equivalent to it being <code>&nbsp;{<!---->:v:<!---->}</code>.</li>
 	<li>If <code>content</code> does not contain any of these 2 placeholders, it will obviously be output repeatedly, identically,
 	once per item.</li>
 	</ul></li></ol></li>
@@ -199,7 +203,7 @@ is valuable enough for the already-working-today use cases.</p>
 	&mdash; as we saw, <code>xdesc</code> has 11 "posts" but each has a uniquely distinct <code>cat</code>:
 	&rarr; <span class="hd-note">demoSimplest, demoCfgArgs, hax.miniTag, hax.htmlImage, hax.htmlLink, hax.htmlLinks, hax.htmlAnchors, hax.xmlEscape, hax.dtFormat, hax.snippet, hax.iterator</span></li>
 <li><code><i>{X<!---->|myenum: FeedValues Some{ feeds=["xdesc"],cats=[],dates=Any } </i>"link"<i>|<!---->}</i></code>
-	&mdash; however, most of them share the same (empty, hence the extra comma below) <code>link</code>:
+	&mdash; however, most of them share the same (empty, hence the below extra comma) <code>link</code>:
 	&rarr; <span class="hd-note">http://github.com/metaleap/haxtatic/blob/master/src/X/DemoSimplest.hs, http://github.com/metaleap/haxtatic/blob/master/src/X/DemoCfgArgs.hs,</span></li>
 <li><code><i>{X<!---->|myenum: FeedValues Some{ feeds=["xdesc"],cats=[],dates=</i>Between "1234-11-" "1234-12-31"<i> } "dt"|<!---->}</i></code>
 	&mdash; filtering by date range:
@@ -293,7 +297,7 @@ or stated as an ordered sequence of multiple such modifiers per <code>With</code
 	produces <span class="hd-note">alpha, beta, gamma, phi, zeta</span>
 	instead of <span class="hd-note">zeta, phi, gamma, beta, alpha</span></li>
 	<li><code><i>{X<!---->|myenum: With (Range 1 23) </i>[Ordered (Shuffle False) , LimitTo 6, WrapEachIn ("#",". ")]<i> |<!---->}</i></code>
-	produces <span class="hd-note">#1. , #7. , #16. , #12. , #23. , #18.</span>
+	produces <span class="hd-note">#14. , #22. , #15. , #21. , #9. , #20.</span>
 	instead of <span class="hd-note">1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23</span>
 		<ul><li>Only either <code>(Shuffle True)</code> or <code>(Shuffle False)</code> are valid. When used in a central project file such as a
 		<a href="../basics/haxproj.html">*.haxproj</a>, a <a href="../basics/tmplsnip.html">template</a> or a <a href="../basics/tmplsnip.html#snippets">snippet</a> (rather than directly inside a

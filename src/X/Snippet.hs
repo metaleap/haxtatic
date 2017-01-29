@@ -28,7 +28,7 @@ registerX _ xreg =
         where
         maincontent = Util.lookup "_hax_snippeterror" (cfg-:content) ((args-:vars)++(cfg-:vars))
         allrepls = argvars++cfgvars -- ++flagrepls
-        argvars = ("{%:content:%}" , args-:content) : (args-:vars >~ var2repl)
+        argvars = ("{:c:}" , args-:content) : (args-:vars >~ var2repl)
         -- flagrepls = concat$ (cfg-:flags) >~ flag2repl where
         --     flag2repl flag =
         --         let isflagset = elem flag (args-:flags)

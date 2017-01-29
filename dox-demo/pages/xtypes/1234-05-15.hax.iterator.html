@@ -18,7 +18,7 @@
 	suffix = "<i>&lt;/li&gt;&lt;/ul&gt;</i>",
 	joinVia = "<i>&lt;/li&gt;&lt;li&gt;</i>",
 	content =&gt;
-<i>&lt;a id="b_link_</i>{%i%}<i>" href="/</i>{%v%}<i>/index.html"&gt;	{B<!---->|title: </i>{%v%}<i> |<!---->}	&lt;/a&gt;</i>
+<i>&lt;a id="b_link_</i>{:i:}<i>" href="/</i>{:v:}<i>/index.html"&gt;	{B<!---->|title: </i>{:v:}<i> |<!---->}	&lt;/a&gt;</i>
 </pre>
 
 {X|dox-xtdecl:	vars= [	("xn","hax.iterator"), ("tn","myenumlist"), ("xo","{T|Xdeclopt|}"),
@@ -28,11 +28,15 @@
 <li>{X|c:suffix|} &mdash; (empty by default) the output to produce once immediately following enumeration</li>
 <li>{X|c:joinVia|} &mdash; ({X|c:,&nbsp;|} by default) the output to produce in-between all enumerated items</li>
 <li>{X|c:content|} &mdash; the principal content output for each enumerated item<ul>
-	<li>The placeholder {X|c:&nbsp;{<!---->%i%<!---->}|} outputs an iteration index: 0 for the first enumerated item and afterwards
-		increments by 1 for each further item, regardless of its value or which ordering/filtering was active.</li>
-	<li>The placeholder {X|c:&nbsp;{<!---->%v%<!---->}|} outputs the current item in plain-text form as returned by the chosen
+	<li>The placeholder {X|c:&nbsp;{<!---->:i:<!---->}|} outputs an iteration index: 0 for the first enumerated item and afterwards
+		increments by 1 for each further item, regardless of its value or which ordering/filtering was active (ie. no gaps ever
+		between successive such increments).</li>
+	<li>The placeholder {X|c:&nbsp;{<!---->:v:<!---->}|} outputs the current item in plain-text form as returned by the chosen
 		<a href="#Enumerators">enumerator</a>.</li>
-	<li>If {X|c:content|} is empty (the default), this is equivalent to it being {X|c:&nbsp;{<!---->%v%<!---->}|}.</li>
+	<li>The placeholder {X|c:&nbsp;{<!---->:n:<!---->}|} outputs the equivalent to {X|c:&nbsp;{<!---->:i:<!---->}|} + 1.</li>
+	<li>The placeholder {X|c:&nbsp;{<!---->:l:<!---->}|} outputs the total number ("<b>l</b>ength of list") of all items being
+		currently enumerated.</li>
+	<li>If {X|c:content|} is empty (the default), this is equivalent to it being {X|c:&nbsp;{<!---->:v:<!---->}|}.</li>
 	<li>If {X|c:content|} does not contain any of these 2 placeholders, it will obviously be output repeatedly, identically,
 	once per item.</li>
 	</ul></li>
@@ -153,7 +157,7 @@ is valuable enough for the already-working-today use cases.</p>
 	&mdash; as we saw, {X|c:xdesc|} has 11 "posts" but each has a uniquely distinct {X|c:cat|}:
 	&rarr; {X|note: {X|myenum: FeedValues Some{feeds=["xdesc"],cats=[],dates=Any} "cat" |} |}</li>
 <li>{X|c:<i>{X<!---->|myenum: FeedValues Some{ feeds=["xdesc"],cats=[],dates=Any } </i>"link"<i>|<!---->}</i>|}
-	&mdash; however, most of them share the same (empty, hence the extra comma below) {X|c:link|}:
+	&mdash; however, most of them share the same (empty, hence the below extra comma) {X|c:link|}:
 	&rarr; {X|note: {X|myenum: FeedValues Some{feeds=["xdesc"],cats=[],dates=Any} "link" |} |}</li>
 <li>{X|c:<i>{X<!---->|myenum: FeedValues Some{ feeds=["xdesc"],cats=[],dates=</i>Between "1234-11-" "1234-12-31"<i> } "dt"|<!---->}</i>|}
 	&mdash; filtering by date range:

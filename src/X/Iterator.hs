@@ -145,15 +145,15 @@ registerX ctxproj xreg =
 
     projbloks = ctxproj-:Proj.setup-:Proj.bloks
     projbloknames = Data.Map.Strict.keys projbloks
-    foreach num | (null cfgcontent)=    \ (_,v) -> v    --  no-content == {%v%}
+    foreach num | (null cfgcontent)=    \ (_,v) -> v    --  no-content == {:v:}
                 | (otherwise)=          repl cfgcontent
                 where
                 cfgcontent = cfg-:content
                 repl []                         _           = []
-                repl ('{':'%':'i':'%':'}':rest) iv@(i , _)  = (show i) ++ repl rest iv
-                repl ('{':'%':'n':'%':'}':rest) iv@(i , _)  = (show$ i+1) ++ repl rest iv
-                repl ('{':'%':'v':'%':'}':rest) iv@(_ , v)  = v ++ repl rest iv
-                repl ('{':'%':'c':'%':'}':rest) iv          = num ++ repl rest iv
+                repl ('{':':':'i':':':'}':rest) iv@(i , _)  = (show i) ++ repl rest iv
+                repl ('{':':':'n':':':'}':rest) iv@(i , _)  = (show$ i+1) ++ repl rest iv
+                repl ('{':':':'v':':':'}':rest) iv@(_ , v)  = v ++ repl rest iv
+                repl ('{':':':'l':':':'}':rest) iv          = num ++ repl rest iv
                 repl (this : rest)              iv          = this : repl rest iv
     cfgjoin = if null $cfg-:joinVia then concat else Util.join $cfg-:joinVia
     cfgwrap | (null $cfg-:prefix) && (null $cfg-:suffix) = id

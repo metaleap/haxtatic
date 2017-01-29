@@ -37,7 +37,7 @@ equally apply to any customized project-directory structurings.&lt;/p&gt;
 &lt;span id=&quot;run&quot;&gt;&lt;h2 id=&quot;Get started&quot;&gt;Get started&lt;/h2&gt;&lt;/span&gt;
 &lt;p&gt;As &lt;a href=&quot;../index.html#Quick start&quot;&gt;described earlier&lt;/a&gt;, one runs &lt;i&gt;HaXtatic&lt;/i&gt; specifying &quot;the project-directory to process&quot; and any missing parts from the above essentials will be (re)created in-place.&lt;/p&gt;
 &lt;p&gt;Example, to create a new site project named &lt;b&gt;mydemosite.foo&lt;/b&gt; (inside the existing &lt;i&gt;~/dev/&lt;/i&gt; directory in this case) &lt;ul&gt;&lt;li&gt;just run from inside the &lt;i&gt;HaXtatic&lt;/i&gt; code-base&apos;s &lt;i&gt;src&lt;/i&gt; directory:&lt;br/&gt;&lt;code&gt;&lt;a href=&quot;http://www.haskell.org/downloads#stack&quot;&gt;stack&lt;/a&gt; ./@HaxMain.hs ~/dev/mydemosite.foo&lt;/code&gt;&lt;/li&gt;&lt;li&gt;or with a compiled executable binary (eg. for extra speed if so inclined), of course&lt;br/&gt;&lt;code&gt;my-haxtatic-exe ~/dev/mydemosite.foo&lt;/code&gt; works equally&lt;/li&gt;&lt;/ul&gt; and the following is generated:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;../-pics/otiosely/long/path/fresh%20project-directory.png&quot; alt=&quot;A &apos;freshly made&apos; project-directory&quot;/&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../-pics/otiosely/long/path/fresh%20project-directory.png&quot; alt=&quot;A &apos;freshly made&apos; project-directory&quot; title=&quot;A &apos;freshly made&apos; project-directory&quot;/&gt;&lt;/p&gt;
 &lt;p&gt;The on-screen output will be something like:&lt;/p&gt;
 &lt;pre&gt;
 ==== HAXTATIC ====
@@ -317,7 +317,7 @@ Wrote 2 files in 0.07s:
 &lt;/p&gt;
 &lt;pre&gt;
 |X|hax.miniTag:&lt;i&gt;h&lt;/i&gt;:&lt;i&gt;h2&lt;/i&gt;:
-    attr=&lt;i&gt;[(&quot;id&quot;,&quot;{%:content:%}&quot;)]&lt;/i&gt;
+    attr=&lt;i&gt;[(&quot;id&quot;,&quot;{:content:}&quot;)]&lt;/i&gt;
 
 |X|hax.htmlAnchors:&lt;i&gt;doxpagetoc&lt;/i&gt;:&lt;i&gt;h2&lt;/i&gt;:
     considerEmpty = &lt;i&gt;1&lt;/i&gt;,

@@ -73,10 +73,9 @@
 					comprised (if present at all) of <i>all</i> the following properties in <i>this</i> very order:<ol><li><code>attr = [ <i>..</i> ]</code> &mdash; a List of all the tag attributes (each denoted in a
 	<code>("<i>name</i>","<i>value</i>")</code> pair) to <i>always</i> append to the markup-language tag output by
 	all instances of this
-	X-tag <ul><li>The special attribute <i>value</i> <code>&nbsp;{<!---->%:content:%<!---->}</code> will replicate the
-	X-tag content inside this
-	attribute (not specially escaped &mdash; effect this by wrapping inside a <a href="../tags/p.html#delay">page-delayed</a> X-tag invoking
-	<a href="../xtypes/hax.xmlEscape.html">hax.xmlEscape</a>) </li></ul></li></ol></li>
+	X-tag <ul><li>The special attribute <i>value</i> placeholder <code>&nbsp;{<!---->:c:<!---->}</code> will replicate the
+	X-tag content inside this attribute (not specially escaped: if this is needed, wrap inside a <a href="../tags/p.html#delay">page-delayed</a> X-tag
+	invoking <a href="../xtypes/hax.xmlEscape.html">hax.xmlEscape</a> as usual) </li></ul></li></ol></li>
 	</ul>
 
 <span id="args"><h2 id="Invocation / Parameters">Invocation / Parameters</h2></span>

@@ -34,10 +34,9 @@
 	<li>{X|c:attr = [ <i>..</i> ]|} &mdash; a List of all the tag attributes (each denoted in a
 	{X|c:("<i>name</i>","<i>value</i>")|} pair) to <i>always</i> append to the markup-language tag output by
 	all instances of this
-	X-tag <ul><li>The special attribute <i>value</i> {X|c:&nbsp;{<!---->%:content:%<!---->}|} will replicate the
-	X-tag content inside this
-	attribute (not specially escaped &mdash; effect this by wrapping inside a {X|lt:p#delay page-delayed|} X-tag invoking
-	{X|lx:hax.xmlEscape hax.xmlEscape|}) </li></ul></li>
+	X-tag <ul><li>The special attribute <i>value</i> placeholder {X|c:&nbsp;{<!---->:c:<!---->}|} will replicate the
+	X-tag content inside this attribute (not specially escaped: if this is needed, wrap inside a {X|lt:p#delay page-delayed|} X-tag
+	invoking {X|lx:hax.xmlEscape hax.xmlEscape|} as usual) </li></ul></li>
 
 |}
 
