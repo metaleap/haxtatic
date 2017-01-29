@@ -188,15 +188,16 @@ tagHandler ctxmain cfgproj ctxpage ctxtmpl outjob ptagcontent
     pvals = let reldir = Util.butNot "." "" (System.FilePath.takeDirectory$ outjob-:Build.relPath)
                 reldir' = Util.butNot "." "" (System.FilePath.takeDirectory$ outjob-:Build.relPathSlashes)
             in  [ "title" =: (ctxpage-:Tmpl.htmlInner1st) "h1" ""
-                , "fileBaseName" =: (System.FilePath.takeBaseName$ outjob-:Build.relPath)
-                , "fileName" =: (System.FilePath.takeFileName$ outjob-:Build.relPath)
+                , "fileBaseName" =: System.FilePath.takeBaseName (outjob-:Build.relPath)
+                , "fileCoreName" =: drop (outjob-:Build.blokName~>length+1) (System.FilePath.takeBaseName $outjob-:Build.relPath)
+                , "fileName" =: System.FilePath.takeFileName (outjob-:Build.relPath)
                 , "fileUri" =: '/':(outjob-:Build.relPathSlashes)
                 , "filePath" =: outjob-:Build.relPath
                 , "dirName" =: Util.ifIs reldir System.FilePath.takeFileName
                 , "dirUri" =: '/':(Util.ifIs reldir' (++"/"))
                 , "dirPath" =: Util.ifIs reldir (++[System.FilePath.pathSeparator])
                 , "srcPath" =: outjob-:Build.srcFile-:Files.path
-                , "srcRelPath" =: (drop (ctxmain-:Files.dirPath~>length+1) (outjob-:Build.srcFile-:Files.path))
+                , "srcRelPath" =: drop (ctxmain-:Files.dirPath~>length+1) (outjob-:Build.srcFile-:Files.path)
                 , "outBuild" =: outjob-:Build.outPathBuild
                 , "outDeploy" =: outjob-:Build.outPathDeploy
                 ]

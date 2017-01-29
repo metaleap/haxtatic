@@ -24,10 +24,9 @@ data Tag
 registerX _ xreg =
     let
     renderer (_ , argstr) =
-        Just$ Util.repeatWhile again (Util.replaceSubsMany allrepls) maincontent
+        Just$ Util.repeatedly (Util.replaceSubsMany allrepls) maincontent
         where
         maincontent = Util.lookup "_hax_snippeterror" (cfg-:content) ((args-:vars)++(cfg-:vars))
-        again = for where for [] = False ; for ('{':'%':_) = True ; for ('%':'}':_) = True ; for (_:more) = for more
         allrepls = argvars++cfgvars -- ++flagrepls
         argvars = ("{%:content:%}" , args-:content) : (args-:vars >~ var2repl)
         -- flagrepls = concat$ (cfg-:flags) >~ flag2repl where

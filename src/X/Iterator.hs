@@ -59,8 +59,9 @@ registerX ctxproj xreg =
         if waitforpage then Nothing
             else Just$ cfgwrap allcontents
         where
-        allcontents = cfgjoin (iteratees >~ foreach)
+        allcontents = cfgjoin (iteratees >~ (foreach (show numtotal)))
 
+        numtotal = iteratees~>length
         iteratees = Util.indexed (iter $args-:over) where
 
             --  RECURSIVE TWEAK-OPS:
@@ -144,9 +145,16 @@ registerX ctxproj xreg =
 
     projbloks = ctxproj-:Proj.setup-:Proj.bloks
     projbloknames = Data.Map.Strict.keys projbloks
-    foreach | (null txt)=   \ (_,v) -> v
-            | (otherwise)=  _repl (hasi,hasv) txt
-            where txt = cfg-:content ; hasi = _hasi txt ; hasv = _hasv txt
+    foreach num | (null cfgcontent)=    \ (_,v) -> v    --  no-content == {%v%}
+                | (otherwise)=          repl cfgcontent
+                where
+                cfgcontent = cfg-:content
+                repl []                         _           = []
+                repl ('{':'%':'i':'%':'}':rest) iv@(i , _)  = (show i) ++ repl rest iv
+                repl ('{':'%':'n':'%':'}':rest) iv@(i , _)  = (show$ i+1) ++ repl rest iv
+                repl ('{':'%':'v':'%':'}':rest) iv@(_ , v)  = v ++ repl rest iv
+                repl ('{':'%':'c':'%':'}':rest) iv          = num ++ repl rest iv
+                repl (this : rest)              iv          = this : repl rest iv
     cfgjoin = if null $cfg-:joinVia then concat else Util.join $cfg-:joinVia
     cfgwrap | (null $cfg-:prefix) && (null $cfg-:suffix) = id
             | otherwise = (((cfg-:prefix))++).(++((cfg-:suffix)))
@@ -159,12 +167,3 @@ registerX ctxproj xreg =
 
 _with2buts iter tweaks =
     w2b (reverse tweaks) where w2b [] = iter ; w2b (this:nested) = But this (w2b nested)
-
-_repl   (False,False)   txt                         _               = txt
-_repl   _               []                          _               = []
-_repl   iv@(True,_)     ('{':'%':'i':'%':'}':rest)  both@(i , _)    = (show i) ++ _repl iv rest both
-_repl   iv@(_,True)     ('{':'%':'v':'%':'}':rest)  both@(_ , v)    = v ++ _repl iv rest both
-_repl   iv              (this : rest)               both            = this : _repl iv rest both
-
-_hasi [] = False ; _hasi ('{':'%':'i':'%':'}':_) = True ; _hasi (_:rest) = _hasi rest
-_hasv [] = False ; _hasv ('{':'%':'v':'%':'}':_) = True ; _hasv (_:rest) = _hasv rest
