@@ -21,14 +21,17 @@ registerX _ xreg =
     renderer (_ , argstr) =
         Just$ Html.emit tag
         where
-        tag = if null (cfg-:attrLink) then imgtag else lnktag
+        haslink = has $cfg-:attrLink
+        tag = if haslink then lnktag else imgtag
         imgtag = Html.T "img" (cfgimgatts ++ (atts "src" "alt")) []
         lnktag = Html.T "a" (cfglinkatts ++ (atts "href" "title")) [imgtag]
         (imgsrc,imgdesc) = argsplit ~> Util.bothTrim
         argsplit = Util.splitOn1stSpace argstr
         atts uriattname descattname =
-            [   uriattname =: Html.joinUri cfg_imgrelpath imgsrc,
-                descattname =: Util.ifNo cfgerrmsg (htmlesc imgdesc) ]
+            let imgtext = Util.ifNo cfgerrmsg (htmlesc imgdesc)
+            in [ uriattname =: Html.joinUri cfg_imgrelpath imgsrc, descattname =: imgtext ]
+            ++ if haslink || descattname == "title" then [] else
+                [ "title" =: imgtext ]
 
 
     in X.Early renderer
