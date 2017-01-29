@@ -49,6 +49,7 @@ data Tweak
     | LimitTo Int
     | Skip Int
     | Ordered SortOrder
+    | Dyn [String]
     deriving Read
 
 
@@ -59,9 +60,10 @@ registerX ctxproj xreg =
         if waitforpage then Nothing
             else Just$ cfgwrap allcontents
         where
-        allcontents = cfgjoin (iteratees >~ (foreach (show numtotal)))
+        allcontents = cfgjoin (iteratees >~ (foreach dyns (show numtotal)))
 
         numtotal = iteratees~>length
+        dyns = d (args-:over) where d (But (Dyn vals) _) = vals ; d (But _ moreover) = d moreover ; d _ = []
         iteratees = Util.indexed (iter $args-:over) where
 
             --  RECURSIVE TWEAK-OPS:
@@ -83,6 +85,8 @@ registerX ctxproj xreg =
             iter (But (Ordered Ascending) moreover) =
                 (s moreover) (iter moreover) where
                     s (FeedPosts _ _) = reverse ; s _ = Data.List.sortBy compare
+            iter (But _ moreover) =
+                iter moreover
 
             --  ACTUAL ENUMERATIONS:
             iter (Values values) =
@@ -145,16 +149,19 @@ registerX ctxproj xreg =
 
     projbloks = ctxproj-:Proj.setup-:Proj.bloks
     projbloknames = Data.Map.Strict.keys projbloks
-    foreach num | (null cfgcontent)=    \ (_,v) -> v    --  no-content == {:v:}
-                | (otherwise)=          repl cfgcontent
-                where
-                cfgcontent = cfg-:content
-                repl []                         _           = []
-                repl ('{':':':'i':':':'}':rest) iv@(i , _)  = (show i) ++ repl rest iv
-                repl ('{':':':'n':':':'}':rest) iv@(i , _)  = (show$ i+1) ++ repl rest iv
-                repl ('{':':':'v':':':'}':rest) iv@(_ , v)  = v ++ repl rest iv
-                repl ('{':':':'l':':':'}':rest) iv          = num ++ repl rest iv
-                repl (this : rest)              iv          = this : repl rest iv
+    foreach dyn num | (null cfgcontent)=    \ (_,v) -> v    --  no content -> "{:v:}"
+                    | (otherwise)=          repl cfgcontent
+                    where
+                    cfgcontent = cfg-:content
+                    repl []                         _           = []
+                    repl ('{':':':'i':':':'}':rest) iv@(i , _)  = (show i) ++ repl rest iv
+                    repl ('{':':':'n':':':'}':rest) iv@(i , _)  = (show$ i+1) ++ repl rest iv
+                    repl ('{':':':'v':':':'}':rest) iv@(_ , v)  = v ++ repl rest iv
+                    repl ('{':':':'l':':':'}':rest) iv          = num ++ repl rest iv
+                    repl ('{':':':'d':':':'}':rest) iv@(i , _)  = grab i ++ (repl rest iv)
+                    repl (this : rest)              iv          = this : repl rest iv
+                    grab i =
+                        if has v || i == 0 then v else grab (i-1) where v = "" -|= (dyn@?i)
     cfgjoin = if null $cfg-:joinVia then concat else Util.join $cfg-:joinVia
     cfgwrap | (null $cfg-:prefix) && (null $cfg-:suffix) = id
             | otherwise = (((cfg-:prefix))++).(++((cfg-:suffix)))

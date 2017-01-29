@@ -10,12 +10,10 @@ import qualified X
 data Tag
     = Cfg {
         vars :: Util.StringPairs,
-        -- flags :: [String],
         content :: String
     }
     | Args {
         vars :: Util.StringPairs,
-        -- flags :: [String],
         content :: String
     }
     deriving Read
@@ -27,13 +25,8 @@ registerX _ xreg =
         Just$ Util.repeatedly (Util.replaceSubsMany allrepls) maincontent
         where
         maincontent = Util.lookup "_hax_snippeterror" (cfg-:content) ((args-:vars)++(cfg-:vars))
-        allrepls = argvars++cfgvars -- ++flagrepls
+        allrepls = argvars++cfgvars
         argvars = ("{:c:}" , args-:content) : (args-:vars >~ var2repl)
-        -- flagrepls = concat$ (cfg-:flags) >~ flag2repl where
-        --     flag2repl flag =
-        --         let isflagset = elem flag (args-:flags)
-        --         in ["{%if:"++flag++"%}" =: (isflagset |? "" |! "<!--"),
-        --             "{%fi:"++flag++"%}" =: (isflagset |? "" |! "-->")]
         args = X.tryParseArgs xreg (Tmpl.fixParseStr "content" argstr) (Just defargs) errargs where
             defargs = Args { vars = [], content = "" }
             errargs = Args { vars = ["_hax_snippeterror" =: errmsg] , content = errmsg }

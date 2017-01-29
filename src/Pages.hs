@@ -166,7 +166,7 @@ tagHandler ctxmain cfgproj ctxpage ctxtmpl outjob ptagcontent
     | has splitrest
         = (Data.List.lookup split1st (ctxpage-:Tmpl.pVars)) ~> (formatpvar =|- for ptagcontent)
     | otherwise
-        = (Data.List.lookup ptagcontent (ctxpage-:Tmpl.pVars)) <|> (for ptagcontent)
+        = (Data.List.lookup ptagcontent (ctxpage-:Tmpl.pVars)) <|> (for ptagcontent) <|> (Just$ "{T|P|"++ptagcontent++"|}")
 
     where
     isxdelay ('X':'|':_) = True ; isxdelay _ = False
