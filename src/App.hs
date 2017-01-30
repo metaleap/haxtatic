@@ -18,9 +18,11 @@ import qualified X.HtmlAnchors (registerX)
 import qualified X.HtmlImage (registerX)
 import qualified X.HtmlLink (registerX)
 import qualified X.HtmlLinks (registerX)
+import qualified X.NoOp (registerX)
 import qualified X.Iterator (registerX)
 import qualified X.Snippet (registerX)
 import qualified X.MiniTag (registerX)
+import qualified X.UnMarkup (registerX)
 import qualified X.XmlEscape (registerX)
 
 import qualified Data.Time.Clock
@@ -37,9 +39,11 @@ xregs = [ "demoSimplest" =: X.DemoSimplest.registerX
         , "hax.htmlImage" =: X.HtmlImage.registerX
         , "hax.htmlLink" =: X.HtmlLink.registerX
         , "hax.htmlLinks" =: X.HtmlLinks.registerX
+        , "hax.noOp" =: X.NoOp.registerX
         , "hax.iterator" =: X.Iterator.registerX
         , "hax.snippet" =: X.Snippet.registerX
         , "hax.miniTag" =: X.MiniTag.registerX
+        , "hax.unMarkup" =: X.UnMarkup.registerX
         , "hax.xmlEscape" =: X.XmlEscape.registerX
         ]
 

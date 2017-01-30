@@ -104,7 +104,7 @@ from the project's {X|lb:bloks Blok|} pages (if any) and/or the project's {X|lb:
 enumerators have quite a few commonalities:</p>
 <ul>
 	<li>A <i>filter query</i> and another 2nd parameter, the full forms being:<ul>
-		<li>{X|c:FeedPosts <i>&lt;filter&gt;</i> [] |} and</li>
+		<li>{X|c:FeedPosts <i>&lt;filter&gt;</i> [] "" |} and</li>
 		<li>{X|c:FeedValues <i>&lt;filter&gt;</i> "<i>&lt;fieldname&gt;</i>" |}</li></ul></li>
 	<li>The first (the <i>filter</i>) part is either simply {X|c:All|} (no filtering, anything goes), or the functionally exactly
 		equivalent {X|c:Some{ feeds=[], cats=[], dates=<i>Any</i> }|} (also no filtering), or the same {X|lb:syntax|}-sensitive form but
@@ -123,6 +123,8 @@ enumerators have quite a few commonalities:</p>
 		<li>for {X|c:FeedValues|} the name of the "post" <a href="#fields">field</a> ({X|lb:haxproj#pdecl custom|} or standard) whose
 			value should be output (at most once per iteration)</li>
 	</ul></li>
+	<li>A 3rd text-value is given for {X|c:FeedPosts|}, may well be empty getting started, but signals the field name from
+	which to populate a Blok post's (otherwise empty) {X|c:cat|}.</li>
 </ul>
 <p class="hd-note"><b>In the current version, a known issue:</b> in a project <i>with</i> {X|lb:bloks Blok|} pages, using <b><i>in</i>
 Blok pages</b> either {X|c:All|} or any {X|c:Some|} that effectively selects <i>any</i> Bloks as <i>feeds</i> is "not currently supported"
@@ -180,9 +182,9 @@ just a moderate grasp of {X|lb:tmplsnip#snippets snippets|} and how to populate 
 the above {X|c:joinVia|}/{X|c:content|} <a href="#decl">directive properties</a> (plus possibly the below {X|c:WrapEachIn|}
 <a href="#Modifiers">modifier</a>) clears the path to infinitely versatile micro-content rendering.</p>
 <p>To give an impression of this in practice, here's just the output produced when selecting:
-{X|c:<i>{X<!---->|myenum: FeedPosts Some{ feeds=["</i>xdesc<i>"], cats=["</i>hax.snippet<i>"], dates=Any} ["</i>cfgmore<i>"] |<!---->}</i>|} &mdash; ie. selecting from this site's {X|c:xdesc|} "feed" just the "post" describing <b>hax.snippet</b> with not-only all standard
+{X|c:<i>{X<!---->|myenum: FeedPosts Some{ feeds=["</i>xdesc<i>"], cats=["</i>hax.snippet<i>"], dates=Any} ["</i>cfgmore<i>"] "" |<!---->}</i>|} &mdash; ie. selecting from this site's {X|c:xdesc|} "feed" just the "post" describing <b>hax.snippet</b> with not-only all standard
 fields (more <a href="#fields">below</a>) but-also the {X|lb:haxproj#pdecl custom|} {X|c:more|} field <b>cfgmore</b>:</p>
-<p>{X|c:{X|xesc:{X|myenum: FeedPosts Some{ feeds=["xdesc"], cats=["hax.snippet"], dates=Any} ["cfgmore"] |}|}|}</p>
+<p>{X|c:{X|xesc:{X|myenum: FeedPosts Some{ feeds=["xdesc"], cats=["hax.snippet"], dates=Any} ["cfgmore"] "" |}|}|}</p>
 <p>A simple {X|lb:syntax list of name-value-pair tuples|} &mdash; just without the enclosing {X|c:&nbsp;[]|} square brackets that are
 not to be forgotten when ensuring the wrapping of these per-item outputs inside what will typically (effectively have to) end up amounting
 to both {X|c: {X<!---->|<i>mysnippet</i>: vars=[ |} and {X|c:], content=> |<!---->} |}.</p>

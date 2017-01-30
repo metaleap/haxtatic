@@ -91,7 +91,7 @@ processPage ctxmain ctxproj ctxbuild ctxtmpl tmplfinder outjob =
             pagesrctmp = cachedfile-:Files.content
             randseed' = (Util.dtInts nowtime)
                             ++ (Util.dtInts $outjob-:Build.srcFile-:Files.modTime)
-                                ++ [ length $ctxbuild-:Posts.allPagesFiles , (max 1 $pagesrcraw~>length) ]
+                                ++ [ length $ctxbuild-:Posts.allPagesFiles , pagesrcraw~>length ]
             ctxpage htmlsrc thandler = Tmpl.PageContext {
                                             Tmpl.blokName = outjob-:Build.blokName,
                                             Tmpl.pTagHandler = thandler,

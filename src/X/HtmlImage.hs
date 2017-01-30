@@ -19,7 +19,7 @@ data Tag =
 registerX _ xreg =
     let
     renderer (_ , argstr) =
-        Just$ Html.emit tag
+        Just$ if null imgsrc then "" else Html.emit tag
         where
         haslink = has $cfg-:attrLink
         tag = if haslink then lnktag else imgtag

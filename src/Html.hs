@@ -104,6 +104,10 @@ findValuesOfVoidTags1stAttr tagname attrname htmlsrc =
 
 
 
+joinUri relpath "" =
+    Files.sanitizeUriRelPathForJoin relpath
+joinUri "" relpath' =
+    Files.sanitizeUriRelPathForJoin relpath'
 joinUri relpath relpath' =
     (Files.sanitizeUriRelPathForJoin relpath) ++ ('/':Files.sanitizeUriRelPathForJoin relpath')
 

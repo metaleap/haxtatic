@@ -42,12 +42,6 @@ infix 0 =:
 infixl 9 >~
 (>~) = flip fmap
 
-(=>-) ::
-    (Functor f)=>
-    f a -> (a -> b) -> f b
-infixl 9 =>-
-(=>-) = flip fmap
-
 
 
 infixl 9 >=~

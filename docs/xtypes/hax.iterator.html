@@ -150,7 +150,7 @@ from the project's <a href="../basics/bloks.html">Blok</a> pages (if any) and/or
 enumerators have quite a few commonalities:</p>
 <ul>
 	<li>A <i>filter query</i> and another 2nd parameter, the full forms being:<ul>
-		<li><code>FeedPosts <i>&lt;filter&gt;</i> []</code> and</li>
+		<li><code>FeedPosts <i>&lt;filter&gt;</i> [] ""</code> and</li>
 		<li><code>FeedValues <i>&lt;filter&gt;</i> "<i>&lt;fieldname&gt;</i>"</code></li></ul></li>
 	<li>The first (the <i>filter</i>) part is either simply <code>All</code> (no filtering, anything goes), or the functionally exactly
 		equivalent <code>Some{ feeds=[], cats=[], dates=<i>Any</i> }</code> (also no filtering), or the same <a href="../basics/syntax.html">syntax</a>-sensitive form but
@@ -169,6 +169,8 @@ enumerators have quite a few commonalities:</p>
 		<li>for <code>FeedValues</code> the name of the "post" <a href="#fields">field</a> (<a href="../basics/haxproj.html#pdecl">custom</a> or standard) whose
 			value should be output (at most once per iteration)</li>
 	</ul></li>
+	<li>A 3rd text-value is given for <code>FeedPosts</code>, may well be empty getting started, but signals the field name from
+	which to populate a Blok post's (otherwise empty) <code>cat</code>.</li>
 </ul>
 <p class="hd-note"><b>In the current version, a known issue:</b> in a project <i>with</i> <a href="../basics/bloks.html">Blok</a> pages, using <b><i>in</i>
 Blok pages</b> either <code>All</code> or any <code>Some</code> that effectively selects <i>any</i> Bloks as <i>feeds</i> is "not currently supported"
@@ -226,9 +228,9 @@ just a moderate grasp of <a href="../basics/tmplsnip.html#snippets">snippets</a>
 the above <code>joinVia</code>/<code>content</code> <a href="#decl">directive properties</a> (plus possibly the below <code>WrapEachIn</code>
 <a href="#Modifiers">modifier</a>) clears the path to infinitely versatile micro-content rendering.</p>
 <p>To give an impression of this in practice, here's just the output produced when selecting:
-<code><i>{X<!---->|myenum: FeedPosts Some{ feeds=["</i>xdesc<i>"], cats=["</i>hax.snippet<i>"], dates=Any} ["</i>cfgmore<i>"] |<!---->}</i></code> &mdash; ie. selecting from this site's <code>xdesc</code> "feed" just the "post" describing <b>hax.snippet</b> with not-only all standard
+<code><i>{X<!---->|myenum: FeedPosts Some{ feeds=["</i>xdesc<i>"], cats=["</i>hax.snippet<i>"], dates=Any} ["</i>cfgmore<i>"] "" |<!---->}</i></code> &mdash; ie. selecting from this site's <code>xdesc</code> "feed" just the "post" describing <b>hax.snippet</b> with not-only all standard
 fields (more <a href="#fields">below</a>) but-also the <a href="../basics/haxproj.html#pdecl">custom</a> <code>more</code> field <b>cfgmore</b>:</p>
-<p><code>(&quot;feed&quot;,&quot;xdesc&quot;),(&quot;dt&quot;,&quot;1234-06-15&quot;),(&quot;cat&quot;,&quot;hax.snippet&quot;),(&quot;title&quot;,&quot;&quot;),(&quot;link&quot;,&quot;&quot;),(&quot;content&quot;,&quot;Renders the named \&quot;snippet\&quot; (aka. \&quot;controls\&quot; / \&quot;components\&quot; / \&quot;sub-templates\&quot;) substituting the specified\n\tnamed-parameter values.&quot;),(&quot;cfgmore&quot;,&quot;&lt;code&gt;vars&lt;/code&gt;, &lt;code&gt;content&lt;/code&gt;&quot;)</code></p>
+<p><code>(&quot;cfgmore&quot;,&quot;&lt;code&gt;vars&lt;/code&gt;, &lt;code&gt;content&lt;/code&gt;&quot;),(&quot;feed&quot;,&quot;xdesc&quot;),(&quot;dt&quot;,&quot;1234-06-15&quot;),(&quot;dt:year&quot;,&quot;1234&quot;),(&quot;cat&quot;,&quot;hax.snippet&quot;),(&quot;title&quot;,&quot;&quot;),(&quot;link&quot;,&quot;&quot;),(&quot;content&quot;,&quot;Renders the named \&quot;snippet\&quot; (aka. \&quot;controls\&quot; / \&quot;components\&quot; / \&quot;sub-templates\&quot;) substituting the specified\n\tnamed-parameter values.&quot;)</code></p>
 <p>A simple <a href="../basics/syntax.html">list of name-value-pair tuples</a> &mdash; just without the enclosing <code>&nbsp;[]</code> square brackets that are
 not to be forgotten when ensuring the wrapping of these per-item outputs inside what will typically (effectively have to) end up amounting
 to both <code>{X<!---->|<i>mysnippet</i>: vars=[</code> and <code>], content=> |<!---->}</code>.</p>
@@ -297,7 +299,7 @@ or stated as an ordered sequence of multiple such modifiers per <code>With</code
 	produces <span class="hd-note">alpha, beta, gamma, phi, zeta</span>
 	instead of <span class="hd-note">zeta, phi, gamma, beta, alpha</span></li>
 	<li><code><i>{X<!---->|myenum: With (Range 1 23) </i>[Ordered (Shuffle False) , LimitTo 6, WrapEachIn ("#",". ")]<i> |<!---->}</i></code>
-	produces <span class="hd-note">#11. , #8. , #21. , #23. , #10. , #17.</span>
+	produces <span class="hd-note">#15. , #1. , #7. , #12. , #6. , #20.</span>
 	instead of <span class="hd-note">1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23</span>
 		<ul><li>Only either <code>(Shuffle True)</code> or <code>(Shuffle False)</code> are valid. When used in a central project file such as a
 		<a href="../basics/haxproj.html">*.haxproj</a>, a <a href="../basics/tmplsnip.html">template</a> or a <a href="../basics/tmplsnip.html#snippets">snippet</a> (rather than directly inside a

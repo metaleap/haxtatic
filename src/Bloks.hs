@@ -124,4 +124,4 @@ tagHandler bloks curbname str =
     in (null fname) |? Nothing
         |! (fname=="name" && has bname) |? Just bname
             |! (blokByName bloks bname) >>= \blok ->
-                (Data.List.lookup fname fields) =>- \fieldval -> blok-:fieldval
+                (Data.List.lookup fname fields) >~ \fieldval -> blok-:fieldval

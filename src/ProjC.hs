@@ -131,7 +131,7 @@ parseProjChunks chunkssplits =
 
 
 raiseParseErr filehint directive parsestr =
-    errorWithoutStackTrace $"!!=>\n\n\t"++filehint++" --- failed to parse:\n`"++directive++"`\n\tdue to some SYNTAX mistake in:\n~============================>>\n"++parsestr++"\n<<============================~\n\nLOOK OUT for: typos, missing-or-superfluous\n\tcommas/quotation/parens/brackets/braces\n\t\tor in the docs: /basics/syntax.html\n\n\n"
+    errorWithoutStackTrace $"!!=>\n\n\t"++filehint++" --- failed to parse..\n\t`"++directive++"`\n\t..due to some SYNTAX mistake somewhere in:\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"++parsestr++"\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\nLOOK OUT for: typos, missing-or-superfluous\n\tcommas/quotation/parens/brackets/braces\n\t\tor in the docs: /basics/syntax.html\n\n\n"
 
 
 

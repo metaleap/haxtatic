@@ -82,32 +82,35 @@ dtYear post =
 
 
 
-feedPosts maybectxbuild projposts projbloks query morefromhtmls =
+feedPosts maybectxbuild projposts projbloks query blokcat morefromhtmls =
     if everything query then allposts else allposts ~| match
     where
-    everything All = True ; everything (Some [] [] Any) = True ; everything (Some [] [] (Between [] [])) = True ; everything _ = False
+    everything All = True ; everything (Some [] [] Any) = True ; everything (Some [] [] (Between "" "")) = True ; everything _ = False
+    queryfeeds = Util.noNils (query-:feeds)
     allposts = projposts ++ (concat$ bloknames>~postsfromblok)
-    postsfromblok blokname = (postsFromBlok maybectxbuild morefromhtmls blokname) >~ snd
+    postsfromblok blokname = (postsFromBlok maybectxbuild morefromhtmls blokcat blokname) >~ snd
     bloknames = let bnames = Data.Map.Strict.keys projbloks in
-                    if everything query then bnames else bnames ~|(`elem` (query-:feeds))
+                    if everything query then bnames else bnames ~|(`elem` queryfeeds)
     match post =
-        (check feed (query-:feeds) && check cat (query-:cats) && (checkdate $query-:dates))
+        (check feed queryfeeds && check cat (query-:cats) && (checkdate $query-:dates))
             || (post-:cat == "_hax_cat") || (post-:dt) == "9999-12-31"
         where
         check field criteria =
             null criteria || any ((post-:field)==) criteria
+        checkdate (Between "" "") =
+            True
         checkdate (Between mindate maxdate) =
             (post-:dt) >= mindate && (post-:dt) <= maxdate
         checkdate _ =
             True
 
 feedGroups maybectxbuild projposts projbloks query fieldname =
-    Util.unique$ case findfield (wellKnownFields True) of
+    Util.unique$ case findfield wellKnownFields of
         Just field -> allposts >~ field
         Nothing -> allposts >=~ (findfield.more)
     where
     findfield = Data.List.lookup fieldname
-    allposts = feedPosts maybectxbuild projposts projbloks query []
+    allposts = feedPosts maybectxbuild projposts projbloks query "" []
 
 
 
@@ -148,7 +151,7 @@ parseProjChunks projcfg chunkssplits =
 
 
 
-postsFromBlok (Just ctxbuild) morefromhtmls blokname =
+postsFromBlok (Just ctxbuild) morefromhtmls blokcat blokname =
     allblokpages >~ topost
     where
     (allblokpages , cdatelatest) = Bloks.allBlokPageFiles (ctxbuild-:projCfg) (ctxbuild-:allPagesFiles) blokname
@@ -167,26 +170,27 @@ postsFromBlok (Just ctxbuild) morefromhtmls blokname =
                 Html.find1st finder "" htmlcontent
             formatdt dtf =
                 ProjC.dtUtc2Str (ctxbuild-:projCfg) dtf (maybectxpage-:(Tmpl.pDate =|- cdatelatest))
+            dyncat p = case Data.List.lookup blokcat wellKnownFields of
+                        Just field -> p-:field
+                        Nothing -> Util.lookup blokcat "" (p-:more)
             post = From {
                 feed = blokname,
-                dt = formatdt "",
                 cat = "",
+                dt = formatdt "",
                 title = htmlinner1st "h1" relpath,
                 link = Files.sanitizeUriRelPathForJoin relpath,
                 more = morefromhtmls >~ morefromhtml,
                 content = (htmlinner1st "p" htmlcontent) -- Html.stripMarkup ' '
             }
-        in (htmlcontent , post)
+        in (htmlcontent , post { cat = dyncat post })
 
-postsFromBlok _ _ _ =
+postsFromBlok _ _ _ _ =
     []
 
 
-wellKnownFields True =
-    ("dt:year"=:dtYear) : (wellKnownFields False)
 
-wellKnownFields _ =
-    [ "feed"=:feed, "dt"=:dt, "cat"=:cat, "title"=:title, "link"=:link, "content"=:content ]
+wellKnownFields =
+    [ "feed"=:feed, "dt"=:dt, "dt:year"=:dtYear, "cat"=:cat, "title"=:title, "link"=:link, "content"=:content ]
 
 
 
@@ -197,7 +201,7 @@ writeAtoms ctxbuild domainname outjobs =
     where
 
     (domain,domainwtf) = Util.splitOn1st '/' domainname
-    postsfromblok = postsFromBlok (Just ctxbuild) []
+    postsfromblok = postsFromBlok (Just ctxbuild) [] ""
 
     writeatom outjob =
         Files.writeTo (outjob-:outPathBuild) relpath xmlatomfull >>= \nowarnings

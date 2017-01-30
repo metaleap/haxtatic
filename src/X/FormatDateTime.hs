@@ -11,7 +11,7 @@ import qualified X
 registerX ctxproj xreg =
     let
     renderer (_ , argstr) =
-        (str2utc argstr <|> str2utc' argstr) =>- utc2str
+        (str2utc argstr <|> str2utc' argstr) >~ utc2str
 
     in X.Early renderer
     where
