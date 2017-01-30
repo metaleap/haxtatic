@@ -32,7 +32,7 @@ data Iteration
     | BlokNames
     | FeedNames Bool
     | FeedValues Posts.Query String
-    | FeedPosts Posts.Query [String] String
+    | FeedPosts Posts.Query [String]
     | But Tweak Iteration
     | With Iteration [Tweak]
     deriving Read
@@ -50,6 +50,7 @@ data Tweak
     | Skip Int
     | Ordered SortOrder
     | Dyn [String]
+    | BlokCat String
     deriving Read
 
 
@@ -64,6 +65,7 @@ registerX ctxproj xreg =
 
         numtotal = iteratees~>length
         dyns = d (args-:over) where d (But (Dyn vals) _) = vals ; d (But _ moreover) = d moreover ; d _ = []
+        blokcat = bc (args-:over) where bc (But (BlokCat bcat) _) = bcat ; bc (But _ moreover) = bc moreover ; bc _ = ""
         iteratees = Util.indexed (iter $args-:over) where
 
             --  RECURSIVE TWEAK-OPS:
@@ -81,10 +83,10 @@ registerX ctxproj xreg =
                 shuffle perpage (iter moreover)
             iter (But (Ordered Descending) moreover) =
                 (s moreover) (iter moreover) where
-                    s (FeedPosts _ _ _) = id ; s _ = Data.List.sortBy (flip compare)
+                    s (FeedPosts _ _) = id ; s _ = Data.List.sortBy (flip compare)
             iter (But (Ordered Ascending) moreover) =
                 (s moreover) (iter moreover) where
-                    s (FeedPosts _ _ _) = reverse ; s _ = Data.List.sortBy compare
+                    s (FeedPosts _ _) = reverse ; s _ = Data.List.sortBy compare
             iter (But _ moreover) =
                 iter moreover
 
@@ -100,7 +102,7 @@ registerX ctxproj xreg =
                 (not bloks) |? projfeednames |! (projfeednames ++ projbloknames)
             iter (FeedValues query fieldname) =
                 feedgroups query fieldname
-            iter (FeedPosts query more blokcat) =
+            iter (FeedPosts query more) =
                 feedposts query blokcat ((morefromhtml more)>=~Posts.moreFromHtmlSplit)
                     ~> Data.List.sortBy presort
                     >~ (fields2pairs ~. show ~. (Util.crop 1 1)) -- to `vars` string, then snip off `[` and `]`
@@ -134,7 +136,7 @@ registerX ctxproj xreg =
             needpage4iter (But (Ordered (Shuffle perpage)) moreover) = perpage || needpage4iter moreover
             needpage4iter (But _ moreover) = needpage4iter moreover
             needpage4iter (FeedValues query _) = needpage4feed query
-            needpage4iter (FeedPosts query _ _) = needpage4feed query
+            needpage4iter (FeedPosts query _) = needpage4feed query
             needpage4iter _ = False
             needpage4feed (Posts.Some feednames@(_:_) _ _) =
                 not$ all (`elem` projfeednames) feednames
