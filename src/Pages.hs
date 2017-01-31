@@ -17,7 +17,6 @@ import qualified Data.List
 import qualified Data.Time.Clock
 import qualified System.Directory
 import qualified System.FilePath
-import qualified Text.Printf
 
 
 
@@ -164,7 +163,7 @@ tagHandler ctxmain cfgproj ctxpage ctxtmpl outjob ptagcontent
     | split1st == "date"
         = fordate splitrest contentdate
     | has splitrest
-        = (Data.List.lookup split1st (ctxpage-:Tmpl.pVars)) ~> (formatpvar =|- for ptagcontent)
+        = ((Data.List.lookup split1st (ctxpage-:Tmpl.pVars)) >>= formatpvar) <|> (for ptagcontent)
     | otherwise
         = (Data.List.lookup ptagcontent (ctxpage-:Tmpl.pVars)) <|> (for ptagcontent) <|> (Just$ "{T|P|"++ptagcontent++"|}")
 
@@ -202,29 +201,7 @@ tagHandler ctxmain cfgproj ctxpage ctxtmpl outjob ptagcontent
                 , "outDeploy" =: outjob-:Build.outPathDeploy
                 ]
     formatpvar pvarfmt =
-        -- OUCH some ugly hackery! will do for a time
-        let num = count 0 pvarfmt
-            count c [] = c
-            count c ('%':'s':more) = count (c + 1) more
-            count c ('%':'v':more) = count (c + 1) more
-            count c (_:more) = count c more
-            args = (take num $ cycle (Util.splitOn ':' splitrest))
-            arg1 func [ _1 ] = func _1 ; arg1 _ _ = undefined
-            arg2 func [ _1 , _2 ] = func _1 _2 ; arg2 _ _ = undefined
-            arg3 func [ _1 , _2 , _3 ] = func _1 _2 _3 ; arg3 _ _ = undefined
-            arg4 func [ _1 , _2 , _3 , _4 ] = func _1 _2 _3 _4 ; arg4 _ _ = undefined
-            arg5 func [ _1 , _2 , _3 , _4 , _5 ] = func _1 _2 _3 _4 _5 ; arg5 _ _ = undefined
-            arg6 func [ _1 , _2 , _3 , _4 , _5 , _6 ] = func _1 _2 _3 _4 _5 _6 ; arg6 _ _ = undefined
-        in case num of
-            0 -> for ptagcontent
-            1 -> Just$ arg1 (Text.Printf.printf pvarfmt) args
-            2 -> Just$ arg2 (Text.Printf.printf pvarfmt) args
-            3 -> Just$ arg3 (Text.Printf.printf pvarfmt) args
-            4 -> Just$ arg4 (Text.Printf.printf pvarfmt) args
-            5 -> Just$ arg5 (Text.Printf.printf pvarfmt) args
-            6 -> Just$ arg6 (Text.Printf.printf pvarfmt) args
-            _ -> for ptagcontent
-
+        Util.formatWithList pvarfmt (Util.splitOn ':' splitrest)
 
 
 writeSitemapXml ctxproj buildplan =

@@ -9,6 +9,7 @@ import qualified Data.Ratio
 import qualified Data.Set
 import qualified Data.Time.Calendar
 import qualified Data.Time.Clock
+import qualified Text.Printf
 import qualified Text.Read
 
 
@@ -55,16 +56,17 @@ bothSnds fn (_,snd1) (_,snd2) =
 
 bothTrim = both (trim,trim)
 
+
 butNot notval defval val
     |(val==notval)= defval
     |(otherwise)= val
 
+ifNo [] defval = defval
+ifNo val _ = val
 
-ifNo val defval =
-    if null val then defval else val
+ifIs [] _ = []
+ifIs val func = func val
 
-ifIs testval op =
-    if null testval then [] else op testval
 
 onlyIf val goalval defval =
     if val==goalval then val else defval
@@ -557,3 +559,22 @@ splitUp withmatch allbeginners end src =
         begpos = endpos<0 |? -1 |! lastidx$ str ~> (take endpos) ~> reverse
         endposl = endpos + (end~>length)
         tolist beg val = (null val && null beg) |? [] |! [(val,beg)]
+
+
+formatWithList text vals =
+    let args = (take num $ cycle vals)
+        num = c 0 text where c n ('%':'s':m) = c (n + 1) m ; c n ('%':'v':m) = c (n + 1) m ; c n (_:m) = c n m ; c n [] = n
+        arg1 func [ _1 ] = func _1 ; arg1 _ _ = undefined
+        arg2 func [ _1 , _2 ] = func _1 _2 ; arg2 _ _ = undefined
+        arg3 func [ _1 , _2 , _3 ] = func _1 _2 _3 ; arg3 _ _ = undefined
+        arg4 func [ _1 , _2 , _3 , _4 ] = func _1 _2 _3 _4 ; arg4 _ _ = undefined
+        arg5 func [ _1 , _2 , _3 , _4 , _5 ] = func _1 _2 _3 _4 _5 ; arg5 _ _ = undefined
+        arg6 func [ _1 , _2 , _3 , _4 , _5 , _6 ] = func _1 _2 _3 _4 _5 _6 ; arg6 _ _ = undefined
+    in case num of
+        1 -> Just$ arg1 (Text.Printf.printf text) args
+        2 -> Just$ arg2 (Text.Printf.printf text) args
+        3 -> Just$ arg3 (Text.Printf.printf text) args
+        4 -> Just$ arg4 (Text.Printf.printf text) args
+        5 -> Just$ arg5 (Text.Printf.printf text) args
+        6 -> Just$ arg6 (Text.Printf.printf text) args
+        _ -> Nothing

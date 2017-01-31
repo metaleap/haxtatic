@@ -129,11 +129,7 @@ rootPathToRel currelpath =
 
 
 
-stripMarkup::
-    Char->
-    String->
-    String
-stripMarkup substchar markup =
+stripMarkup stripentities substchar markup =
     stripmarkup (False , False) markup
     where
     stripmarkup _ [] = []
@@ -147,7 +143,7 @@ stripMarkup substchar markup =
         istagopen = curchar=='<'
         istagclose = curchar=='>'
 
-        inentnow = inentis || isentopen
+        inentnow = stripentities && (inentis || isentopen)
         inentnext = inentnow && not isentclose
         isentopen = curchar=='&'
         isentclose = curchar==';'

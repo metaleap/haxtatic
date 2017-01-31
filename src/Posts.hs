@@ -56,7 +56,7 @@ data Query
     deriving Read
 
 data QueryDate
-    = Any
+    = AnyDate
     | Between String String
     deriving Read
 
@@ -85,7 +85,7 @@ dtYear post =
 feedPosts maybectxbuild projposts projbloks query blokcat morefromhtmls =
     if everything query then allposts else allposts ~| match
     where
-    everything All = True ; everything (Some [] [] Any) = True ; everything (Some [] [] (Between "" "")) = True ; everything _ = False
+    everything All = True ; everything (Some [] [] AnyDate) = True ; everything (Some [] [] (Between "" "")) = True ; everything _ = False
     queryfeeds = Util.noNils (query-:feeds)
     allposts = projposts ++ (concat$ bloknames>~postsfromblok)
     postsfromblok blokname = (postsFromBlok maybectxbuild morefromhtmls blokcat blokname) >~ snd
@@ -221,7 +221,7 @@ writeAtoms ctxbuild domainname outjobs =
                             \<feed xmlns=\"http://www.w3.org/2005/Atom\">\n\
                             \    <link rel=\"self\" type=\"application/rss+xml\" href=\"http://"++domainname++"/"++(urify relpath)++"\" />\n\
                             \    <title>"++domain++" "++feedtitle++"</title>\n\
-                            \    <subtitle>"++(has feedname |? (domainname++pageuri) |! (Util.trim$ Html.stripMarkup ' ' feeddesc))++"</subtitle>\n\
+                            \    <subtitle>"++(has feedname |? (domainname++pageuri) |! (Util.trim$ Html.stripMarkup True ' ' feeddesc))++"</subtitle>\n\
                             \    <id>http://"++domainname++pageuri++"</id>\n\
                             \    <link href=\"http://"++domainname++pageuri++"\"/>\n\
                             \    <updated>"++updated++"T00:00:00Z</updated>\n    "
