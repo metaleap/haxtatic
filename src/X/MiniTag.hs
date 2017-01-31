@@ -21,13 +21,11 @@ data Tag
 registerX _ xreg =
     let
     renderplain (_ , argstr) =
-        Just$ if null argstr then "" else
-            cfg_htmltagplain argstr
+        Just$ if null argstr then "" else cfg_htmltagplain argstr
     renderwithattr (_ , argstr) =
-        Just$ (null innercontent) |? "" |! Html.out
-                cfg_htmltagname (cfghtmlatts ++ [("" =: innercontent)] ++ (dynatts innercontent)) []
+        Just$ (null argstr) |? "" |! Html.out
+                cfg_htmltagname (cfghtmlatts ++ [("" =: argstr)] ++ (dynatts argstr)) []
         where
-        innercontent = argstr
         dynatts inn = cfgdynatts >~ \(name , val) -> (name , repl val) where
             repl [] = []
             repl ('{':':':'c':':':'}':rest) = inn ++ repl rest

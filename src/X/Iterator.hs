@@ -103,23 +103,8 @@ registerX ctxproj xreg =
             iter (FeedValues query fieldname) =
                 feedgroups query fieldname
             iter (FeedPosts query more) =
-                feedposts query blokcat ((morefromhtml more)>=~Posts.moreFromHtmlSplit)
-                    ~> Data.List.sortBy presort
-                    >~ (fields2pairs ~. show ~. (Util.crop 1 1)) -- to `vars` string, then snip off `[` and `]`
-                where
-                presort p1 p2 | (cdt==EQ) = compare p1 p2 | (otherwise) = cdt where
-                    cdt = compare (p2-:Posts.dt) (p1-:Posts.dt)
-                fields2pairs post =
-                    morefields ++ (Posts.wellKnownFields >~ Util.both (id , (post-:)))
-                    where
-                    morefields = more >=~ topair
-                    topair mf =
-                        Data.List.lookup mf (Posts.more post) >~ \val -> (mf , val)
-        (feedgroups,feedposts) = (ff Posts.feedGroups , ff Posts.feedPosts) where ff f = f maybectxbuild projposts projbloks
-        morefromhtml more = more ~| is where is ('<':val) = elem '>' val ; is _ = False
-        maybectxbuild = maybectxpage >~ \ctxpage -> Posts.BuildContext (ctxpage-:Tmpl.lookupCachedPageRender)
-                                                                        (ctxpage-:Tmpl.allPagesFiles) projbloks
-                                                                        projposts (ctxproj-:Proj.setup-:Proj.cfg)
+                outputFeed (feedposts query blokcat (moreFromHtmlSplit more)) more
+        (feedgroups,feedposts) = feedFuncs ctxproj maybectxpage
         args = X.tryParseArgs xreg ("over="++argstr) Nothing errargs where
             errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))] }
 
@@ -143,15 +128,12 @@ registerX ctxproj xreg =
             needpage4feed _ =
                 has projbloknames
 
-        projposts = ctxproj-:Proj.setup-:Proj.posts
-        projfeednames = ctxproj-:Proj.setup-:Proj.feeds
     in X.EarlyOrWait renderer
     where
-
-    projbloks = ctxproj-:Proj.setup-:Proj.bloks
-    projbloknames = Data.Map.Strict.keys projbloks
-    foreach dyn num | (null cfgcontent)=    \ (_,v) -> v    --  no content -> "{:v:}"
-                    | (otherwise)=          repl cfgcontent
+    projbloknames = Data.Map.Strict.keys (ctxproj-:Proj.setup-:Proj.bloks)
+    projfeednames = ctxproj-:Proj.setup-:Proj.feeds
+    foreach dyn num | null cfgcontent   = \ (_,v) -> v    --  no content -> "{:v:}"
+                    | otherwise         = repl cfgcontent
                     where
                     cfgcontent = cfg-:content
                     repl []                         _           = []
@@ -175,3 +157,32 @@ registerX ctxproj xreg =
 
 _with2buts iter tweaks =
     w2b (reverse tweaks) where w2b [] = iter ; w2b (this:nested) = But this (w2b nested)
+
+
+feedFuncs ctxproj maybectxpage =
+    (ff Posts.feedGroups , ff Posts.feedPosts) where
+        ff f = f maybectxbuild projposts projbloks
+        projbloks = ctxproj-:Proj.setup-:Proj.bloks
+        projposts = ctxproj-:Proj.setup-:Proj.posts
+        maybectxbuild = maybectxpage >~ \ctxpage ->
+                                            Posts.BuildContext (ctxpage-:Tmpl.lookupCachedPageRender)
+                                                                (ctxpage-:Tmpl.allPagesFiles) projbloks
+                                                                projposts (ctxproj-:Proj.setup-:Proj.cfg)
+
+
+moreFromHtmlSplit more =
+    (more ~| is)>=~Posts.moreFromHtmlSplit where
+        is ('<':val) = elem '>' val ; is _ = False
+
+
+outputFeed posts more =
+    (Data.List.sortBy presort posts) >~ (fields2pairs ~. show ~. (Util.crop 1 1)) -- to `vars` string, then snip off `[` and `]`
+    where
+    presort p1 p2 | (cdt==EQ) = compare p1 p2 | (otherwise) = cdt where
+        cdt = compare (p2-:Posts.dt) (p1-:Posts.dt)
+    fields2pairs post =
+        morefields ++ (Posts.wellKnownFields >~ Util.both (id , (post-:)))
+        where
+        morefields = more >=~ topair
+        topair mf =
+            Data.List.lookup mf (Posts.more post) >~ \val -> (mf , val)
