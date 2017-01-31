@@ -20,7 +20,10 @@ data Tag
 
 registerX _ xreg =
     let
-    renderer (_ , argstr) =
+    renderplain (_ , argstr) =
+        Just$ if null argstr then "" else
+            cfg_htmltagplain argstr
+    renderwithattr (_ , argstr) =
         Just$ (null innercontent) |? "" |! Html.out
                 cfg_htmltagname (cfghtmlatts ++ [("" =: innercontent)] ++ (dynatts innercontent)) []
         where
@@ -30,9 +33,12 @@ registerX _ xreg =
             repl ('{':':':'c':':':'}':rest) = inn ++ repl rest
             repl (this:rest) = this : repl rest
 
-    in X.Early renderer
+    in X.Early (has (cfg-:attr) |? renderwithattr |! renderplain)
     where
 
+    cfg_htmltagplain = ((pref).(suff)) where
+                        suff = (++suffix) ; pref = (prefix++) . ((:) '>') where
+                        prefix = '<':cfg_htmltagname ; suffix = ('<':'/':cfg_htmltagname)++">"
     (cfg_htmltagname , cfg_parsestr ) = xreg-:X.cfgSplitOnce
     (cfgdynatts , cfghtmlatts) = (cfg-:attr) ~> (Data.List.partition $(Data.List.isInfixOf "{:c:}").snd)
     cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where

@@ -27,13 +27,13 @@ data Ctx
 
 data Item
     = From {
-        feed :: String,
         dt :: String,
         cat :: String,
         title :: String,
         link :: String,
         more :: Util.StringPairs,
-        content :: String
+        content :: String,
+        feed :: String
     }
     deriving (Eq, Read, Ord)
 
@@ -136,7 +136,7 @@ parseProjChunks projcfg chunkssplits =
         let
             pstr = Util.join ":" pvalsplits ~> Util.trim
             parsestr' = (Tmpl.fixParseStr "content" pstr)
-            parsestr = ("From {feed = \"" ++ pfeedcat ++ "\", ") ++ parsestr' ++ "}"
+            parsestr = "From {" ++ parsestr' ++ ",feed=\"" ++ pfeedcat ++ "\"}"
             post = Util.tryParseOr errpost parsestr
             errpost = From {
                     title = if projcfg-:ProjC.parsingFailEarly
