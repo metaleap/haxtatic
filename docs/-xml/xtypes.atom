@@ -726,7 +726,7 @@ Blok pages&lt;/b&gt; either &lt;code&gt;All&lt;/code&gt; or any &lt;code&gt;Some
 is valuable enough for the already-working-today use cases.&lt;/p&gt;
 &lt;h3&gt;FeedValues&lt;/h3&gt;
 &lt;p&gt;In this site, &lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: FeedValues &lt;/i&gt;All &quot;cat&quot;&lt;i&gt; |&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt; produces some peculiar outputs:
-&lt;span class=&quot;hd-note&quot;&gt;hax.snippet, hax.htmlLink, hax.htmlImage, hax.htmlLinks, hax.iterator, hax.dtFormat, hax.xmlEscape, hax.miniTag, demoSimplest, demoCfgArgs, hax.htmlAnchors,&lt;/span&gt; &amp;mdash;that final comma baffles, for one&amp;mdash; here&apos;s how and why:&lt;/p&gt;
+&lt;span class=&quot;hd-note&quot;&gt;demoSimplest, demoCfgArgs, hax.miniTag, hax.htmlImage, hax.htmlLink, hax.htmlLinks, hax.htmlAnchors, hax.xmlEscape, hax.dtFormat, hax.snippet, hax.iterator,&lt;/span&gt; &amp;mdash;that final comma baffles, for one&amp;mdash; here&apos;s how and why:&lt;/p&gt;
 &lt;ul&gt;
 	&lt;li&gt;&lt;code&gt;All&lt;/code&gt; uses as &lt;i&gt;input&lt;/i&gt; feeds essentially what the described-earlier &lt;code&gt;FeedNames True&lt;/code&gt; enumerator
 	&lt;i&gt;outputs&lt;/i&gt;: &lt;code&gt;xdesc, basics, tags, xtypes&lt;/code&gt; &amp;mdash; in this site there are 3 &lt;a href=&quot;../basics/bloks.html&quot;&gt;Bloks&lt;/a&gt; defined and 1
@@ -750,10 +750,10 @@ is valuable enough for the already-working-today use cases.&lt;/p&gt;
 	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;1234&lt;/span&gt;&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: FeedValues Some{ feeds=[&quot;xdesc&quot;],cats=[],dates=AnyDate } &lt;/i&gt;&quot;cat&quot;&lt;i&gt; |&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
 	&amp;mdash; as we saw, &lt;code&gt;xdesc&lt;/code&gt; has 11 &quot;posts&quot; but each has a uniquely distinct &lt;code&gt;cat&lt;/code&gt;:
-	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;hax.snippet, hax.htmlLink, hax.htmlImage, hax.htmlLinks, hax.iterator, hax.dtFormat, hax.xmlEscape, hax.miniTag, demoSimplest, demoCfgArgs, hax.htmlAnchors&lt;/span&gt;&lt;/li&gt;
+	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;demoSimplest, demoCfgArgs, hax.miniTag, hax.htmlImage, hax.htmlLink, hax.htmlLinks, hax.htmlAnchors, hax.xmlEscape, hax.dtFormat, hax.snippet, hax.iterator&lt;/span&gt;&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: FeedValues Some{ feeds=[&quot;xdesc&quot;],cats=[],dates=AnyDate } &lt;/i&gt;&quot;link&quot;&lt;i&gt;|&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
 	&amp;mdash; however, most of them share the same (empty, hence the below extra comma) &lt;code&gt;link&lt;/code&gt;:
-	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;, http://github.com/metaleap/haxtatic/blob/master/src/X/DemoSimplest.hs, http://github.com/metaleap/haxtatic/blob/master/src/X/DemoCfgArgs.hs&lt;/span&gt;&lt;/li&gt;
+	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;http://github.com/metaleap/haxtatic/blob/master/src/X/DemoSimplest.hs, http://github.com/metaleap/haxtatic/blob/master/src/X/DemoCfgArgs.hs,&lt;/span&gt;&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: FeedValues Some{ feeds=[&quot;xdesc&quot;],cats=[],dates=&lt;/i&gt;Between &quot;1234-11-&quot; &quot;1234-12-31&quot;&lt;i&gt; } &quot;dt&quot;|&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
 	&amp;mdash; filtering by date range:
 	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;1234-12-15, 1234-11-15&lt;/span&gt;&lt;/li&gt;
@@ -846,7 +846,7 @@ or stated as an ordered sequence of multiple such modifiers per &lt;code&gt;With
 	produces &lt;span class=&quot;hd-note&quot;&gt;alpha, beta, gamma, phi, zeta&lt;/span&gt;
 	instead of &lt;span class=&quot;hd-note&quot;&gt;zeta, phi, gamma, beta, alpha&lt;/span&gt;&lt;/li&gt;
 	&lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: With (Range 1 23) &lt;/i&gt;[Ordered (Shuffle False) , LimitTo 6, WrapEachIn (&quot;#&quot;,&quot;. &quot;)]&lt;i&gt; |&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
-	produces &lt;span class=&quot;hd-note&quot;&gt;#12. , #7. , #19. , #14. , #18. , #8.&lt;/span&gt;
+	produces &lt;span class=&quot;hd-note&quot;&gt;#14. , #12. , #9. , #6. , #5. , #3.&lt;/span&gt;
 	instead of &lt;span class=&quot;hd-note&quot;&gt;1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23&lt;/span&gt;
 		&lt;ul&gt;&lt;li&gt;Only either &lt;code&gt;(Shuffle True)&lt;/code&gt; or &lt;code&gt;(Shuffle False)&lt;/code&gt; are valid. When used in a central project file such as a
 		&lt;a href=&quot;../basics/haxproj.html&quot;&gt;*.haxproj&lt;/a&gt;, a &lt;a href=&quot;../basics/tmplsnip.html&quot;&gt;template&lt;/a&gt; or a &lt;a href=&quot;../basics/tmplsnip.html#snippets&quot;&gt;snippet&lt;/a&gt; (rather than directly inside a

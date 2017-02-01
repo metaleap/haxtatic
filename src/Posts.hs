@@ -129,9 +129,7 @@ parseProjChunks projcfg chunkssplits =
     (feednames , posts)
     where
     feednames = Util.unique (posts>~feed)
-    posts = chunkssplits>=~foreach
-    -- cmpposts post1 post2 =
-    --     compare (post2-:dt) (post1-:dt)
+    posts = Data.List.sortBy (flip compare) (chunkssplits>=~foreach)
     foreach (pfeedcat:pvalsplits) =
         let
             pstr = Util.join ":" pvalsplits ~> Util.trim
