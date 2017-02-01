@@ -72,7 +72,8 @@ loadCtx ctxmain projname xregs defaultfiles =
 
 _loadSetup ctxmain ctxproj xregs defaultfiles =
     SetupFromProj {
-            bloks = blokspost, cfg = cfgpost, posts = Util.shuffleExtra (ctxmain-:Files.randSeed) postspost, feeds = feedspost,
+            bloks = blokspost, cfg = cfgpost, feeds = feedspost,
+            posts = Util.times 23 (Util.shuffleExtra $ctxmain-:Files.randSeed) postspost,
             ctxTmpl = Tmpl.ProcessingContext {
                     Tmpl.bTagHandler =  Bloks.tagHandler blokspost,
                     Tmpl.cTagHandler = ProjC.tagHandler cfgmiscpost,

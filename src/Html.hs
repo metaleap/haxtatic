@@ -78,6 +78,7 @@ escape =
     next count (_:rest) =
         next (count + 1) rest
 
+escapeSpace4Href = Util.replaceWith (' ' , "%20")
 
 
 find1st finder defval htmlsrc =

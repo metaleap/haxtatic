@@ -178,7 +178,7 @@ postsFromBlok (Just ctxbuild) morefromhtmls blokcat blokname =
                 cat = "",
                 dt = formatdt "",
                 title = htmlinner1st "h1" relpath,
-                link = Files.sanitizeUriRelPathForJoin relpath,
+                link = (Html.escapeSpace4Href . Html.escape . Files.sanitizeUriRelPathForJoin) relpath,
                 more = morefromhtmls >~ morefromhtml,
                 content = (htmlinner1st "p" htmlcontent) -- Html.stripMarkup ' '
             }
@@ -219,7 +219,7 @@ writeAtoms ctxbuild domainname outjobs =
                             else ((snd$ allposts@!0)-:dt)
                 xmlintro = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
                             \<feed xmlns=\"http://www.w3.org/2005/Atom\">\n\
-                            \    <link rel=\"self\" type=\"application/rss+xml\" href=\"http://"++domainname++"/"++(urify relpath)++"\" />\n\
+                            \    <link rel=\"self\" type=\"application/rss+xml\" href=\"http://"++domainname++"/"++(hrefify relpath)++"\" />\n\
                             \    <title>"++domain++" "++feedtitle++"</title>\n\
                             \    <subtitle>"++(has feedname |? (domainname++pageuri) |! (Util.trim$ Html.stripMarkup True ' ' feeddesc))++"</subtitle>\n\
                             \    <id>http://"++domainname++pageuri++"</id>\n\
@@ -232,7 +232,7 @@ writeAtoms ctxbuild domainname outjobs =
             in return (xmlintro++xmlinner++"\n</feed>" , nowarn)
 
         root2rel = Html.rootPathToRel relpath
-        urify = Files.pathSepSystemToSlash
+        hrefify = Html.escapeSpace4Href . Html.escape . Files.pathSepSystemToSlash
         blokname = outjob-:blokName
         feedname = has blokname |? "" |!
                     drop 1 (System.FilePath.takeExtension srcpath)
@@ -241,7 +241,7 @@ writeAtoms ctxbuild domainname outjobs =
                     Nothing -> ((ctxbuild-:projPosts) ~|(==feedname).feed) >~((,) "")
                     Just _ -> postsfromblok blokname
         (pageuri , feedtitle , feeddesc) = case maybeblok of
-                    Just blok -> ( '/':(urify (blok-:Bloks.blokIndexPageFile)) , blok-:Bloks.title , blok-:Bloks.desc )
+                    Just blok -> ( '/':(hrefify (blok-:Bloks.blokIndexPageFile)) , blok-:Bloks.title , blok-:Bloks.desc )
                     Nothing -> ( '/':(feedname++".html") , feedname , "" )
         pageuri' = drop 1 pageuri
 

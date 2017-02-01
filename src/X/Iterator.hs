@@ -28,6 +28,7 @@ data Tag
 
 data Iteration
     = Range Int Int
+    | RangeSans Int Int [Int]
     | Values [String]
     | BlokNames
     | FeedNames Bool
@@ -64,13 +65,13 @@ registerX ctxproj xreg =
         allcontents = cfgjoin (iteratees >~ (foreach dyns (show numtotal)))
 
         numtotal = iteratees~>length
-        dyns = d (args-:over) where d (But (Dyn vals) _) = vals ; d (But _ moreover) = d moreover ; d _ = []
+        dyns = d (args-:over) where d (With i t) = d (_w2b i t) ; d (But (Dyn vals) _) = vals ; d (But _ moreover) = d moreover ; d _ = []
         blokcat = bc (args-:over) where bc (But (BlokCat bcat) _) = bcat ; bc (But _ moreover) = bc moreover ; bc _ = ""
         iteratees = Util.indexed (iter $args-:over) where
 
             --  RECURSIVE TWEAK-OPS:
             iter (With moreover tweaks) =
-                iter (_with2buts moreover tweaks)
+                iter (_w2b moreover tweaks)
             iter (But (WrapEachIn (pref , suff)) moreover) =
                 (iter moreover) >~ ((pref++).(++suff))
             iter (But (LimitTo limit) moreover) =
@@ -93,9 +94,11 @@ registerX ctxproj xreg =
             --  ACTUAL ENUMERATIONS:
             iter (Values values) =
                 values
-            iter (Range from to) =
+            iter (RangeSans from to sans) =
                 let range | (from > to) = reverse [to..from] | otherwise = [from..to]
-                in range >~ show
+                in (null sans |? range |! ( range ~| not.(`elem` sans) )) >~ show
+            iter (Range from to) =
+                iter (RangeSans from to [])
             iter BlokNames =
                 projbloknames
             iter (FeedNames bloks) =
@@ -110,7 +113,7 @@ registerX ctxproj xreg =
             errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))] }
 
         shuffle perpage =
-            Util.times 23 $ Util.shuffleExtra (rndseeds maybectxpage perpage)
+            Util.shuffleExtra (rndseeds maybectxpage perpage)
         rndseeds (Just pagectx) True = (pagectx-:Tmpl.randSeed) ++ (rndseeds Nothing False)
         rndseeds _ _ = ctxproj-:Proj.setup-:Proj.randSeed
 
@@ -118,7 +121,7 @@ registerX ctxproj xreg =
             (not$ hasctxpage maybectxpage) && (needpage4iter $args-:over)
             where
             hasctxpage Nothing = False ; hasctxpage (Just _) = True
-            needpage4iter (With iter buts) = needpage4iter (_with2buts iter buts)
+            needpage4iter (With iter buts) = needpage4iter (_w2b iter buts)
             needpage4iter (But (Ordered (Shuffle perpage)) moreover) = perpage || needpage4iter moreover
             needpage4iter (But _ moreover) = needpage4iter moreover
             needpage4iter (FeedValues query _) = needpage4feed query
@@ -156,7 +159,7 @@ registerX ctxproj xreg =
 
 
 
-_with2buts iter tweaks =
+_w2b iter tweaks =
     w2b (reverse tweaks) where w2b [] = iter ; w2b (this:nested) = But this (w2b nested)
 
 

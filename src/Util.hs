@@ -478,6 +478,12 @@ replaceSubsBy olds tonew =
     replrec = _replcore replby tonew
 
 
+replaceWith repl@(old , new) list =
+    let (idx , rest) = _indexof_droptil old 0 list
+    in if idx < 0 then list else
+        (take idx list) ++ new ++ (replaceWith repl (drop 1 rest))
+
+
 _replcore recurse tonew (idx , old , oldlen) str =
     if idx<0 then str else
         let pre = take idx str
