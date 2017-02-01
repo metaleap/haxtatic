@@ -45,7 +45,8 @@ registerX _ xreg =
         htmlesc $cfg-:xmlEscape where
         htmlesc (False , False) = id
         htmlesc (True , True) = Util.both' Html.escape
-        htmlesc (forhref , fortext) = Util.both ((forhref |? Html.escape |! id) , (fortext |? Html.escape |! id))
+        htmlesc (False , True) = (>~ Html.escape)
+        htmlesc (True , False) = Util.both (Html.escape, id)
     (cfg_relpath , cfg_parsestr) = xreg-:X.cfgSplitOnce
     (cfgerrmsg , cfglinkatts) = Html.attrClearInner $cfg-:attr
     cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where

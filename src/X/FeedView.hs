@@ -75,7 +75,6 @@ registerX ctxproj xreg =
             (args-:xVars) >~ \(xvname , xv) -> (xvname , tofunc xv) where
                 tofunc (V val) = const val
                 tofunc (F name) = Util.lookup name ""
-                tofunc (FeedWise feed yay nay) = (switch yay nay feed) . (lookie "feed")
                 tofunc (Wrap pref suff xv) = (pref++) . (++suff) . (tofunc xv)
                 tofunc (StripMarkup xv) = (Html.stripMarkup False ' ') . (tofunc xv)
                 tofunc (PrefixIf p xv) = (ifis (p++)) . (tofunc xv)
@@ -84,8 +83,9 @@ registerX ctxproj xreg =
                 tofunc (OneOf []) = const "" ; tofunc (OneOf [xv]) = tofunc xv
                 tofunc (OneOf (xv:xvs)) = retry (tofunc xv) (tofunc (OneOf xvs))
                 tofunc (Format text xvs) = ((-|=) text) . (Util.formatWithList text) . (vals xvs)
-                lookie key fp = (Util.lookup key "" fp , fp)
-                switch dis dat v1 (v2 , carry) | (v1 == v2) = tofunc dis carry | otherwise = tofunc dat carry
+                tofunc (FeedWise feed yay nay) = (switch yay nay feed) . (lookit "feed")
+                lookit key = (fmap (Util.lookup key "")) . t where t v = (v,v)
+                switch dis dat v1 (carry , v2) | (v1 == v2) = tofunc dis carry | otherwise = tofunc dat carry
                 ifis _ "" = "" ; ifis fn val = fn val
                 retry _ _ [] = [] ; retry fdis fdat val = null s |? fdat val |! s where s = fdis val
                 try _ [] = [] ; try maybeer val = case maybeer val of Nothing -> val ; Just v -> v

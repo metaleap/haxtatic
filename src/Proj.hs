@@ -72,7 +72,7 @@ loadCtx ctxmain projname xregs defaultfiles =
 
 _loadSetup ctxmain ctxproj xregs defaultfiles =
     SetupFromProj {
-            bloks = blokspost, cfg = cfgpost, posts = postspost, feeds = feedspost,
+            bloks = blokspost, cfg = cfgpost, posts = Util.shuffleExtra (ctxmain-:Files.randSeed) postspost, feeds = feedspost,
             ctxTmpl = Tmpl.ProcessingContext {
                     Tmpl.bTagHandler =  Bloks.tagHandler blokspost,
                     Tmpl.cTagHandler = ProjC.tagHandler cfgmiscpost,
@@ -81,8 +81,8 @@ _loadSetup ctxmain ctxproj xregs defaultfiles =
                     Tmpl.processTags = cfgpost-:ProjC.tmplTags
                 },
             tagMismatches = Tmpl.tagMismatches rawsrc,
-            randSeed = (rawsrc~>length) : (length $defaultfiles-:Defaults.htmlSnippets)
-                        : ((ctxmain-:Files.randSeed) ++ (Util.dtInts $defaultfiles-:Defaults.projectDefault-:Files.modTime))
+            randSeed = (ctxmain-:Files.randSeed) ++ (rawsrc~>length) : (length $defaultfiles-:Defaults.htmlSnippets)
+                            : (Util.dtInts $defaultfiles-:Defaults.projectDefault-:Files.modTime)
         }
     where
     setupprep = SetupFromProj {
@@ -121,6 +121,8 @@ _loadSetup ctxmain ctxproj xregs defaultfiles =
 
 
 loadChunks rawsrc =
+    -- note to self, next time start from
+    -- https://www.reddit.com/r/haskellquestions/comments/5r8wae/merging_list_elements_conditionally/dd6iv9c/
     paireds >~ rejointochunks
     where
     paireds = gatherothers beginners

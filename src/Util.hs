@@ -400,7 +400,7 @@ indexOfSubs1st _ [] =
 indexOfSubs1st subs str =
     let startchars = unique$ subs>~(@!0)
         (startindex , _haystack) = _indexof_droptil' (`elem` startchars) 0 str
-        iidxs = isubs >~ (both (id,indexof)) ~|(>=0).snd
+        iidxs = isubs >~ (fmap indexof) ~|(>=0).snd
         isubs = indexed subs
         indexof = indexOfSub _haystack
         (i,index) = Data.List.minimumBy (bothSnds compare) iidxs

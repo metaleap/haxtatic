@@ -110,7 +110,7 @@ registerX ctxproj xreg =
             errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))] }
 
         shuffle perpage =
-            Util.shuffleExtra (rndseeds maybectxpage perpage)
+            Util.times 23 $ Util.shuffleExtra (rndseeds maybectxpage perpage)
         rndseeds (Just pagectx) True = (pagectx-:Tmpl.randSeed) ++ (rndseeds Nothing False)
         rndseeds _ _ = ctxproj-:Proj.setup-:Proj.randSeed
 
@@ -172,7 +172,7 @@ feedFuncs ctxproj maybectxpage =
 
 
 postFieldsToPairs more post =
-    morefields ++ (Posts.wellKnownFields >~ Util.both (id , (post-:)))
+    morefields ++ (Posts.wellKnownFields >~ (fmap (post-:)))
     where
     morefields = more >=~ topair
     topair mf =
