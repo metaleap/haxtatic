@@ -62,7 +62,7 @@ registerX ctxproj xreg =
         if waitforpage then Nothing
             else Just$ cfgwrap allcontents
         where
-        allcontents = cfgjoin (iteratees >~ (foreach dyns (show numtotal)))
+        allcontents = cfgjoin (iteratees >~ (foreach dyns n)) where n = show numtotal
 
         numtotal = iteratees~>length
         dyns = d (args-:over) where d (With i t) = d (_w2b i t) ; d (But (Dyn vals) _) = vals ; d (But _ moreover) = d moreover ; d _ = []

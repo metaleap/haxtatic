@@ -77,19 +77,19 @@ registerX ctxproj xreg =
                 tofunc (F name) = Util.lookup name ""
                 tofunc (Wrap pref suff xv) = (pref++) . (++suff) . (tofunc xv)
                 tofunc (StripMarkup xv) = (Html.stripMarkup False ' ') . (tofunc xv)
-                tofunc (PrefixIf p xv) = (ifis (p++)) . (tofunc xv)
+                tofunc (PrefixIf p xv) = (ifis (p++)) . (tofunc xv) where
+                    ifis _ "" = "" ; ifis fn val = fn val
+                tofunc (OneOf []) = const "" ; tofunc (OneOf [xv]) = tofunc xv
+                tofunc (OneOf (xv:xvs)) = retry (tofunc xv) (tofunc (OneOf xvs)) where
+                    retry _ _ [] = [] ; retry fdis fdat val = null s |? fdat val |! s where s = fdis val
+                tofunc (Format text xvs) = ((-|=) text) . (Util.formatWithList text) . (vals xvs) where
+                    vals _ [] = [] ; vals [] _ = [] ; vals (xv:rest) fp = (tofunc xv fp) : (vals rest fp)
+                tofunc (FeedWise feed yay nay) = (switch yay nay feed) . (my "feed") where
+                    my = ((,) <*>) . l where l k = ("" -|=) . Data.List.lookup k
+                    switch dis dat v1 (carry,v2) = tofunc (v1==v2 |? dis |! dat) carry
                 tofunc (DtFormat dtfname xv) = (try (dtformat dtfname)) . (tofunc xv)
                 tofunc (X xv) = (try (xtags maybectxpage)) . (tofunc xv)
-                tofunc (OneOf []) = const "" ; tofunc (OneOf [xv]) = tofunc xv
-                tofunc (OneOf (xv:xvs)) = retry (tofunc xv) (tofunc (OneOf xvs))
-                tofunc (Format text xvs) = ((-|=) text) . (Util.formatWithList text) . (vals xvs)
-                tofunc (FeedWise feed yay nay) = (switch yay nay feed) . (lookit "feed")
-                lookit key = (fmap (Util.lookup key "")) . t where t v = (v,v)
-                switch dis dat v1 (carry , v2) | (v1 == v2) = tofunc dis carry | otherwise = tofunc dat carry
-                ifis _ "" = "" ; ifis fn val = fn val
-                retry _ _ [] = [] ; retry fdis fdat val = null s |? fdat val |! s where s = fdis val
                 try _ [] = [] ; try maybeer val = case maybeer val of Nothing -> val ; Just v -> v
-                vals _ [] = [] ; vals [] _ = [] ; vals (xv:xvs) fp = (tofunc xv fp) : (vals xvs fp)
 
         postsfrom = Posts.Some (args-:feeds)
         (feedgroups , feedposts) = X.Iterator.feedFuncs ctxproj maybectxpage
