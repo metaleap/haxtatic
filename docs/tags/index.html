@@ -28,38 +28,12 @@
 	built-in fallback date-time format since none was specified in the tag) when it is processed: <span class="hd-note">2016-12-18</span>.</p>
 	<p>Available "prefixes" (or <i>haxTag types</i>) are (in order of simplicity) <b>T</b>, <b>B</b>, <b>P</b> and <b>X</b>:</p>
 	<h2 id="Topics">Topics</h2>
-	
-	<ul id="doxindexlisting" class="hd-feed"><li><!--
-		other possible `vars` that can be added above and used below:
-			("feed" , ""),
-			("dt" , ""),
-			("cat" , "")
-	-->
-	<a class="hd-feed-title" href="../tags/t.html">T-tags: named plain text/markup snippets</a>
-	<blockquote class="hd-feed-desc"><code>{T<!---->| .. |<!---->}</code> tags directly output named textual contents defined in a <i>*.haxproj</i> file.</blockquote></li><li><!--
-		other possible `vars` that can be added above and used below:
-			("feed" , ""),
-			("dt" , ""),
-			("cat" , "")
-	-->
-	<a class="hd-feed-title" href="../tags/p.html">P-tags: page-specific outputs</a>
-	<blockquote class="hd-feed-desc"><code>{P<!---->| .. |<!---->}</code> tags refer to the <b>current page context</b> during rendering; outputting pre-computed values (page title, page date, etc.), custom per-page variables, or correct relative paths from the current location.</blockquote></li><li><!--
-		other possible `vars` that can be added above and used below:
-			("feed" , ""),
-			("dt" , ""),
-			("cat" , "")
-	-->
-	<a class="hd-feed-title" href="../tags/b.html">B-tags: Blok info (name, title, desc, ..)</a>
-	<blockquote class="hd-feed-desc">A <code>{B<!---->| .. |<!---->}</code> tag outputs, for the (named or current) <a href="../basics/bloks.html">Blok</a>, the value (as set in a <a href="../basics/haxproj.html#bdecl"><i>*.haxproj</i> |B| directive</a>) of the requested property.</blockquote></li><li><!--
-		other possible `vars` that can be added above and used below:
-			("feed" , ""),
-			("dt" , ""),
-			("cat" , "")
-	-->
-	<a class="hd-feed-title" href="../tags/x.html">X-tags: dynamic renderers</a>
-	<blockquote class="hd-feed-desc">An <code>{X<!---->| <i>..</i> |<!---->}</code> tag invokes a programmatic output renderer (aka.
+	<ul id="doxindexlisting" class="hd-feed"><li><a class="hd-feed-title" href="../tags/t.html">T-tags: named plain text/markup snippets</a>
+		<blockquote class="hd-feed-desc"><code>{T<!---->| .. |<!---->}</code> tags directly output named textual contents defined in a <i>*.haxproj</i> file.</blockquote></li><li><a class="hd-feed-title" href="../tags/p.html">P-tags: page-specific outputs</a>
+		<blockquote class="hd-feed-desc"><code>{P<!---->| .. |<!---->}</code> tags refer to the <b>current page context</b> during rendering; outputting pre-computed values (page title, page date, etc.), custom per-page variables, or correct relative paths from the current location.</blockquote></li><li><a class="hd-feed-title" href="../tags/b.html">B-tags: Blok info (name, title, desc, ..)</a>
+		<blockquote class="hd-feed-desc">A <code>{B<!---->| .. |<!---->}</code> tag outputs, for the (named or current) <a href="../basics/bloks.html">Blok</a>, the value (as set in a <a href="../basics/haxproj.html#bdecl"><i>*.haxproj</i> |B| directive</a>) of the requested property.</blockquote></li><li><a class="hd-feed-title" href="../tags/x.html">X-tags: dynamic renderers</a>
+		<blockquote class="hd-feed-desc">An <code>{X<!---->| <i>..</i> |<!---->}</code> tag invokes a programmatic output renderer (aka.
 <a href="../xtypes/index.html">X-renderer</a>).</blockquote></li></ul>
-	
 	<h2 id="Processing">Processing</h2>
 	<ul><li>All unprocessed haXtags (mispelled etc.) simply remain in the output, aiding swift detection<ul><li>(exception: some
 		X-tags requiring <a href="../basics/syntax.html">syntax</a> &mdash; if unprocessable <i>due to bad syntax</i>, these output error details)

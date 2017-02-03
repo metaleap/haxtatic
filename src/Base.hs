@@ -8,10 +8,8 @@ import Data.Function ( (&) )
 
 
 
-has ::
-    (Foldable f)=>
-    f a -> Bool
-has = not.null
+has [] = False
+has (_:_) = True
 
 
 
@@ -45,11 +43,7 @@ infixl 9 >~
 
 
 infixl 9 >=~
-(>=~) [] _ = []
-(>=~) (item:more) func =
-    keepjustsdiscardnothings (func item) where
-    keepjustsdiscardnothings (Just sth) = sth:(more>=~func)
-    keepjustsdiscardnothings _ = more>=~func
+(>=~) = flip Data.Maybe.mapMaybe
 
 
 
@@ -58,7 +52,7 @@ infixl 9 >/~
 (>/~) (item:more) func =
     discardnil (func item) where
     discardnil [] = more >/~ func
-    discardnil val = val:(more >/~ func)
+    discardnil val = val : (more >/~ func)
 
 
 

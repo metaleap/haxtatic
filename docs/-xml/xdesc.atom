@@ -76,11 +76,25 @@
         <updated>1234-06-30T00:00:00Z</updated>
         <content type="html">Outputs in a designated output format any input date/time text-values encoded in a designated input format.</content>
     </entry><entry>
+        <title type="html">hax.unMarkup</title>
+        <summary type="html">hax.unMarkup</summary>
+        <link href="../xdesc.html#1234-06-22"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-06-22:haxtatic/xdesc.html#1234-06-22</id>
+        <updated>1234-06-22T00:00:00Z</updated>
+        <content type="html">Outputs the given content with HTML/XML/etc. markup tags (but not entities outside such tags) naively replaced by space characters.</content>
+    </entry><entry>
+        <title type="html">hax.noOp</title>
+        <summary type="html">hax.noOp</summary>
+        <link href="../xdesc.html#1234-06-11"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-06-11:haxtatic/xdesc.html#1234-06-11</id>
+        <updated>1234-06-11T00:00:00Z</updated>
+        <content type="html">Outputs either the given content exactly-as-specified, or ignores it and outputs the pre-configured &quot;constant&quot; content.</content>
+    </entry><entry>
         <title type="html">hax.snippet</title>
         <summary type="html">hax.snippet</summary>
-        <link href="../xdesc.html#1234-06-15"/><author><name>metaleap.github.io</name></author>
-        <id>tag:metaleap.github.io,1234-06-15:haxtatic/xdesc.html#1234-06-15</id>
-        <updated>1234-06-15T00:00:00Z</updated>
+        <link href="../xdesc.html#1234-06-05"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-06-05:haxtatic/xdesc.html#1234-06-05</id>
+        <updated>1234-06-05T00:00:00Z</updated>
         <content type="html">Renders the named &quot;snippet&quot; (aka. &quot;controls&quot; / &quot;components&quot; / &quot;sub-templates&quot;) substituting the specified
 	named-parameter values.</content>
     </entry><entry>
@@ -89,6 +103,13 @@
         <link href="../xdesc.html#1234-05-15"/><author><name>metaleap.github.io</name></author>
         <id>tag:metaleap.github.io,1234-05-15:haxtatic/xdesc.html#1234-05-15</id>
         <updated>1234-05-15T00:00:00Z</updated>
-        <content type="html">Renders a sequence of values from the specified enumerator, applying the specified filtering/ordering/limits.</content>
+        <content type="html">Outputs a sequence of values from the specified enumerator, applying the specified filtering/ordering/limits.</content>
+    </entry><entry>
+        <title type="html">hax.feedView</title>
+        <summary type="html">hax.feedView</summary>
+        <link href="../xdesc.html#1234-04-15"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-04-15:haxtatic/xdesc.html#1234-04-15</id>
+        <updated>1234-04-15T00:00:00Z</updated>
+        <content type="html">Renders posts from the specified feeds grouped as specified, delegating display logic to the specified X-tags.</content>
     </entry>
 </feed>

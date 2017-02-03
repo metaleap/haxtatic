@@ -55,7 +55,7 @@
 	&lt;li&gt;&lt;code&gt;{P&lt;!----&gt;|srcRelPath|&lt;!----&gt;}&lt;/code&gt; &amp;rarr; project-directory-relative path to the content source of the current page&lt;br/&gt;&amp;mdash; eg. for this page: &lt;span class=&quot;hd-note&quot;&gt;pages\tags\2016-12-17.p.html&lt;/span&gt;&lt;/li&gt;
 	&lt;li&gt;&lt;code&gt;{P&lt;!----&gt;|outBuild|&lt;!----&gt;}&lt;/code&gt; &amp;rarr; full path to the current page&apos;s output file&lt;br/&gt;&amp;mdash; eg. for this page: &lt;span class=&quot;hd-note&quot;&gt;D:\dev\hs\hax2\dox-demo\default-build\tags\p.html&lt;/span&gt;&lt;/li&gt;
 	&lt;li&gt;&lt;code&gt;{P&lt;!----&gt;|outDeploy|&lt;!----&gt;}&lt;/code&gt; &amp;rarr; full path to the current page&apos;s output file in the &lt;a href=&quot;../basics/haxproj.html#cmisc&quot;&gt;secondary&lt;/a&gt; output directory, if any&lt;/li&gt;
-	&lt;li&gt;&lt;code&gt;{P&lt;!----&gt;|srcTime|&lt;!----&gt;}&lt;/code&gt; and &lt;code&gt;{P&lt;!----&gt;|srcTime:&lt;i&gt;mydtformatname&lt;/i&gt;|&lt;!----&gt;}&lt;/code&gt; &amp;rarr; the current page source&apos;s &lt;i&gt;actual&lt;/i&gt; modification date/time (which may differ from the &lt;a href=&quot;../basics/datetime.html&quot;&gt;page date&lt;/a&gt; if that was set explicitly)&lt;br/&gt;&amp;mdash; eg. for this page: &lt;span class=&quot;hd-note&quot;&gt;2017-01-31&lt;/span&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;{P&lt;!----&gt;|srcTime|&lt;!----&gt;}&lt;/code&gt; and &lt;code&gt;{P&lt;!----&gt;|srcTime:&lt;i&gt;mydtformatname&lt;/i&gt;|&lt;!----&gt;}&lt;/code&gt; &amp;rarr; the current page source&apos;s &lt;i&gt;actual&lt;/i&gt; modification date/time (which may differ from the &lt;a href=&quot;../basics/datetime.html&quot;&gt;page date&lt;/a&gt; if that was set explicitly)&lt;br/&gt;&amp;mdash; eg. for this page: &lt;span class=&quot;hd-note&quot;&gt;2017-02-03&lt;/span&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&quot;Custom&quot;&gt;Custom&lt;/h2&gt;
 &lt;p&gt;
@@ -137,10 +137,14 @@ event always worth a try (to be undone later if possible) when investigating une
 	&lt;li&gt;&lt;a href=&quot;#hax.htmlAnchors&quot;&gt;hax.htmlAnchors&lt;/a&gt; &amp;mdash; gather and link to in-page contents&lt;/li&gt;
 	&lt;li&gt;&lt;a href=&quot;#hax.xmlEscape&quot;&gt;hax.xmlEscape&lt;/a&gt; &amp;mdash; HTML/XML/etc.-escape given content&lt;/li&gt;
 	&lt;li&gt;&lt;a href=&quot;#hax.dtFormat&quot;&gt;hax.dtFormat&lt;/a&gt; &amp;mdash; dates formatted as desired&lt;/li&gt;
+	&lt;li&gt;&lt;a href=&quot;#hax.unMarkup&quot;&gt;hax.unMarkup&lt;/a&gt; &amp;mdash; naively plain-text-ify given HTML/XML/etc. markup&lt;/li&gt;
+	&lt;li&gt;&lt;a href=&quot;#hax.noOp&quot;&gt;hax.noOp&lt;/a&gt; &amp;mdash; output a constant value, or any given input untouched&lt;/li&gt;
 	&lt;li&gt;&lt;a href=&quot;#hax.snippet&quot;&gt;hax.snippet&lt;/a&gt; &amp;mdash; elsewhere known as &quot;custom controls&quot;, &quot;components&quot;, &quot;sub-templates&quot;, or
 		&quot;&lt;i&gt;thing&lt;/i&gt;lets&quot;..&lt;/li&gt;
 	&lt;li&gt;&lt;a href=&quot;#hax.iterator&quot;&gt;hax.iterator&lt;/a&gt; &amp;mdash; versatile content/record
 		selector&amp;rarr;rearranger&amp;rarr;reformatter&amp;rarr;renderer&lt;/li&gt;
+	&lt;li&gt;&lt;a href=&quot;#hax.feedView&quot;&gt;hax.feedView&lt;/a&gt; &amp;mdash; richer, faster &amp;amp; easier iteration over (and rendering of) select
+		&quot;feed posts&quot; / Blok pages&lt;/li&gt;
 &lt;/ul&gt;
 &lt;span id=&quot;demo&quot;&gt;
 &lt;h2 id=&quot;demoSimplest&quot;&gt;demoSimplest&lt;/h2&gt;
@@ -239,6 +243,26 @@ event always worth a try (to be undone later if possible) when investigating une
 			&lt;ul&gt;&lt;li&gt;further configuring: &lt;i&gt;(no other settings)&lt;/i&gt;&lt;/li&gt;&lt;/ul&gt;
 		&lt;/li&gt;
 		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt;: &lt;i&gt;any date/time value currently formatted as inputdtfname or as YYYY-MM-DD&lt;/i&gt; |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;/ol&gt;&lt;h2 id=&quot;hax.unMarkup&quot;&gt;hax.unMarkup&lt;/h2&gt;
+	&lt;p class=&quot;up&quot;&gt;Outputs the given content with HTML/XML/etc. markup tags (but not entities outside such tags) naively replaced by space characters.&lt;/p&gt;
+	
+	&lt;ol&gt;
+		&lt;li class=&quot;up&quot;&gt;
+			&lt;a href=&quot;../xtypes/hax.unMarkup.html#decl&quot;&gt;Declaration&lt;/a&gt; of an &lt;code&gt;|X|hax.unMarkup:&lt;u&gt;&lt;i&gt;myTag&lt;/i&gt;&lt;/u&gt;&lt;/code&gt; directive in a
+			&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; file,
+			&lt;ul&gt;&lt;li&gt;further configuring: &lt;i&gt;(no other settings)&lt;/i&gt;&lt;/li&gt;&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt;: &lt;i&gt;any content to plain-text-ify&lt;/i&gt; |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;/ol&gt;&lt;h2 id=&quot;hax.noOp&quot;&gt;hax.noOp&lt;/h2&gt;
+	&lt;p class=&quot;up&quot;&gt;Outputs either the given content exactly-as-specified, or ignores it and outputs the pre-configured &quot;constant&quot; content.&lt;/p&gt;
+	
+	&lt;ol&gt;
+		&lt;li class=&quot;up&quot;&gt;
+			&lt;a href=&quot;../xtypes/hax.noOp.html#decl&quot;&gt;Declaration&lt;/a&gt; of an &lt;code&gt;|X|hax.noOp:&lt;u&gt;&lt;i&gt;myTag&lt;/i&gt;&lt;/u&gt;&lt;/code&gt; or &lt;code&gt;|X|hax.noOp:&lt;i&gt;myTag&lt;/i&gt;:&lt;i&gt;constant-content-here&lt;/i&gt;&lt;/code&gt; directive in a
+			&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; file,
+			&lt;ul&gt;&lt;li&gt;further configuring: &lt;i&gt;(no other settings)&lt;/i&gt;&lt;/li&gt;&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt;: &lt;i&gt;any content to output or discard here&lt;/i&gt; |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
 	&lt;/ol&gt;&lt;h2 id=&quot;hax.snippet&quot;&gt;hax.snippet&lt;/h2&gt;
 	&lt;p class=&quot;up&quot;&gt;Renders the named &quot;snippet&quot; (aka. &quot;controls&quot; / &quot;components&quot; / &quot;sub-templates&quot;) substituting the specified
 	named-parameter values.&lt;/p&gt;
@@ -251,7 +275,7 @@ event always worth a try (to be undone later if possible) when investigating une
 		&lt;/li&gt;
 		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt;: vars = [..], content = &amp;quot;..&amp;quot; |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
 	&lt;/ol&gt;&lt;h2 id=&quot;hax.iterator&quot;&gt;hax.iterator&lt;/h2&gt;
-	&lt;p class=&quot;up&quot;&gt;Renders a sequence of values from the specified enumerator, applying the specified filtering/ordering/limits.&lt;/p&gt;
+	&lt;p class=&quot;up&quot;&gt;Outputs a sequence of values from the specified enumerator, applying the specified filtering/ordering/limits.&lt;/p&gt;
 	
 	&lt;ol&gt;
 		&lt;li class=&quot;up&quot;&gt;
@@ -260,6 +284,16 @@ event always worth a try (to be undone later if possible) when investigating une
 			&lt;ul&gt;&lt;li&gt;further configuring: &lt;code&gt;prefix&lt;/code&gt;, &lt;code&gt;suffix&lt;/code&gt;, &lt;code&gt;joinVia&lt;/code&gt;, &lt;code&gt;content&lt;/code&gt;&lt;/li&gt;&lt;/ul&gt;
 		&lt;/li&gt;
 		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt;: ..  |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;/ol&gt;&lt;h2 id=&quot;hax.feedView&quot;&gt;hax.feedView&lt;/h2&gt;
+	&lt;p class=&quot;up&quot;&gt;Renders posts from the specified feeds grouped as specified, delegating display logic to the specified X-tags.&lt;/p&gt;
+	
+	&lt;ol&gt;
+		&lt;li class=&quot;up&quot;&gt;
+			&lt;a href=&quot;../xtypes/hax.feedView.html#decl&quot;&gt;Declaration&lt;/a&gt; of an &lt;code&gt;|X|hax.feedView:&lt;u&gt;&lt;i&gt;myTag&lt;/i&gt;&lt;/u&gt;: &lt;i&gt;..&lt;/i&gt;&lt;/code&gt; directive in a
+			&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; file,
+			&lt;ul&gt;&lt;li&gt;further configuring: &lt;code&gt;xnameGroupHeading&lt;/code&gt;, &lt;code&gt;feedWrap&lt;/code&gt;, &lt;code&gt;xnameFeedItem&lt;/code&gt;, &lt;code&gt;feedMore&lt;/code&gt;&lt;/li&gt;&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt;: feeds = [..] , groups = [..] , xVars = [..]  |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
 	&lt;/ol&gt;
 &lt;/span&gt;
 </content>

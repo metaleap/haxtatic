@@ -227,7 +227,7 @@ writeSitemapXml ctxproj buildplan =
             relpath = pageinfo-:Build.relPathSlashes
             priorel = max 0.0 (priobase - priodown)
 
-            priodown = 0.1 * (fromIntegral$ (Util.count '/' relpath) + (Util.count '.' relpath) - 1) :: Float
+            priodown = 0.1 * (fromIntegral$ (Util.count '/' relpath) + (Util.count '.' relpath) - 1)
             priobase
                 | relpath=="index.html" || relpath=="index.htm"
                 = 1.0

@@ -23,13 +23,13 @@ data Tag
     }
     | Args {
         feeds :: [String],
-        groups :: [GroupFromTitleCatsDates],
+        groups :: [GroupWithNameCatsDates],
         xVars :: [(String , XVar)]
     }
     deriving Read
 
 
-data GroupFromTitleCatsDates
+data GroupWithNameCatsDates
     = Group String [String] Posts.QueryDate
     deriving Read
 
@@ -81,12 +81,12 @@ registerX ctxproj xreg =
                     ifis _ "" = "" ; ifis fn val = fn val
                 tofunc (OneOf []) = const "" ; tofunc (OneOf [xv]) = tofunc xv
                 tofunc (OneOf (xv:xvs)) = retry (tofunc xv) (tofunc (OneOf xvs)) where
-                    retry _ _ [] = [] ; retry fdis fdat val = null s |? fdat val |! s where s = fdis val
-                tofunc (Format text xvs) = ((-|=) text) . (Util.formatWithList text) . (vals xvs) where
-                    vals _ [] = [] ; vals [] _ = [] ; vals (xv:rest) fp = (tofunc xv fp) : (vals rest fp)
-                tofunc (FeedWise feed yay nay) = (switch yay nay feed) . (my "feed") where
+                    retry _ _ [] = [] ; retry fmay fnay val = has s |? s |! fnay val where s = fmay val
+                tofunc (Format text xvs) = ((-|=) text) . Util.formatWithList text . vals xvs where
+                    vals _ [] = [] ; vals [] _ = [] ; vals (xv:rest) fp = tofunc xv fp : vals rest fp
+                tofunc (FeedWise feed yay nay) = switch . my "feed" where
                     my = ((,) <*>) . l where l k = ("" -|=) . Data.List.lookup k
-                    switch dis dat v1 (carry,v2) = tofunc (v1==v2 |? dis |! dat) carry
+                    switch (carry,v2) = tofunc (feed==v2 |? yay |! nay) carry
                 tofunc (DtFormat dtfname xv) = (try (dtformat dtfname)) . (tofunc xv)
                 tofunc (X xv) = (try (xtags maybectxpage)) . (tofunc xv)
                 try _ [] = [] ; try maybeer val = case maybeer val of Nothing -> val ; Just v -> v
@@ -98,7 +98,7 @@ registerX ctxproj xreg =
         args = X.tryParseArgs xreg argstr Nothing errval where
             errval = Args{ feeds=[], groups=[Group errmsg [] Posts.AnyDate], xVars = [] } where
                 errmsg = X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))
-    in X.Early renderer
+    in X.WaitForPage renderer
     where
     (xerrgroups , xerrfeeditem) = (x $cfg-:xnameGroupHeading, x $cfg-:xnameFeedItem) where
         x xn = (++"|}") . (("{X|"++xn)++) . ((:) ':')

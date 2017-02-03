@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
     <url>
-        <loc>http://metaleap.github.io/haxtatic/xtypes/hax.iterator.html</loc>
-        <lastmod>1234-05-15</lastmod>
+        <loc>http://metaleap.github.io/haxtatic/xtypes/hax.feedView.html</loc>
+        <lastmod>1234-05-01</lastmod>
         <priority>0.4</priority>
     </url><url>
         <loc>http://metaleap.github.io/haxtatic/xtypes/hax.miniTag.html</loc>
@@ -33,8 +33,20 @@
         <lastmod>1234-07-01</lastmod>
         <priority>0.4</priority>
     </url><url>
+        <loc>http://metaleap.github.io/haxtatic/xtypes/hax.unMarkup.html</loc>
+        <lastmod>1234-06-22</lastmod>
+        <priority>0.4</priority>
+    </url><url>
+        <loc>http://metaleap.github.io/haxtatic/xtypes/hax.noOp.html</loc>
+        <lastmod>1234-06-20</lastmod>
+        <priority>0.4</priority>
+    </url><url>
         <loc>http://metaleap.github.io/haxtatic/xtypes/hax.snippet.html</loc>
         <lastmod>1234-06-15</lastmod>
+        <priority>0.4</priority>
+    </url><url>
+        <loc>http://metaleap.github.io/haxtatic/xtypes/hax.iterator.html</loc>
+        <lastmod>1234-05-15</lastmod>
         <priority>0.4</priority>
     </url><url>
         <loc>http://metaleap.github.io/haxtatic/xtypes/demoSimplest.html</loc>
@@ -43,10 +55,6 @@
     </url><url>
         <loc>http://metaleap.github.io/haxtatic/xtypes/demoCfgArgs.html</loc>
         <lastmod>1234-01-10</lastmod>
-        <priority>0.5</priority>
-    </url><url>
-        <loc>http://metaleap.github.io/haxtatic/tags/x.html</loc>
-        <lastmod>2016-12-15</lastmod>
         <priority>0.5</priority>
     </url><url>
         <loc>http://metaleap.github.io/haxtatic/tags/t.html</loc>
@@ -59,6 +67,10 @@
     </url><url>
         <loc>http://metaleap.github.io/haxtatic/tags/b.html</loc>
         <lastmod>2016-12-16</lastmod>
+        <priority>0.5</priority>
+    </url><url>
+        <loc>http://metaleap.github.io/haxtatic/tags/x.html</loc>
+        <lastmod>2016-12-15</lastmod>
         <priority>0.5</priority>
     </url><url>
         <loc>http://metaleap.github.io/haxtatic/basics/projdir.html</loc>
@@ -94,7 +106,7 @@
         <priority>0.5</priority>
     </url><url>
         <loc>http://metaleap.github.io/haxtatic/index.html</loc>
-        <lastmod>2017-02-01</lastmod>
+        <lastmod>2017-02-03</lastmod>
         <priority>1.0</priority>
     </url><url>
         <loc>http://metaleap.github.io/haxtatic/basics/index.html</loc>

@@ -6,4 +6,4 @@ import qualified X
 
 
 registerX _ _ =
-    X.Early (Just . (Html.stripMarkup False ' ') . snd)
+    X.Early$ \ (_ , argstr) -> Just$ Html.stripMarkup False ' ' argstr

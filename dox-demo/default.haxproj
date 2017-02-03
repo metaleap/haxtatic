@@ -112,6 +112,7 @@ turn on whatever syntax highlighting for eased grokkage..
 |X|hax.htmlLink:_lx: xtypes: attr = [] , xmlEscape = (False , False) , uriAutoExt = ".html"
 |X|hax.htmlImage:doxpic: {P| /-pics/otiosely/long/path |}: attrLink=[], attrImg=[], xmlEscape=False
 |X|hax.xmlEscape:xesc
+|X|hax.noOp:id
 |X|hax.miniTag:c: code
 |X|hax.miniTag:h: h2: attr=[ ("id" , "{:c:}") ]
 |X|hax.miniTag:note: span: attr=[("class" , "hd-note")]
@@ -134,9 +135,11 @@ turn on whatever syntax highlighting for eased grokkage..
 	outputIfEmpty = "<style type='text/css'>.hd-toc { display: none; }</style>",
 	xmlEscapeHref = False
 
-|X|hax.iterator:doxindex:
-	prefix = "<ul id=\"doxindexlisting\" class=\"hd-feed\"><li>{", suffix = "}</li></ul>", joinVia = "}</li><li>{",
-	content=""
+|X|hax.feedView: doxtopicindex:
+	xnameGroupHeading = "id",
+	feedWrap = ("<ul id=\"doxindexlisting\" class=\"hd-feed\">" , "</ul>"),
+	xnameFeedItem = "dox-topicitem",
+	feedMore = []
 
 |X|hax.iterator:xdescs:
 	prefix = "{", suffix = "}", joinVia = "}{",
@@ -232,7 +235,23 @@ turn on whatever syntax highlighting for eased grokkage..
 	Outputs in a designated output format any input date/time text-values encoded in a designated input format.
 
 |P|xdesc:
-	dt = "1234-06-15", cat = "hax.snippet", title = "", link = "",
+	dt = "1234-06-22", cat = "hax.unMarkup", title = "", link = "",
+	more = [("declmore" , ""),
+			("cfgmore" , "<i>(no other settings)</i>"),
+			("usage" , ": <i>any content to plain-text-ify</i>") ],
+	content=>
+	Outputs the given content with HTML/XML/etc. markup tags (but not entities outside such tags) naively replaced by space characters.
+
+|P|xdesc:
+	dt = "1234-06-11", cat = "hax.noOp", title = "", link = "",
+	more = [("declmore" , "</code> or <code>|X|hax.noOp:<i>myTag</i>:<i>constant-content-here</i>"),
+			("cfgmore" , "<i>(no other settings)</i>"),
+			("usage" , ": <i>any content to output or discard here</i>") ],
+	content=>
+	Outputs either the given content exactly-as-specified, or ignores it and outputs the pre-configured "constant" content.
+
+|P|xdesc:
+	dt = "1234-06-05", cat = "hax.snippet", title = "", link = "",
 	more = [("declmore" , ": <i>..</i>"),
 			("cfgmore" , "{X|c:vars|}, {X|c:content|}"),
 			("usage" , ": vars = [..], content = &quot;..&quot;") ],
@@ -246,4 +265,12 @@ turn on whatever syntax highlighting for eased grokkage..
 			("cfgmore" , "{X|c:prefix|}, {X|c:suffix|}, {X|c:joinVia|}, {X|c:content|}"),
 			("usage" , ": .. ") ],
 	content=>
-	Renders a sequence of values from the specified enumerator, applying the specified filtering/ordering/limits.
+	Outputs a sequence of values from the specified enumerator, applying the specified filtering/ordering/limits.
+
+|P|xdesc:
+	dt = "1234-04-15", cat = "hax.feedView", title = "", link = "",
+	more = [("declmore" , ": <i>..</i>"),
+			("cfgmore" , "{X|c:xnameGroupHeading|}, {X|c:feedWrap|}, {X|c:xnameFeedItem|}, {X|c:feedMore|}"),
+			("usage" , ": feeds = [..] , groups = [..] , xVars = [..] ") ],
+	content=>
+	Renders posts from the specified feeds grouped as specified, delegating display logic to the specified X-tags.

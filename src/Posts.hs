@@ -69,11 +69,11 @@ buildPlan modtimeproj relpathpostatoms feednames =
         where
         file = if null dstfilerelpath then Files.NoFile else
                 Files.FileInfo { Files.modTime = modtimeproj , Files.path = ":F|/."++feedname }
-        dstfilename = feedname++".atom"
         dstfilerelpath
-            |(relpathpostatoms==Defaults.dir_PostAtoms_None)= ""
-            |(null relpathpostatoms)= dstfilename
-            |(otherwise)= relpathpostatoms </> dstfilename
+            | (relpathpostatoms==Defaults.dir_PostAtoms_None) = ""
+            | (null relpathpostatoms) = dstfilename
+            | (otherwise) = relpathpostatoms </> dstfilename
+        dstfilename = feedname++".atom"
 
 
 

@@ -7,6 +7,6 @@ import qualified X
 
 registerX _ xreg =
     let constval = xreg-:X.cfgFullStr
-    in if null constval
-        then X.Early (Just . snd)
-        else X.Early (\_ -> Just constval)
+    in X.Early$ if null constval
+        then \ (_,argstr) -> Just argstr
+        else \_ -> Just constval

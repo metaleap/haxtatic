@@ -29,17 +29,13 @@ dateTime0 = Data.Time.Clock.UTCTime {
 
 dtInts :: Data.Time.Clock.UTCTime -> [Int]
 dtInts utctime =
-    [ modifiedjulianday , daytimenum , daytimedenom ]
+    [ modifiedjulianday , daytimenumer , daytimedenom ]
     where
     modifiedjulianday = fromInteger$ Data.Time.Calendar.toModifiedJulianDay (Data.Time.Clock.utctDay utctime)
-    daytimenum = fromInteger$ Data.Ratio.numerator daytime
+    daytimenumer = fromInteger$ Data.Ratio.numerator daytime
     daytimedenom = fromInteger$ Data.Ratio.denominator daytime
     daytime = toRational (Data.Time.Clock.utctDayTime utctime)
 
-
-facF n = foldr (*) 1 [1..n]
-facR 0 = 1
-facR n = n * facR (n - 1)
 
 
 both (fun1,fun2) (tfst,tsnd) =
@@ -270,13 +266,7 @@ tryParseOr defval =
 
 
 
-noMaybes [] = []
-noMaybes ((Just val):more) = val:(noMaybes more)
-noMaybes (_:more) = noMaybes more
-
-noNils [] = []
-noNils ([]:more) = noNils more
-noNils (item:more) = item:(noNils more)
+noNils list = [item | item <- list, has item]
 
 noNilFsts [] = []
 noNilFsts (([],_):more) = noNilFsts more
@@ -464,7 +454,7 @@ replaceSubsMany [replpair] list = replaceSub replpair list
 replaceSubsMany replpairs list =
     Data.List.foldl' replsub list replpairs
     where
-    replsub = flip replaceSub --- wtf foldl'..
+    replsub = flip replaceSub
 
 
 replaceSubsBy [] _ = id

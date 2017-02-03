@@ -70,7 +70,7 @@ buildPlan (modtimeproj,modtimetmpl) projcfg allpagesfiles bloks =
             let fakepath = (isblokpagefile bpage) |? blok-:bfield |! ""
                 (allblokpagefiles , cdatelatest) = _allblokpagefiles bname
                 bpage = ("",Files.NoFile) -|= allblokpagefiles@?0
-                fdatelatest = maximum (allblokpagefiles >~ snd >~ Files.modTime)
+                fdatelatest = maximum (allblokpagefiles >~ (Files.modTime . snd))
             in ( Files.pathSepSlashToSystem fakepath ,
                 (null fakepath) |? Files.NoFile |! Files.FileInfo {
                                                     Files.path = Files.prependPathBlokIndexPrefix$
@@ -116,12 +116,15 @@ preferredRelPath bloks (outpagerelpath , file) =
 
 
 
-tagHandler bloks curbname str =
-    let fields = [  ("title",title) , ("desc",desc) , ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
-                    ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash)  ]
-        bname = Util.ifNo bn curbname
-        (fname, bn) = Util.bothTrim (Util.splitOn1st_ ':' str)
-    in (null fname) |? Nothing
-        |! (fname=="name" && has bname) |? Just bname
-            |! (blokByName bloks bname) >>= \blok ->
-                (Data.List.lookup fname fields) >~ \fieldval -> blok-:fieldval
+tagHandler bloks curbname str
+    | (null fname) = Nothing
+    | (fname=="name" && has bname) = Just bname
+    | (otherwise) = (blokByName bloks bname) >>= \ blok ->
+                        (Data.List.lookup fname fields) >~ \ fieldval ->
+                            blok-:fieldval
+    where
+    (fname, bn) = Util.bothTrim (Util.splitOn1st_ ':' str)
+    bname = Util.ifNo bn curbname
+    fields = [  ("title",title), ("desc",desc),
+                ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
+                ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash)  ]

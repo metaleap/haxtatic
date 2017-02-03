@@ -3,11 +3,11 @@ content=>
 <h1>{B|title: {%bname%} |}</h1>
 {B|desc: {%bname%} |}
 {X|h: Topics |}
-
-{X|doxindex:	But (WrapEachIn	(	"X|dox-bloklink: vars=["
-										,	"], content=\"\" |"
-										))
-						(FeedPosts (Some {feeds=["{%bname%}"], cats=[], dates=AnyDate}) [])
-			|}
-
+{X|doxtopicindex:
+	feeds=["{%bname%}"] , groups = [ Group "" [] AnyDate ] , xVars =
+	[	("L", F "link")
+	,	("t", F "title")
+	,	("D", F "content")
+	]
+|}
 {T|blokIntroMore_{%bname%}|}

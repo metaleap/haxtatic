@@ -14,7 +14,7 @@
 		<input type="checkbox" checked="checked" id="chk_showtoc"/>
 		<label for="chk_showtoc">On this page:</label>
 		<ul>
-			<li><a href="#demoSimplest">demoSimplest</a></li><li><a href="#demoCfgArgs">demoCfgArgs</a></li><li><a href="#hax.miniTag">hax.miniTag</a></li><li><a href="#hax.htmlImage">hax.htmlImage</a></li><li><a href="#hax.htmlLink">hax.htmlLink</a></li><li><a href="#hax.htmlLinks">hax.htmlLinks</a></li><li><a href="#hax.htmlAnchors">hax.htmlAnchors</a></li><li><a href="#hax.xmlEscape">hax.xmlEscape</a></li><li><a href="#hax.dtFormat">hax.dtFormat</a></li><li><a href="#hax.snippet">hax.snippet</a></li><li><a href="#hax.iterator">hax.iterator</a></li>
+			<li><a href="#demoSimplest">demoSimplest</a></li><li><a href="#demoCfgArgs">demoCfgArgs</a></li><li><a href="#hax.miniTag">hax.miniTag</a></li><li><a href="#hax.htmlImage">hax.htmlImage</a></li><li><a href="#hax.htmlLink">hax.htmlLink</a></li><li><a href="#hax.htmlLinks">hax.htmlLinks</a></li><li><a href="#hax.htmlAnchors">hax.htmlAnchors</a></li><li><a href="#hax.xmlEscape">hax.xmlEscape</a></li><li><a href="#hax.dtFormat">hax.dtFormat</a></li><li><a href="#hax.unMarkup">hax.unMarkup</a></li><li><a href="#hax.noOp">hax.noOp</a></li><li><a href="#hax.snippet">hax.snippet</a></li><li><a href="#hax.iterator">hax.iterator</a></li><li><a href="#hax.feedView">hax.feedView</a></li>
 		</ul>
 	</div>
 
@@ -36,10 +36,14 @@
 	<li><a href="#hax.htmlAnchors">hax.htmlAnchors</a> &mdash; gather and link to in-page contents</li>
 	<li><a href="#hax.xmlEscape">hax.xmlEscape</a> &mdash; HTML/XML/etc.-escape given content</li>
 	<li><a href="#hax.dtFormat">hax.dtFormat</a> &mdash; dates formatted as desired</li>
+	<li><a href="#hax.unMarkup">hax.unMarkup</a> &mdash; naively plain-text-ify given HTML/XML/etc. markup</li>
+	<li><a href="#hax.noOp">hax.noOp</a> &mdash; output a constant value, or any given input untouched</li>
 	<li><a href="#hax.snippet">hax.snippet</a> &mdash; elsewhere known as "custom controls", "components", "sub-templates", or
 		"<i>thing</i>lets"..</li>
 	<li><a href="#hax.iterator">hax.iterator</a> &mdash; versatile content/record
 		selector&rarr;rearranger&rarr;reformatter&rarr;renderer</li>
+	<li><a href="#hax.feedView">hax.feedView</a> &mdash; richer, faster &amp; easier iteration over (and rendering of) select
+		"feed posts" / Blok pages</li>
 </ul>
 <span id="demo">
 <h2 id="demoSimplest">demoSimplest</h2>
@@ -138,6 +142,26 @@
 			<ul><li>further configuring: <i>(no other settings)</i></li></ul>
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>: <i>any date/time value currently formatted as inputdtfname or as YYYY-MM-DD</i> |<!---->}</code></li>
+	</ol><h2 id="hax.unMarkup">hax.unMarkup</h2>
+	<p class="up">Outputs the given content with HTML/XML/etc. markup tags (but not entities outside such tags) naively replaced by space characters.</p>
+	
+	<ol>
+		<li class="up">
+			<a href="../xtypes/hax.unMarkup.html#decl">Declaration</a> of an <code>|X|hax.unMarkup:<u><i>myTag</i></u></code> directive in a
+			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
+			<ul><li>further configuring: <i>(no other settings)</i></li></ul>
+		</li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>: <i>any content to plain-text-ify</i> |<!---->}</code></li>
+	</ol><h2 id="hax.noOp">hax.noOp</h2>
+	<p class="up">Outputs either the given content exactly-as-specified, or ignores it and outputs the pre-configured "constant" content.</p>
+	
+	<ol>
+		<li class="up">
+			<a href="../xtypes/hax.noOp.html#decl">Declaration</a> of an <code>|X|hax.noOp:<u><i>myTag</i></u></code> or <code>|X|hax.noOp:<i>myTag</i>:<i>constant-content-here</i></code> directive in a
+			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
+			<ul><li>further configuring: <i>(no other settings)</i></li></ul>
+		</li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>: <i>any content to output or discard here</i> |<!---->}</code></li>
 	</ol><h2 id="hax.snippet">hax.snippet</h2>
 	<p class="up">Renders the named "snippet" (aka. "controls" / "components" / "sub-templates") substituting the specified
 	named-parameter values.</p>
@@ -150,7 +174,7 @@
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>: vars = [..], content = &quot;..&quot; |<!---->}</code></li>
 	</ol><h2 id="hax.iterator">hax.iterator</h2>
-	<p class="up">Renders a sequence of values from the specified enumerator, applying the specified filtering/ordering/limits.</p>
+	<p class="up">Outputs a sequence of values from the specified enumerator, applying the specified filtering/ordering/limits.</p>
 	
 	<ol>
 		<li class="up">
@@ -159,6 +183,16 @@
 			<ul><li>further configuring: <code>prefix</code>, <code>suffix</code>, <code>joinVia</code>, <code>content</code></li></ul>
 		</li>
 		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>: ..  |<!---->}</code></li>
+	</ol><h2 id="hax.feedView">hax.feedView</h2>
+	<p class="up">Renders posts from the specified feeds grouped as specified, delegating display logic to the specified X-tags.</p>
+	
+	<ol>
+		<li class="up">
+			<a href="../xtypes/hax.feedView.html#decl">Declaration</a> of an <code>|X|hax.feedView:<u><i>myTag</i></u>: <i>..</i></code> directive in a
+			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
+			<ul><li>further configuring: <code>xnameGroupHeading</code>, <code>feedWrap</code>, <code>xnameFeedItem</code>, <code>feedMore</code></li></ul>
+		</li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>: feeds = [..] , groups = [..] , xVars = [..]  |<!---->}</code></li>
 	</ol>
 </span>
 
