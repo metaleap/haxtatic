@@ -57,12 +57,12 @@
         <lastmod>1234-01-10</lastmod>
         <priority>0.5</priority>
     </url><url>
-        <loc>http://metaleap.github.io/haxtatic/tags/t.html</loc>
-        <lastmod>2016-12-18</lastmod>
-        <priority>0.5</priority>
-    </url><url>
         <loc>http://metaleap.github.io/haxtatic/tags/p.html</loc>
         <lastmod>2016-12-17</lastmod>
+        <priority>0.5</priority>
+    </url><url>
+        <loc>http://metaleap.github.io/haxtatic/tags/t.html</loc>
+        <lastmod>2016-12-18</lastmod>
         <priority>0.5</priority>
     </url><url>
         <loc>http://metaleap.github.io/haxtatic/tags/b.html</loc>

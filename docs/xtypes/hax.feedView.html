@@ -37,9 +37,12 @@
 					<a href="../basics/haxproj.html#xdecl">declaring</a> X-tags and invoking them. If found challenging, try the
 					<a href="../xtypes/hax.miniTag.html">more</a>-<a href="../xtypes/hax.htmlImage.html">elaborate</a>-<a href="../xtypes/hax.htmlLink.html">and</a>-<a href="../xtypes/hax.xmlEscape.html">introductory</a>
 					topics first to form a better grasp on the basics and overall mechanisms.</p>
-<h3>Stage:</h3><p><a href="../tags/index.html#stages">Page</a> &mdash; this X-renderer requires a page context for rendering: therefore
-					any <i>hax.feedView</i>-invoking X-tags encountered during pre-templating (at start-up time) will be
-					skipped over, thus only process per-page, once present.</p>
+<h3>Stage:</h3><p><a href="../tags/index.html#stages">Early or Page</a> &mdash; this X-renderer determines dynamically (documented
+					further <a href="#dynstage">below</a>) whether or not it requires a page context for rendering, so depending on each
+					<i>hax.feedView</i>-invoking X-tag's configuration and/or parameters:</p><ul><li><i>some</i> encountered
+					during pre-templating (at start-up time) may be eagerly <a href="../tags/index.html#Processing">processed</a> immediately in-place
+					(for overall-reduced per-page processing loads),</li> <li> and <i>others</i> will be skipped over, thus only
+					process per-page, once present.</li></ul>
 </span>
 <h2 id="Purpose">Purpose</h2>
 <p>

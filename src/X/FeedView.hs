@@ -12,6 +12,7 @@ import qualified X.FormatDateTime
 import qualified X.Iterator
 
 import qualified Data.List
+import qualified Data.Map.Strict
 
 
 data Tag
@@ -52,7 +53,8 @@ data XVar
 registerX ctxproj xreg =
     let
     renderer (maybectxpage , argstr) =
-        Just$ concat$ allgroups>~foreach
+        if waitforpage then Nothing
+            else Just$ concat$ allgroups>~foreach
         where
         allgroups = if has (args-:groups) then (args-:groups)
                     else ((feedgroups (postsfrom [] Posts.AnyDate) "dt:year") ~> (Data.List.sortBy (flip compare))) >~ togroup
@@ -98,8 +100,18 @@ registerX ctxproj xreg =
         args = X.tryParseArgs xreg argstr Nothing errval where
             errval = Args{ feeds=[], groups=[Group errmsg [] Posts.AnyDate], xVars = [] } where
                 errmsg = X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))
-    in X.WaitForPage renderer
+        waitforpage =
+            (not$ hasctxpage maybectxpage) && (needpage4feeds $args-:feeds)
+            where
+            hasctxpage Nothing = False ; hasctxpage (Just _) = True
+            needpage4feeds [] = has projbloknames
+            needpage4feeds feednames = not$ all (`elem` projfeednames) feednames
+    in X.EarlyOrWait renderer
     where
+
+    projbloknames = Data.Map.Strict.keys (ctxproj-:Proj.setup-:Proj.bloks)
+    projfeednames = ctxproj-:Proj.setup-:Proj.feeds
+
     (xerrgroups , xerrfeeditem) = (x $cfg-:xnameGroupHeading, x $cfg-:xnameFeedItem) where
         x xn = (++"|}") . (("{X|"++xn)++) . ((:) ':')
     dtformat = X.FormatDateTime.dtFormatter ctxproj ""

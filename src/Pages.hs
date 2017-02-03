@@ -31,20 +31,22 @@ processAll ctxmain ctxproj buildplan =
     in Tmpl.loadAll ctxmain ctxtmpl (ctxproj-:Proj.coreFiles)
                     filenameexts (cfgproj-:ProjC.htmlEquivExts) >>= \tmplfinder
     -> let
-        processpage done [] =
+        process done [] =
             return done
-        processpage (prevwarns , prevhints , ctxbuildprev) (thisjob:morejobs) =
-            processPage ctxmain ctxproj ctxbuildprev ctxtmpl tmplfinder thisjob
-            >>= \(maybewarning , maybehint , ctxbuildnext) -> let
-                nextwarns = maybewarning~>((:prevwarns) =|- prevwarns)
-                nexthints = maybehint~>((:prevhints) =|- prevhints)
-            in processpage (nextwarns , nexthints , ctxbuildnext) morejobs
+        process (prevwarns , prevhints , ctxbuildprev) (thisjob:morejobs) =
+            procpage ctxbuildprev thisjob
+            >>= \(maybewarning , maybehint , ctxbuildnext) ->
+                let nextwarns = maybewarning~>((:prevwarns) =|- prevwarns)
+                    nexthints = maybehint~>((:prevhints) =|- prevhints)
+                in process (nextwarns , nexthints , ctxbuildnext) morejobs
+        taghandler = tagHandler ctxmain cfgproj ctxtmpl
+        procpage = processPage ctxmain ctxproj ctxtmpl tmplfinder taghandler
 
-    in processpage ([] , [] , ctxbuildinitial) (buildplan-:Build.outPages)
+    in process ([] , [] , ctxbuildinitial) (buildplan-:Build.outPages)
 
 
 
-processPage ctxmain ctxproj ctxbuild ctxtmpl tmplfinder outjob =
+processPage ctxmain ctxproj ctxtmpl tmplfinder thandler ctxbuild outjob =
     Files.writeTo dstfilepath (outjob-:Build.relPath) processcontent
     >>= \(outsrc , ctxpage , mismatches)
     -> Tmpl.warnIfTagMismatches ctxmain srcfilepath mismatches
@@ -91,9 +93,9 @@ processPage ctxmain ctxproj ctxbuild ctxtmpl tmplfinder outjob =
             randseed' = (Util.dtInts nowtime)
                             ++ (Util.dtInts $outjob-:Build.srcFile-:Files.modTime)
                                 ++ [ length $ctxbuild-:Posts.allPagesFiles , pagesrcraw~>length ]
-            ctxpage htmlsrc thandler = Tmpl.PageContext {
+            ctxpage htmlsrc ptaghandler = Tmpl.PageContext {
                                             Tmpl.blokName = outjob-:Build.blokName,
-                                            Tmpl.pTagHandler = thandler,
+                                            Tmpl.pTagHandler = ptaghandler,
                                             Tmpl.pVars = pagevars,
                                             Tmpl.pDate = pagedate,
                                             Tmpl.htmlInners = htmlinners htmlsrc,
@@ -104,10 +106,10 @@ processPage ctxmain ctxproj ctxbuild ctxtmpl tmplfinder outjob =
                                             Tmpl.allPagesFiles = ctxbuild-:Posts.allPagesFiles,
                                             Tmpl.randSeed = randseed' >~ ((+) ((max 1 $pagesrcraw~>length) * randseed'@!1))
                                         }
+            taghandler = thandler outjob
             ctxpageprep = ctxpage pagesrcraw (taghandler ctxpageprep)
             ctxpageproc = ctxpage pagesrcproc (taghandler ctxpageproc)
             (pagevars , pagedate , pagesrcchunks) = pageVars (ctxbuild-:Posts.projCfg) pagesrcraw $outjob-:Build.contentDate
-            taghandler pagectx = tagHandler ctxmain (ctxbuild-:Posts.projCfg) pagectx ctxtmpl outjob
             tmpl = tmplfinder$ System.FilePath.takeExtension dstfilepath
             pagesrcproc = if has pagesrctmp then pagesrctmp else
                             Tmpl.processSrc ctxtmpl (Just ctxpageprep)
@@ -155,7 +157,7 @@ pageVars cfgproj pagesrc contentdate =
 
 
 
-tagHandler ctxmain cfgproj ctxpage ctxtmpl outjob ptagcontent
+tagHandler ctxmain cfgproj ctxtmpl outjob ctxpage ptagcontent
     | isxdelay ptagcontent
         = Just$ Tmpl.processXtagDelayed xtaghandler (drop 2 ptagcontent)
     | ptagcontent == "date"
@@ -165,9 +167,12 @@ tagHandler ctxmain cfgproj ctxpage ctxtmpl outjob ptagcontent
     | has splitrest
         = ((Data.List.lookup split1st (ctxpage-:Tmpl.pVars)) >>= formatpvar) <|> (for ptagcontent)
     | otherwise
-        = (Data.List.lookup ptagcontent (ctxpage-:Tmpl.pVars)) <|> (for ptagcontent) <|> (Just$ "{T|P|"++ptagcontent++"|}")
+        = (Data.List.lookup ptagcontent (ctxpage-:Tmpl.pVars))
+        <|> (for ptagcontent)
+        <|> (ttags ('P':'|':ptagcontent))
 
     where
+    ttags = ctxtmpl-:Tmpl.tTagHandler
     isxdelay ('X':'|':_) = True ; isxdelay _ = False
     xtaghandler = (ctxtmpl-:Tmpl.xTagHandler) (Just ctxpage)
     contentdate = ctxpage-:Tmpl.pDate

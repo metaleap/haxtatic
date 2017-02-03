@@ -35,8 +35,8 @@ registerX _ xreg =
     where
 
     cfg_htmltagplain = ((pref).(suff)) where
-                        suff = (++suffix) ; pref = (prefix++) . ((:) '>') where
-                        prefix = '<':cfg_htmltagname ; suffix = ('<':'/':cfg_htmltagname)++">"
+                        suff = (++suffix) ; pref = (prefix++)
+                        suffix = ('<':'/':cfg_htmltagname)++">" ; prefix = '<':cfg_htmltagname++">"
     (cfg_htmltagname , cfg_parsestr ) = xreg-:X.cfgSplitOnce
     (cfgdynatts , cfghtmlatts) = (cfg-:attr) ~> (Data.List.partition $(Data.List.isInfixOf "{:c:}").snd)
     cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where

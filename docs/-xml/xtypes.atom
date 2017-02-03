@@ -915,7 +915,7 @@ or stated as an ordered sequence of multiple such modifiers per &lt;code&gt;With
 	produces &lt;span class=&quot;hd-note&quot;&gt;alpha, beta, gamma, phi, zeta&lt;/span&gt;
 	instead of &lt;span class=&quot;hd-note&quot;&gt;zeta, phi, gamma, beta, alpha&lt;/span&gt;&lt;/li&gt;
 	&lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: With (Range 1 23) &lt;/i&gt;[Ordered (Shuffle False) , LimitTo 6, WrapEachIn (&quot;#&quot;,&quot;. &quot;)]&lt;i&gt; |&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
-	produces &lt;span class=&quot;hd-note&quot;&gt;#3. , #16. , #2. , #9. , #7. , #1.&lt;/span&gt;
+	produces &lt;span class=&quot;hd-note&quot;&gt;#7. , #20. , #5. , #2. , #23. , #22.&lt;/span&gt;
 	instead of &lt;span class=&quot;hd-note&quot;&gt;1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23&lt;/span&gt;
 		&lt;ul&gt;&lt;li&gt;Only either &lt;code&gt;(Shuffle True)&lt;/code&gt; or &lt;code&gt;(Shuffle False)&lt;/code&gt; are valid. When used in a central project file such as a
 		&lt;a href=&quot;../basics/haxproj.html&quot;&gt;*.haxproj&lt;/a&gt;, a &lt;a href=&quot;../basics/tmplsnip.html&quot;&gt;template&lt;/a&gt; or a &lt;a href=&quot;../basics/tmplsnip.html#snippets&quot;&gt;snippet&lt;/a&gt; (rather than directly inside a
@@ -963,9 +963,12 @@ whenever:&lt;/p&gt;
 					&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;declaring&lt;/a&gt; X-tags and invoking them. If found challenging, try the
 					&lt;a href=&quot;../xtypes/hax.miniTag.html&quot;&gt;more&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.htmlImage.html&quot;&gt;elaborate&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.htmlLink.html&quot;&gt;and&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.xmlEscape.html&quot;&gt;introductory&lt;/a&gt;
 					topics first to form a better grasp on the basics and overall mechanisms.&lt;/p&gt;
-&lt;h3&gt;Stage:&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;../tags/index.html#stages&quot;&gt;Page&lt;/a&gt; &amp;mdash; this X-renderer requires a page context for rendering: therefore
-					any &lt;i&gt;hax.feedView&lt;/i&gt;-invoking X-tags encountered during pre-templating (at start-up time) will be
-					skipped over, thus only process per-page, once present.&lt;/p&gt;
+&lt;h3&gt;Stage:&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;../tags/index.html#stages&quot;&gt;Early or Page&lt;/a&gt; &amp;mdash; this X-renderer determines dynamically (documented
+					further &lt;a href=&quot;#dynstage&quot;&gt;below&lt;/a&gt;) whether or not it requires a page context for rendering, so depending on each
+					&lt;i&gt;hax.feedView&lt;/i&gt;-invoking X-tag&apos;s configuration and/or parameters:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;i&gt;some&lt;/i&gt; encountered
+					during pre-templating (at start-up time) may be eagerly &lt;a href=&quot;../tags/index.html#Processing&quot;&gt;processed&lt;/a&gt; immediately in-place
+					(for overall-reduced per-page processing loads),&lt;/li&gt; &lt;li&gt; and &lt;i&gt;others&lt;/i&gt; will be skipped over, thus only
+					process per-page, once present.&lt;/li&gt;&lt;/ul&gt;
 &lt;/span&gt;
 &lt;h2 id=&quot;Purpose&quot;&gt;Purpose&lt;/h2&gt;
 &lt;p&gt;

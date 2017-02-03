@@ -11,6 +11,12 @@ import qualified Proj
 import qualified Tmpl
 import qualified Util
 
+import qualified Data.Time.Clock
+import qualified System.Directory
+import qualified System.FilePath
+import qualified System.IO
+import qualified Text.Printf
+
 import qualified X.DemoSimplest (registerX)
 import qualified X.DemoCfgArgs (registerX)
 import qualified X.FeedView (registerX)
@@ -25,12 +31,6 @@ import qualified X.Snippet (registerX)
 import qualified X.MiniTag (registerX)
 import qualified X.UnMarkup (registerX)
 import qualified X.XmlEscape (registerX)
-
-import qualified Data.Time.Clock
-import qualified System.Directory
-import qualified System.FilePath
-import qualified System.IO
-import qualified Text.Printf
 
 
 xregs = [ "demoSimplest" =: X.DemoSimplest.registerX
