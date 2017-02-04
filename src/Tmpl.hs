@@ -37,11 +37,11 @@ data CtxPage
         pTagHandler :: String -> Maybe String,
         pVars :: Util.StringPairs,
         pDate :: Data.Time.Clock.UTCTime,
-        htmlInners :: String->[String],
-        htmlInner1st :: String->String->String,
+        htmlInners :: String -> [String],
+        htmlInner1st :: String -> String -> String,
         tmpl :: CtxTmpl,
         cachedRenderSansTmpl :: String,
-        lookupCachedPageRender :: FilePath->Maybe CtxPage,
+        lookupCachedPageRender :: FilePath -> Maybe CtxPage,
         allPagesFiles :: [(FilePath , Files.File)],
         randSeed :: [Int]
     }
@@ -52,8 +52,7 @@ _applychunkbegin = tag_P
 _applychunkmid = ":content:"
 _applychunkend = tag_Close
 apply ctxtmpl ctxpage pagesrc =
-    -- concatMap foreach (ctxtmpl-:chunks)
-    concat$ ctxtmpl-:chunks >~ foreach
+    ctxtmpl-:chunks >>= foreach
     where
     foreach (":content:" , "{P|") =
         pagesrc
@@ -96,13 +95,13 @@ loadAll ctxmain ctxproc deffiles filenameexts htmlequivexts =
         tmplfind ext =
             elem ext htmlequivexts |? tmpldef |!
                 tmpldef -|= (Data.List.find ((ext==).fileExt) loadedtemplates)
-    in return tmplfind
+    in pure tmplfind
 
 
 
 loadTmpl ctxmain ctxproc fileext tmpfile =
     warnIfTagMismatches ctxmain (srcfile-:Files.path) (tagMismatches rawsrc)
-    >> return TemplateContext {
+    *> pure TemplateContext {
                 fileExt = fileext, srcFile = srcfile, chunks = srcchunks
             }
     where
@@ -123,8 +122,7 @@ processSrc ctxproc ctxpage =
     _p = ctxpage-:(pTagHandler =|- preserveunprocessedtag)
     _x = (ctxproc-:xTagHandler) ctxpage
     process src =
-        -- concatMap foreach (splitup src)
-        concat$ (splitup src) >~foreach
+        (splitup src) >>= foreach
         where
         foreach (srccontent , "") =
             srccontent
@@ -164,7 +162,7 @@ tagMismatches src =
 
 warnIfTagMismatches ctxmain filename (numtagends , numtagbegins) =
     if Files.hasPathBlokIndexPrefix filename || numtagbegins == numtagends
-        then return ()
+        then pure ()
         else
         let maindirpath = ctxmain-:Files.dirPath
             trim = (Util.startsWith filename maindirpath) |? (drop$ maindirpath~>length + 1) |! id

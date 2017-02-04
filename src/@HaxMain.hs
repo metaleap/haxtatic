@@ -23,8 +23,8 @@ main ::
 main =
     Data.Time.Clock.getCurrentTime >>= \starttime
     -> putStrLn "\n\n==== HAXTATIC ====\n"
-    >> System.IO.hFlush System.IO.stdout
-    >> System.Environment.getArgs >>= \cmdargs
+    *> System.IO.hFlush System.IO.stdout
+    *> System.Environment.getArgs >>= \cmdargs
     -> System.Directory.getCurrentDirectory >>= \curdir
     -> if null cmdargs
         then putStrLn "No project-directory path supplied.\n\
@@ -56,20 +56,20 @@ main =
             showavg 0 _ _ = ""
             showavg l t1 t2 = Text.Printf.printf " (%ux ~%s)" l (showtime' 4 ((Util.duration t1 t2) / (fromIntegral l)))
         in Text.Printf.printf "\n\nWrote %u files in %s:" numoutfiles (showtime timetaken)
-        >> Text.Printf.printf "\n\t%s pre-templating & planning"
+        *> Text.Printf.printf "\n\t%s pre-templating & planning"
                                 (showtime$ Util.duration starttime timeinitdone)
-        >> Text.Printf.printf "\n\t%s page templating & generation%s"
+        *> Text.Printf.printf "\n\t%s page templating & generation%s"
                                 (showtime$ Util.duration timecopydone timeprocdone)
                                 (showavg (buildplan-:Build.outPages~>length) timecopydone timeprocdone)
-        >> Text.Printf.printf "\n\t%s XML file generation%s"
+        *> Text.Printf.printf "\n\t%s XML file generation%s"
                                 (showtime$ Util.duration timeprocdone timexmldone)
                                 (showavg numxmls timeprocdone timexmldone)
-        >> Text.Printf.printf "\n\t%s misc. & file-copying%s"
+        *> Text.Printf.printf "\n\t%s misc. & file-copying%s"
                                 (showtime$ ((Util.duration timeinitdone timecopydone) + (Util.duration timexmldone endtime)))
                                 (showavg (buildplan-:Build.outStatics~>length) timeprocdone endtime)
-        >> if has warnpages
+        *> if has warnpages
             then putStrLn ("\n\n" ++ (Util.join "\n\t!>\t" ("Apparent {!| ERROR MESSAGES |!} were rendered into:":warnpages)) ++ "\n\n")
             else if has hintpages
             then putStrLn ("\n\n" ++ (Util.join "\n\t?>\t" ("DON'T MISS the (potentially critical) notices above for:":hintpages)) ++ "\n\n")
             else putStrLn ("\n\n==== Bye now! ====\n\n")
-        >> System.IO.hFlush System.IO.stdout
+        *> System.IO.hFlush System.IO.stdout

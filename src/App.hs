@@ -1,6 +1,8 @@
 {-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module App where
 
+--  writing an X-renderer? register it right below the `import`s, in `xregs`
+
 import Base
 import qualified Build
 import qualified Defaults
@@ -54,47 +56,44 @@ processAll ctxmain projfilename custfilenames =
     let nameonly = System.FilePath.takeFileName -- turn a mistakenly supplied file-path back into just-name
         projname = nameonly (ctxmain-:Files.dirPath)
     in putStrLn "\n1/6\tReading essential project files (or creating them).."
-    >> System.IO.hFlush System.IO.stdout
-    >> System.Directory.createDirectoryIfMissing False (ctxmain-:Files.dirPath)
-    >> Defaults.loadOrCreate ctxmain projname (projfilename~>nameonly) (custfilenames>~nameonly)
-    >>= Proj.loadCtx ctxmain projname xregs >>= \ctxproj
+    *> System.IO.hFlush System.IO.stdout
+    *> System.Directory.createDirectoryIfMissing False (ctxmain-:Files.dirPath)
+    *> Defaults.loadOrCreate ctxmain projname (projfilename~>nameonly) (custfilenames>~nameonly)
+    >>= Proj.loadCtx ctxmain projname xregs >>= \ ctxproj
     -> Tmpl.warnIfTagMismatches ctxmain "*.haxproj (or *.haxsnip)"
                 (ctxproj-:Proj.setup-:Proj.tagMismatches)
 
-    >> putStrLn ("\n2/6\tPlanning the work..")
-    >> System.IO.hFlush System.IO.stdout
-    >> Build.plan ctxmain ctxproj >>= \buildplan
+    *> putStrLn ("\n2/6\tPlanning the work..")
+    *> System.IO.hFlush System.IO.stdout
+    *> Build.plan ctxmain ctxproj >>= \ buildplan
     -> let
+        numdynpages = buildplan-:Build.numDynPages ; numskippages = buildplan-:Build.numSkippedPages
+        numskipfiles = buildplan-:Build.numSkippedStatic ; numskipposts = buildplan-:Build.numSkippedAtoms
+        numoutfiles = buildplan-:Build.numOutFilesTotal ; numxmls = numatoms + numsitemaps
         numgenpages = buildplan-:Build.outPages~>length
-        numdynpages = buildplan-:Build.numDynPages
-        numskippages = buildplan-:Build.numSkippedPages
         numcopyfiles = buildplan-:Build.outStatics~>length
-        numskipfiles = buildplan-:Build.numSkippedStatic
-        numskipposts = buildplan-:Build.numSkippedAtoms
-        numoutfiles = buildplan-:Build.numOutFilesTotal
         numatoms = buildplan-:Build.outAtoms~>length
         numsitemaps = ((buildplan-:Build.siteMap~>fst) == Build.NoOutput) |? 0 |! 1
-        numxmls = numatoms + numsitemaps
         dirbuild = ctxproj-:Proj.dirPathBuild
     in Text.Printf.printf "\t->\tStatic files: will copy %u, skipping %u\n" numcopyfiles numskipfiles
-    >> Text.Printf.printf "\t->\tContent pages: will generate %u+%u, skipping %u\n" (numgenpages - numdynpages) numdynpages numskippages
-    >> Text.Printf.printf "\t->\tXML files: will generate %u feeds, skipping %u\n\t\t           plus %u sitemap(s)\n" numatoms numskipposts numsitemaps
-    >> Data.Time.Clock.getCurrentTime >>= \timeinitdone
+    *> Text.Printf.printf "\t->\tContent pages: will generate %u+%u, skipping %u\n" (numgenpages - numdynpages) numdynpages numskippages
+    *> Text.Printf.printf "\t->\tXML files: will generate %u feeds, skipping %u\n\t\t           plus %u sitemap(s)\n" numatoms numskipposts numsitemaps
+    *> Data.Time.Clock.getCurrentTime >>= \timeinitdone
 
     -> Text.Printf.printf "\n3/6\tCopying %u/%u file(s) to:\n\t~>\t%s\n" numcopyfiles (numcopyfiles+numskipfiles) dirbuild
-    >> System.IO.hFlush System.IO.stdout
-    >> Build.copyStaticFiles buildplan
-    >> Data.Time.Clock.getCurrentTime >>= \timecopydone
+    *> System.IO.hFlush System.IO.stdout
+    *> Build.copyStaticFiles buildplan
+    *> Data.Time.Clock.getCurrentTime >>= \timecopydone
 
     -> Text.Printf.printf "\n4/6\tGenerating %u/%u file(s) in:\n\t~>\t%s\n" numgenpages (numgenpages+numskippages) dirbuild
-    >> System.IO.hFlush System.IO.stdout
-    >> Pages.processAll ctxmain ctxproj buildplan >>= \(warnpages , hintpages , ctxbuild)
+    *> System.IO.hFlush System.IO.stdout
+    *> Pages.processAll ctxmain ctxproj buildplan >>= \(warnpages , hintpages , ctxbuild)
     -> Data.Time.Clock.getCurrentTime >>= \timeprocdone
 
     -> Text.Printf.printf "\n5/6\tWriting %u/%u XML file(s) to:\n\t~>\t%s\n" numxmls (numxmls+numskipposts) dirbuild
-    >> Pages.writeSitemapXml ctxproj buildplan
-    >> Posts.writeAtoms ctxbuild (ctxproj-:Proj.domainName) (buildplan-:Build.feedJobs)
-    >> Data.Time.Clock.getCurrentTime >>= \timexmldone
+    *> Pages.writeSitemapXml ctxproj buildplan
+    *> Posts.writeAtoms ctxbuild (ctxproj-:Proj.domainName) (buildplan-:Build.feedJobs)
+    *> Data.Time.Clock.getCurrentTime >>= \timexmldone
 
     -> let
         extrahints = if (ctxproj-:Proj.setup-:Proj.tagMismatches~>fst /= ctxproj-:Proj.setup-:Proj.tagMismatches~>snd)
@@ -103,6 +102,6 @@ processAll ctxmain projfilename custfilenames =
         doordonot = if null$ ctxproj-:Proj.dirPathDeploy
                     then putStrLn (deploymsg++ "(skipping this step.)")
                     else putStrLn (deploymsg++(ctxproj-:Proj.dirPathDeploy))
-                        >> System.IO.hFlush System.IO.stdout
-                        >> Build.copyAllOutputsToDeploy buildplan
+                        *> System.IO.hFlush System.IO.stdout
+                        *> Build.copyAllOutputsToDeploy buildplan
     in Util.via doordonot (buildplan , warnpages , hintpages ++ extrahints , numoutfiles , numxmls , timeinitdone , timecopydone , timeprocdone, timexmldone)

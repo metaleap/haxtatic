@@ -29,7 +29,7 @@ registerX _ xreg =
             || (tagmatches~>length) <= (cfg-:considerEmpty)
         = Just$ cfg-:outputIfEmpty
         | otherwise
-        = Just$ concat$ tagmatches>~foreach
+        = Just$ tagmatches >>= foreach
         where
 
         tagmatches = (pagectx-:Tmpl.htmlInners) cfg_gathertagname

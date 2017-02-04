@@ -66,7 +66,7 @@ loadCtx ctxmain projname xregs defaultfiles =
             setup = loadedsetup,
             coreFiles = defaultfiles
         }
-    in return ctxproj
+    in pure ctxproj
 
 
 

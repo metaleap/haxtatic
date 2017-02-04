@@ -36,7 +36,7 @@ loadOrCreate ctxmain projname projfilename custfilenames =
     -> Files.readOrDefault True ctxmain relpathtmplmain relpathtmplmain' _tmpl_html_main
     >>= \tmplmainfile
     -> Files.readOrDefault True ctxmain relpathsnipblok "" _tmpl_html_blok
-    >> Files.listAllFiles (ctxmain-:Files.dirPath) ["tmpl"] id >>= \tmplfileinfos
+    *> Files.listAllFiles (ctxmain-:Files.dirPath) ["tmpl"] id >>= \tmplfileinfos
     -> let
         snipfileinfos = tmplfileinfos ~|(Data.List.isSuffixOf ".haxsnip.html").fst
         snipmodtime = if null snipfileinfos then Util.dateTime0 else maximum$ snipfileinfos>~(snd ~. Files.modTime)
@@ -52,7 +52,7 @@ loadOrCreate ctxmain projname projfilename custfilenames =
             = file { Files.modTime = max cmpmodtime $file-:Files.modTime }
         redatedcfg = redated cfgmodtime
         redatedtmpl = redated tmplmodtime
-    in return DefaultFiles {
+    in pure DefaultFiles {
         projectDefault = projfile~>redatedcfg,
         projectOverwrites = custfiles>~redatedcfg,
         htmlTemplateMain = tmplmainfile~>redatedtmpl,
@@ -72,7 +72,7 @@ writeDefaultIndexHtml ctxmain projname dirpagesrel dirbuild htmltemplatemain =
         pathtmpl = htmltemplatemain-:Files.path
         pathfinal = dirbuild </> fileName_IndexHtml
         dstfile = Files.FileInfo dstfilepath (ctxmain-:Files.nowTime)
-        filecontent = return ( _index_html
+        filecontent = pure ( _index_html
                                     dircur projname dirproj dirpages dstfilepath pathtmpl pathfinal,
                                 (dstfile , fileName_IndexHtml , pathfinal) )
     in Files.writeTo dstfilepath dstfpathrel filecontent

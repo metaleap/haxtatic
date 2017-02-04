@@ -52,7 +52,7 @@ data Task
 
 copyAllOutputsToDeploy buildplan =
     let foreach NoOutput =
-            return ()
+            pure ()
         foreach builtfile =
             let srcfilepath = builtfile-:outPathBuild
                 ifexists True =
@@ -61,10 +61,10 @@ copyAllOutputsToDeploy buildplan =
                     putStrLn ("\t-!\tMissing: `" ++srcfilepath++ "`")
             in System.Directory.doesFileExist srcfilepath >>= ifexists
     in (buildplan-:outStatics) >>~ foreach
-    >> (buildplan-:outPages) >>~ foreach
-    >> (buildplan-:outAtoms) >>~ foreach
-    >> (buildplan-:siteMap~>fst) ~> foreach
-    >> return ()
+    *> (buildplan-:outPages) >>~ foreach
+    *> (buildplan-:outAtoms) >>~ foreach
+    *> (buildplan-:siteMap~>fst) ~> foreach
+    *> pure ()
 
 
 
@@ -76,17 +76,17 @@ copyStaticFiles buildplan =
 
 
 _createIndexHtmlIfNoContentPages ctxmain ctxproj numpagesrcfiles =
-    if numpagesrcfiles > 0 then return NoOutput
+    if numpagesrcfiles > 0 then pure NoOutput
     else let
         sitename = ctxproj-:Proj.projName
         dirpagesrel = (ctxproj-:Proj.setup-:Proj.cfg-:ProjC.processingOfPages-:ProjC.dirs)@!0
         dirbuild = ctxproj-:Proj.dirPathBuild
         htmltemplatemain = ctxproj-:Proj.coreFiles-:Defaults.htmlTemplateMain
     in putStrLn ("\t->\tNo content-source files whatsoever.. making one for you:")
-    >> Defaults.writeDefaultIndexHtml
+    *> Defaults.writeDefaultIndexHtml
         ctxmain sitename dirpagesrel dirbuild htmltemplatemain
     >>= \(srcfile , relpath , outjobpath)
-    -> return FileOutput {
+    -> pure FileOutput {
                     relPath = relpath,
                     relPathSlashes = Files.pathSepSystemToSlash relpath,
                     blokName = "",
@@ -159,7 +159,7 @@ plan ctxmain ctxproj =
                                 Posts.relPath = outjob-:relPath,
                                 Posts.srcFile = outjob-:srcFile
                             }
-    in return BuildPlan {
+    in pure BuildPlan {
                 outAtoms = outatomfiles,
                 outPages = outpagefiles,
                 outStatics = outcopyfiles,
@@ -200,20 +200,20 @@ _filterOutFiles shouldforce fileinfos cfgproc =
         skipall = ["*"]==cfgproc-:ProjC.skip
         forceall = ["*"]==cfgproc-:ProjC.force
         shouldbuildfile NoOutput =
-            return False
+            pure False
         shouldbuildfile fileinfo =
             let outfilepath = fileinfo-:outPathBuild
                 skipthis = (not skipall) && (matchesany $cfgproc-:ProjC.skip)
                 forcethis = (not forceall) && (matchesany $cfgproc-:ProjC.force)
                 matchesany = Files.simpleFileNameMatchAny $fileinfo-:relPath
             in (forcethis || (forceall && not skipthis) || (shouldforce fileinfo))
-            |? return True
+            |? pure True
             |! (skipthis || (skipall && not forcethis))
-            |? return False
+            |? pure False
             |! let
                 ifexists False =
-                    return True
+                    pure True
                 ifexists True =
                     System.Directory.getModificationTime outfilepath
-                    >>= return.((fileinfo-:srcFile-:Files.modTime) >)
+                    >>= pure . ((fileinfo-:srcFile-:Files.modTime) >)
             in System.Directory.doesFileExist outfilepath >>= ifexists

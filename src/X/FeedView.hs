@@ -54,27 +54,24 @@ registerX ctxproj xreg =
     let
     renderer (maybectxpage , argstr) =
         if waitforpage then Nothing
-            else Just$ concat$ allgroups>~foreach
+            else Just$ allgroups >>= render
         where
-        allgroups = if has (args-:groups) then (args-:groups)
-                    else ((feedgroups (postsfrom [] Posts.AnyDate) "dt:year") ~> (Data.List.sortBy (flip compare))) >~ togroup
-        togroup year = Group year [] (Posts.Between year ((show . (+ 1)) (Util.tryParseOr 9998 year)))
-        foreach (Group title cats dates) =
-            let query = postsfrom cats dates
-                more = cfg-:feedMore
-                posts = X.Iterator.preSorted$ feedposts query "dt" (X.Iterator.moreFromHtmlSplit more)
-                postsfields = posts >~ X.Iterator.postFieldsToPairs more
-                outxvars = postsfields >~ tooutitem
-                outitems = outxvars >~ X.Iterator.outputFeedPosts >~ \ strvars ->
-                            xfeeditem ("vars=["++strvars++"],content=>")
-            in if null outitems then "" else
-                (xgroups title) ++ (feedwrap (concat outitems))
+        allgroups = (Util.ifNo $args-:groups)$  --  if no groups defined $ fall back to: feed years, descending
+                        (Util.sortDesc$ feedgroups (postsfrom [] Posts.AnyDate) "dt:year") >~ togroup where
+                            togroup year = Group year [] (Posts.Between year (show$ 1 + Util.tryParseOr 9998 year))
+        render (Group title cats dates) =
+            null outitems |? "" |! xgroups title ++ cfgfeedwrap outitems
+            where
+            outitems = posts >~ X.Iterator.postFieldsToPairs more ~. tooutitem ~. xfeedwrap
+            posts = X.Iterator.preSorted$ feedposts query "dt" mh
+            more = cfg-:feedMore ; mh = X.Iterator.moreFromHtmlSplit more
+            query = postsfrom cats dates
 
         tooutitem fieldpairs =
-            xvhandlers >~ \(xvname , handler) -> (xvname , handler fieldpairs)
+            xvhandlers >~ (>~ ($fieldpairs))
 
         xvhandlers =
-            (args-:xVars) >~ \(xvname , xv) -> (xvname , tofunc xv) where
+            (args-:xVars) >~ (>~ tofunc) where
                 tofunc (V val) = const val
                 tofunc (F name) = Util.lookup name ""
                 tofunc (Wrap pref suff xv) = (pref++) . (++suff) . (tofunc xv)
@@ -93,10 +90,10 @@ registerX ctxproj xreg =
                 tofunc (X xv) = (try (xtags maybectxpage)) . (tofunc xv)
                 try _ [] = [] ; try maybeer val = case maybeer val of Nothing -> val ; Just v -> v
 
+        xfeedwrap = xfeeditem . ("vars=["++) . (++"],content=>") . X.Iterator.outputFeedPosts
         postsfrom = Posts.Some (args-:feeds)
         (feedgroups , feedposts) = X.Iterator.feedFuncs ctxproj maybectxpage
-        (xgroups , xfeeditem) = (x (cfg-:xnameGroupHeading) xerrgroups , x (cfg-:xnameFeedItem) xerrfeeditem) where
-            x xn xerr v = xerr v -|= xtags maybectxpage (xn++':':v)
+        (xgroups , xfeeditem) = xboth maybectxpage
         args = X.tryParseArgs xreg argstr Nothing errval where
             errval = Args{ feeds=[], groups=[Group errmsg [] Posts.AnyDate], xVars = [] } where
                 errmsg = X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))
@@ -112,10 +109,13 @@ registerX ctxproj xreg =
     projbloknames = Data.Map.Strict.keys (ctxproj-:Proj.setup-:Proj.bloks)
     projfeednames = ctxproj-:Proj.setup-:Proj.feeds
 
+    xboth maybectxpage =
+        (x (cfg-:xnameGroupHeading) xerrgroups , x (cfg-:xnameFeedItem) xerrfeeditem) where
+            x xn xerr v = xerr v -|= xtags maybectxpage (xn++':':v)
     (xerrgroups , xerrfeeditem) = (x $cfg-:xnameGroupHeading, x $cfg-:xnameFeedItem) where
         x xn = (++"|}") . (("{X|"++xn)++) . ((:) ':')
     dtformat = X.FormatDateTime.dtFormatter ctxproj ""
-    feedwrap = ((fst $cfg-:feedWrap)++).(++(snd $cfg-:feedWrap))
+    cfgfeedwrap = ((fst $cfg-:feedWrap)++) . (++(snd $cfg-:feedWrap)) . concat
     xtags = ctxproj-:Proj.setup-:Proj.ctxTmpl-:Tmpl.xTagHandler
     cfg = X.tryParseCfg xreg (xreg-:X.cfgFullStr) Nothing errval where
         errval = Cfg { xnameGroupHeading = "", xnameFeedItem = "", feedMore = [],

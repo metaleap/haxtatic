@@ -38,7 +38,7 @@ registerX _ xreg =
                 {-error-} (Args { items = ["#"=:""], attr = X.htmlErrAttsArgs (xreg , Util.excerpt 23 argstr) })
 
         htmlout attribs argitems =
-            concat$ argitems>~(foreach Nothing attribs)
+            argitems >>= (foreach Nothing attribs)
         foreach maybname attribs (('&':burl) , btext) =
             case maybectxpage of
                 Nothing -> foreach maybname attribs (burl , btext)

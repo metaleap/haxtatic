@@ -65,31 +65,34 @@ registerX ctxproj xreg =
         allcontents = cfgjoin (iteratees >~ (foreach dyns n)) where n = show numtotal
 
         numtotal = iteratees~>length
-        dyns = d (args-:over) where d (With i t) = d (_w2b i t) ; d (But (Dyn vals) _) = vals ; d (But _ moreover) = d moreover ; d _ = []
-        blokcat = bc (args-:over) where bc (But (BlokCat bcat) _) = bcat ; bc (But _ moreover) = bc moreover ; bc _ = ""
+        dyns = null dyns'' |? [] |! dyns' ++ repeat dlast where
+            dlast = dyns'@!ilast ; ilast = dyns''~>length - 1
+            dyns' = [0..ilast]>~g where g i = (null v && i > 0) |? g (i-1) |! v where v = dyns''@!i
+            dyns'' = d$args-:over where d (With i t) = d (_w2b i t) ; d (But (Dyn vals) _) = vals ; d (But _ deeper) = d deeper ; d _ = []
+        blokcat = bc (args-:over) where bc (But (BlokCat bcat) _) = bcat ; bc (But _ deeper) = bc deeper ; bc _ = ""
         iteratees = Util.indexed (iter $args-:over) where
 
             --  RECURSIVE TWEAK-OPS:
-            iter (With moreover tweaks) =
-                iter (_w2b moreover tweaks)
-            iter (But (WrapEachIn (pref , suff)) moreover) =
-                (iter moreover) >~ ((pref++).(++suff))
-            iter (But (LimitTo limit) moreover) =
-                take limit (iter moreover)
-            iter (But (Skip skip) moreover) =
-                drop skip (iter moreover)
-            iter (But (Ordered None) moreover) =
-                iter moreover
-            iter (But (Ordered (Shuffle perpage)) moreover) =
-                shuffle perpage (iter moreover)
-            iter (But (Ordered Descending) moreover) =
-                (s moreover) (iter moreover) where
-                    s (FeedPosts _ _) = id ; s _ = Data.List.sortBy (flip compare)
-            iter (But (Ordered Ascending) moreover) =
-                (s moreover) (iter moreover) where
+            iter (With deeper tweaks) =
+                iter (_w2b deeper tweaks)
+            iter (But (WrapEachIn (pref , suff)) deeper) =
+                (iter deeper) >~ ((pref++).(++suff))
+            iter (But (LimitTo limit) deeper) =
+                take limit (iter deeper)
+            iter (But (Skip skip) deeper) =
+                drop skip (iter deeper)
+            iter (But (Ordered None) deeper) =
+                iter deeper
+            iter (But (Ordered (Shuffle perpage)) deeper) =
+                shuffle perpage (iter deeper)
+            iter (But (Ordered Descending) deeper) =
+                (s deeper) (iter deeper) where
+                    s (FeedPosts _ _) = id ; s _ = Util.sortDesc
+            iter (But (Ordered Ascending) deeper) =
+                (s deeper) (iter deeper) where
                     s (FeedPosts _ _) = reverse ; s _ = Data.List.sortBy compare
-            iter (But _ moreover) =
-                iter moreover
+            iter (But _ deeper) =
+                iter deeper
 
             --  ACTUAL ENUMERATIONS:
             iter (Values values) =
@@ -122,8 +125,8 @@ registerX ctxproj xreg =
             where
             hasctxpage Nothing = False ; hasctxpage (Just _) = True
             needpage4iter (With iter buts) = needpage4iter (_w2b iter buts)
-            needpage4iter (But (Ordered (Shuffle perpage)) moreover) = perpage || needpage4iter moreover
-            needpage4iter (But _ moreover) = needpage4iter moreover
+            needpage4iter (But (Ordered (Shuffle perpage)) deeper) = perpage || needpage4iter deeper
+            needpage4iter (But _ deeper) = needpage4iter deeper
             needpage4iter (FeedValues query _) = needpage4feed query
             needpage4iter (FeedPosts query _) = needpage4feed query
             needpage4iter _ = False
@@ -136,19 +139,27 @@ registerX ctxproj xreg =
     where
     projbloknames = Data.Map.Strict.keys (ctxproj-:Proj.setup-:Proj.bloks)
     projfeednames = ctxproj-:Proj.setup-:Proj.feeds
-    foreach dyn num | null cfgcontent   = \ (_,v) -> v    --  no content -> "{:v:}"
-                    | otherwise         = repl cfgcontent
-                    where
-                    cfgcontent = cfg-:content
-                    repl []                         _           = []
-                    repl ('{':':':'i':':':'}':rest) iv@(i , _)  = (show i) ++ repl rest iv
-                    repl ('{':':':'n':':':'}':rest) iv@(i , _)  = (show$ i+1) ++ repl rest iv
-                    repl ('{':':':'v':':':'}':rest) iv@(_ , v)  = v ++ repl rest iv
-                    repl ('{':':':'l':':':'}':rest) iv          = num ++ repl rest iv
-                    repl ('{':':':'d':':':'}':rest) iv@(i , _)  = grab i ++ (repl rest iv)
-                    repl (this : rest)              iv          = this : repl rest iv
-                    grab i =
-                        if has v || i == 0 then v else grab (i-1) where v = "" -|= (dyn@?i)
+    foreach dyn num (i,v)   | null cfgcontent   = v --  no content == "{:v:}"
+                            | otherwise         = cfgcontenter (show i , v , dyn@!i , show$ i+1 , num)
+    cfgcontent = cfg-:content
+    cfgcontenter (si,v,sd,sn,num) =
+        cfgcontentsplits >>= persplit
+        where
+        persplit Si = si
+        persplit V = v
+        persplit Sd = sd
+        persplit Sn = sn
+        persplit Num = num
+        persplit (Str str) = str
+
+    cfgcontentsplits = (Util.splitUp id ["{:"] ":}" cfgcontent) >~ forsplit where
+        forsplit (('i':[]) , ('{':_)) = Si
+        forsplit (('v':[]) , ('{':_)) = V
+        forsplit (('d':[]) , ('{':_)) = Sd
+        forsplit (('n':[]) , ('{':_)) = Sn
+        forsplit (('l':[]) , ('{':_)) = Num
+        forsplit (othercontent, ('{':_)) = Str ('{':':':othercontent++":}")
+        forsplit (othercontent, _) = Str othercontent
     cfgjoin = if null $cfg-:joinVia then concat else Util.join $cfg-:joinVia
     cfgwrap | (null $cfg-:prefix) && (null $cfg-:suffix) = id
             | otherwise = (((cfg-:prefix))++).(++((cfg-:suffix)))
@@ -156,7 +167,7 @@ registerX ctxproj xreg =
     cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where
         defcfg = Cfg { prefix = "" , suffix = "" , joinVia = ", " , content = "" }
         errcfg = Cfg { prefix = X.htmlErr (X.clarifyParseCfgError xreg) , suffix = "" , joinVia = "" , content = "" }
-
+data WhyDaLuckyStiff = Si | V | Sd | Sn | Num | Str String
 
 
 _w2b iter tweaks =
@@ -175,7 +186,7 @@ feedFuncs ctxproj maybectxpage =
 
 
 postFieldsToPairs more post =
-    morefields ++ (Posts.wellKnownFields >~ (fmap (post-:)))
+    morefields ++ (Posts.wellKnownFields >~ (>~ (post-:)))
     where
     morefields = more >=~ topair
     topair mf =

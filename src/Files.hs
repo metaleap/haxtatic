@@ -45,12 +45,12 @@ _isfsnameok _ = True
 
 
 
-copyTo _ [] = return ()
+copyTo _ [] = pure ()
 copyTo srcfilepath ("":dstmore) = copyTo srcfilepath dstmore
 copyTo srcfilepath (dstpath:dstmore) =
     System.Directory.createDirectoryIfMissing True (System.FilePath.takeDirectory dstpath)
-    >> System.Directory.copyFile srcfilepath dstpath
-    >> copyTo srcfilepath dstmore
+    *> System.Directory.copyFile srcfilepath dstpath
+    *> copyTo srcfilepath dstmore
 
 
 
@@ -80,7 +80,7 @@ ensureFileExt ignorecase ext filepath =
 filesInDir dir =
     System.Directory.doesDirectoryExist dir >>= direxists where
         direxists False =
-            return []
+            pure []
         direxists True =
             System.Directory.listDirectory dir >>=
             (~| _isfsnameok) ~. (>>| filesonly) where
@@ -100,29 +100,29 @@ prependPathBlokIndexPrefix fauxpath = ':':'B':'|':'/':fauxpath
 
 
 listAllFiles rootdirpath reldirs modtimer =
-    let allfiles = concat<$> (dirpaths >>~ foreachdir)
+    let allfiles = (dirpaths >>~ foreachdir) >~ concat
         dirpaths = reldirs >~ (System.FilePath.combine rootdirpath)
         foreachfile :: FilePath -> IO (FilePath , Data.Time.Clock.UTCTime)
         foreachfile filepath =
             System.Directory.getModificationTime filepath >>= \modtime
-            -> return (filepath , modtimer modtime)
+            -> pure (filepath , modtimer modtime)
         foreachdir :: FilePath -> IO [(FilePath , Data.Time.Clock.UTCTime)]
         foreachdir dirpath =
             System.Directory.doesDirectoryExist dirpath >>= direxists where
                 direxists False =
-                    return []
+                    pure []
                 direxists True =
                     System.Directory.listDirectory dirpath >>= \names
                     -> let  oknames = names ~| _isfsnameok
                             files = oknames >>| fstest System.Directory.doesFileExist
                             dirs = oknames >>| fstest System.Directory.doesDirectoryExist
                             fstest = ((dirpath</>) ~.)
-                            joinpath n = n >>= return.(dirpath</>)
+                            joinpath n = n >>= pure.(dirpath</>)
                     in (joinpath<$> files) >>= \filepaths
                     -> (filepaths >>~ foreachfile) >>= \filetuples
                     -> (joinpath<$> dirs) >>= \subdirpaths
                     -> (subdirpaths >>~ foreachdir) >>= \recursed
-                    -> return (concat [filetuples, concat recursed])
+                    -> pure (concat [filetuples, concat recursed])
     in allfiles >>= \allfiletuples
     -> let
         foreachfiletuple (srcfilepath , modtime) =
@@ -134,7 +134,7 @@ listAllFiles rootdirpath reldirs modtimer =
                 if Util.startsWith srcfilepath reldirpath
                 then Just$ drop (1 + reldirpath~>length) srcfilepath else Nothing
         newest (_,modtime1) (_,modtime2) = compare modtime2 modtime1
-    in return$ (Data.List.sortBy newest allfiletuples)>~foreachfiletuple
+    in pure$ (Data.List.sortBy newest allfiletuples)>~foreachfiletuple
 
 
 
@@ -145,7 +145,7 @@ pathSepSystemToSlash = Util.substitute '\\' '/' -- no sys-sep here: thus covers 
 
 
 readOrDefault _ _ "" _ _ =
-    return NoFile
+    pure NoFile
 
 readOrDefault create ctxmain relpath relpath2 defaultcontent =
     System.Directory.doesFileExist filepath >>= fileexists
@@ -153,15 +153,15 @@ readOrDefault create ctxmain relpath relpath2 defaultcontent =
     filepath = System.FilePath.combine (ctxmain-:dirPath) relpath
     fileexists True =
         System.Directory.getModificationTime filepath >>= \modtime
-        -> readFile filepath >>= (FileFull filepath modtime)~.return
+        -> readFile filepath >>= (FileFull filepath modtime)~.pure
     fileexists False =
         if has relpath2 && relpath2/=relpath
         then readOrDefault create ctxmain relpath2 "" defaultcontent else
         let file = FileFull filepath filetime defaultcontent
             filetime = if create || has defaultcontent then (ctxmain-:nowTime) else Util.dateTime0
-        in if not create then return file else
-            writeTo filepath relpath (return (defaultcontent , ()))
-            >> return file
+        in if not create then pure file else
+            writeTo filepath relpath (pure (defaultcontent , ()))
+            *> pure file
 
 
 
@@ -204,14 +204,14 @@ _fileoutputdonemsg = "OK ]"
 
 
 writeTo "" _ loadcontent =
-    loadcontent >>= \(_ , returnvalue)
-    -> return returnvalue
+    loadcontent >>= \(_ , finalresult)
+    -> pure finalresult
 writeTo filepath showpath loadcontent =
     System.Directory.createDirectoryIfMissing True (System.FilePath.takeDirectory filepath)
-    >> (if has showpath then putStr$ _fileoutputbeginmsg showpath else return ())
-    >> System.IO.hFlush System.IO.stdout
-    >> loadcontent >>= \(loadedcontent , returnvalue)
+    *> (if has showpath then putStr$ _fileoutputbeginmsg showpath else pure ())
+    *> System.IO.hFlush System.IO.stdout
+    *> loadcontent >>= \(loadedcontent , finalresult)
     -> writeFile filepath loadedcontent
-    >> (if has showpath then putStrLn _fileoutputdonemsg else return ())
-    >> System.IO.hFlush System.IO.stdout
-    >> return returnvalue
+    *> (if has showpath then putStrLn _fileoutputdonemsg else pure ())
+    *> System.IO.hFlush System.IO.stdout
+    *> pure finalresult

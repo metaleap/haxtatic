@@ -87,7 +87,7 @@ feedPosts maybectxbuild projposts projbloks query blokcat morefromhtmls =
     where
     everything All = True ; everything (Some [] [] AnyDate) = True ; everything (Some [] [] (Between "" "")) = True ; everything _ = False
     queryfeeds = Util.noNils (query-:feeds)
-    allposts = projposts ++ (concat$ bloknames>~postsfromblok)
+    allposts = projposts ++ (bloknames >>= postsfromblok)
     postsfromblok blokname = (postsFromBlok maybectxbuild morefromhtmls blokcat blokname) >~ snd
     bloknames = let bnames = Data.Map.Strict.keys projbloks in
                     if everything query then bnames else bnames ~|(`elem` queryfeeds)
@@ -129,7 +129,7 @@ parseProjChunks projcfg chunkssplits =
     (feednames , posts)
     where
     feednames = Util.unique (posts>~feed)
-    posts = Data.List.sortBy (flip compare) (chunkssplits>=~foreach)
+    posts = Util.sortDesc$ chunkssplits >=~ foreach
     foreach (pfeedcat:pvalsplits) =
         let
             pstr = Util.join ":" pvalsplits ~> Util.trim
@@ -193,9 +193,9 @@ wellKnownFields =
 
 
 writeAtoms _ _ [] =
-    return ()
+    pure ()
 writeAtoms ctxbuild domainname outjobs =
-    outjobs >>~ writeatom >> return ()
+    outjobs >>~ writeatom *> pure ()
     where
 
     (domain,domainwtf) = Util.splitOn1st '/' domainname
@@ -203,7 +203,7 @@ writeAtoms ctxbuild domainname outjobs =
 
     writeatom outjob =
         Files.writeTo (outjob-:outPathBuild) relpath xmlatomfull >>= \nowarnings
-        -> if nowarnings then return ()
+        -> if nowarnings then pure ()
             else putStrLn ("...\t<~\tProbable {!| ERROR MESSAGES |!} were rendered into `"++relpath++"`")
 
         where
@@ -223,11 +223,11 @@ writeAtoms ctxbuild domainname outjobs =
                             \    <id>http://"++domainname++pageuri++"</id>\n\
                             \    <link href=\"http://"++domainname++pageuri++"\"/>\n\
                             \    <updated>"++updated++"T00:00:00Z</updated>\n    "
-                xmlinner = concat$ allposts>~xmlatompost
+                xmlinner = allposts >>= xmlatompost
                 nowarn = i1 < 0 || i2 < (i1 + 4) where
                     i1 = Util.indexOfSub xmlinner "{!|"
                     i2 = Util.indexOfSub xmlinner "|!}"
-            in return (xmlintro++xmlinner++"\n</feed>" , nowarn)
+            in pure (xmlintro++xmlinner++"\n</feed>" , nowarn)
 
         root2rel = Html.rootPathToRel relpath
         hrefify = Html.escapeSpace4Href . Html.escape . Files.pathSepSystemToSlash

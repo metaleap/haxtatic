@@ -32,7 +32,7 @@ processAll ctxmain ctxproj buildplan =
                     filenameexts (cfgproj-:ProjC.htmlEquivExts) >>= \tmplfinder
     -> let
         process done [] =
-            return done
+            pure done
         process (prevwarns , prevhints , ctxbuildprev) (thisjob:morejobs) =
             procpage ctxbuildprev thisjob
             >>= \(maybewarning , maybehint , ctxbuildnext) ->
@@ -50,14 +50,14 @@ processPage ctxmain ctxproj ctxtmpl tmplfinder thandler ctxbuild outjob =
     Files.writeTo dstfilepath (outjob-:Build.relPath) processcontent
     >>= \(outsrc , ctxpage , mismatches)
     -> Tmpl.warnIfTagMismatches ctxmain srcfilepath mismatches
-    >> let
+    *> let
         outjobsrcfilepath = outjob-:Build.srcFile-:Files.path
         lookupcachedpagerender = ctxbuild-:Posts.lookupCachedPageRender
         cachelookup filepath
             |(filepath==outjobsrcfilepath)= Just ctxpage
             |(otherwise)= lookupcachedpagerender filepath
         i1 = Util.indexOfSub outsrc "|!}" ; i2 = Util.indexOfSub outsrc "{!|"
-    in return ( (i2 < 0 || i1 < i2) |? Nothing |! (Just$ outjob-:Build.relPath),
+    in pure ( (i2 < 0 || i1 < i2) |? Nothing |! (Just$ outjob-:Build.relPath),
                 (mismatches~>fst == mismatches~>snd) |? Nothing |! (Just$ outjob-:Build.relPath),
                 ctxbuild { Posts.lookupCachedPageRender = cachelookup} )
 
@@ -72,18 +72,18 @@ processPage ctxmain ctxproj ctxtmpl tmplfinder thandler ctxbuild outjob =
                             (++ (ProjC.dtPageDateFormat (ctxproj-:Proj.setup-:Proj.cfg) (outjob-:Build.contentDate)))
             tmpfilepathpvars = Util.ifIs tmpfilepath (++"pv")
             readtmp False =
-                return$ Files.FileFull tmpfilepath Util.dateTime0 ""
+                pure$ Files.FileFull tmpfilepath Util.dateTime0 ""
             readtmp True =
                 System.Directory.getModificationTime tmpfilepath >>= \tmpmodtime
                 -> if cmpmodtime > tmpmodtime then readtmp False else
                     readFile tmpfilepath >>= \tmpsrc
-                    -> return$ Files.FileFull tmpfilepath tmpmodtime tmpsrc
+                    -> pure$ Files.FileFull tmpfilepath tmpmodtime tmpsrc
         in System.Directory.doesFileExist tmpfilepath >>= readtmp >>= \cachedfile
         -> System.Directory.doesFileExist tmpfilepathpvars >>= \istmpfilepvars
         -> if has blokindexname
-            then return ((0,0) , "{X|_hax_blokindex: vars=[(\"bname\",\""++blokindexname++"\")] , content=\"\" |}" , cachedfile)
+            then pure ((0,0) , "{X|_hax_blokindex: vars=[(\"bname\",\""++blokindexname++"\")] , content=\"\" |}" , cachedfile)
             else readFile (if (istmpfilepvars && has (cachedfile-:Files.content)) then tmpfilepathpvars else srcfilepath) >>= \rawsrc
-                    -> return (Tmpl.tagMismatches rawsrc , rawsrc , cachedfile)
+                    -> pure (Tmpl.tagMismatches rawsrc , rawsrc , cachedfile)
 
     processcontent =
         Data.Time.Clock.getCurrentTime >>= \nowtime
@@ -123,15 +123,15 @@ processPage ctxmain ctxproj ctxtmpl tmplfinder thandler ctxbuild outjob =
             htmlinner1st htmlsrc tagname defval =
                 defval -|= (htmlinners htmlsrc tagname)@?0
             writetmp "" =
-                let pvarstotmp = concat$ pagevars>~foreach
+                let pvarstotmp = pagevars >>= foreach
                     foreach (pvname , pvval) =
                         "{%P|"++pvname++('=':(Tmpl.processSrc ctxtmpl (Just ctxpageproc) pvval))++"|%}"
-                in Files.writeTo (cachedfile-:Files.path) "" (return (pagesrcproc , ()))
-                >> Files.writeTo (Util.ifIs (cachedfile-:Files.path) (++"pv")) "" (return (pvarstotmp , ()))
+                in Files.writeTo (cachedfile-:Files.path) "" (pure (pagesrcproc , ()))
+                *> Files.writeTo (Util.ifIs (cachedfile-:Files.path) (++"pv")) "" (pure (pvarstotmp , ()))
             writetmp _ =
-                return ()
+                pure ()
         in writetmp pagesrctmp
-        >> return (outsrc , (outsrc , ctxpageproc , mismatches))
+        *> pure (outsrc , (outsrc , ctxpageproc , mismatches))
 
 
 
@@ -242,11 +242,11 @@ writeSitemapXml ctxproj buildplan =
                 = 0.66
         (outjob , pagefileinfos) = buildplan-:Build.siteMap
         xmlitems = (pagefileinfos >~foreach)
-        xmloutput = return (xmlsitemapfull xmlitems , ())
+        xmloutput = pure (xmlsitemapfull xmlitems , ())
     in if outjob == Build.NoOutput
-        then return ()
+        then pure ()
         else Files.writeTo
                 (outjob-:Build.outPathBuild)
                 (outjob-:Build.relPath)
                 xmloutput
-            >> return ()
+            *> pure ()

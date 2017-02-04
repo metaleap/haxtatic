@@ -38,10 +38,10 @@ emit tag =
         (outopen++outatts++outinner++outclose)
     where
     outopen = "<"++tagname
-    outatts = concat$ (Util.mergeDuplFsts (==) (Util.join " ") tagatts)>~foreach where
+    outatts = (Util.mergeDuplFsts (==) (Util.join " ") tagatts) >>= foreach where
         foreach (n,v)   |(null n || null v)= ""
                         |(otherwise)= " " ++ n ++ "=\"" ++ v ++ "\""
-    outinner = ifselfclosing ++ (concat$ tchildren>~emit) ++ innercontent where
+    outinner = ifselfclosing ++ (tchildren >>= emit) ++ innercontent where
         ifselfclosing = nooutertag |? "" |!
                         noinneroutput |? "/>" |! ">"
     outclose = noinneroutput |? "" |! ("</"++tagname++">")

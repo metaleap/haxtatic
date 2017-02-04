@@ -83,8 +83,8 @@ repeatWhile again fn arg =
 
 via fn =
     --  use it to `>>=` a value over to fn but then
-    --  discard its return and return the value instead
-    ((>>)fn).return
+    --  discard its result and return said value instead
+    ((*>)fn).pure
 
 
 clamp minval maxval =
@@ -160,12 +160,12 @@ cropOn1st delim cropafter trimitemsafterdelim oncrop list =
 count item =
     countBy (==item)
 
-countBy predicate =
+countBy check =
     next 0 where
     next counter [] =
         counter
     next counter (this:rest)
-        |(predicate this)= next (counter+1) rest
+        |(check this)= next (counter+1) rest
         |(otherwise)= next counter rest
 
 countSub _ [] = 0
@@ -233,11 +233,11 @@ subAt start len =
 
 substitute old new
     |(old==new)= id
-    |(otherwise)= fmap subst where
+    |(otherwise)= (>~ subst) where
         subst item |(item==old)= new |(otherwise)= item
 
 substitute' olds new =
-    fmap subst where
+    (>~ subst) where
         subst item |(elem item olds)= new |(otherwise)= item
 
 trim = trim'' Data.Char.isSpace
@@ -285,12 +285,15 @@ keepNoNilFsts func (item:more)
 
 
 
-uniqueO:: (Eq a)=> [a] -> [a]
+sortDesc :: Ord a => [a] -> [a]
+sortDesc = Data.List.sortBy (flip compare)
+
+uniqueO:: Eq a => [a] -> [a]
 uniqueO = Data.List.nub
 
 uniqueU:: (Ord a)=> [a] -> [a]
 -- http://stackoverflow.com/a/16109302
-uniqueU = ((fmap (@!0)) . Data.List.group . Data.List.sort)
+uniqueU = (>~ (@!0)) . Data.List.group . Data.List.sort
 
 unique:: (Ord a)=> [a] -> [a]
 -- http://stackoverflow.com/a/16111081
@@ -356,9 +359,9 @@ indexOf item (this:rest) =
 _indexof_droptil delim = _indexof_droptil' (delim==)
 _indexof_droptil' _ _ [] =
     (_intmin , [])
-_indexof_droptil' predicate counter list@(this:rest) =
-    if (predicate this) then (counter , list)
-        else _indexof_droptil' predicate (counter + 1) rest
+_indexof_droptil' check counter list@(this:rest) =
+    if (check this) then (counter , list)
+        else _indexof_droptil' check (counter + 1) rest
 
 
 indexOf1st items list =
@@ -390,7 +393,7 @@ indexOfSubs1st _ [] =
 indexOfSubs1st subs str =
     let startchars = unique$ subs>~(@!0)
         (startindex , _haystack) = _indexof_droptil' (`elem` startchars) 0 str
-        iidxs = isubs >~ (fmap indexof) ~|(>=0).snd
+        iidxs = isubs >~ (>~ indexof) ~|(>=0).snd
         isubs = indexed subs
         indexof = indexOfSub _haystack
         (i,index) = Data.List.minimumBy (bothSnds compare) iidxs
@@ -484,17 +487,17 @@ _replcore recurse tonew (idx , old , oldlen) str =
 
 splitOn delim =
     splitOn' (delim==)
-splitOn' predicate =
+splitOn' check =
     foldr each [[]] where
         each _ [] = []
         each item accum@(item0:rest)
-            |(predicate item)= []:accum
+            |(check item)= []:accum
             |(otherwise)= (item:item0):rest
 
 splitOn1st delim =
     splitOn1st' (delim==)
-splitOn1st' predicate list =
-    let (i , rest) = _indexof_droptil' predicate 0 list
+splitOn1st' check list =
+    let (i , rest) = _indexof_droptil' check 0 list
     in if i<0 then (list , [])
         else (take i list , drop 1 rest)
 splitOn1stSpace = splitOn1st' Data.Char.isSpace
@@ -558,19 +561,21 @@ splitUp withmatch allbeginners end src =
 
 
 formatWithList text vals =
-    let args = (take num $ cycle vals)
-        num = c 0 text where c n ('%':'s':m) = c (n + 1) m ; c n ('%':'v':m) = c (n + 1) m ; c n (_:m) = c n m ; c n [] = n
-        arg1 func [ _1 ] = func _1 ; arg1 _ _ = undefined
-        arg2 func [ _1 , _2 ] = func _1 _2 ; arg2 _ _ = undefined
-        arg3 func [ _1 , _2 , _3 ] = func _1 _2 _3 ; arg3 _ _ = undefined
-        arg4 func [ _1 , _2 , _3 , _4 ] = func _1 _2 _3 _4 ; arg4 _ _ = undefined
-        arg5 func [ _1 , _2 , _3 , _4 , _5 ] = func _1 _2 _3 _4 _5 ; arg5 _ _ = undefined
-        arg6 func [ _1 , _2 , _3 , _4 , _5 , _6 ] = func _1 _2 _3 _4 _5 _6 ; arg6 _ _ = undefined
+    -- silly hack for passing list of user-args into this annoyingly-variadic built-in
+    -- hardcoded "support for up to 6"  =)
+    let args = take num (cycle vals)
+        num = c 0 text where c n ('%':'s':m) = c (n+1) m ; c n ('%':'v':m) = c (n+1) m ; c n (_:m) = c n m ; c n [] = n
+        a1 p [ _1 ] = p _1                                          ; a1 _ _ = undefined
+        a2 p [ _1 , _2 ] = p _1 _2                                  ; a2 _ _ = undefined
+        a3 p [ _1 , _2 , _3 ] = p _1 _2 _3                          ; a3 _ _ = undefined
+        a4 p [ _1 , _2 , _3 , _4 ] = p _1 _2 _3 _4                  ; a4 _ _ = undefined
+        a5 p [ _1 , _2 , _3 , _4 , _5 ] = p _1 _2 _3 _4 _5          ; a5 _ _ = undefined
+        a6 p [ _1 , _2 , _3 , _4 , _5 , _6 ] = p _1 _2 _3 _4 _5 _6  ; a6 _ _ = undefined
     in case num of
-        1 -> Just$ arg1 (Text.Printf.printf text) args
-        2 -> Just$ arg2 (Text.Printf.printf text) args
-        3 -> Just$ arg3 (Text.Printf.printf text) args
-        4 -> Just$ arg4 (Text.Printf.printf text) args
-        5 -> Just$ arg5 (Text.Printf.printf text) args
-        6 -> Just$ arg6 (Text.Printf.printf text) args
+        1 -> Just$ a1 (Text.Printf.printf text) args
+        2 -> Just$ a2 (Text.Printf.printf text) args
+        3 -> Just$ a3 (Text.Printf.printf text) args
+        4 -> Just$ a4 (Text.Printf.printf text) args
+        5 -> Just$ a5 (Text.Printf.printf text) args
+        6 -> Just$ a6 (Text.Printf.printf text) args
         _ -> Nothing
