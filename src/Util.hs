@@ -76,9 +76,6 @@ repeatedly fn arg =
     let result = fn arg
     in if (result==arg) then result else repeatedly fn result
 
-repeatWhile again fn arg =
-    let result = fn arg
-    in if not$ again result then result else repeatWhile again fn result
 
 
 via fn =

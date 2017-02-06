@@ -62,8 +62,11 @@ registerX ctxproj xreg =
         if waitforpage then Nothing
             else Just$ cfgwrap allcontents
         where
-        allcontents = cfgjoin (iteratees >~ (foreach dyns n)) where n = show numtotal
+        allcontents = cfgjoin (iteratees >~ foreach)
+        foreach | null cfgcontent = snd
+                | otherwise = \ (i,v) -> cfgcontenter (show i , v , dyns@!i , show$ i+1 , num)
 
+        num = show numtotal
         numtotal = iteratees~>length
         dyns = null dyns'' |? [] |! dyns' ++ repeat dlast where
             dlast = dyns'@!ilast ; ilast = dyns''~>length - 1
@@ -139,8 +142,6 @@ registerX ctxproj xreg =
     where
     projbloknames = Data.Map.Strict.keys (ctxproj-:Proj.setup-:Proj.bloks)
     projfeednames = ctxproj-:Proj.setup-:Proj.feeds
-    foreach dyn num (i,v)   | null cfgcontent   = v --  no content == "{:v:}"
-                            | otherwise         = cfgcontenter (show i , v , dyn@!i , show$ i+1 , num)
     cfgcontent = cfg-:content
     cfgcontenter (si,v,sd,sn,num) =
         cfgcontentsplits >>= persplit

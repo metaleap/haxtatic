@@ -208,10 +208,10 @@ writeTo "" _ loadcontent =
     -> pure finalresult
 writeTo filepath showpath loadcontent =
     System.Directory.createDirectoryIfMissing True (System.FilePath.takeDirectory filepath)
-    *> (if has showpath then putStr$ _fileoutputbeginmsg showpath else pure ())
+    *> (has showpath |? putStr (_fileoutputbeginmsg showpath) |! pure ())
     *> System.IO.hFlush System.IO.stdout
     *> loadcontent >>= \(loadedcontent , finalresult)
     -> writeFile filepath loadedcontent
-    *> (if has showpath then putStrLn _fileoutputdonemsg else pure ())
+    *> (has showpath |? putStrLn _fileoutputdonemsg |! pure ())
     *> System.IO.hFlush System.IO.stdout
     *> pure finalresult
