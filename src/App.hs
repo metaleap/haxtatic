@@ -100,8 +100,8 @@ processAll ctxmain projfilename custfilenames =
                         then ["*.haxproj or *.haxsnip"] else []
         deploymsg = Text.Printf.printf "\n6/6\tCopying only the %u newly (over)written file(s) also to:\n\t~>\t" numoutfiles
         doordonot = if null$ ctxproj-:Proj.dirPathDeploy
-                    then putStrLn (deploymsg++ "(skipping this step.)")
-                    else putStrLn (deploymsg++(ctxproj-:Proj.dirPathDeploy))
+                    then putStrLn (deploymsg ++ "(skipping this step.)")
+                    else putStrLn (deploymsg ++ (ctxproj-:Proj.dirPathDeploy))
                         *> System.IO.hFlush System.IO.stdout
                         *> Build.copyAllOutputsToDeploy buildplan
     in Util.via doordonot (buildplan , warnpages , hintpages ++ extrahints , numoutfiles , numxmls , timeinitdone , timecopydone , timeprocdone, timexmldone)

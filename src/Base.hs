@@ -1,10 +1,12 @@
 {-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
-module Base (module Base , (<|>) ) where
+module Base (module Base , (Control.Applicative.<|>) , (Data.Monoid.<>) ) where
 
-import Control.Applicative ( (<|>) )
+import qualified Control.Applicative
 import qualified Control.Monad
-import qualified Data.Maybe
 import Data.Function ( (&) )
+import qualified Data.Maybe
+import qualified Data.Monoid
+import qualified Data.Traversable
 
 
 
@@ -66,10 +68,10 @@ infixl 7 ~|
 
 
 (>>~) ::
-    (Traversable t, Monad m)=>
-    t a -> (a -> m b) -> m (t b)
+    (Traversable tr, Applicative ap)=>
+    tr a -> (a -> ap b) -> ap (tr b)
 infixl 8 >>~
-(>>~) = Control.Monad.forM
+(>>~) = Data.Traversable.for
 
 
 

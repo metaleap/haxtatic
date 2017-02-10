@@ -93,24 +93,20 @@ duration =
 
 
 -- for uses such as `crop` without (directly) taking the `length`
-dropLast 0 = id
-dropLast 1 = init
-dropLast n = (@!n) . reverse . Data.List.inits
+dropLast 0 list = list
+dropLast n list = zipWith const list (drop n list)
+-- dropLast n = (@!n) . reverse . Data.List.inits
 -- dropLast n l = l~>take (l~>length - n)
 
 
 takeLast 0 = const []
-takeLast 1 = (:[]).last
-takeLast n = (@!n) . reverse . Data.List.tails
+-- takeLast 1 = (: []) . last
+takeLast n = ([] -|=) . (@?n) . reverse . Data.List.tails
 
 
-indexed l =
-    zip [0 .. ] l
+indexed =
+    zip [0 .. ]
 
-reOrdered [] l = l
-reOrdered _ [] = []
-reOrdered newordering l =
-    newordering >~ (l@!)
 
 
 shiftLeft [] = []
@@ -289,12 +285,12 @@ uniqueO:: Eq a => [a] -> [a]
 uniqueO = Data.List.nub
 
 uniqueU:: (Ord a)=> [a] -> [a]
--- http://stackoverflow.com/a/16109302
+--  http://stackoverflow.com/a/16109302
 uniqueU = (>~ (@!0)) . Data.List.group . Data.List.sort
 
-unique:: (Ord a)=> [a] -> [a]
--- http://stackoverflow.com/a/16111081
-unique =
+unique':: (Ord a)=> [a] -> [a]
+--  http://stackoverflow.com/a/16111081
+unique' =
     halp Data.Set.empty
     where
     halp _ [] = []
@@ -302,6 +298,12 @@ unique =
         if Data.Set.member this set
             then halp set rest
             else this : (halp (Data.Set.insert this set) rest)
+
+unique list = foldr go (const []) list Data.Set.empty where
+--  https://github.com/quchen/articles/blob/master/fbut.md#nub
+    go x xs cache
+        | Data.Set.member x cache   = xs cache
+        | otherwise                 = x : xs (Data.Set.insert x cache)
 
 uniqueBy:: (any -> any -> Bool) -> [any] -> [any]
 uniqueBy = Data.List.nubBy
@@ -403,8 +405,7 @@ indexOfSubs1st subs str =
 lastIndexOfSub revstr revsub
     |(idx<0)= idx
     |(otherwise)= revstr~>length - revsub~>length - idx
-    where
-        idx = indexOfSub revstr revsub
+    where idx = indexOfSub revstr revsub
 
 
 
@@ -505,7 +506,7 @@ splitOn1st_ delim list
     where
     (i , rest) = spliton delim list ; spliton ':' = colon ; spliton '.' = dot ; spliton '>' = gt ; spliton '\"' = quote
     spliton '#' = sharp ; spliton '=' = eq ; spliton ',' = comma ; spliton ' ' = space ; spliton '\v' = white
-    spliton _ = error ("splitOn1st_ is hard-coded and doesn't support "++(show delim) ++ ", fix that or use splitOn1st")
+    spliton _ = error$ "splitOn1st_ is hard-coded and doesn't support "++(shows delim ", fix that or use splitOn1st")
     n = (_intmin , []) ; y l = (0 , l) ; b (j,l) = (j+1,l)
     colon [] = n ; colon (':':xs) = y xs ; colon (_:xs) = b (colon xs)
     dot [] = n ; dot ('.':xs) = y xs ; dot (_:xs) = b (dot xs)

@@ -1,0 +1,23 @@
+resolver: ghc-8.0.2
+
+# User packages to be built.
+packages:
+- '.'
+
+# Dependency packages to be pulled from upstream that are not in the resolver
+# (e.g., acme-missiles-0.3)
+extra-deps: []
+
+# Override default flag values for local packages and extra-deps
+flags: {}
+
+# Extra package databases containing global packages
+extra-package-dbs: []
+
+arch: x86_64
+
+# extra-include-dirs: [/src]
+# extra-lib-dirs: [/path/to/dir]
+
+# Allow a newer minor version of GHC than the snapshot specifies
+compiler-check: newer-minor
