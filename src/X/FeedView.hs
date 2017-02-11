@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module X.FeedView where
 
 import Hax.Base
@@ -59,7 +58,7 @@ registerX ctxproj xreg =
         where
         allgroups = (Util.ifNo $args-:groups)$  --  if no groups defined $ fall back to: feed years, descending
                         (Util.sortDesc$ feedgroups (postsfrom [] Posts.AnyDate) "dt:year") >~ togroup where
-                            togroup year = Group year [] (Posts.Between year (show$ 1 + Util.tryParseOr 9998 year))
+                            togroup year = Group year [] (Posts.Between year (show$ 1 + Util.tryParseOr (9998::Int) year))
         render (Group title cats dates) =
             null outitems |? "" |! xgroups title ++ cfgfeedwrap outitems
             where

@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module X.Snippet where
 
 import Hax.Base

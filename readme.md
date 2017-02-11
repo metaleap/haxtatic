@@ -5,7 +5,7 @@
 - `dox-demo` -- the HaXtatic source project to generate `docs`
 - `docs` -- the [HaXtatic user docs](http://metaleap.github.io/haxtatic/), readily rendered
 
-Requires [http://github.com/metaleap/haxbase](metaleap/haxbase) package to compile!
+Requires [metaleap/haxbase](http://github.com/metaleap/haxbase) package to compile!
 
 
 ## In the `old-sloppy-messy-v0` branch:

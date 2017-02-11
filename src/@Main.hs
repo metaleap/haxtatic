@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wall #-}
 module Main where
 
 import Hax.Base
@@ -17,8 +16,7 @@ import qualified Text.Printf
 
 
 
-main ::
-    IO ()
+main :: IO ()
 main =
     Data.Time.Clock.getCurrentTime >>= \starttime
     -> putStrLn "\n\n==== HAXTATIC ====\n"

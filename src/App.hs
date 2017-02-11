@@ -1,7 +1,7 @@
-{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
-module App where
+module App (processAll)
+where
 
---  writing an X-renderer? register it right below the `import`s, in `xregs`
+--  writing an X-renderer? register it in `xregs` right below these imports
 
 import Hax.Base
 

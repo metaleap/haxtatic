@@ -1,5 +1,7 @@
-{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
-module Bloks where
+module Bloks (  Blok, title, desc, inSitemap,
+                allBlokPageFiles, blokByName, blokIndexPageFile, blokNameFromIndexPagePath,
+                blokNameFromRelPath, buildPlan, tagHandler, parseProjChunks, preferredRelPath)
+where
 
 import Hax.Base
 

@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module Pages where
 
 import Hax.Base
@@ -233,7 +232,7 @@ writeSitemapXml ctxproj buildplan =
             relpath = pageinfo-:Build.relPathSlashes
             priorel = max 0.0 (priobase - priodown)
 
-            priodown = 0.1 * (fromIntegral$ (Util.count '/' relpath) + (Util.count '.' relpath) - 1)
+            priodown = (0.1::Double) * (fromIntegral$ (Util.count '/' relpath) + (Util.count '.' relpath) - (1::Int))
             priobase
                 | relpath=="index.html" || relpath=="index.htm"
                 = 1.0
