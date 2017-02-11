@@ -1,6 +1,7 @@
 module X.DemoCfgArgs where
 
-import Base
+import Hax.Base
+
 import qualified Html
 import qualified X
 

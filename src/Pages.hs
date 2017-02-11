@@ -1,7 +1,8 @@
 {-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module Pages where
 
-import Base
+import Hax.Base
+
 import qualified Bloks
 import qualified Build
 import qualified Defaults

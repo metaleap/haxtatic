@@ -1,9 +1,8 @@
-#!/usr/bin/env stack
-{-stack --install-ghc --resolver ghc-8.0.2 runghc
--}{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Wall #-}
 module Main where
 
-import Base
+import Hax.Base
+
 import qualified App
 import qualified Build
 import qualified Defaults

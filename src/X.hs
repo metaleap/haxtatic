@@ -1,7 +1,8 @@
 {-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module X where
 
-import Base
+import Hax.Base
+
 import qualified Html
 import qualified ProjC
 import qualified Tmpl

@@ -12,25 +12,50 @@
 <p>Git(Hub) integration? Docker play&amp;pluggery? Content-aware on-the-fly dependency tracking via embedded PhD-thesis with Van Schlauberg ad-hoc proofs and Nodejs hooks? Type-safe <i>everything</i>? <b>Uh-huh.</b> Ain't nobody got time for tomfoolery!</p>
 {X|h: &quot;Quick&quot; start |}
 <ol>
-	<li>Fetch from <a href="http://github.com/metaleap/haxtatic">Github</a></li>
+	<li>Fetch the <a href="http://github.com/metaleap/haxbase">haxbase</a> and <a href="http://github.com/metaleap/haxtatic">haxtatic</a> repos from GitHub</li>
 	<li>
-		Run with <a href="http://docs.haskellstack.org/en/stable/install_and_upgrade/">Stack</a> (a one-off 10-15 MB download)
+		Build once with <a href="http://docs.haskellstack.org/en/stable/install_and_upgrade/">Stack</a> (a one-off 10-15 MB download)
 		<ul>
-			<li>first via: <code><span>haxtatic/src/</span>$ stack ./@HaxMain.hs</code> to see a quick notice on how to <i>really</i> run this <ul><li>(unlike all future runs, this very first run will take a while and possibly output countless semi-obscure progress notices, as a fresh {X|c:stack|} first fetches the appropriate Haskell compiler (several~100s MB) to run {T|Hax|} from source &mdash; a one-off expense)</li></ul></li>
-			<li>now run: <code><span>haxtatic/src/</span>$ stack ./@HaxMain.hs <i>~/where/ever/</i>mydemosite.foo/</code></li>
+			<li>eg. <code><span>~/gitrepos/metaleap/haxtatic/</span>$ stack install</code> should suffice <ul><li>(unlike all future runs of {X|c:stack|}, this very first run will take a while and possibly output countless semi-obscure progress notices, as a fresh {X|c:stack|} first fetches the appropriate Haskell compiler (several~100s MB) &mdash; a one-off expense)</li></ul></li>
 		</ul>
 	</li>
-	<li>Explore the {X|_lb:projdir#Get%20started freshly generated and populated|} <code>mydemosite.foo</code> project-directory to grasp the bare essentials from the pre-created default single-page site in there.</li>
+	<li>Now try eg. <code><span>~/gitrepos/metaleap/haxtatic/</span>$ stack exec haxtatic</code> to hopefully see a little greeting with a notice such as {X|c:No project-directory path supplied|}. Good! Now try just {X|c:<span>~</span>$ haxtatic|}, if this works the same, even better as it "installed" (copied the binary) to somewhere on your {X|c:PATH|}.</li>
+	<li>Now run {X|c:haxtatic ~/mydemosite.foo|} (or alternatively, as per above, {X|c:stack exec haxtatic ~/mydemosite.foo|}), then explore the {X|_lb:projdir#Get%20started freshly generated and populated|} <code>mydemosite.foo</code> project-directory to grasp the bare essentials from the pre-created default single-page site in there.</li>
 	<li>Dig through <a href="http://github.com/metaleap/haxtatic/tree/master/dox-demo">the project-directory for this very Docs site</a> (or indeed skim over these here docs!) to figure out most-of-the-rest.</li>
 </ol>
-<p>
-If the program is appreciated and <i>in actual use</i> for real projects, then an executable binary for your OS/arch combo can (and
-probably should) also be compiled from the source via {X|c:stack|} quite trivially, if so inclined &mdash; that will make it
-between 4-10x faster per-page!
-</p>
 {X|h: In context |}
 <p>
 	<b>Hacked-together for hacking-together some fine sites</b> the (frankly imaginary) "old-school way" &mdash; certainly a rather hacky way &mdash; and honestly among all the alternatives possibly <i>only</i> remotely, mildly "more compelling" in case you wish to (or have to) command some awfully-convoluted-templating powers and optionally &mdash;in a pinch, as a last resort&mdash; are content to code up at least simple short pieces of <a href="http://haskell.org">Haskell</a> (starting from <a href="http://github.com/metaleap/haxtatic/blob/master/src/X/DemoSimplest.hs">this</a> or <a href="http://github.com/metaleap/haxtatic/blob/master/src/X/DemoCfgArgs.hs">this</a>) &mdash; I wrote it from the ground up with easy-speedy, "done-and-done" future (rendering) extensibility chiefly in mind.
 </p>
 <h3>Not that you should have to for most needs, though!</h3>
 <p>&mdash; except perhaps for the most exotic of uses (or "abusing" it for other neatly-hacky text-to-text / bulk transformations).. <b>this tool <i>does</i> actually accomplish quite a lot</b> without really needing to touch its codebase &mdash; just have to turn {X|_lb:haxproj config-file|} warrior and in places wrestle moderate amounts of trivial-yet-unforgiving {X|_lb:syntax syntax|} &mdash; alas you'll have to run-from-source (or compile from scratch) no less.. for no good reason other than plain inertia on my part. (Redistributing precompiled executable binaries of my open-source work for various platforms hasn't made it onto my exhaustive list of <i>actual priorities</i>. Though emitting overly wordy verbiage in software documentation <i>has</i>, apparently, unwittingly. Confound it!)</p>
+{X|h: Performance|}
+<p>
+{T|Hax|} performs "incremental"/"differential" rebuilds by default, so just changing a single content-source file will only re-generate that (or with a Blok page, the entire Blok). Changing a template causes rebuilding of every file (by default from a cached pre-processed version) utilizing that template. Changing *.haxproj or *.haxsnip.html files causes a "full" rebuild (also invalidating/overwriting all cached files).
+</p>
+<p>
+On my machine (mid-2014 Thinkpad, Windows 8.1 64bit), HaXtatic consistently reports for a <i>full</i> rebuild (assuming no static-files have changed, and with page-caching disabled &mdash; it's enabled {X|_lb:haxproj#cmisc by default|}) of this very documentation site:
+</p>
+<pre>
+Wrote 35 files in 0.42s:
+	0.03s pre-templating &amp planning
+	0.29s page templating &amp generation (30x ~0.009s)
+	0.09s XML file generation (5x ~0.018s)
+	0s misc. &amp file-copying
+</pre>
+<p>
+With page-caching enabled (the default), per-page cost is about halved (for "differential" rebuilds as per above). Another example, a <i>full</i> rebuild of the publicly visible parts of <a href="http://metaleap.net">metaleap.net</a> (no static-file changes) routinely gives:
+</p>
+<pre>
+Wrote 21 files in 0.46s:
+	0.05s pre-templating &amp; planning
+	0.36s page templating &amp; generation (19x ~0.019s)
+	0.04s XML file generation (2x ~0.022s)
+	0s misc. &amp; file-copying
+</pre>
+<p>
+In this case, enabled page-caching only improves per-page cost to ~0.013s so the gain very much depends on the overall project, content characteristics, main-template complexity/functionality and such; of course there will always be in principle <i>some</i> slight gain for all subsequent differential rebuilds.
+</p>
+<p>
+So from the above and some other experimental/test sites, on my machine/architecture/OS combination, I can consistently expect "about 40-50 files generated per second". Not "stellar" but certainly <i>mighty fine</i> for the intended uses. Differential rebuilds of course cut down the total number of files to re-generate.
+</p>

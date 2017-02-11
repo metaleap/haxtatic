@@ -3,7 +3,8 @@ module App where
 
 --  writing an X-renderer? register it right below the `import`s, in `xregs`
 
-import Base
+import Hax.Base
+
 import qualified Build
 import qualified Defaults
 import qualified Files

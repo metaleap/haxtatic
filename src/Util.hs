@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module Util where
 
-import Base
+import Hax.Base
 
 import qualified Data.Char
 import qualified Data.List

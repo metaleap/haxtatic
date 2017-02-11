@@ -3,6 +3,7 @@ resolver: ghc-8.0.2
 # User packages to be built.
 packages:
 - '.'
+- '../haxbase'
 
 # Dependency packages to be pulled from upstream that are not in the resolver
 # (e.g., acme-missiles-0.3)
@@ -21,3 +22,6 @@ arch: x86_64
 
 # Allow a newer minor version of GHC than the snapshot specifies
 compiler-check: newer-minor
+
+ghc-options:
+  "*": -O2

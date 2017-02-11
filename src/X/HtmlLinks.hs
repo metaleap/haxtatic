@@ -1,7 +1,8 @@
 {-# OPTIONS_GHC -Wall -fno-warn-missing-signatures -fno-warn-type-defaults #-}
 module X.HtmlLinks where
 
-import Base
+import Hax.Base
+
 import qualified Files
 import qualified Html
 import qualified Tmpl

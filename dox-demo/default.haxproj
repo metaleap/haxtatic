@@ -16,7 +16,7 @@ turn on whatever syntax highlighting for eased grokkage..
 |C|dtformat:mydtf_longmonth: %d %B
 |C|dtformat:mydtf_shortmonth: %b %d
 
-|C|_hax_dir_cache:
+|C|hax_dir_cache:
 |C|_hax_relpath_sitemap: -xml/sitemap.xml
 |C|_hax_relpath_postatoms: -xml
 |C|_hax_domainname: metaleap.github.io/haxtatic
