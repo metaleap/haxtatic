@@ -1,6 +1,6 @@
 module Defaults where
 
-import Hax.Base
+import HxB
 
 import qualified Files
 import qualified Util

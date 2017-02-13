@@ -3,7 +3,7 @@ where
 
 --  writing an X-renderer? register it in `xregs` right below these imports
 
-import Hax.Base
+import HxB
 
 import qualified Build
 import qualified Defaults

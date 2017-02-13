@@ -1,6 +1,6 @@
 module X.Iterator where
 
-import Hax.Base
+import HxB
 
 import qualified Posts
 import qualified Proj

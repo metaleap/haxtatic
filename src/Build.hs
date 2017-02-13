@@ -1,6 +1,6 @@
 module Build where
 
-import Hax.Base
+import HxB
 
 import qualified Bloks
 import qualified Defaults

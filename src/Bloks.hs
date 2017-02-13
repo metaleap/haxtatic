@@ -3,7 +3,7 @@ module Bloks (  Blok, title, desc, inSitemap,
                 blokNameFromRelPath, buildPlan, tagHandler, parseProjChunks, preferredRelPath)
 where
 
-import Hax.Base
+import HxB
 
 import qualified Files
 import qualified ProjC

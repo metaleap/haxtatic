@@ -1,6 +1,6 @@
 module X.FeedView where
 
-import Hax.Base
+import HxB
 
 import qualified Html
 import qualified Posts

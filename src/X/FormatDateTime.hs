@@ -1,6 +1,6 @@
 module X.FormatDateTime where
 
-import Hax.Base
+import HxB
 
 import qualified Proj
 import qualified ProjC

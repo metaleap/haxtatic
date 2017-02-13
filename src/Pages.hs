@@ -1,6 +1,6 @@
 module Pages where
 
-import Hax.Base
+import HxB
 
 import qualified Bloks
 import qualified Build

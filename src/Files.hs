@@ -1,6 +1,6 @@
 module Files where
 
-import Hax.Base
+import HxB
 
 import qualified Util
 

@@ -1,6 +1,6 @@
 module Util where
 
-import Hax.Base
+import HxB
 
 import qualified Data.Char
 import qualified Data.List

@@ -1,6 +1,6 @@
 module X.HtmlLinks where
 
-import Hax.Base
+import HxB
 
 import qualified Files
 import qualified Html

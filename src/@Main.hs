@@ -1,6 +1,6 @@
 module Main where
 
-import Hax.Base
+import HxB
 
 import qualified App
 import qualified Build

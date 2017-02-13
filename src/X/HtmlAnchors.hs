@@ -1,6 +1,6 @@
 module X.HtmlAnchors where
 
-import Hax.Base
+import HxB
 
 import qualified Html
 import qualified Tmpl

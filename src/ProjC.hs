@@ -1,6 +1,6 @@
 module ProjC where
 
-import Hax.Base
+import HxB
 
 import qualified Defaults
 import qualified Files
