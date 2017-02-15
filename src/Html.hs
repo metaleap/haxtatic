@@ -1,6 +1,6 @@
 module Html where
 
-import HxB
+import Base
 
 import qualified Files
 import qualified Util

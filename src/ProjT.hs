@@ -1,6 +1,6 @@
 module ProjT where
 
-import HxB
+import Base
 
 import qualified Util
 

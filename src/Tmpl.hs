@@ -1,6 +1,6 @@
 module Tmpl where
 
-import HxB
+import Base
 
 import qualified Defaults
 import qualified Files

@@ -1,6 +1,6 @@
 module X.HtmlLink where
 
-import HxB
+import Base
 
 import qualified Files
 import qualified Html
@@ -27,7 +27,7 @@ registerX _ xreg =
         argsplit = Util.splitOn1st_ '\v' argstr -- not really for \v but mostly-equivalent to Util.splitOn1stSpace argstr
         atts uriattname descattname =
             [   uriattname =: Html.joinUri cfg_relpath (uriautoext linkhref),
-                descattname =: Util.ifNo cfgerrmsg (Util.ifNo linktext (fst$ Util.splitOn1st_ '#' linkhref)) ]
+                descattname =: cfgerrmsg <?> (linktext <?> (fst$ Util.splitOn1st_ '#' linkhref)) ]
 
 
     in X.Early renderer

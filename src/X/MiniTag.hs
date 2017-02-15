@@ -1,6 +1,6 @@
 module X.MiniTag where
 
-import HxB
+import Base
 
 import qualified Html
 import qualified Util

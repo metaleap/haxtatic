@@ -1,6 +1,6 @@
 module Files where
 
-import HxB
+import Base
 
 import qualified Util
 

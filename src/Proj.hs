@@ -1,6 +1,6 @@
 module Proj where
 
-import HxB
+import Base
 
 import qualified Bloks
 import qualified Defaults
@@ -55,7 +55,7 @@ loadCtx ctxmain projname xregs defaultfiles =
         ctxproj = ProjContext {
             projName = projname,
             setupName = setupname,
-            domainName = Util.ifNo (loadedsetup-:cfg-:ProjC.domainName) projname,
+            domainName = (loadedsetup-:cfg-:ProjC.domainName) <?> projname,
             dirPath = dirpath,
             dirPathBuild = dirpathjoin$
                 setupname ++ "-" ++ loadedsetup-:cfg-:ProjC.dirNameBuild,

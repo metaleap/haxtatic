@@ -1,6 +1,6 @@
 module X.NoOp where
 
-import HxB
+import Base
 
 import qualified X
 

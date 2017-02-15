@@ -1,6 +1,6 @@
 module Main where
 
-import HxB
+import Base
 
 import qualified App
 import qualified Build

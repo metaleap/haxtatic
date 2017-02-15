@@ -1,6 +1,6 @@
 module Posts where
 
-import HxB
+import Base
 
 import qualified Bloks
 import qualified Defaults
@@ -250,11 +250,11 @@ writeAtoms ctxbuild domainname outjobs =
                     ]
 
         xmlatompost (htmlcontent , post) =
-            let posttitle = xmlesc$ Util.ifNo (post-:title) (post-:cat)
+            let posttitle = xmlesc$ (post-:title) <?> (post-:cat)
                 postdesc = xmlesc (post-:(has blokname |? content |! cat))
                 postfull = xmlesc (has blokname |? (sanitize htmlcontent) |! (post-:content))
                 postdt = post-:dt
-                posturl = Util.ifNo (post-:link) (pageuri'++('#':postdt))
+                posturl = (post-:link) <?> (pageuri'++('#':postdt))
             in ("<entry>\n\
                 \        <title type=\"html\">"++posttitle++"</title>\n\
                 \        <summary type=\"html\">"++postdesc++"</summary>\n\

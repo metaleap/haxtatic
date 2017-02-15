@@ -1,6 +1,6 @@
 module X.HtmlImage where
 
-import HxB
+import Base
 
 import qualified Html
 import qualified Util
@@ -28,7 +28,7 @@ registerX _ xreg =
         (imgsrc,imgdesc) = argsplit ~> Util.bothTrim
         argsplit = Util.splitOn1stSpace argstr
         atts uriattname descattname =
-            let imgtext = Util.ifNo cfgerrmsg (htmlesc imgdesc)
+            let imgtext = cfgerrmsg <?> (htmlesc imgdesc)
             in [ uriattname =: Html.joinUri cfg_imgrelpath imgsrc, descattname =: imgtext ]
             ++ if haslink || descattname == "title" then [] else
                 [ "title" =: imgtext ]

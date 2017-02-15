@@ -3,7 +3,7 @@ module Bloks (  Blok, title, desc, inSitemap,
                 blokNameFromRelPath, buildPlan, tagHandler, parseProjChunks, preferredRelPath)
 where
 
-import HxB
+import Base
 
 import qualified Files
 import qualified ProjC
@@ -127,7 +127,7 @@ tagHandler bloks curbname str
                             blok-:fieldval
     where
     (fname, bn) = Util.bothTrim (Util.splitOn1st_ ':' str)
-    bname = Util.ifNo bn curbname
+    bname = bn <?> curbname
     fields = [  ("title",title), ("desc",desc),
                 ("atomFile" , atomFile~.Files.pathSepSystemToSlash),
                 ("blokIndexPageFile" , blokIndexPageFile~.Files.pathSepSystemToSlash)  ]

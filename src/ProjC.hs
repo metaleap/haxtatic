@@ -1,6 +1,6 @@
 module ProjC where
 
-import HxB
+import Base
 
 import qualified Defaults
 import qualified Files
@@ -101,7 +101,7 @@ parseProjChunks chunkssplits =
         Proc { dirs = [dirname], skip = [], force = [] }
     procsane defname proc =
         Proc {
-            dirs = Util.ifNo (proc-:dirs >/~ dirnameonly) [defname],
+            dirs = (proc-:dirs >/~ dirnameonly) <?> [defname],
             skip = saneneither |? [] |! saneskip,
             force = saneneither |? [] |! saneforce
         } where

@@ -1,6 +1,6 @@
 module Util where
 
-import HxB
+import Base
 
 import qualified Data.Char
 import qualified Data.List
@@ -56,8 +56,6 @@ butNot notval defval val
     |(val==notval)= defval
     |(otherwise)= val
 
-ifNo [] defval = defval
-ifNo val _ = val
 
 ifIs [] _ = []
 ifIs val func = func val

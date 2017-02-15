@@ -1,6 +1,6 @@
 module X.FeedView where
 
-import HxB
+import Base
 
 import qualified Html
 import qualified Posts
@@ -56,8 +56,8 @@ registerX ctxproj xreg =
         if waitforpage then Nothing
             else Just$ allgroups >>= render
         where
-        allgroups = (Util.ifNo $args-:groups)$  --  if no groups defined $ fall back to: feed years, descending
-                        (Util.sortDesc$ feedgroups (postsfrom [] Posts.AnyDate) "dt:year") >~ togroup where
+        allgroups = (args-:groups) <?>  --  if no groups defined $ fall back to: feed years, descending
+                        ((Util.sortDesc$ feedgroups (postsfrom [] Posts.AnyDate) "dt:year") >~ togroup) where
                             togroup year = Group year [] (Posts.Between year (show$ 1 + Util.tryParseOr (9998::Int) year))
         render (Group title cats dates) =
             null outitems |? "" |! xgroups title ++ cfgfeedwrap outitems

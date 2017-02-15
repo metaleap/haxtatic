@@ -1,6 +1,6 @@
 module X.Snippet where
 
-import HxB
+import Base
 
 import qualified Tmpl
 import qualified Util
