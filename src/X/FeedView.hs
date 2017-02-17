@@ -1,6 +1,7 @@
 module X.FeedView where
 
 import Base
+import qualified Lst
 
 import qualified Html
 import qualified Posts
@@ -11,7 +12,6 @@ import qualified X
 import qualified X.FormatDateTime
 import qualified X.Iterator
 
-import qualified Data.List
 import qualified Data.Map.Strict
 
 
@@ -84,7 +84,7 @@ registerX ctxproj xreg =
                 tofunc (Format text xvs) = ((-|=) text) . Util.formatWithList text . vals xvs where
                     vals _ [] = [] ; vals [] _ = [] ; vals (xv:rest) fp = tofunc xv fp : vals rest fp
                 tofunc (FeedWise feed yay nay) = switch . my "feed" where
-                    my = ((,) <*>) . l where l k = ("" -|=) . Data.List.lookup k
+                    my = ((,) <*>) . l where l k = ("" -|=) . Lst.lookup k
                     switch (carry,v2) = tofunc (feed==v2 |? yay |! nay) carry
                 tofunc (DtFormat dtfname xv) = (try (dtformat dtfname)) . (tofunc xv)
                 tofunc (X xv) = (try (xtags maybectxpage)) . (tofunc xv)

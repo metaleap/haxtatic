@@ -1,6 +1,7 @@
 module ProjC where
 
 import Base
+import qualified Lst
 
 import qualified Defaults
 import qualified Files
@@ -86,7 +87,7 @@ parseProjChunks chunkssplits =
     relpathpostatoms = Files.sanitizeRelPath$ Data.Map.Strict.findWithDefault
                     Defaults.dir_PostAtoms "_hax_relpath_postatoms" cfgmisc
     htmlequivexts = Util.unique ("":".html":".htm":hexts) where
-        hexts = hstr ~> (Util.splitOn ',') >~ (('.':).(Util.trimSpaceOr ['.']))
+        hexts = hstr ~> (Lst.splitOn ',') >~ (('.':).(Util.trimSpaceOr ['.']))
         hstr = Data.Map.Strict.findWithDefault "" "_hax_htmlequivexts" cfgmisc
     procstatic = procfind Defaults.dir_Static
     procpages = procfind Defaults.dir_Pages
@@ -110,7 +111,7 @@ parseProjChunks chunkssplits =
             sanitize fvals = let them = proc~>fvals >/~ Util.trim
                                 in (elem "*" them) |? ["*"] |! them
     proctags = (has ptags) |? ptags |! Tmpl.tags_All ~|(/=Tmpl.tag_C) where
-        ptags = (pstr~>(Util.splitOn ',') >/~ Util.trim) ~> Util.unique >~ (('{':).(++"|"))
+        ptags = (pstr~>(Lst.splitOn ',') >/~ Util.trim) ~> Util.unique >~ (('{':).(++"|"))
         pstr = Util.trim$ Data.Map.Strict.findWithDefault "" ("process:tags") cfgprocs
     dirnameonly = System.FilePath.takeFileName ~. Util.trim
     cfgmisc = cfglines2hashmap ""
@@ -126,12 +127,12 @@ parseProjChunks chunkssplits =
                     = ( prefix ++ ":" ++ next~>Util.trim , foreachvalue$ rest )
                     where prefix = Util.trim prefix'
                 foreachchunk _ = ( "" , "" )
-                foreachvalue = (Util.join ":") ~.Util.trim
+                foreachvalue = (Lst.join ':') ~.Util.trim
 
 
 
 raiseParseErr filehint directive parsestr =
-    errorWithoutStackTrace $"!!=>\n\n\t"++filehint++" --- failed to parse..\n\t`"++directive++"`\n\t..due to some SYNTAX mistake somewhere in:\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"++parsestr++"\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\nLOOK OUT for: typos, missing-or-superfluous\n\tcommas/quotation/parens/brackets/braces\n\t\tor in the docs: /basics/syntax.html\n\n\n"
+    err $"!!=>\n\n\t"++filehint++" --- failed to parse..\n\t`"++directive++"`\n\t..due to some SYNTAX mistake somewhere in:\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"++parsestr++"\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\nLOOK OUT for: typos, missing-or-superfluous\n\tcommas/quotation/parens/brackets/braces\n\t\tor in the docs: /basics/syntax.html\n\n\n"
 
 
 

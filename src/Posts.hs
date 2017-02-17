@@ -1,6 +1,7 @@
 module Posts where
 
 import Base
+import qualified Lst
 
 import qualified Bloks
 import qualified Defaults
@@ -10,7 +11,6 @@ import qualified ProjC
 import qualified Tmpl
 import qualified Util
 
-import qualified Data.List
 import qualified Data.Map.Strict
 import qualified System.FilePath
 import System.FilePath ( (</>) )
@@ -109,7 +109,7 @@ feedGroups maybectxbuild projposts projbloks query fieldname =
         Just field -> allposts >~ field
         Nothing -> allposts >=~ (findfield.more)
     where
-    findfield = Data.List.lookup fieldname
+    findfield = Lst.lookup fieldname
     allposts = feedPosts maybectxbuild projposts projbloks query "" []
 
 
@@ -132,7 +132,7 @@ parseProjChunks projcfg chunkssplits =
     posts = Util.sortDesc$ chunkssplits >=~ foreach
     foreach (pfeedcat:pvalsplits) =
         let
-            pstr = Util.join ":" pvalsplits ~> Util.trim
+            pstr = Lst.join ':' pvalsplits ~> Util.trim
             parsestr' = (Tmpl.fixParseStr "content" pstr)
             parsestr = "From {" ++ parsestr' ++ ",feed=\"" ++ pfeedcat ++ "\"}"
             post = Util.tryParseOr errpost parsestr
@@ -168,7 +168,7 @@ postsFromBlok (Just ctxbuild) morefromhtmls blokcat blokname =
                 Html.find1st finder "" htmlcontent
             formatdt dtf =
                 ProjC.dtUtc2Str (ctxbuild-:projCfg) dtf (maybectxpage-:(Tmpl.pDate =|- cdatelatest))
-            dyncat p = case Data.List.lookup blokcat wellKnownFields of
+            dyncat p = case Lst.lookup blokcat wellKnownFields of
                         Just field -> p-:field
                         Nothing -> Util.lookup blokcat "" (p-:more)
             post = From {
@@ -258,7 +258,7 @@ writeAtoms ctxbuild domainname outjobs =
             in ("<entry>\n\
                 \        <title type=\"html\">"++posttitle++"</title>\n\
                 \        <summary type=\"html\">"++postdesc++"</summary>\n\
-                \        <link href=\""++((Util.contains posturl "://") |? posturl |! root2rel posturl)++"\"/><author><name>"++domain++"</name></author>\n\
+                \        <link href=\""++((Lst.isInfixed posturl "://") |? posturl |! root2rel posturl)++"\"/><author><name>"++domain++"</name></author>\n\
                 \        <id>tag:"++domain++(',':postdt)++(':':domainwtf)++('/':posturl)++"</id>\n\
                 \        <updated>"++postdt++"T00:00:00Z</updated>\n\
                 \        <content type=\"html\">"++postfull++"</content>\n\

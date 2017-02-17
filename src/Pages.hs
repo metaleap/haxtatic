@@ -1,6 +1,7 @@
 module Pages where
 
 import Base
+import qualified Lst
 
 import qualified Bloks
 import qualified Build
@@ -13,7 +14,6 @@ import qualified ProjC
 import qualified Tmpl
 import qualified Util
 
-import qualified Data.List
 import qualified Data.Time.Clock
 import qualified System.Directory
 import qualified System.FilePath
@@ -165,9 +165,9 @@ tagHandler ctxmain cfgproj ctxtmpl outjob ctxpage ptagcontent
     | split1st == "date"
         = fordate splitrest contentdate
     | has splitrest
-        = ((Data.List.lookup split1st (ctxpage-:Tmpl.pVars)) >>= formatpvar) <|> (for ptagcontent)
+        = ((Lst.lookup split1st (ctxpage-:Tmpl.pVars)) >>= formatpvar) <|> (for ptagcontent)
     | otherwise
-        = (Data.List.lookup ptagcontent (ctxpage-:Tmpl.pVars))
+        = (Lst.lookup ptagcontent (ctxpage-:Tmpl.pVars))
         <|> (for ptagcontent)
         <|> (ttags ('P':'|':ptagcontent))
 
@@ -188,7 +188,7 @@ tagHandler ctxmain cfgproj ctxtmpl outjob ctxpage ptagcontent
         let (dtfp,dtfn) = Util.bothTrim (Util.splitOn1st_ ':' name)
         in if dtfp=="srcTime"
             then fordate dtfn (outjob-:Build.srcFile-:Files.modTime)
-            else Data.List.lookup name pvals
+            else Lst.lookup name pvals
     pvals = let reldir = Util.butNot "." "" (System.FilePath.takeDirectory$ outjob-:Build.relPath)
                 reldir' = Util.butNot "." "" (System.FilePath.takeDirectory$ outjob-:Build.relPathSlashes)
             in  [ "title" =: (ctxpage-:Tmpl.htmlInner1st) "h1" ""
@@ -206,7 +206,7 @@ tagHandler ctxmain cfgproj ctxtmpl outjob ctxpage ptagcontent
                 , "outDeploy" =: outjob-:Build.outPathDeploy
                 ]
     formatpvar pvarfmt =
-        Util.formatWithList pvarfmt (Util.splitOn ':' splitrest)
+        Util.formatWithList pvarfmt (Lst.splitOn ':' splitrest)
 
 
 writeSitemapXml ctxproj buildplan =
@@ -236,7 +236,7 @@ writeSitemapXml ctxproj buildplan =
             priobase
                 | relpath=="index.html" || relpath=="index.htm"
                 = 1.0
-                | Util.endsWith relpath "/index.html" || Util.endsWith relpath "/index.htm"
+                | Lst.isSuffixed relpath "/index.html" || Lst.isSuffixed relpath "/index.htm"
                 = 0.88
                 | otherwise
                 = 0.66

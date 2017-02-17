@@ -12,14 +12,14 @@ cabal-version:       >=1.10
 extra-source-files:  README.md
 
 executable haxtatic
-    default-language:    Haskell2010
-    ghc-options:         -j4 -Wall -fno-warn-missing-signatures -O2 -threaded -rtsopts -with-rtsopts=-N4
-    hs-source-dirs:      src
-    main-is:             @Main.hs
-    build-depends:
-        haxbase,
-        base, time, containers, filepath, directory
-    other-modules:
-        App, Bloks, Build, Defaults, Files, Html, Pages, Posts, Proj, ProjC, ProjT, Tmpl, Util, X,
-        X.DemoCfgArgs, X.DemoSimplest, X.FeedView, X.FormatDateTime, X.HtmlAnchors, X.HtmlImage, X.HtmlLink,
-        X.HtmlLinks, X.Iterator, X.MiniTag, X.NoOp, X.Snippet, X.UnMarkup, X.XmlEscape
+  default-language:    Haskell2010
+  ghc-options:         -j4 -Wall -fno-warn-missing-signatures -O2 -threaded -rtsopts -with-rtsopts=-N4
+  hs-source-dirs:      src
+  main-is:             @Main.hs
+  build-depends:
+    haxbase,
+    base, time, containers, filepath, directory
+  other-modules:
+    App, Bloks, Build, Defaults, Files, Html, Pages, Posts, Proj, ProjC, ProjT, Tmpl, Util, X,
+    X.DemoCfgArgs, X.DemoSimplest, X.FeedView, X.FormatDateTime, X.HtmlAnchors, X.HtmlImage, X.HtmlLink,
+    X.HtmlLinks, X.Iterator, X.MiniTag, X.NoOp, X.Snippet, X.UnMarkup, X.XmlEscape

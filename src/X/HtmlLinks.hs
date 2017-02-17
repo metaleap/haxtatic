@@ -1,6 +1,7 @@
 module X.HtmlLinks where
 
 import Base
+import qualified Lst
 
 import qualified Files
 import qualified Html
@@ -59,8 +60,8 @@ registerX _ xreg =
             outattr (Just ctxpage) (('&':name) , value) =
                 if pathmatch then Just (name , value) else Nothing
                 where
-                pathmatch = (has pagebfname && Util.startsWith pagebfname (dstbaseuri++"."))
-                                || (has pagediruri && Util.startsWith dstlinkuri pagediruri) || (dstlinkuri == pagediruri)
+                pathmatch = (has pagebfname && Lst.isPrefixed pagebfname (dstbaseuri++"."))
+                                || (has pagediruri && Lst.isPrefixed dstlinkuri pagediruri) || (dstlinkuri == pagediruri)
                 pagebfname = ((ctxpage-:Tmpl.pTagHandler) "fileBaseName") ~> ((++ ".") =|- "")
                 pagediruri = ((ctxpage-:Tmpl.pTagHandler) "dirUri") ~> (Files.sanitizeUriRelPathForJoin =|- "")
             outattr _ other =

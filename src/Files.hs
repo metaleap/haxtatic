@@ -1,6 +1,7 @@
 module Files where
 
 import Base
+import qualified Lst
 
 import qualified Util
 
@@ -131,7 +132,7 @@ listAllFiles rootdirpath reldirs modtimer =
             where
             relpaths = dirpaths>=~foreachsrcdir
             foreachsrcdir reldirpath =
-                if Util.startsWith srcfilepath reldirpath
+                if Lst.isPrefixed srcfilepath reldirpath
                 then Just$ drop (1 + reldirpath~>length) srcfilepath else Nothing
         newest (_,modtime1) (_,modtime2) = compare modtime2 modtime1
     in pure$ (Data.List.sortBy newest allfiletuples)>~foreachfiletuple
@@ -179,17 +180,17 @@ simpleFileNameMatch =
 simpleFileNameMatchAny =
     simpleFilePathMatchAny . System.FilePath.takeFileName
 
-simpleFilePathMatch :: FilePath -> String -> Bool
+simpleFilePathMatch :: FilePath  ->  String  ->  Bool
 simpleFilePathMatch _ "*" = True
 simpleFilePathMatch relpath dumbpattern =
     let testcontains = patternstarts && patternends
         teststarts = (not testcontains) && patternends
         testends = (not testcontains) && patternstarts
-        patternstarts = Util.begins '*' dumbpattern
-        patternends = Util.endsWith dumbpattern "*"
-    in (testcontains && Util.contains relpath (Util.crop 1 1 dumbpattern))
-    || (teststarts && Util.startsWith relpath (Util.crop 0 1 dumbpattern))
-    || (testends && Util.endsWith relpath (Util.crop 1 0 dumbpattern))
+        patternstarts = Lst.begins '*' dumbpattern
+        patternends = Lst.isSuffixed dumbpattern "*"
+    in (testcontains && Lst.isInfixed relpath (Util.crop 1 1 dumbpattern))
+    || (teststarts && Lst.isPrefixed relpath (Util.crop 0 1 dumbpattern))
+    || (testends && Lst.isSuffixed relpath (Util.crop 1 0 dumbpattern))
 
 simpleFilePathMatchAny :: FilePath -> [String] -> Bool
 simpleFilePathMatchAny relpath dumbpatterns =

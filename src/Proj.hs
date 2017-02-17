@@ -1,6 +1,7 @@
 module Proj where
 
 import Base
+import qualified Lst
 
 import qualified Bloks
 import qualified Defaults
@@ -112,7 +113,7 @@ _loadSetup ctxmain ctxproj xregs defaultfiles =
     prepchunkssplits = srcchunksprep >~ splitchunk
     postchunkssplits = srcchunkspost >~ splitchunk
     splitchunk (prefix,src) =
-        (prefix , Util.splitOn ':' src)
+        (prefix , Lst.splitOn ':' src)
     rawsrc = _rawsrc ctxproj
     srcchunksprep = loadChunks rawsrc
     srcchunkspost = srcchunksprep >~ pretemplatechunk
@@ -151,7 +152,7 @@ loadChunks rawsrc =
 _rawsrc ctxproj =
     --  join primary project file with additionally-specified 'overwrites' ones:
     (ctxproj-:coreFiles-:Defaults.projectDefault-:Files.content) ++ "\n" ++
-        (Util.join "\n") (projcusts>~Files.content ++ projsnips>~foreach)
+        (Lst.join '\n') (projcusts>~Files.content ++ projsnips>~foreach)
         where
         projcusts = ctxproj-:coreFiles-:Defaults.projectOverwrites
         projsnips = ctxproj-:coreFiles-:Defaults.htmlSnippets

@@ -4,6 +4,7 @@ module Bloks (  Blok, title, desc, inSitemap,
 where
 
 import Base
+import qualified Lst
 
 import qualified Files
 import qualified ProjC
@@ -95,7 +96,7 @@ parseProjChunks projcfg chunkssplits =
         (bname , blok)
         where
         (bname , blok) = (blokname~>Util.trim , Util.tryParseOr (errblok) parsestr)
-        parsestr' = bvalsplits ~> (Util.join ":") ~> Util.trim ~> (Tmpl.fixParseStr "desc")
+        parsestr' = bvalsplits ~> (Lst.join ':') ~> Util.trim ~> (Tmpl.fixParseStr "desc")
         parsestr = parsestr' ~> (("From {"++).(++"}"))
         errblok = From { title = if projcfg-:ProjC.parsingFailEarly
                                     then (ProjC.raiseParseErr "*.haxproj" ("|B|"++bname++":") parsestr')
@@ -123,7 +124,7 @@ tagHandler bloks curbname str
     | (null fname) = Nothing
     | (fname=="name" && has bname) = Just bname
     | (otherwise) = (blokByName bloks bname) >>= \ blok ->
-                        (Data.List.lookup fname fields) >~ \ fieldval ->
+                        (Lst.lookup fname fields) >~ \ fieldval ->
                             blok-:fieldval
     where
     (fname, bn) = Util.bothTrim (Util.splitOn1st_ ':' str)

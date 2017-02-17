@@ -1,6 +1,7 @@
 module Main where
 
 import Base
+import qualified Lst
 
 import qualified App
 import qualified Build
@@ -65,8 +66,8 @@ main =
                                 (showtime$ ((Util.duration timeinitdone timecopydone) + (Util.duration timexmldone endtime)))
                                 (showavg (buildplan-:Build.outStatics~>length) timeprocdone endtime)
         *> if has warnpages
-            then putStrLn ("\n\n" ++ (Util.join "\n\t!>\t" ("Apparent {!| ERROR MESSAGES |!} were rendered into:":warnpages)) ++ "\n\n")
+            then putStrLn ("\n\n" ++ (Lst.joined "\n\t!>\t" ("Apparent {!| ERROR MESSAGES |!} were rendered into:":warnpages)) ++ "\n\n")
             else if has hintpages
-            then putStrLn ("\n\n" ++ (Util.join "\n\t?>\t" ("DON'T MISS the (potentially critical) notices above for:":hintpages)) ++ "\n\n")
+            then putStrLn ("\n\n" ++ (Lst.joined "\n\t?>\t" ("DON'T MISS the (potentially critical) notices above for:":hintpages)) ++ "\n\n")
             else putStrLn ("\n\n==== Bye now! ====\n\n")
         *> System.IO.hFlush System.IO.stdout

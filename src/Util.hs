@@ -1,6 +1,7 @@
 module Util where
 
 import Base
+import qualified Lst
 
 import qualified Data.Char
 import qualified Data.List
@@ -163,7 +164,7 @@ countSub [] _ = 0
 countSub list sub =
     foldr each 0 (Data.List.tails list) where
         each listtail counter =
-            if Data.List.isPrefixOf sub listtail then counter + 1 else counter
+            if Lst.isPrefixOf sub listtail then counter + 1 else counter
 
 countAnySubs list subs =
     --  equivalent to, but faster than:
@@ -171,14 +172,14 @@ countAnySubs list subs =
     foldr each 0 (Data.List.tails list) where
     each listtail counter =
         if any isprefix subs then counter + 1 else counter where
-        isprefix sub = Data.List.isPrefixOf sub listtail
+        isprefix sub = Lst.isPrefixOf sub listtail
 
 countSubVsSubs list (sub,subs) =
     --  equivalent to, but faster than:
     --      (countSub list sub, countAnySubs list subs)
     foldr each (0,0) (Data.List.tails list) where
     each listtail counter =
-        let isprefix sublist = Data.List.isPrefixOf sublist listtail
+        let isprefix sublist = Lst.isPrefixOf sublist listtail
             isp1 = isprefix sub
             isp2 = any isprefix subs
         in if isp1 || isp2
@@ -189,24 +190,10 @@ countSubVsSubs list (sub,subs) =
 
 
 
-begins item (this:_) =
-    item == this
-begins _ _ =
-    False
-
 fstBegins item ((this:_),_) =
     item == this
 fstBegins _ _ =
     False
-
-contains :: (Eq t)=> [t] -> [t] -> Bool
-contains = flip Data.List.isInfixOf
-
-endsWith :: (Eq t)=> [t] -> [t] -> Bool
-endsWith = flip Data.List.isSuffixOf
-
-startsWith :: (Eq t)=> [t] -> [t] -> Bool
-startsWith = flip Data.List.isPrefixOf
 
 toLower :: String -> String
 toLower = (>~ Data.Char.toLower)
@@ -214,9 +201,7 @@ toLower = (>~ Data.Char.toLower)
 toUpper :: String -> String
 toUpper = (>~ Data.Char.toUpper)
 
-join = Data.List.intercalate
-
-lookup key defval = (defval -|=) . (Data.List.lookup key)
+lookup key defval = (defval -|=) . (Lst.lookup key)
 
 subAt start len =
     (take len) . (drop start)
@@ -375,10 +360,10 @@ indexOfSub haystack needle =
         indexofsub [] _ =
             _intmin
         indexofsub list@(_:rest) sub =
-            if Data.List.isPrefixOf sub list then 0
+            if Lst.isPrefixOf sub list then 0
                 else (1 + indexofsub rest sub)
 --  indexOfSub list@(_:rest) sub =
---      if Data.List.isPrefixOf sub list then 0
+--      if Lst.isPrefixOf sub list then 0
 --          else (1 + indexOfSub rest sub)
 
 
@@ -415,7 +400,7 @@ replaceSub (old , new) =
         | (otherwise) = this : replsub more
     withnew = ((new ++) . replsub . dropold)
     dropold = drop $old~>length
-    isprefix = Data.List.isPrefixOf old
+    isprefix = Lst.isPrefixOf old
 
 
 replaceSub' ([] , _) = id
@@ -480,15 +465,6 @@ _replcore recurse tonew (idx , old , oldlen) str =
 
 
 
-splitOn delim =
-    splitOn' (delim==)
-splitOn' check =
-    foldr each [[]] where
-        each _ [] = []
-        each item accum@(item0:rest)
-            |(check item)= []:accum
-            |(otherwise)= (item:item0):rest
-
 splitOn1st delim =
     splitOn1st' (delim==)
 splitOn1st' check list =
@@ -529,7 +505,7 @@ splitUp withmatch allbeginners end src =
         then [(src,"")]
         else _splitup src
     where
-    nomatchpossible = not$ Data.List.isInfixOf end src -- oddly enough this extra work does pay off perf-wise
+    nomatchpossible = not$ Lst.isInfixOf end src -- oddly enough this extra work does pay off perf-wise
     beginners = beginners' ~| length~.((==)beg0len)
     beginners' = allbeginners ~> forNoNilsEach reverse
     beg0len = beg0~>length

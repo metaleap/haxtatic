@@ -1,12 +1,12 @@
 module Defaults where
 
 import Base
+import qualified Lst
 
 import qualified Files
 import qualified Util
 
 import qualified Data.Char
-import qualified Data.List
 import qualified Data.Time.Format
 import qualified System.FilePath
 import System.FilePath ( (</>) )
@@ -38,7 +38,7 @@ loadOrCreate ctxmain projname projfilename custfilenames =
     -> Files.readOrDefault True ctxmain relpathsnipblok "" _tmpl_html_blok
     *> Files.listAllFiles (ctxmain-:Files.dirPath) ["tmpl"] id >>= \tmplfileinfos
     -> let
-        snipfileinfos = tmplfileinfos ~|(Data.List.isSuffixOf ".haxsnip.html").fst
+        snipfileinfos = tmplfileinfos ~|(Lst.isSuffixOf ".haxsnip.html").fst
         snipmodtime = if null snipfileinfos then Util.dateTime0 else maximum$ snipfileinfos>~(snd ~. Files.modTime)
     in (snipfileinfos>~(("tmpl" </>).fst)   ) >>~ foreach
     >>= \snipfiles

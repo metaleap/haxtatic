@@ -1,6 +1,7 @@
 module X.Iterator where
 
 import Base
+import qualified Lst
 
 import qualified Posts
 import qualified Proj
@@ -161,7 +162,7 @@ registerX ctxproj xreg =
         forsplit (('l':[]) , ('{':_)) = Num
         forsplit (othercontent, ('{':_)) = Str ('{':':':othercontent++":}")
         forsplit (othercontent, _) = Str othercontent
-    cfgjoin = if null $cfg-:joinVia then concat else Util.join $cfg-:joinVia
+    cfgjoin = if null $cfg-:joinVia then concat else Lst.joined $cfg-:joinVia
     cfgwrap | (null $cfg-:prefix) && (null $cfg-:suffix) = id
             | otherwise = (((cfg-:prefix))++).(++((cfg-:suffix)))
     cfg_parsestr = Tmpl.fixParseStr "content" (xreg-:X.cfgFullStr)
@@ -191,7 +192,7 @@ postFieldsToPairs more post =
     where
     morefields = more >=~ topair
     topair mf =
-        Data.List.lookup mf (Posts.more post) >~ \val -> (mf , val)
+        Lst.lookup mf (Posts.more post) >~ \val -> (mf , val)
 
 
 moreFromHtmlSplit more =

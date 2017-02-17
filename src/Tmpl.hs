@@ -1,12 +1,12 @@
 module Tmpl where
 
 import Base
+import qualified Lst
 
 import qualified Defaults
 import qualified Files
 import qualified Util
 
-import qualified Data.List
 import qualified Data.Time.Clock
 import System.FilePath ( (</>) )
 import qualified Text.Printf
@@ -94,7 +94,7 @@ loadAll ctxmain ctxproc deffiles filenameexts htmlequivexts =
         tmplfind ".htm" = tmpldef
         tmplfind ext =
             elem ext htmlequivexts |? tmpldef |!
-                tmpldef -|= (Data.List.find ((ext==).fileExt) loadedtemplates)
+                tmpldef -|= (Lst.find ((ext==).fileExt) loadedtemplates)
     in pure tmplfind
 
 
@@ -165,7 +165,7 @@ warnIfTagMismatches ctxmain filename (numtagends , numtagbegins) =
         then pure ()
         else
         let maindirpath = ctxmain-:Files.dirPath
-            trim = (Util.startsWith filename maindirpath) |? (drop$ maindirpath~>length + 1) |! id
+            trim = (Lst.isPrefixed filename maindirpath) |? (drop$ maindirpath~>length + 1) |! id
         in Text.Printf.printf "...\t<~\tPotential syntax issue: %ux `|}` but %ux `{*|`\n\t\t\tin `%s`\n"
                                 (numtagends::Int) (numtagbegins::Int) (trim filename)
 
