@@ -94,7 +94,7 @@ parseProjChunks ctxproj projcfg xregisterers chunkssplits =
         ( tn , reg ) where
         reg = registerx ctxproj Named { xname = xn, tname = tn, parsingFailEarly = projcfg-:ProjC.parsingFailEarly,
                                         cfgFullStr = cfgstr, cfgSplitAll = tvals>~Str.trim,
-                                        cfgSplitOnce = both (Str.trimEnd , Str.trimStart) (Util.splitOn1st_ ':' cfgstr) }
+                                        cfgSplitOnce = duo (Str.trimEnd , Str.trimStart) (Util.splitOn1st_ ':' cfgstr) }
         cfgstr = Str.trim$ Lst.join ':' tvals
 
 

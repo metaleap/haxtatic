@@ -11,7 +11,7 @@ import qualified X
 
 data Tag =
     Cfg {
-        attr :: Util.StringPairs,
+        attr :: Str.Pairs,
         xmlEscape :: (Bool , Bool),
         uriAutoExt :: String
     }
@@ -45,9 +45,9 @@ registerX _ xreg =
     htmlescape =
         htmlesc $cfg-:xmlEscape where
         htmlesc (False , False) = id
-        htmlesc (True , True) = Util.both' Html.escape
+        htmlesc (True , True) = Util.onBoth Html.escape
         htmlesc (False , True) = (>~ Html.escape)
-        htmlesc (True , False) = both (Html.escape, id)
+        htmlesc (True , False) = duo (Html.escape, id)
     (cfg_relpath , cfg_parsestr) = xreg-:X.cfgSplitOnce
     (cfgerrmsg , cfglinkatts) = Html.attrClearInner $cfg-:attr
     cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where

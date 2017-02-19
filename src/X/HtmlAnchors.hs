@@ -16,7 +16,7 @@ data Tag
         xmlEscapeHref :: Bool
     }
     | Args {
-        attr :: Util.StringPairs
+        attr :: Str.Pairs
     }
     deriving Read
 

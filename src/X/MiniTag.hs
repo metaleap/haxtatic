@@ -1,9 +1,9 @@
 module X.MiniTag where
 
 import Base
+import qualified Str
 
 import qualified Html
-import qualified Util
 import qualified X
 
 import qualified Data.List
@@ -12,7 +12,7 @@ import qualified Data.List
 
 data Tag
     = Cfg {
-        attr :: Util.StringPairs
+        attr :: Str.Pairs
     }
     deriving Read
 

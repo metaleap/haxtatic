@@ -10,8 +10,8 @@ import qualified X
 
 data Tag =
     Cfg {
-        attrLink :: Util.StringPairs,
-        attrImg :: Util.StringPairs,
+        attrLink :: Str.Pairs,
+        attrImg :: Str.Pairs,
         xmlEscape :: Bool
     }
     deriving Read

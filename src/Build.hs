@@ -101,7 +101,7 @@ plan ctxmain ctxproj =
         projcfg = projsetup-:Proj.cfg
         cfgprocstatic = projcfg-:ProjC.processingOfFiles
         cfgprocpages = projcfg-:ProjC.processingOfPages
-        cfgprocposts = ProjC.Proc { ProjC.force = Util.onlyIf (cfgprocpages-:ProjC.force) ["*"] [],
+        cfgprocposts = ProjC.Proc { ProjC.force = Util.eitherOne (cfgprocpages-:ProjC.force) ["*"] [],
                                     ProjC.skip = [], ProjC.dirs = []}
         listallfiles = Files.listAllFiles $ctxproj-:Proj.dirPath
         modtimeproj = ctxproj-:Proj.coreFiles-:Defaults.projectDefault-:Files.modTime

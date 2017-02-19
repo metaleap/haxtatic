@@ -7,7 +7,6 @@ import qualified Str
 import qualified Files
 import qualified Html
 import qualified Tmpl
-import qualified Util
 import qualified X
 
 import qualified System.FilePath
@@ -15,14 +14,14 @@ import qualified System.FilePath
 
 data Tag =
     Cfg {
-        attr :: Util.StringPairs,
-        itemsFirst :: Util.StringPairs,
-        itemsLast :: Util.StringPairs,
+        attr :: Str.Pairs,
+        itemsFirst :: Str.Pairs,
+        itemsLast :: Str.Pairs,
         wrapHref :: (String , String)
     }
     | Args {
-        items :: Util.StringPairs,
-        attr :: Util.StringPairs
+        items :: Str.Pairs,
+        attr :: Str.Pairs
     }
     deriving Read
 

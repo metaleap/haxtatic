@@ -75,7 +75,7 @@ registerX ctxproj xreg =
             dyns' = [0..ilast]>~g where g i = (null v && i > 0) |? g (i-1) |! v where v = dyns''@!i
             dyns'' = d$args-:over where d (With i t) = d (_w2b i t) ; d (But (Dyn vals) _) = vals ; d (But _ deeper) = d deeper ; d _ = []
         blokcat = bc (args-:over) where bc (But (BlokCat bcat) _) = bcat ; bc (But _ deeper) = bc deeper ; bc _ = ""
-        iteratees = Util.indexed (iter $args-:over) where
+        iteratees = Lst.indexed (iter $args-:over) where
 
             --  RECURSIVE TWEAK-OPS:
             iter (With deeper tweaks) =
@@ -121,7 +121,7 @@ registerX ctxproj xreg =
             errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Str.teaser 23 argstr))] }
 
         shuffle perpage =
-            Util.shuffleExtra (rndseeds maybectxpage perpage)
+            Lst.shuffleExtra (rndseeds maybectxpage perpage)
         rndseeds (Just pagectx) True = (pagectx-:Tmpl.randSeed) ++ (rndseeds Nothing False)
         rndseeds _ _ = ctxproj-:Proj.setup-:Proj.randSeed
 
@@ -202,7 +202,7 @@ moreFromHtmlSplit more =
 
 
 outputFeedPosts =
-    (Util.crop 1 1) . show
+    (Lst.crop 1 1) . show
 
 
 preSorted posts =

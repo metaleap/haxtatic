@@ -130,7 +130,7 @@ loadChunks rawsrc =
     paireds = gatherothers beginners
     beginners = alllines ~| isbegin
     others = alllines ~|not.isbegin
-    alllines = Util.indexed$ lines rawsrc
+    alllines = Lst.indexed$ lines rawsrc
 
     isbegin (_ , '|':cfgprefix:'|':_) =
         any (cfgprefix==) ['B','C','P','T','X']
@@ -160,6 +160,6 @@ _rawsrc ctxproj =
         foreach snipfile =
             unlines (headerline:tabbedlines)
             where
-            basename = (Util.dropLast (".haxsnip.html"~>length)) (System.FilePath.takeFileName $snipfile-:Files.path)
+            basename = (Lst.dropLast (".haxsnip.html"~>length)) (System.FilePath.takeFileName $snipfile-:Files.path)
             headerline = "|X|hax.snippet:"++basename++":"
             tabbedlines = (lines $snipfile-:Files.content) >~ ("\t"++)

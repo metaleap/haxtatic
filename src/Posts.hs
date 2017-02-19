@@ -32,7 +32,7 @@ data Item
         cat :: String,
         title :: String,
         link :: String,
-        more :: Util.StringPairs,
+        more :: Str.Pairs,
         content :: String,
         feed :: String
     }

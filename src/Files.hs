@@ -73,7 +73,7 @@ ensureFileExt _ "" filepath = filepath
 ensureFileExt _ _ "" = ""
 ensureFileExt ignorecase ext filepath =
     let curext = System.FilePath.takeExtension filepath
-        cmp = if ignorecase then Util.toLower else id
+        cmp = if ignorecase then Str.toLower else id
     in if (cmp curext)==(cmp ext)
         then filepath else filepath++ext
 
@@ -189,9 +189,9 @@ simpleFilePathMatch relpath dumbpattern =
         testends = (not testcontains) && patternstarts
         patternstarts = Lst.begins '*' dumbpattern
         patternends = Lst.isSuffixed dumbpattern "*"
-    in (testcontains && Lst.isInfixed relpath (Util.crop 1 1 dumbpattern))
-    || (teststarts && Lst.isPrefixed relpath (Util.crop 0 1 dumbpattern))
-    || (testends && Lst.isSuffixed relpath (Util.crop 1 0 dumbpattern))
+    in (testcontains && Lst.isInfixed relpath (Lst.crop 1 1 dumbpattern))
+    || (teststarts && Lst.isPrefixed relpath (Lst.crop 0 1 dumbpattern))
+    || (testends && Lst.isSuffixed relpath (Lst.crop 1 0 dumbpattern))
 
 simpleFilePathMatchAny :: FilePath -> [String] -> Bool
 simpleFilePathMatchAny relpath dumbpatterns =

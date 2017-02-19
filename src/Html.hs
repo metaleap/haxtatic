@@ -12,7 +12,7 @@ import qualified Util
 data Tag =
     T {
         name :: String,
-        attribs :: Util.StringPairs,
+        attribs :: Str.Pairs,
         subTags :: [Tag]
     }
     deriving Eq
@@ -117,7 +117,7 @@ joinUri relpath relpath' =
 
 
 out::
-    String-> Util.StringPairs-> [Tag]->
+    String-> Str.Pairs-> [Tag]->
     String
 out tname tatts tchildren =
     emit (T tname tatts tchildren)
@@ -127,7 +127,7 @@ out tname tatts tchildren =
 rootPathToRel currelpath =
     if null walktoroot then id else ((last walktoroot) ++)
     where
-    walktoroot = take (Util.count '/' (Files.sanitizeUriRelPathForJoin currelpath)) infinity
+    walktoroot = take (Lst.count '/' (Files.sanitizeUriRelPathForJoin currelpath)) infinity
     infinity = iterate (++ "../") "../"
 
 

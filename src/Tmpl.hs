@@ -36,7 +36,7 @@ data CtxPage
     = PageContext {
         blokName :: String,
         pTagHandler :: String -> Maybe String,
-        pVars :: Util.StringPairs,
+        pVars :: Str.Pairs,
         pDate :: Data.Time.Clock.UTCTime,
         htmlInners :: String -> [String],
         htmlInner1st :: String -> String -> String,
@@ -84,8 +84,7 @@ loadAll ctxmain ctxproc deffiles filenameexts htmlequivexts =
                         --  fallback template content: `{P|:content:|}`
                         (_applychunkbegin++_applychunkmid++_applychunkend)
                     >>= loadTmpl ctxmain ctxproc fileext
-        fileexts = "":otherexts where
-            otherexts = (Util.unique filenameexts) ~| Util.noneOf htmlequivexts
+        fileexts = "":exts where exts = (Util.unique filenameexts) ~| not.(`elem` htmlequivexts)
     in fileexts>>~foreach
     >>= \loadedtemplates
     -> let
@@ -148,7 +147,7 @@ processTag taghandler (tagcontent , tagbegin) =
     taginner = if noesc then tagcontent else tagesc
     result = case (taghandler taginner) of
                 Just output->
-                    if noesc then output else (show output) ~> (Util.crop 1 1)
+                    if noesc then output else (show output) ~> (Lst.crop 1 1)
                 Nothing->
                     tagbegin++tagcontent++tag_Close
 

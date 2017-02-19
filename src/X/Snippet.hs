@@ -10,11 +10,11 @@ import qualified X
 
 data Tag
     = Cfg {
-        vars :: Util.StringPairs,
+        vars :: Str.Pairs,
         content :: String
     }
     | Args {
-        vars :: Util.StringPairs,
+        vars :: Str.Pairs,
         content :: String
     }
     deriving Read

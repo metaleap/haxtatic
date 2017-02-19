@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -fwarn-missing-signatures #-}
+{-# OPTIONS_GHC #-}
 module Util where
 
 import Base
@@ -10,16 +10,13 @@ import qualified Data.Ratio
 import qualified Data.Set
 import qualified Data.Time.Calendar
 import qualified Data.Time.Clock
-import qualified Text.Printf
-import qualified Text.Read
 
 
 
-type StringPairs = [(String , String)]
-
-
-
+_intmin :: Int
 _intmin = minBound::Int
+
+dateTime0 :: Data.Time.Clock.UTCTime
 dateTime0 = Data.Time.Clock.UTCTime {
                 Data.Time.Clock.utctDay = Data.Time.Calendar.ModifiedJulianDay {
                                             Data.Time.Calendar.toModifiedJulianDay = 0 },
@@ -28,7 +25,7 @@ dateTime0 = Data.Time.Clock.UTCTime {
 
 
 
-dtInts :: Data.Time.Clock.UTCTime -> [Int]
+dtInts ::  Data.Time.Clock.UTCTime  ->  [Int]
 dtInts utctime =
     [ modifiedjulianday , daytimenumer , daytimedenom ]
     where
@@ -39,122 +36,65 @@ dtInts utctime =
 
 
 
-both' f = both (f,f)
+onBoth ::  (a->b)  ->  (a , a)  ->  (b , b)
+onBoth = duo . dupl
 
-
-bothFsts fn (fst1,_) (fst2,_) =
+onFsts ::  (i1->i2->o)  ->  (i1 , _1)  ->  (i2 , _2)  ->  o
+onFsts fn (fst1 , _) (fst2 , _) =
     fn fst1 fst2
 
-bothSnds fn (_,snd1) (_,snd2) =
+onSnds ::  (i1->i2->o)  ->  (_1 , i1)  ->  (_2 , i2)  -> o
+onSnds fn (_ , snd1) (_ , snd2) =
     fn snd1 snd2
 
 
 
-butNot notval defval val
-    |(val==notval)= defval
-    |(otherwise)= val
+butNot ::  (Eq e)=>  e  ->  e  ->  e  ->  e
+butNot unwanted fallback value
+    | (value == unwanted) = fallback
+    | (otherwise) = value
 
 
+ifIs ::  [a]  ->  ([a]->[b])  ->  [b]
 ifIs [] _ = []
 ifIs val func = func val
 
 
-onlyIf val goalval defval =
-    if val==goalval then val else defval
-
-noneOf vals val =
-    all (val/=) vals
+eitherOne ::  (Eq a)=>  a  ->  a  ->  a  ->  a
+eitherOne value yay nay =
+    if value==yay then yay else nay
 
 
 
+repeatedly ::  (Eq a)=>  (a->a)  ->  a  ->  a
 repeatedly fn arg =
     let result = fn arg
     in if (result==arg) then result else repeatedly fn result
 
 
 
+via ::  (Applicative a)=>  a i  ->  o  ->  a o
 via fn =
     --  use it to `>>=` a value over to fn but then
     --  discard its result and return said value instead
     ((*>)fn).pure
 
 
+clamp ::  Int  ->  Int  ->  Int  ->  Int
 clamp minval maxval =
     (max minval) . (min maxval)
 
 
+duration ::  Data.Time.Clock.UTCTime  ->  Data.Time.Clock.UTCTime  ->  Data.Time.Clock.NominalDiffTime
 duration =
     flip Data.Time.Clock.diffUTCTime
 
 
--- for uses such as `crop` without (directly) taking the `length`
-dropLast 0 list = list
-dropLast n list = zipWith const list (drop n list)
--- dropLast n = (@!n) . reverse . Data.List.inits
--- dropLast n l = l~>take (l~>length - n)
-
-
-takeLast 0 = const []
--- takeLast 1 = (: []) . last
-takeLast n = ([] -|=) . (@?n) . reverse . Data.List.tails
-
-
-indexed =
-    zip [0 .. ]
-
-
-
-shiftLeft [] = []
-shiftLeft (start:rest) =
-    rest ++ [start]
-
-
-shuffleBasic [] list = list
-shuffleBasic _ [] = []
-shuffleBasic (rnd:rnds) list
-    | (null left) = shuffleBasic rnds right
-    | (otherwise) = (last left) : (shuffleBasic rnds ((init left) ++ right))
-    where (left , right) = splitAt (rnd `mod` list~>length) list
-
-shuffleExtra rnds@(_:_:_) list@(_:_:_) =
-    let shiftby = (rnds@!1) `mod` (list~>length - 1)
-        reverseordont = if 0 == (shiftby `mod` 2) then reverse else id
-        shuffled = shuffleBasic rnds list
-        shifted = times shiftby shiftLeft shuffled
-    in reverseordont shifted
-shuffleExtra rnds list =
-    shuffleBasic rnds list
-
-
-times 0 _ =
-    id
-times n func =
-    (times (n - 1) func) . func
-
-
-crop 0 0 = id
-crop 0 1 = dropLast 1
-crop 0 end = dropLast end
-crop 1 0 = drop 1 -- `tail` could error out, one less worry
-crop start 0 = drop start
-crop start end =
-    (drop start) . (dropLast end)
 
 cropOn1st delim cropafter trimitemsafterdelim oncrop list =
     let i = indexOf delim list
     in if i < 0 then list else
         (oncrop . (Lst.trimEndEq trimitemsafterdelim) . (take (i+cropafter))) list
-
-count item =
-    countBy (==item)
-
-countBy check =
-    next 0 where
-    next counter [] =
-        counter
-    next counter (this:rest)
-        |(check this)= next (counter+1) rest
-        |(otherwise)= next counter rest
 
 countSub _ [] = 0
 countSub [] _ = 0
@@ -191,12 +131,6 @@ fstBegins item ((this:_),_) =
     item == this
 fstBegins _ _ =
     False
-
-toLower :: String -> String
-toLower = (>~ Data.Char.toLower)
-
-toUpper :: String -> String
-toUpper = (>~ Data.Char.toUpper)
 
 lookup key defval = (defval -|=) . (Lst.lookup key)
 
@@ -264,10 +198,10 @@ uniqueBy:: (any -> any -> Bool) -> [any] -> [any]
 uniqueBy = Data.List.nubBy
 
 uniqueFst:: (Eq eq)=> [(eq,any)] -> [(eq,any)]
-uniqueFst = uniqueBy (bothFsts (==))
+uniqueFst = uniqueBy (onFsts (==))
 
 uniqueSnd:: (Eq eq)=> [(any,eq)] -> [(any,eq)]
-uniqueSnd = uniqueBy (bothSnds (==))
+uniqueSnd = uniqueBy (onSnds (==))
 
 
 
@@ -282,22 +216,6 @@ mergeDuplFsts isduplicate mergevalues =
 
 
 
-lengthGEq 0 = const True
-lengthGEq n = has . drop (n - 1)
-
-lengthGt 0 = has
-lengthGt n = has . drop n
-
-fuseElems is2fuse fusion (this:next:more) =
-    (fused:rest) where
-        nofuse = not$ is2fuse this next
-        fused = nofuse |? this |! fusion this next
-        rest = fuseElems is2fuse fusion$
-                nofuse |? (next:more) |! more
-fuseElems _ _ l = l
-
-
-
 indexOf _ [] =
     _intmin
 indexOf item (this:rest) =
@@ -309,8 +227,9 @@ indexOf item (this:rest) =
 _indexof_droptil delim = _indexof_droptil' (delim==)
 _indexof_droptil' _ _ [] =
     (_intmin , [])
+
 _indexof_droptil' check counter list@(this:rest) =
-    if (check this) then (counter , list)
+    if check this then (counter , list)
         else _indexof_droptil' check (counter + 1) rest
 
 
@@ -344,9 +263,9 @@ indexOfSubs1st subs str =
     let startchars = unique$ subs>~(@!0)
         (startindex , _haystack) = _indexof_droptil' (`elem` startchars) 0 str
         iidxs = isubs >~ (>~ indexof) ~|(>=0).snd
-        isubs = indexed subs
+        isubs = Lst.indexed subs
         indexof = indexOfSub _haystack
-        (i,index) = Data.List.minimumBy (bothSnds compare) iidxs
+        (i,index) = Data.List.minimumBy (onSnds compare) iidxs
     in if startindex<0 || null iidxs || index<0
         then ( _intmin , [] )
         else ( index+startindex , subs@!i )
