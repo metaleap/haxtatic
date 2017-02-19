@@ -50,7 +50,7 @@ main =
             showtime' numdig difftime =
                 let overaminute = difftime > 60
                 in (overaminute |? (difftime / 60) |! difftime)
-                    ~> show ~> ( Util.cropOn1st '.' numdig ['0'] ((++(overaminute |? "m" |! "s")) . (Util.trimEnd' ['.'])) )
+                    ~> show ~> ( Util.cropOn1st '.' numdig ['0'] ((++(overaminute |? "m" |! "s")) . (Lst.trimEndEq ['.'])) )
             showavg 0 _ _ = ""
             showavg l t1 t2 = Text.Printf.printf " (%ux ~%s)" l (showtime' 4 ((Util.duration t1 t2) / (fromIntegral l)))
         in Text.Printf.printf "\n\nWrote %u files in %s:" numoutfiles (showtime timetaken)

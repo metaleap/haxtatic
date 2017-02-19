@@ -2,6 +2,7 @@ module X.HtmlLinks where
 
 import Base
 import qualified Lst
+import qualified Str
 
 import qualified Files
 import qualified Html
@@ -36,7 +37,7 @@ registerX _ xreg =
         allitems = htmlout (args-:attr ++ cfghtmlatts) (args-:items)
         args = X.tryParseArgs xreg argstr
                 {-empty-} (Just Args { items = [], attr = [] })
-                {-error-} (Args { items = ["#"=:""], attr = X.htmlErrAttsArgs (xreg , Util.excerpt 23 argstr) })
+                {-error-} (Args { items = ["#"=:""], attr = X.htmlErrAttsArgs (xreg , Str.teaser 23 argstr) })
 
         htmlout attribs argitems =
             argitems >>= (foreach Nothing attribs)

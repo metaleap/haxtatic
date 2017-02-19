@@ -132,8 +132,8 @@ plan ctxmain ctxproj =
                             System.Directory.getModificationTime outfilepath
                             >>= pure . ((fileinfo-:srcFile-:Files.modTime) >)
                     in System.Directory.doesFileExist outfilepath >>= ifexists
-        outfileinfo contentdater relpather both@(relpath,file) =
-            let (_,cdate) = Files.customDateFromFileName dtparser both   --  ignoring the renamed relpath as we already had to take it above (for bloks) when we had to ignore the cdate .. ugly this double call
+        outfileinfo contentdater relpather pathnfile@(relpath,file) =
+            let (_,cdate) = Files.customDateFromFileName dtparser pathnfile  --  ignoring the renamed relpath as we already had to take it above (for bloks) when we had to ignore the cdate .. ugly this double call
                 dtparser = ProjC.dtPageDateParse$ ctxproj-:Proj.setup-:Proj.cfg
                 relpathnu = relpather relpath
                 contentdate = contentdater (file-:Files.modTime , cdate)
@@ -154,8 +154,8 @@ plan ctxmain ctxproj =
                     b2 = Bloks.blokNameFromRelPath (projsetup-:Proj.bloks) relpath2 file2
                 in if cmp /= EQ then cmp else
                     compare (file2-:Files.modTime) (file1-:Files.modTime)
-            renamerelpath both@(_,file) =
-                let (datelessrelpath , _modtime) = Files.customDateFromFileName (ProjC.dtPageDateParse projcfg) both
+            renamerelpath pathnfile@(_,file) =
+                let (datelessrelpath , _modtime) = Files.customDateFromFileName (ProjC.dtPageDateParse projcfg) pathnfile
                     preferredrelpath = Bloks.preferredRelPath (projsetup-:Proj.bloks) (datelessrelpath , file)
                 in (preferredrelpath , file)
         outfileinfobasic = outfileinfo fst id

@@ -2,6 +2,7 @@ module Posts where
 
 import Base
 import qualified Lst
+import qualified Str
 
 import qualified Bloks
 import qualified Defaults
@@ -132,10 +133,10 @@ parseProjChunks projcfg chunkssplits =
     posts = Util.sortDesc$ chunkssplits >=~ foreach
     foreach (pfeedcat:pvalsplits) =
         let
-            pstr = Lst.join ':' pvalsplits ~> Util.trim
+            pstr = Lst.join ':' pvalsplits ~> Str.trim
             parsestr' = (Tmpl.fixParseStr "content" pstr)
             parsestr = "From {" ++ parsestr' ++ ",feed=\"" ++ pfeedcat ++ "\"}"
-            post = Util.tryParseOr errpost parsestr
+            post = Str.tryParseOr errpost parsestr
             errpost = From {
                     title = if projcfg-:ProjC.parsingFailEarly
                                 then ProjC.raiseParseErr "*.haxproj" ("|P|"++pfeedcat++":") parsestr'
@@ -219,7 +220,7 @@ writeAtoms ctxbuild domainname outjobs =
                             \<feed xmlns=\"http://www.w3.org/2005/Atom\">\n\
                             \    <link rel=\"self\" type=\"application/rss+xml\" href=\"http://"++domainname++"/"++(hrefify relpath)++"\" />\n\
                             \    <title>"++domain++" "++feedtitle++"</title>\n\
-                            \    <subtitle>"++(has feedname |? (domainname++pageuri) |! (Util.trim$ Html.stripMarkup True ' ' feeddesc))++"</subtitle>\n\
+                            \    <subtitle>"++(has feedname |? (domainname++pageuri) |! (Str.trim$ Html.stripMarkup True ' ' feeddesc))++"</subtitle>\n\
                             \    <id>http://"++domainname++pageuri++"</id>\n\
                             \    <link href=\"http://"++domainname++pageuri++"\"/>\n\
                             \    <updated>"++updated++"T00:00:00Z</updated>\n    "

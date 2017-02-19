@@ -2,6 +2,7 @@ module Tmpl where
 
 import Base
 import qualified Lst
+import qualified Str
 
 import qualified Defaults
 import qualified Files
@@ -66,7 +67,7 @@ apply ctxtmpl ctxpage pagesrc =
 
 fixParseStr fulltextfieldname pstr =
     if i < 0 then pstr else
-    (take i pstr) ++ fulltextfieldname ++ "=" ++ (pstr ~> ((drop$ i+l) ~. Util.trim ~. show))
+    (take i pstr) ++ fulltextfieldname ++ "=" ++ (pstr ~> ((drop$ i+l) ~. Str.trim ~. show))
         where i = Util.indexOfSub pstr (fulltextfieldname++"=>") ; l = 2 + fulltextfieldname~>length
 
 
@@ -106,7 +107,7 @@ loadTmpl ctxmain ctxproc fileext tmpfile =
             }
     where
     srcfile = tmpfile { Files.content = srcpreprocessed }
-    srcchunks = Util.splitUp Util.trim [_applychunkbegin] _applychunkend srcpreprocessed
+    srcchunks = Util.splitUp Str.trim [_applychunkbegin] _applychunkend srcpreprocessed
     srcpreprocessed = processSrc ctxproc Nothing rawsrc
     rawsrc = (tmpfile-:Files.content)
 
@@ -116,7 +117,7 @@ processSrc ctxproc ctxpage =
     Util.repeatedly process
     where
     preserveunprocessedtag = const Nothing
-    splitup = Util.splitUp Util.trim (ctxproc-:processTags) tag_Close
+    splitup = Util.splitUp Str.trim (ctxproc-:processTags) tag_Close
     _c = ctxproc-:cTagHandler ; _t = ctxproc-:tTagHandler
     _b = (ctxproc-:bTagHandler) (ctxpage-:(blokName =|- ""))
     _p = ctxpage-:(pTagHandler =|- preserveunprocessedtag)

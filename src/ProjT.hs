@@ -2,6 +2,7 @@ module ProjT where
 
 import Base
 import qualified Lst
+import qualified Str
 
 import qualified Util
 
@@ -11,8 +12,8 @@ import qualified Data.Map.Strict
 parseProjChunks chunkssplits =
     Data.Map.Strict.fromList$ chunkssplits ~> Util.keepNoNilFsts foreach where
         foreach (tname:tvalsplits) =
-            ( tname ~> Util.trim ,
-                tvalsplits ~> (Lst.join ':') ~> Util.trim )
+            ( tname ~> Str.trim ,
+                tvalsplits ~> (Lst.join ':') ~> Str.trim )
         foreach _ =
             ( "" , "" )
 

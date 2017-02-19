@@ -1,6 +1,7 @@
 module X.HtmlImage where
 
 import Base
+import qualified Str
 
 import qualified Html
 import qualified Util
@@ -25,7 +26,7 @@ registerX _ xreg =
         tag = if haslink then lnktag else imgtag
         imgtag = Html.T "img" (cfgimgatts ++ (atts "src" "alt")) []
         lnktag = Html.T "a" (cfglinkatts ++ (atts "href" "title")) [imgtag]
-        (imgsrc,imgdesc) = argsplit ~> Util.bothTrim
+        (imgsrc,imgdesc) = argsplit ~> Str.trimBoth
         argsplit = Util.splitOn1stSpace argstr
         atts uriattname descattname =
             let imgtext = cfgerrmsg <?> (htmlesc imgdesc)

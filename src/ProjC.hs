@@ -2,6 +2,7 @@ module ProjC where
 
 import Base
 import qualified Lst
+import qualified Str
 
 import qualified Defaults
 import qualified Files
@@ -87,13 +88,13 @@ parseProjChunks chunkssplits =
     relpathpostatoms = Files.sanitizeRelPath$ Data.Map.Strict.findWithDefault
                     Defaults.dir_PostAtoms "_hax_relpath_postatoms" cfgmisc
     htmlequivexts = Util.unique ("":".html":".htm":hexts) where
-        hexts = hstr ~> (Lst.splitOn ',') >~ (('.':).(Util.trimSpaceOr ['.']))
+        hexts = hstr ~> (Lst.splitOn ',') >~ (('.':).(Str.trimSpaceOr ['.']))
         hstr = Data.Map.Strict.findWithDefault "" "_hax_htmlequivexts" cfgmisc
     procstatic = procfind Defaults.dir_Static
     procpages = procfind Defaults.dir_Pages
     procfind name =
         let procstr = Data.Map.Strict.findWithDefault "" ("process:"++name) cfgprocs
-        in procsane name (Util.tryParse (procdef name)
+        in procsane name (Str.tryParse (procdef name)
                                         (procdef$ raiseParseErr "*.haxproj" ("|C|process:"++name++":") procstr)
                                         (("Proc {"++).(++"}"))
                                         procstr)
@@ -108,12 +109,12 @@ parseProjChunks chunkssplits =
         } where
             saneneither = saneskip==saneforce
             saneskip = sanitize skip ; saneforce = sanitize force
-            sanitize fvals = let them = proc~>fvals >/~ Util.trim
+            sanitize fvals = let them = proc~>fvals >/~ Str.trim
                                 in (elem "*" them) |? ["*"] |! them
     proctags = (has ptags) |? ptags |! Tmpl.tags_All ~|(/=Tmpl.tag_C) where
-        ptags = (pstr~>(Lst.splitOn ',') >/~ Util.trim) ~> Util.unique >~ (('{':).(++"|"))
-        pstr = Util.trim$ Data.Map.Strict.findWithDefault "" ("process:tags") cfgprocs
-    dirnameonly = System.FilePath.takeFileName ~. Util.trim
+        ptags = (pstr~>(Lst.splitOn ',') >/~ Str.trim) ~> Util.unique >~ (('{':).(++"|"))
+        pstr = Str.trim$ Data.Map.Strict.findWithDefault "" ("process:tags") cfgprocs
+    dirnameonly = System.FilePath.takeFileName ~. Str.trim
     cfgmisc = cfglines2hashmap ""
     cfgdtformats = cfglines2hashmap "dtformat"
     cfgprocs = cfglines2hashmap "process"
@@ -124,10 +125,10 @@ parseProjChunks chunkssplits =
                     | null goalprefix
                     = ( prefix , foreachvalue$ (next:rest) )
                     | prefix==goalprefix
-                    = ( prefix ++ ":" ++ next~>Util.trim , foreachvalue$ rest )
-                    where prefix = Util.trim prefix'
+                    = ( prefix ++ ":" ++ next~>Str.trim , foreachvalue$ rest )
+                    where prefix = Str.trim prefix'
                 foreachchunk _ = ( "" , "" )
-                foreachvalue = (Lst.join ':') ~.Util.trim
+                foreachvalue = (Lst.join ':') ~.Str.trim
 
 
 

@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fwarn-missing-signatures #-}
 module Util where
 
 import Base
@@ -38,9 +39,6 @@ dtInts utctime =
 
 
 
-both (fun1,fun2) (tfst,tsnd) =
-    (fun1 tfst , fun2 tsnd)
-
 both' f = both (f,f)
 
 
@@ -50,7 +48,6 @@ bothFsts fn (fst1,_) (fst2,_) =
 bothSnds fn (_,snd1) (_,snd2) =
     fn snd1 snd2
 
-bothTrim = both (trim,trim)
 
 
 butNot notval defval val
@@ -146,7 +143,7 @@ crop start end =
 cropOn1st delim cropafter trimitemsafterdelim oncrop list =
     let i = indexOf delim list
     in if i < 0 then list else
-        (oncrop . (trimEnd' trimitemsafterdelim) . (take (i+cropafter))) list
+        (oncrop . (Lst.trimEndEq trimitemsafterdelim) . (take (i+cropafter))) list
 
 count item =
     countBy (==item)
@@ -214,30 +211,6 @@ substitute old new
 substitute' olds new =
     (>~ subst) where
         subst item |(elem item olds)= new |(otherwise)= item
-
-trim = trim'' Data.Char.isSpace
-trim' [] = id
-trim' dropitems = trim'' (`elem` dropitems)
-trim'' fn = (trimStart'' fn) ~. (trimEnd'' fn)
-trimSpaceOr dropitems = trim'' (\c -> Data.Char.isSpace c || elem c dropitems )
-
-trimEnd = trimEnd'' Data.Char.isSpace
-trimEnd' [] = id
-trimEnd' dropitems = trimEnd'' (`elem` dropitems)
-trimEnd'' = Data.List.dropWhileEnd
-
-trimStart = trimStart'' Data.Char.isSpace
-trimStart' [] = id
-trimStart' dropitems = trimStart'' (`elem` dropitems)
-trimStart'' = Data.List.dropWhile
-
-
-tryParse nullval errval toparsestr str =
-    if (null str) then nullval else
-        errval -|= (Text.Read.readMaybe$ toparsestr str)
-
-tryParseOr defval =
-    (defval -|=).Text.Read.readMaybe
 
 
 
@@ -314,10 +287,6 @@ lengthGEq n = has . drop (n - 1)
 
 lengthGt 0 = has
 lengthGt n = has . drop n
-
-excerpt maxlen str =
-    if s==str then s else (s++"...")
-    where s = take maxlen str
 
 fuseElems is2fuse fusion (this:next:more) =
     (fused:rest) where
@@ -529,24 +498,3 @@ splitUp withmatch allbeginners end src =
         begpos = endpos<0 |? -1 |! lastidx$ str ~> (take endpos) ~> reverse
         endposl = endpos + (end~>length)
         tolist beg val = (null val && null beg) |? [] |! [(val,beg)]
-
-
-formatWithList text vals =
-    -- silly hack for passing list of user-args into this annoyingly-variadic built-in
-    -- hardcoded "support for up to 6"  =)
-    let args = take num (cycle vals)
-        num = c 0 text where c n ('%':'s':m) = c (n+1) m ; c n ('%':'v':m) = c (n+1) m ; c n (_:m) = c n m ; c n [] = n
-        a1 p [ _1 ] = p _1                                          ; a1 _ _ = undefined
-        a2 p [ _1 , _2 ] = p _1 _2                                  ; a2 _ _ = undefined
-        a3 p [ _1 , _2 , _3 ] = p _1 _2 _3                          ; a3 _ _ = undefined
-        a4 p [ _1 , _2 , _3 , _4 ] = p _1 _2 _3 _4                  ; a4 _ _ = undefined
-        a5 p [ _1 , _2 , _3 , _4 , _5 ] = p _1 _2 _3 _4 _5          ; a5 _ _ = undefined
-        a6 p [ _1 , _2 , _3 , _4 , _5 , _6 ] = p _1 _2 _3 _4 _5 _6  ; a6 _ _ = undefined
-    in case num of
-        1 -> Just$ a1 (Text.Printf.printf text) args
-        2 -> Just$ a2 (Text.Printf.printf text) args
-        3 -> Just$ a3 (Text.Printf.printf text) args
-        4 -> Just$ a4 (Text.Printf.printf text) args
-        5 -> Just$ a5 (Text.Printf.printf text) args
-        6 -> Just$ a6 (Text.Printf.printf text) args
-        _ -> Nothing

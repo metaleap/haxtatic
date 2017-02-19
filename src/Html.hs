@@ -2,6 +2,7 @@ module Html where
 
 import Base
 import qualified Lst
+import qualified Str
 
 import qualified Files
 import qualified Util
@@ -92,7 +93,7 @@ findInnerContentOfTags tagname htmlsrc =
         foreach ("",_) = Nothing
         foreach (inner'' , tagbegin) =
             let inner' = if (tagbegin == lookfor@!0) then inner'' else snd$ Util.splitOn1st_ '>' inner''
-                inner = Util.trim inner'
+                inner = Str.trim inner'
             in null inner |? Nothing |! Just inner
     in chunks>=~foreach
 

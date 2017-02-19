@@ -2,6 +2,7 @@ module Files where
 
 import Base
 import qualified Lst
+import qualified Str
 
 import qualified Util
 
@@ -62,7 +63,7 @@ customDateFromFileName dateparser (filepath , srcfile) =
         (datepart , fnrest) = System.FilePath.splitExtensions filename
     in case (dateparser datepart) of
         Just customdate->
-            ( (sanitizeRelPath filedir) </> (Util.trimStart' ['.'] fnrest) , customdate )
+            ( (sanitizeRelPath filedir) </> (Lst.trimStartEq ['.'] fnrest) , customdate )
         Nothing->
             ( filepath , srcfile-:modTime )
 
@@ -167,10 +168,10 @@ readOrDefault create ctxmain relpath relpath2 defaultcontent =
 
 
 sanitizeRelPath =
-    (Util.trimSpaceOr ('.':System.FilePath.pathSeparators)) ~. pathSepSlashToSystem
+    (Str.trimSpaceOr ('.':System.FilePath.pathSeparators)) ~. pathSepSlashToSystem
 
 sanitizeUriRelPathForJoin =
-    (Util.trimSpaceOr System.FilePath.pathSeparators) ~. pathSepSystemToSlash
+    (Str.trimSpaceOr System.FilePath.pathSeparators) ~. pathSepSystemToSlash
 
 
 

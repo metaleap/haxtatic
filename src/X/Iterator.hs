@@ -2,6 +2,7 @@ module X.Iterator where
 
 import Base
 import qualified Lst
+import qualified Str
 
 import qualified Posts
 import qualified Proj
@@ -117,7 +118,7 @@ registerX ctxproj xreg =
                     ~> preSorted >~ ((postFieldsToPairs more) ~. outputFeedPosts)
         (feedgroups,feedposts) = feedFuncs ctxproj maybectxpage
         args = X.tryParseArgs xreg ("over="++argstr) Nothing errargs where
-            errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))] }
+            errargs = Args { over = Values [X.htmlErr$ X.clarifyParseArgsError (xreg , (Str.teaser 23 argstr))] }
 
         shuffle perpage =
             Util.shuffleExtra (rndseeds maybectxpage perpage)

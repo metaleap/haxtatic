@@ -1,6 +1,7 @@
 module X.HtmlLink where
 
 import Base
+import qualified Str
 
 import qualified Files
 import qualified Html
@@ -23,7 +24,7 @@ registerX _ xreg =
         Just$ Html.emit tag
         where
         tag = Html.T "a" (cfglinkatts ++ (atts "href" "")) []
-        (linkhref,linktext) = argsplit ~> Util.bothTrim ~> htmlescape
+        (linkhref,linktext) = argsplit ~> Str.trimBoth ~> htmlescape
         argsplit = Util.splitOn1st_ '\v' argstr -- not really for \v but mostly-equivalent to Util.splitOn1stSpace argstr
         atts uriattname descattname =
             [   uriattname =: Html.joinUri cfg_relpath (uriautoext linkhref),
@@ -46,7 +47,7 @@ registerX _ xreg =
         htmlesc (False , False) = id
         htmlesc (True , True) = Util.both' Html.escape
         htmlesc (False , True) = (>~ Html.escape)
-        htmlesc (True , False) = Util.both (Html.escape, id)
+        htmlesc (True , False) = both (Html.escape, id)
     (cfg_relpath , cfg_parsestr) = xreg-:X.cfgSplitOnce
     (cfgerrmsg , cfglinkatts) = Html.attrClearInner $cfg-:attr
     cfg = X.tryParseCfg xreg cfg_parsestr (Just defcfg) errcfg where

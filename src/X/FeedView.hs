@@ -2,6 +2,7 @@ module X.FeedView where
 
 import Base
 import qualified Lst
+import qualified Str
 
 import qualified Html
 import qualified Posts
@@ -58,7 +59,7 @@ registerX ctxproj xreg =
         where
         allgroups = (args-:groups) <?>  --  if no groups defined $ fall back to: feed years, descending
                         ((Util.sortDesc$ feedgroups (postsfrom [] Posts.AnyDate) "dt:year") >~ togroup) where
-                            togroup year = Group year [] (Posts.Between year (show$ 1 + Util.tryParseOr (9998::Int) year))
+                            togroup year = Group year [] (Posts.Between year (show$ 1 + Str.tryParseOr (9998::Int) year))
         render (Group title cats dates) =
             null outitems |? "" |! xgroups title ++ cfgfeedwrap outitems
             where
@@ -81,7 +82,7 @@ registerX ctxproj xreg =
                 tofunc (OneOf []) = const "" ; tofunc (OneOf [xv]) = tofunc xv
                 tofunc (OneOf (xv:xvs)) = retry (tofunc xv) (tofunc (OneOf xvs)) where
                     retry _ _ [] = [] ; retry fmay fnay val = has s |? s |! fnay val where s = fmay val
-                tofunc (Format text xvs) = ((-|=) text) . Util.formatWithList text . vals xvs where
+                tofunc (Format text xvs) = ((-|=) text) . Str.formatWithList text . vals xvs where
                     vals _ [] = [] ; vals [] _ = [] ; vals (xv:rest) fp = tofunc xv fp : vals rest fp
                 tofunc (FeedWise feed yay nay) = switch . my "feed" where
                     my = ((,) <*>) . l where l k = ("" -|=) . Lst.lookup k
@@ -96,7 +97,7 @@ registerX ctxproj xreg =
         (xgroups , xfeeditem) = xboth maybectxpage
         args = X.tryParseArgs xreg argstr Nothing errval where
             errval = Args{ feeds=[], groups=[Group errmsg [] Posts.AnyDate], xVars = [] } where
-                errmsg = X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))
+                errmsg = X.htmlErr$ X.clarifyParseArgsError (xreg , (Str.teaser 23 argstr))
         waitforpage =
             (not$ hasctxpage maybectxpage) && (needpage4feeds $args-:feeds)
             where

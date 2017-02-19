@@ -5,6 +5,7 @@ where
 
 import Base
 import qualified Lst
+import qualified Str
 
 import qualified Files
 import qualified ProjC
@@ -95,8 +96,8 @@ parseProjChunks projcfg chunkssplits =
     foreach (blokname:bvalsplits) =
         (bname , blok)
         where
-        (bname , blok) = (blokname~>Util.trim , Util.tryParseOr (errblok) parsestr)
-        parsestr' = bvalsplits ~> (Lst.join ':') ~> Util.trim ~> (Tmpl.fixParseStr "desc")
+        (bname , blok) = (blokname~>Str.trim , Str.tryParseOr (errblok) parsestr)
+        parsestr' = bvalsplits ~> (Lst.join ':') ~> Str.trim ~> (Tmpl.fixParseStr "desc")
         parsestr = parsestr' ~> (("From {"++).(++"}"))
         errblok = From { title = if projcfg-:ProjC.parsingFailEarly
                                     then (ProjC.raiseParseErr "*.haxproj" ("|B|"++bname++":") parsestr')
@@ -127,7 +128,7 @@ tagHandler bloks curbname str
                         (Lst.lookup fname fields) >~ \ fieldval ->
                             blok-:fieldval
     where
-    (fname, bn) = Util.bothTrim (Util.splitOn1st_ ':' str)
+    (fname, bn) = Str.trimBoth (Util.splitOn1st_ ':' str)
     bname = bn <?> curbname
     fields = [  ("title",title), ("desc",desc),
                 ("atomFile" , atomFile~.Files.pathSepSystemToSlash),

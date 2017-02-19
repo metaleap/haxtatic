@@ -2,6 +2,7 @@ module X where
 
 import Base
 import qualified Lst
+import qualified Str
 
 import qualified Html
 import qualified ProjC
@@ -34,7 +35,7 @@ clarifyParseArgsError (xreg , arghint) =
 clarifyParseCfgError xreg =
     let (xn,tn) = (xreg-:xname , xreg-:tname)
         hint = Util.ifIs ("" -|= (xreg-:cfgSplitAll)@?0) (++": ...")
-    in ( ("(in your *.haxproj) following") , ("|X|" ++ xn ++ ":" ++ tn ++ ":") , (Util.excerpt 23 hint) )
+    in ( ("(in your *.haxproj) following") , ("|X|" ++ xn ++ ":" ++ tn ++ ":") , (Str.teaser 23 hint) )
 
 hasPageContext Nothing = False
 hasPageContext _ = True
@@ -81,8 +82,8 @@ parseProjChunks ctxproj projcfg xregisterers chunkssplits =
     where
     rendererr msg (_,_) = Just msg
     foreach (xname':tname':tvals) =
-        let xn = Util.trim xname'
-            tn = Util.trim tname'
+        let xn = Str.trim xname'
+            tn = Str.trim tname'
         in if null tn then Nothing else
         Just$ case Lst.lookup xn xregisterers of
             Nothing -> ( tn , Early (rendererr ("{!|X|"++tn++": unknown X-renderer `"++xn++"`, mispelled in your *.haxproj? |!}")) )
@@ -92,9 +93,9 @@ parseProjChunks ctxproj projcfg xregisterers chunkssplits =
     from registerx xn tn tvals =
         ( tn , reg ) where
         reg = registerx ctxproj Named { xname = xn, tname = tn, parsingFailEarly = projcfg-:ProjC.parsingFailEarly,
-                                        cfgFullStr = cfgstr, cfgSplitAll = tvals>~Util.trim,
-                                        cfgSplitOnce = Util.both (Util.trimEnd , Util.trimStart) (Util.splitOn1st_ ':' cfgstr) }
-        cfgstr = Util.trim$ Lst.join ':' tvals
+                                        cfgFullStr = cfgstr, cfgSplitAll = tvals>~Str.trim,
+                                        cfgSplitOnce = both (Str.trimEnd , Str.trimStart) (Util.splitOn1st_ ':' cfgstr) }
+        cfgstr = Str.trim$ Lst.join ':' tvals
 
 
 shouldWaitForPage (Just _) _ _ =
@@ -108,7 +109,7 @@ shouldWaitForPage Nothing needctxpage htmlattribs =
 tagHandler xtags ctxpage tagcontent =
     renderwhen$ Data.Map.Strict.lookup xtagname xtags
     where
-    renderargs = (ctxpage , Util.trimStart argstr)
+    renderargs = (ctxpage , Str.trimStart argstr)
     (xtagname , argstr) = (Util.splitOn1st_ ':' tagcontent)
 
     renderwhen (Just (Early xrend)) =
@@ -138,6 +139,6 @@ _tryparse xreg ctorname parsestr maybedefval errval =
         for "Cfg" = "|X|"++(xreg-:xname)++":"++(xreg-:tname)++":.."
         for "Args" = "{X|"++(xreg-:tname)++": .. |}"
         for _ = undefined
-        try (Just defval) = Util.tryParse defval (nay errval) wrap
-        try _ = (Util.tryParseOr (nay errval)) . wrap
+        try (Just defval) = Str.tryParse defval (nay errval) wrap
+        try _ = (Str.tryParseOr (nay errval)) . wrap
     in try maybedefval parsestr

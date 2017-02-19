@@ -2,6 +2,7 @@ module Pages where
 
 import Base
 import qualified Lst
+import qualified Str
 
 import qualified Bloks
 import qualified Build
@@ -138,20 +139,20 @@ processPage ctxmain ctxproj ctxtmpl tmplfinder thandler ctxbuild outjob =
 pageVars cfgproj pagesrc contentdate =
     (pagevars , pagedate , pagesrcchunks)
     where
-    chunks = (Util.splitUp Util.trim ["{%P|"] "|%}" pagesrc)
+    chunks = (Util.splitUp Str.trim ["{%P|"] "|%}" pagesrc)
     pagevars = chunks>=~foreach
     pvardates = pagevars>=~maybedate
     pagedate = contentdate -|= pvardates@?0
     pagesrcchunks = (chunks ~|null.snd) >~ fst -- ~|is
 
     foreach (pvarstr , "{%P|") =
-        let nameandval = (Util.splitOn1st_ '=' pvarstr) ~> Util.bothTrim
+        let nameandval = (Util.splitOn1st_ '=' pvarstr) ~> Str.trimBoth
         in Just nameandval
     foreach _ =
         Nothing
 
     maybedate (varname,varval) =
-        let (dtpref , dtfname) = Util.bothTrim (Util.splitOn1st_ ':' varname)
+        let (dtpref , dtfname) = Str.trimBoth (Util.splitOn1st_ ':' varname)
         in if dtpref /= "date" then Nothing
             else ProjC.dtStr2Utc cfgproj dtfname varval
 
@@ -176,16 +177,16 @@ tagHandler ctxmain cfgproj ctxtmpl outjob ctxpage ptagcontent
     isxdelay ('X':'|':_) = True ; isxdelay _ = False
     xtaghandler = (ctxtmpl-:Tmpl.xTagHandler) (Just ctxpage)
     contentdate = ctxpage-:Tmpl.pDate
-    (split1st , splitrest) = Util.bothTrim (Util.splitOn1st_ ':' ptagcontent)
+    (split1st , splitrest) = Str.trimBoth (Util.splitOn1st_ ':' ptagcontent)
     root2rel = Html.rootPathToRel (outjob-:Build.relPathSlashes)
     fordate dtfn datetime =
         Just$ ProjC.dtUtc2Str cfgproj dtfn datetime
     for ('/':path) =
         Just$ root2rel path
     for ('1':'s':'t':':':htmltagname) =
-        Just$ (ctxpage-:Tmpl.htmlInner1st) (Util.trim htmltagname) ""
+        Just$ (ctxpage-:Tmpl.htmlInner1st) (Str.trim htmltagname) ""
     for name =
-        let (dtfp,dtfn) = Util.bothTrim (Util.splitOn1st_ ':' name)
+        let (dtfp,dtfn) = Str.trimBoth (Util.splitOn1st_ ':' name)
         in if dtfp=="srcTime"
             then fordate dtfn (outjob-:Build.srcFile-:Files.modTime)
             else Lst.lookup name pvals
@@ -206,7 +207,7 @@ tagHandler ctxmain cfgproj ctxtmpl outjob ctxpage ptagcontent
                 , "outDeploy" =: outjob-:Build.outPathDeploy
                 ]
     formatpvar pvarfmt =
-        Util.formatWithList pvarfmt (Lst.splitOn ':' splitrest)
+        Str.formatWithList pvarfmt (Lst.splitOn ':' splitrest)
 
 
 writeSitemapXml ctxproj buildplan =

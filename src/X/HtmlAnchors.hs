@@ -1,6 +1,7 @@
 module X.HtmlAnchors where
 
 import Base
+import qualified Str
 
 import qualified Html
 import qualified Tmpl
@@ -39,7 +40,7 @@ registerX _ xreg =
         (args_tagname , args_parsestr) = Util.splitOn1st_ ':' argstr
         args = X.tryParseArgs xreg args_parsestr
                 (Just Args { attr = [] })
-                (Args { attr = X.htmlErrAttsArgs (xreg , Util.excerpt 23 argstr) })
+                (Args { attr = X.htmlErrAttsArgs (xreg , Str.teaser 23 argstr) })
 
     renderer _ =
         Nothing

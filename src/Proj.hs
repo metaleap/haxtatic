@@ -2,6 +2,7 @@ module Proj where
 
 import Base
 import qualified Lst
+import qualified Str
 
 import qualified Bloks
 import qualified Defaults
@@ -143,8 +144,8 @@ loadChunks rawsrc =
         in (thisline , others ~|belongs.fst) : (null more |? [] |! gatherothers more)
 
     rejointochunks (beg,subs) =
-        let sublines = subs >~ snd -- (Util.trim . snd) ~|is
-            chunk = (Util.trim . unlines) ( (Util.trim beg):sublines )
+        let sublines = subs >~ snd -- (Str.trim . snd) ~|is
+            chunk = (Str.trim . unlines) ( (Str.trim beg):sublines )
         in (chunk@!1 , drop 3 chunk)
 
 

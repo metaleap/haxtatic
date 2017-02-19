@@ -1,6 +1,7 @@
 module X.Snippet where
 
 import Base
+import qualified Str
 
 import qualified Tmpl
 import qualified Util
@@ -30,7 +31,7 @@ registerX _ xreg =
         args = X.tryParseArgs xreg (Tmpl.fixParseStr "content" argstr) (Just defargs) errargs where
             defargs = Args { vars = [], content = "" }
             errargs = Args { vars = ["_hax_snippeterror" =: errmsg] , content = errmsg }
-            errmsg = X.htmlErr$ X.clarifyParseArgsError (xreg , (Util.excerpt 23 argstr))
+            errmsg = X.htmlErr$ X.clarifyParseArgsError (xreg , (Str.teaser 23 argstr))
 
     in X.Early renderer
     where
