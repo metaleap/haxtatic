@@ -1,8 +1,9 @@
-{-# OPTIONS_GHC #-}
+{-# OPTIONS_GHC -Wmissing-signatures #-}
 module Util where
 
 import Base
 import qualified Lst
+import qualified Str
 
 import qualified Data.Char
 import qualified Data.List
@@ -36,14 +37,14 @@ dtInts utctime =
 
 
 
-onBoth ::  (a->b)  ->  (a , a)  ->  (b , b)
+onBoth ::  (a->b)  ->  (a,a)  ->  (b,b)
 onBoth = duo . dupl
 
-onFsts ::  (i1->i2->o)  ->  (i1 , _1)  ->  (i2 , _2)  ->  o
+onFsts ::  (i1->i2->o)  ->  (i1,_1)  ->  (i2,_2)  ->  o
 onFsts fn (fst1 , _) (fst2 , _) =
     fn fst1 fst2
 
-onSnds ::  (i1->i2->o)  ->  (_1 , i1)  ->  (_2 , i2)  -> o
+onSnds ::  (i1->i2->o)  ->  (_1,i1)  ->  (_2,i2)  -> o
 onSnds fn (_ , snd1) (_ , snd2) =
     fn snd1 snd2
 
@@ -90,12 +91,13 @@ duration =
     flip Data.Time.Clock.diffUTCTime
 
 
-
+cropOn1st ::  Char  ->  Int  ->  [Char]  ->  (String->String)  ->  String  ->  String
 cropOn1st delim cropafter trimitemsafterdelim oncrop list =
     let i = indexOf delim list
     in if i < 0 then list else
         (oncrop . (Lst.trimEndEq trimitemsafterdelim) . (take (i+cropafter))) list
 
+countSub ::  String  ->  String  ->  Int
 countSub _ [] = 0
 countSub [] _ = 0
 countSub list sub =
@@ -103,6 +105,7 @@ countSub list sub =
         each listtail counter =
             if Lst.isPrefixOf sub listtail then counter + 1 else counter
 
+countAnySubs ::  String  ->  [String]  ->  Int
 countAnySubs list subs =
     --  equivalent to, but faster than:
     --      sum (map (countSub list) subs)
@@ -111,6 +114,7 @@ countAnySubs list subs =
         if any isprefix subs then counter + 1 else counter where
         isprefix sub = Lst.isPrefixOf sub listtail
 
+countSubVsSubs ::  String  ->  (String,[String])  ->  (Int,Int)
 countSubVsSubs list (sub,subs) =
     --  equivalent to, but faster than:
     --      (countSub list sub, countAnySubs list subs)
@@ -126,38 +130,48 @@ countSubVsSubs list (sub,subs) =
             else counter
 
 
-
+fstBegins ::  (Eq a)=>  a  ->  ([a],b)  ->  Bool
 fstBegins item ((this:_),_) =
     item == this
 fstBegins _ _ =
     False
 
-lookup key defval = (defval -|=) . (Lst.lookup key)
+lookup ::  (Eq a)=>  a  ->  b  ->  [(a,b)]  ->  b
+lookup key defval =
+    (defval -|=) . (Lst.lookup key)
 
+subAt ::  Int  ->  Int  ->  [a]  ->  [a]
 subAt start len =
     (take len) . (drop start)
 
+
+substitute ::  (Eq a)=>  a  ->  a  ->  [a]  ->  [a]
 substitute old new
     |(old==new)= id
     |(otherwise)= (>~ subst) where
         subst item |(item==old)= new |(otherwise)= item
 
+substitute' :: (Eq a)=>  [a] -> a -> [a] -> [a]
 substitute' olds new =
     (>~ subst) where
-        subst item |(elem item olds)= new |(otherwise)= item
+        subst item = elem item olds |? new |! item
 
 
 
+noNils ::  [[a]]  ->  [[a]]
 noNils list = [item | item <- list, has item]
 
-noNilFsts [] = []
-noNilFsts (([],_):more) = noNilFsts more
-noNilFsts (item:more) = item:(noNilFsts more)
-
+forNoNilsEach ::  ([a]->b)  ->  [[a]]  ->  [b]
 forNoNilsEach _ [] = []
 forNoNilsEach func ([]:more) = forNoNilsEach func more
 forNoNilsEach func (item:more) = (func item):(forNoNilsEach func more)
 
+noNilFsts ::  [([a] , b)]  ->  [([a] , b)]
+noNilFsts [] = []
+noNilFsts (([],_):more) = noNilFsts more
+noNilFsts (item:more) = item:(noNilFsts more)
+
+keepNoNilFsts ::  (a->([b] , c))  ->  [a]  ->  [([b] , c)]
 keepNoNilFsts _ [] = []
 -- keepNoNilFsts func (([],_):more) = keepNoNilFsts func more
 keepNoNilFsts func (item:more)
@@ -167,17 +181,17 @@ keepNoNilFsts func (item:more)
 
 
 
-sortDesc :: Ord a => [a] -> [a]
+sortDesc :: (Ord a)=>  [a]  ->  [a]
 sortDesc = Data.List.sortBy (flip compare)
 
-uniqueO:: Eq a => [a] -> [a]
+uniqueO:: (Eq a)=>  [a]  ->  [a]
 uniqueO = Data.List.nub
 
-uniqueU:: (Ord a)=> [a] -> [a]
+uniqueU:: (Ord a)=>  [a]  ->  [a]
 --  http://stackoverflow.com/a/16109302
 uniqueU = (>~ (@!0)) . Data.List.group . Data.List.sort
 
-unique':: (Ord a)=> [a] -> [a]
+unique':: (Ord a)=>  [a]  ->  [a]
 --  http://stackoverflow.com/a/16111081
 unique' =
     halp Data.Set.empty
@@ -188,23 +202,25 @@ unique' =
             then halp set rest
             else this : (halp (Data.Set.insert this set) rest)
 
+unique ::  (Ord a)=>  [a]  ->  [a]
 unique list = foldr go (const []) list Data.Set.empty where
 --  https://github.com/quchen/articles/blob/master/fbut.md#nub
     go x xs cache
         | Data.Set.member x cache   = xs cache
         | otherwise                 = x : xs (Data.Set.insert x cache)
 
-uniqueBy:: (any -> any -> Bool) -> [any] -> [any]
+uniqueBy::  (a->a->Bool)  ->  [a]  ->  [a]
 uniqueBy = Data.List.nubBy
 
-uniqueFst:: (Eq eq)=> [(eq,any)] -> [(eq,any)]
+uniqueFst:: (Eq e)=>  [(e , a)]  ->  [(e , a)]
 uniqueFst = uniqueBy (onFsts (==))
 
-uniqueSnd:: (Eq eq)=> [(any,eq)] -> [(any,eq)]
+uniqueSnd:: (Eq e)=>  [(a , e)]  ->  [(a , e)]
 uniqueSnd = uniqueBy (onSnds (==))
 
 
 
+mergeDuplFsts ::  (String->String->Bool)  ->  ([String]->String)  ->  Str.Pairs  ->  Str.Pairs
 mergeDuplFsts isduplicate mergevalues =
     mergeduplfsts where
     mergeduplfsts [] = []
@@ -216,6 +232,7 @@ mergeDuplFsts isduplicate mergevalues =
 
 
 
+indexOf ::  (Eq a)=>  a  ->  [a]  ->  Int
 indexOf _ [] =
     _intmin
 indexOf item (this:rest) =
@@ -224,18 +241,21 @@ indexOf item (this:rest) =
 
 
 
+_indexof_droptil :: (Eq a)=>  a  ->  Int  ->  [a]  ->  (Int , [a])
 _indexof_droptil delim = _indexof_droptil' (delim==)
+
+_indexof_droptil' ::  (a->Bool)  ->  Int  ->  [a]  ->  (Int , [a])
 _indexof_droptil' _ _ [] =
     (_intmin , [])
-
 _indexof_droptil' check counter list@(this:rest) =
     if check this then (counter , list)
         else _indexof_droptil' check (counter + 1) rest
 
-
+indexOf1st ::  (Eq a)=>  [a]  ->  [a]  ->  Int
 indexOf1st items list =
     i where (i , _) = _indexof_droptil' (`elem` items) 0 list
 
+indexOfSub ::  String  ->  String  ->  Int
 indexOfSub [] _ =
     _intmin
 indexOfSub _ [] =
@@ -255,6 +275,7 @@ indexOfSub haystack needle =
 --          else (1 + indexOfSub rest sub)
 
 
+indexOfSubs1st ::  [String]  ->  String  ->  (Int , String)
 indexOfSubs1st [] _ =
     (_intmin , [] )
 indexOfSubs1st _ [] =
@@ -272,6 +293,7 @@ indexOfSubs1st subs str =
 
 
 
+lastIndexOfSub ::  String  ->  String  ->  Int
 lastIndexOfSub revstr revsub
     |(idx<0)= idx
     |(otherwise)= revstr~>length - revsub~>length - idx
@@ -279,6 +301,7 @@ lastIndexOfSub revstr revsub
 
 
 
+replaceSub ::  (String , String)  ->  String  ->  String
 replaceSub ([] , _) = id
 replaceSub (old , new) =
     replsub where
@@ -291,6 +314,7 @@ replaceSub (old , new) =
     isprefix = Lst.isPrefixOf old
 
 
+replaceSub' ::  (String , String)  ->  String  ->  String
 replaceSub' ([] , _) = id
 replaceSub' (old , new) =
     replsub where
@@ -302,6 +326,7 @@ replaceSub' (old , new) =
     oldlen = old~>length
 
 
+replaceSubsFew ::  Str.Pairs  ->  String  ->  String
 replaceSubsFew [] = id
 replaceSubsFew [replpair] = replaceSub replpair
 replaceSubsFew replpairs =
@@ -320,6 +345,7 @@ replaceSubsFew replpairs =
         undefined   -- not exist as a `replold` (ie. fst) in `replpairs`?!
 
 
+replaceSubsMany ::  Str.Pairs  ->  String  ->  String
 replaceSubsMany [] list = list
 replaceSubsMany [replpair] list = replaceSub replpair list
 replaceSubsMany replpairs list =
@@ -327,7 +353,7 @@ replaceSubsMany replpairs list =
     where
     replsub = flip replaceSub
 
-
+replaceSubsBy ::  [String]  ->  (String->String)  ->  String  ->  String
 replaceSubsBy [] _ = id
 replaceSubsBy olds tonew =
     replby
@@ -338,13 +364,14 @@ replaceSubsBy olds tonew =
         in replrec (idx , old , old~>length) str
     replrec = _replcore replby tonew
 
-
+replaceWith ::  (Char , String)  ->  String  ->  String
 replaceWith repl@(old , new) list =
     let (idx , rest) = _indexof_droptil old 0 list
     in if idx < 0 then list else
         (take idx list) ++ new ++ (replaceWith repl (drop 1 rest))
 
 
+_replcore ::  (String->String)  ->  (String->String)  ->  (Int , String , Int)  ->  String  ->  String
 _replcore recurse tonew (idx , old , oldlen) str =
     if idx<0 then str else
         let pre = take idx str
@@ -353,14 +380,20 @@ _replcore recurse tonew (idx , old , oldlen) str =
 
 
 
+splitOn1st ::  (Eq a)=>  a  ->  [a]  ->  ([a] , [a])
 splitOn1st delim =
     splitOn1st' (delim==)
+
+splitOn1st' ::  (a->Bool)  ->  [a]  ->  ([a] , [a])
 splitOn1st' check list =
     let (i , rest) = _indexof_droptil' check 0 list
     in if i<0 then (list , [])
         else (take i list , drop 1 rest)
+
+splitOn1stSpace ::  String  ->  (String , String)
 splitOn1stSpace = splitOn1st' Data.Char.isSpace
 
+splitOn1st_ ::  Char  ->  String  ->  (String , String)
 splitOn1st_ delim list
     |(i < 0)= (list , [])
     |(otherwise) = (take i list , rest)
@@ -380,20 +413,22 @@ splitOn1st_ delim list
     gt [] = n ; gt ('>':xs) = y xs ; gt (_:xs) = b (gt xs)
 
 
+splitIt ::  Int  ->  [a]  ->  ([a] , [a])
 splitIt i list
     |(i < 0)= (list , [])
     |(otherwise)= (take i list, drop (i+1) list)
 
 
+splitUp ::  (String->String)  ->  [String]  ->  String  ->  String  ->  Str.Pairs
 splitUp _ _ _ "" = []
 splitUp _ _ "" src = [(src,"")]
 splitUp _ [] _ src = [(src,"")]
-splitUp withmatch allbeginners end src =
+splitUp withmatch allbeginners ender src =
     if nomatchpossible || null beginners
         then [(src,"")]
         else _splitup src
     where
-    nomatchpossible = not$ Lst.isInfixOf end src -- oddly enough this extra work does pay off perf-wise
+    nomatchpossible = not$ Lst.isInfixOf ender src -- oddly enough this extra work does pay off perf-wise
     beginners = beginners' ~| length~.((==)beg0len)
     beginners' = allbeginners ~> forNoNilsEach reverse
     beg0len = beg0~>length
@@ -413,7 +448,7 @@ splitUp withmatch allbeginners end src =
         beginner = nomatch |? "" |! str ~> (take endpos) ~> (drop begpos) ~> (take beg0len)
         nomatch = endpos<0 || begpos<0
         splitat = (nomatch && endpos>=0) |? endposl |! 0
-        endpos = indexOfSub str end
+        endpos = indexOfSub str ender
         begpos = endpos<0 |? -1 |! lastidx$ str ~> (take endpos) ~> reverse
-        endposl = endpos + (end~>length)
+        endposl = endpos + (ender~>length)
         tolist beg val = (null val && null beg) |? [] |! [(val,beg)]
