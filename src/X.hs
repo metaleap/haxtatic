@@ -139,6 +139,6 @@ _tryparse xreg ctorname parsestr maybedefval errval =
         for "Cfg" = "|X|"++(xreg-:xname)++":"++(xreg-:tname)++":.."
         for "Args" = "{X|"++(xreg-:tname)++": .. |}"
         for _ = undefined
-        try (Just defval) = Str.tryParse defval (nay errval) wrap
+        try (Just defval) = Str.tryParseNonNull defval (nay errval) wrap
         try _ = (Str.tryParseOr (nay errval)) . wrap
     in try maybedefval parsestr

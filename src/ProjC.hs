@@ -94,10 +94,8 @@ parseProjChunks chunkssplits =
     procpages = procfind Defaults.dir_Pages
     procfind name =
         let procstr = Data.Map.Strict.findWithDefault "" ("process:"++name) cfgprocs
-        in procsane name (Str.tryParse (procdef name)
-                                        (procdef$ raiseParseErr "*.haxproj" ("|C|process:"++name++":") procstr)
-                                        (("Proc {"++).(++"}"))
-                                        procstr)
+            perr = procdef$ raiseParseErr "*.haxproj" ("|C|process:"++name++":") procstr
+        in procsane name (Str.tryParseNonNull (procdef name) perr (("Proc {"++).(++"}")) procstr)
 
     procdef dirname =
         Proc { dirs = [dirname], skip = [], force = [] }

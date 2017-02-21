@@ -67,13 +67,6 @@ eitherOne value yay nay =
 
 
 
-repeatedly ::  (Eq a)=>  (a->a)  ->  a  ->  a
-repeatedly fn arg =
-    let result = fn arg
-    in if (result==arg) then result else repeatedly fn result
-
-
-
 via ::  (Applicative a)=>  a i  ->  o  ->  a o
 via fn =
     --  use it to `>>=` a value over to fn but then
@@ -413,10 +406,6 @@ splitOn1st_ delim list
     gt [] = n ; gt ('>':xs) = y xs ; gt (_:xs) = b (gt xs)
 
 
-splitIt ::  Int  ->  [a]  ->  ([a] , [a])
-splitIt i list
-    |(i < 0)= (list , [])
-    |(otherwise)= (take i list, drop (i+1) list)
 
 
 splitUp ::  (String->String)  ->  [String]  ->  String  ->  String  ->  Str.Pairs

@@ -1,6 +1,7 @@
 module X.Snippet where
 
 import Base
+import qualified Fn
 import qualified Str
 
 import qualified Tmpl
@@ -23,7 +24,7 @@ data Tag
 registerX _ xreg =
     let
     renderer (_ , argstr) =
-        Just$ Util.repeatedly (Util.replaceSubsMany allrepls) maincontent
+        Just$ Fn.repeatedly (Util.replaceSubsMany allrepls) maincontent
         where
         maincontent = Util.lookup "_hax_snippeterror" (cfg-:content) ((args-:vars)++(cfg-:vars))
         allrepls = argvars++cfgvars

@@ -1,6 +1,7 @@
 module Tmpl where
 
 import Base
+import qualified Fn
 import qualified Lst
 import qualified Str
 
@@ -113,7 +114,7 @@ loadTmpl ctxmain ctxproc fileext tmpfile =
 
 
 processSrc ctxproc ctxpage =
-    Util.repeatedly process
+    Fn.repeatedly process
     where
     preserveunprocessedtag = const Nothing
     splitup = Util.splitUp Str.trim (ctxproc-:processTags) tag_Close
