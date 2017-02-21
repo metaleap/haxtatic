@@ -17,9 +17,9 @@ import qualified Text.Printf
 
 
 
-main :: IO ()
-main =
-    Data.Time.Clock.getCurrentTime >>= \starttime
+main    :: IO ()
+main
+    = Data.Time.Clock.getCurrentTime >>= \starttime
     -> putStrLn "\n\n==== HAXTATIC ====\n"
     *> System.IO.hFlush System.IO.stdout
     *> System.Environment.getArgs >>= \cmdargs
