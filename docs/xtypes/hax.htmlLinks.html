@@ -1,0 +1,98 @@
+<!DOCTYPE html><html lang="en"><head>
+    <title>hax.htmlLinks | HaXtatic Docs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../haxtatic.css" rel="stylesheet" />
+	<!--	xtypes/hax.htmlLinks.html
+			generated on 1234-08-15
+			from /home/roxor/dev/hs/haxtatic/dox-demo/pages/xtypes/1234-08-15.hax.htmlLinks.html	-->
+</head><body>
+    <h4>HaXtatic Docs</h4>
+	<ul class="hd-nav">
+		<li class="hd-nav"><a id="__hax_htmlLinks__" href="../index.html">Intro</a></li><li class="hd-nav"><a id="__hax_htmlLinks__basics" href="../basics/index.html">Basics</a></li><li class="hd-nav"><a id="__hax_htmlLinks__tags" href="../tags/index.html">haXtags</a></li><li class="hd-nav hd-nav-sel"><a id="__hax_htmlLinks__xtypes" href="../xtypes/index.html">X-renderers</a></li>
+	</ul>
+	<div class="hd-toc">
+		<input type="checkbox" checked="checked" id="chk_showtoc"/>
+		<label for="chk_showtoc">On this page:</label>
+		<ul>
+			<li><a href="#In a nutshell">In a nutshell</a></li><li><a href="#Declaration / Configuration">Declaration / Configuration</a></li><li><a href="#Invocation / Parameters">Invocation / Parameters</a></li>
+		</ul>
+	</div>
+
+
+<!-- begins content source page -->
+<h1>hax.htmlLinks</h1>
+	
+	<p class="up">Helps with site navigation: outputs a sequence of <code>&lt;a href=&quot;..&quot;&gt; .. &lt;/a&gt;</code> or
+	<code>&nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a href=&quot;..&quot;&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code>
+	in a uniform manner.</p>
+	<h2 id="In a nutshell">In a nutshell</h2>
+	<ol>
+		<li class="up">
+			<a href="../xtypes/hax.htmlLinks.html#decl">Declaration</a> of an <code>|X|hax.htmlLinks:<u><i>myTag</i></u>:<i>outerhtmltag</i>: <i>..</i></code> directive in a
+			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
+			<ul><li>further configuring: <code>attr</code>, <code>itemsFirst</code>, <code>itemsLast</code>, <code>wrapHref</code></li></ul>
+		</li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>: items = [..] , attr = [..] |<!---->}</code></li>
+	</ol>
+<p class="hd-note">This topic is in a compact format for users already familiar with the essentials of
+					<a href="../basics/haxproj.html#xdecl">declaring</a> X-tags and invoking them. If found challenging, try the
+					<a href="../xtypes/hax.miniTag.html">more</a>-<a href="../xtypes/hax.htmlImage.html">elaborate</a>-<a href="../xtypes/hax.htmlLink.html">and</a>-<a href="../xtypes/hax.xmlEscape.html">introductory</a>
+					topics first to form a better grasp on the basics and overall mechanisms.</p>
+<h3>Stage:</h3><p><a href="../tags/index.html#stages">Early or Page</a> &mdash; this X-renderer determines dynamically (documented
+					further <a href="#dynstage">below</a>) whether or not it requires a page context for rendering, so depending on each
+					<i>hax.htmlLinks</i>-invoking X-tag's configuration and/or parameters:</p><ul><li><i>some</i> encountered
+					during pre-templating (at start-up time) may be eagerly <a href="../tags/index.html#Processing">processed</a> immediately in-place
+					(for overall-reduced per-page processing loads),</li> <li> and <i>others</i> will be skipped over, thus only
+					process per-page, once present.</li></ul>
+<span id="decl"><h2 id="Declaration / Configuration">Declaration / Configuration</h2></span>
+<p>To demonstrate valid <a href="../basics/haxproj.html#xdecl">*.haxproj</a> directives declaring <i>hax.htmlLinks</i>
+					<a href="../tags/x.html">X-tags</a>:</p>
+<pre>
+|X|hax.htmlLinks:<i>mysidenav</i>:<i>li</i>
+
+|X|hax.htmlLinks:<i>mytopnav</i>:<i>div</i>:
+	attr= [ <i>("class","my-nav") , ("&amp;class","my-nav-sel")</i> ],
+	itemsFirst =[ <i>("","Home")</i> ],
+	itemsLast = [<i>("blog/","{T|myBlog|}")</i>],
+	wrapHref = (<i>"/"</i> , <i>"index.html"</i>)
+</pre>
+<p>To elaborate, for example the last one of the above, as all <a href="../basics/haxproj.html#xdecl">|X| directives</a> declaring <a href="../tags/x.html">X-tags</a> do:</p>
+	<ul>
+		<li>begins with <code>|X|</code> followed by the X-renderer identifier (here <code>hax.htmlLinks</code>)</li>
+		<li>followed by <code>&nbsp;:</code> colon and the desired X-tag name to be used to invoke it (here <code>mytopnav</code>),</li>
+		<li>followed by <code>&nbsp;:</code> colon and now <i>hax.htmlLinks</i>-<b>specific</b> configuration:</li>
+		<li>The output <u>outer</u> markup-tag name (can be empty to skip such) to contain every output
+								<code>&lt;a&gt;</code> element</li>
+		<li>followed by a <code>&nbsp;:</code> colon if an <b>optional</b> <a href="../basics/syntax.html">syntax-sensitive</a> properties block follows,
+					comprised (if present at all) of <i>all</i> the following properties in <i>this</i> very order:<ol><li id="dynstage"><code>attr = [("<i>name</i>","<i>value</i>") , <i>..</i>]</code>
+	&mdash; the output <u>outer</u>-tag's markup attributes as name-value pairs
+		<ul><li>Attribute names starting with <code>&nbsp;&amp;</code> ampersand are only output (without it, of course) for path-wise
+		"current/selected/active" links with respect to the current page-context (see below paragraph for the approximate logic used
+		here)</li><li>use of any such dynamic <code>&nbsp;&amp;</code> attribute names switches this X-tag's <a href="../tags/index.html#stages">stage</a>
+		from <i>Early</i> (the default) into <i>Page</i>.</li></ul>
+	</li>
+<li><code>itemsFirst = [("<i>uri</i>","<i>text</i>") , <i>..</i>]</code>
+	&mdash; the links to <i>always</i> render first</li>
+<li><code>itemsLast = [("<i>uri</i>","<i>text</i>") , <i>..</i>]</code>
+	&mdash; the links to <i>always</i> render last</li>
+<li><code>wrapHref = ("","")</code>
+	&mdash; the prefix-to-prepend &amp; suffix-to-append to every rendered <code>&lt;a&gt;</code> element's <code>href</code> attribute value</li>
+<li>No HTML/XML/etc.-escaping of inputs is performed, provide correct values for the intended output format.</li></ol></li>
+	</ul>
+<span id="args"><h2 id="Invocation / Parameters">Invocation / Parameters</h2></span>
+<p>For example, <code>{X<!---->|mysidenav: items=[("foo","Foo"),("bar","Bar")] , attr=[("class","my-foo")] |<!---->}</code> to output:</p>
+<pre>
+&lt;li class="my-foo"&gt;&lt;a href="foo"&gt;Foo&lt;/a&gt;&lt;/li&gt;
+&lt;li class="my-foo"&gt;&lt;a href="bar"&gt;Bar&lt;/a&gt;&lt;/li&gt;
+</pre>
+<p>For example, <code>{X<!---->|mytopnav|<!---->}</code> to render in all generated <code>/blog/*</code> output files:</p>
+<pre>
+&lt;div class="my-nav"&gt;&lt;a href="/index.html"&gt;Home&lt;/a&gt;&lt;/div&gt;
+&lt;div class="my-nav my-nav-sel"&gt;&lt;a href="/blog/index.html"&gt;My Blog&lt;/a&gt;&lt;/div&gt;
+</pre>
+<p>&mdash; whereas all others would see the same, minus the <code>my-nav-sel</code> appendum.</p>
+<p>No HTML/XML/etc.-escaping of inputs is performed, provide correct values for the intended output format.</p>
+
+<!-- end of content source page -->
+<a name="down"></a>
+</body></html>

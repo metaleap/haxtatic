@@ -1,0 +1,1043 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <link rel="self" type="application/rss+xml" href="http://metaleap.github.io/haxtatic/-xml/xtypes.atom" />
+    <title>metaleap.github.io X-renderers</title>
+    <subtitle>Any                          X-tag                                            declared and defined     in a project always invokes a so-called "X-renderer":    
+	        a specific, specialized programmatic output-rendering routine integrated into the    HaXtatic     code-base,     
+	    each offering its own degree of configurability (the once-per-tag-definition settings) and parameterization (the
+	varying-dynamically-per-tag-invocation settings).          
+	      HaXtatic     ships with numerous such simple-yet-versatile X-renderers    that are listed below    , and custom ones may be coded up
+	and integrated straightforwardly in Haskell (if minimally comfortable with the language and its tool-chain)         starting from the
+	2                 demo     starter samples.    
+	   All the following built-in X-renderers are ready to use in X-tag definitions:</subtitle>
+    <id>http://metaleap.github.io/haxtatic/xtypes/index.html</id>
+    <link href="http://metaleap.github.io/haxtatic/xtypes/index.html"/>
+    <updated>1234-10-15T00:00:00Z</updated>
+    <entry>
+        <title type="html">hax.miniTag</title>
+        <summary type="html">Outputs &lt;code&gt;&amp;nbsp;&amp;lt;&lt;i&gt;somehtmltag ..&lt;/i&gt;&amp;gt;&lt;i&gt;tag&apos;s inner-markup content&lt;/i&gt;&amp;lt;/&lt;i&gt;somehtmltag&lt;/i&gt;&amp;gt;&lt;/code&gt;.</summary>
+        <link href="../xtypes/hax.miniTag.html"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-10-15:haxtatic/xtypes/hax.miniTag.html</id>
+        <updated>1234-10-15T00:00:00Z</updated>
+        <content type="html">&lt;h1&gt;hax.miniTag&lt;/h1&gt;
+	
+	&lt;p class=&quot;up&quot;&gt;Outputs &lt;code&gt;&amp;nbsp;&amp;lt;&lt;i&gt;somehtmltag ..&lt;/i&gt;&amp;gt;&lt;i&gt;tag&apos;s inner-markup content&lt;/i&gt;&amp;lt;/&lt;i&gt;somehtmltag&lt;/i&gt;&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+	&lt;h2 id=&quot;In a nutshell&quot;&gt;In a nutshell&lt;/h2&gt;
+	&lt;ol&gt;
+		&lt;li class=&quot;up&quot;&gt;
+			&lt;a href=&quot;../xtypes/hax.miniTag.html#decl&quot;&gt;Declaration&lt;/a&gt; of an &lt;code&gt;|X|hax.miniTag:&lt;u&gt;&lt;i&gt;myTag&lt;/i&gt;&lt;/u&gt;:&lt;i&gt;somehtmltag&lt;/i&gt;: &lt;i&gt;..&lt;/i&gt;&lt;/code&gt; directive in a
+			&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; file,
+			&lt;ul&gt;&lt;li&gt;further configuring: &lt;code&gt;attr&lt;/code&gt;&lt;/li&gt;&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt;:&lt;i&gt; tag&apos;s inner-markup content &lt;/i&gt; |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;/ol&gt;
+&lt;h3&gt;Stage:&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;../tags/index.html#stages&quot;&gt;Early&lt;/a&gt; &amp;mdash; this X-renderer does not require a page context for
+					rendering: therefore many &lt;i&gt;hax.miniTag&lt;/i&gt;-invoking X-tags encountered during pre-templating (at
+					start-up time) may be eagerly &lt;a href=&quot;../tags/index.html#Processing&quot;&gt;processed&lt;/a&gt; immediately in-place (for overall-reduced
+					per-page processing loads).&lt;/p&gt;
+&lt;h2 id=&quot;Purpose&quot;&gt;Purpose&lt;/h2&gt;
+&lt;p&gt;Some markup contents require repetetive use of quickly-becoming-too-verbose &quot;mostly just inner text&quot; tags such as
+	(often in raw-HTML contents) &lt;code&gt;&amp;lt;blockquote&amp;gt;&lt;/code&gt;, &lt;code&gt;&amp;lt;code&amp;gt;&lt;/code&gt;,
+	or &lt;code&gt;&amp;lt;p class=&quot;my-para-highlighted my-smallerfont my-roundborder&quot;&amp;gt;&lt;/code&gt; etc.&lt;/p&gt;
+&lt;p&gt;Setting up &lt;i&gt;hax.miniTag&lt;/i&gt; X-tags for such instances alleviates this easily, and lets the author turn
+	repetetive-hence-too-verbose occurrences of, for example:&lt;/p&gt;
+&lt;ul&gt;
+	&lt;li&gt;&lt;code&gt;&amp;lt;blockquote&amp;gt;&lt;i&gt;content&lt;/i&gt;&amp;lt;/blockquote&amp;gt;&lt;/code&gt;&lt;br/&gt;&amp;rarr; into &lt;code&gt;{X&lt;!----&gt;|bq:&lt;i&gt;content&lt;/i&gt;|&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;&amp;lt;code&amp;gt;&lt;i&gt;content&lt;/i&gt;&amp;lt;/code&amp;gt;&lt;/code&gt;&lt;br/&gt;&amp;rarr; into &lt;code&gt;{X&lt;!----&gt;|c:&lt;i&gt;content&lt;/i&gt;|&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;&amp;lt;p class=&quot;my-para-highlighted my-smallerfont my-roundborder&quot;&amp;gt;&lt;i&gt;content&lt;/i&gt;&amp;lt;/p&amp;gt;&lt;/code&gt;&lt;br/&gt;&amp;rarr; into
+		&lt;code&gt;{X&lt;!----&gt;|phsr:&lt;i&gt;content&lt;/i&gt;|&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;li&gt;et cetera..&lt;/li&gt;
+&lt;/ul&gt;
+&lt;span id=&quot;decl&quot;&gt;&lt;h2 id=&quot;Declaration / Configuration&quot;&gt;Declaration / Configuration&lt;/h2&gt;&lt;/span&gt;
+&lt;p&gt;To demonstrate valid &lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; directives to declare the above 3 example &lt;a href=&quot;../tags/x.html&quot;&gt;X-tags&lt;/a&gt;:&lt;/p&gt;
+&lt;pre&gt;
+|X|hax.miniTag:&lt;i&gt;bq&lt;/i&gt;:&lt;i&gt;blockquote&lt;/i&gt;
+
+|X|hax.miniTag:&lt;i&gt;c&lt;/i&gt;:
+    &lt;i&gt;code&lt;/i&gt;: attr = []
+
+|X|hax.miniTag:&lt;i&gt;phsr&lt;/i&gt;: &lt;i&gt;p&lt;/i&gt;:attr
+    = [ (&quot;&lt;i&gt;class&lt;/i&gt;&quot; , &quot;&lt;i&gt;my-para-highlighted my-smallerfont&lt;/i&gt;&quot;),
+        (&quot;&lt;i&gt;class&lt;/i&gt;&quot; , &quot;&lt;i&gt;my-roundborder&lt;/i&gt;&quot;) ]
+&lt;/pre&gt;
+
+&lt;p&gt;To elaborate, for example the last one of the above, as all &lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;|X| directives&lt;/a&gt; declaring &lt;a href=&quot;../tags/x.html&quot;&gt;X-tags&lt;/a&gt; do:&lt;/p&gt;
+	&lt;ul&gt;
+		&lt;li&gt;begins with &lt;code&gt;|X|&lt;/code&gt; followed by the X-renderer identifier (here &lt;code&gt;hax.miniTag&lt;/code&gt;)&lt;/li&gt;
+		&lt;li&gt;followed by &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon and the desired X-tag name to be used to invoke it (here &lt;code&gt;&lt;/code&gt;),&lt;/li&gt;
+		&lt;li&gt;followed by &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon and now &lt;i&gt;hax.miniTag&lt;/i&gt;-&lt;b&gt;specific&lt;/b&gt; configuration:&lt;/li&gt;
+		&lt;li&gt;The name of the output markup-language tag that this X-tag should wrap its content in
+										(here &lt;code&gt;blockquote&lt;/code&gt;),&lt;/li&gt;
+		&lt;li&gt;followed by a &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon if an &lt;b&gt;optional&lt;/b&gt; &lt;a href=&quot;../basics/syntax.html&quot;&gt;syntax-sensitive&lt;/a&gt; properties block follows,
+					comprised (if present at all) of &lt;i&gt;all&lt;/i&gt; the following properties in &lt;i&gt;this&lt;/i&gt; very order:&lt;ol&gt;&lt;li&gt;&lt;code&gt;attr = [ &lt;i&gt;..&lt;/i&gt; ]&lt;/code&gt; &amp;mdash; a List of all the tag attributes (each denoted in a
+	&lt;code&gt;(&quot;&lt;i&gt;name&lt;/i&gt;&quot;,&quot;&lt;i&gt;value&lt;/i&gt;&quot;)&lt;/code&gt; pair) to &lt;i&gt;always&lt;/i&gt; append to the markup-language tag output by
+	all instances of this
+	X-tag &lt;ul&gt;&lt;li&gt;The special attribute &lt;i&gt;value&lt;/i&gt; placeholder &lt;code&gt;&amp;nbsp;{&lt;!----&gt;:c:&lt;!----&gt;}&lt;/code&gt; will replicate the
+	X-tag content inside this attribute (not specially escaped: if this is needed, wrap inside a &lt;a href=&quot;../tags/p.html#delay&quot;&gt;page-delayed&lt;/a&gt; X-tag
+	invoking &lt;a href=&quot;../xtypes/hax.xmlEscape.html&quot;&gt;hax.xmlEscape&lt;/a&gt; as usual) &lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ol&gt;&lt;/li&gt;
+	&lt;/ul&gt;
+
+&lt;span id=&quot;args&quot;&gt;&lt;h2 id=&quot;Invocation / Parameters&quot;&gt;Invocation / Parameters&lt;/h2&gt;&lt;/span&gt;
+&lt;p&gt;No special tag parameters, no special content treatment: the entire X-tag &lt;i&gt;content&lt;/i&gt; (ie. following the tag name such as
+above &lt;code&gt;phsr&lt;/code&gt; and then &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon, as in &lt;code&gt;{X&lt;!----&gt;|phsr:&lt;i&gt;content&lt;/i&gt;|&lt;!----&gt;}&lt;/code&gt;) is output as-is, inside the
+output markup tag configured for the X-tag (ie. as above,
+&lt;code&gt;&amp;lt;p class=&quot;my-para-highlighted my-smallerfont my-roundborder&quot;&amp;gt;&lt;i&gt;content&lt;/i&gt;&amp;lt;/p&amp;gt;&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;
+	&lt;b&gt;Caution:&lt;/b&gt; if no such X-tag &lt;i&gt;content&lt;/i&gt; is present, &lt;i&gt;nothing&lt;/i&gt; is rendered out at all, not even the intended
+	(would-be empty) output markup tag. This is by design and more often than not desirable, especially in certain scenarios
+	of somewhat-dynamic tag contents.
+&lt;/p&gt;
+</content>
+    </entry><entry>
+        <title type="html">hax.xmlEscape</title>
+        <summary type="html">Outputs the given content with all occurrences of any of &lt;code&gt;&amp;amp; &amp;lt; &amp;gt; &amp;quot; &amp;apos;&lt;/code&gt; each appropriately
+	entity-escaped for safe inclusion in HTML/XML/etc. markup.</summary>
+        <link href="../xtypes/hax.xmlEscape.html"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-09-20:haxtatic/xtypes/hax.xmlEscape.html</id>
+        <updated>1234-09-20T00:00:00Z</updated>
+        <content type="html">&lt;h1&gt;hax.xmlEscape&lt;/h1&gt;
+	
+	&lt;p class=&quot;up&quot;&gt;Outputs the given content with all occurrences of any of &lt;code&gt;&amp;amp; &amp;lt; &amp;gt; &amp;quot; &amp;apos;&lt;/code&gt; each appropriately
+	entity-escaped for safe inclusion in HTML/XML/etc. markup.&lt;/p&gt;
+	&lt;h2 id=&quot;In a nutshell&quot;&gt;In a nutshell&lt;/h2&gt;
+	&lt;ol&gt;
+		&lt;li class=&quot;up&quot;&gt;
+			&lt;a href=&quot;../xtypes/hax.xmlEscape.html#decl&quot;&gt;Declaration&lt;/a&gt; of an &lt;code&gt;|X|hax.xmlEscape:&lt;u&gt;&lt;i&gt;myTag&lt;/i&gt;&lt;/u&gt;&lt;/code&gt; directive in a
+			&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; file,
+			&lt;ul&gt;&lt;li&gt;further configuring: &lt;i&gt;(no other settings)&lt;/i&gt;&lt;/li&gt;&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt;: &lt;i&gt;any &amp;quot;content&amp;apos; to &amp;lt;&amp;gt; XML&amp;amp;HTML-escape&lt;/i&gt; |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;/ol&gt;
+&lt;span id=&quot;decl&quot;&gt;
+&lt;h3&gt;Stage:&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;../tags/index.html#stages&quot;&gt;Early&lt;/a&gt; &amp;mdash; this X-renderer does not require a page context for
+					rendering: therefore many &lt;i&gt;hax.xmlEscape&lt;/i&gt;-invoking X-tags encountered during pre-templating (at
+					start-up time) may be eagerly &lt;a href=&quot;../tags/index.html#Processing&quot;&gt;processed&lt;/a&gt; immediately in-place (for overall-reduced
+					per-page processing loads).&lt;/p&gt;
+&lt;/span&gt;
+&lt;h2 id=&quot;Purpose&quot;&gt;Purpose&lt;/h2&gt;
+&lt;p&gt;
+	As a general principle, &lt;b&gt;none&lt;/b&gt; of the built-in X-renderers &lt;b&gt;ever&lt;/b&gt; HTML/XML-escape, &lt;i&gt;of their own accord&lt;/i&gt;
+	(unless expressly set up to do so on specific occasions), any of their generated outputs derived from project inputs:
+	users are expected to specify such inputs already-escaped as the project&apos;s / file&apos;s output format demands.
+&lt;/p&gt;
+&lt;p&gt;
+	As such, some projects might for example require XML/HTML-escaping other &lt;a href=&quot;../tags/index.html&quot;&gt;haXtag&lt;/a&gt; outputs
+	dynamically/selectively after-the-fact; such is accomplished by embedding them inside a &lt;b&gt;hax.xmlEscape&lt;/b&gt; X-tag.
+&lt;/p&gt;
+</content>
+    </entry><entry>
+        <title type="html">hax.htmlLink</title>
+        <summary type="html">Outputs &lt;code&gt;&amp;lt;a &lt;i&gt;..&lt;/i&gt;&amp;gt;&lt;i&gt;..&lt;/i&gt;&amp;lt;/a&amp;gt;&lt;/code&gt;.</summary>
+        <link href="../xtypes/hax.htmlLink.html"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-09-10:haxtatic/xtypes/hax.htmlLink.html</id>
+        <updated>1234-09-10T00:00:00Z</updated>
+        <content type="html">&lt;h1&gt;hax.htmlLink&lt;/h1&gt;
+	
+	&lt;p class=&quot;up&quot;&gt;Outputs &lt;code&gt;&amp;lt;a &lt;i&gt;..&lt;/i&gt;&amp;gt;&lt;i&gt;..&lt;/i&gt;&amp;lt;/a&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+	&lt;h2 id=&quot;In a nutshell&quot;&gt;In a nutshell&lt;/h2&gt;
+	&lt;ol&gt;
+		&lt;li class=&quot;up&quot;&gt;
+			&lt;a href=&quot;../xtypes/hax.htmlLink.html#decl&quot;&gt;Declaration&lt;/a&gt; of an &lt;code&gt;|X|hax.htmlLink:&lt;u&gt;&lt;i&gt;myTag&lt;/i&gt;&lt;/u&gt;:&lt;i&gt;some/rel/base/path&lt;/i&gt;: &lt;i&gt;..&lt;/i&gt;&lt;/code&gt; directive in a
+			&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; file,
+			&lt;ul&gt;&lt;li&gt;further configuring: &lt;code&gt;attr&lt;/code&gt; , &lt;code&gt;xmlEscape&lt;/code&gt; , &lt;code&gt;uriAutoExt&lt;/code&gt; &lt;/li&gt;&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt;:&lt;i&gt;rel-to-base/path/no/whitespace and then the link text text&lt;/i&gt; |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;/ol&gt;
+&lt;h3&gt;Stage:&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;../tags/index.html#stages&quot;&gt;Early&lt;/a&gt; &amp;mdash; this X-renderer does not require a page context for
+					rendering: therefore many &lt;i&gt;hax.htmlLink&lt;/i&gt;-invoking X-tags encountered during pre-templating (at
+					start-up time) may be eagerly &lt;a href=&quot;../tags/index.html#Processing&quot;&gt;processed&lt;/a&gt; immediately in-place (for overall-reduced
+					per-page processing loads).&lt;/p&gt;
+&lt;h2 id=&quot;Purpose&quot;&gt;Purpose&lt;/h2&gt;
+&lt;p&gt;
+	In a similar spirit to &lt;a href=&quot;../xtypes/hax.miniTag.html&quot;&gt;hax.miniTag&lt;/a&gt; and &lt;a href=&quot;../xtypes/hax.htmlImage.html&quot;&gt;hax.htmlImage&lt;/a&gt;, this one is for saving precious
+	keystrokes with &lt;code&gt;&amp;lt;a ..&amp;gt;&lt;/code&gt;-rich HTML contents requiring repetetive use of quickly-becoming-too-verbose markup.
+&lt;/p&gt;
+&lt;span id=&quot;decl&quot;&gt;&lt;h2 id=&quot;Declaration / Configuration&quot;&gt;Declaration / Configuration&lt;/h2&gt;&lt;/span&gt;
+&lt;p&gt;To demonstrate valid &lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; directives declaring &lt;i&gt;hax.htmlLink&lt;/i&gt;
+					&lt;a href=&quot;../tags/x.html&quot;&gt;X-tags&lt;/a&gt;:&lt;/p&gt;
+&lt;pre&gt;
+|X|hax.htmlLink:&lt;i&gt;lb&lt;/i&gt;: &lt;i&gt;{P&lt;!----&gt;|/basics|&lt;!----&gt;}&lt;/i&gt;
+
+|X|hax.htmlLink:&lt;i&gt;lt&lt;/i&gt;: &lt;i&gt;/tags&lt;/i&gt;:
+	attr = [ &lt;i&gt;(&quot;class&quot;,
+	&quot;foo-sitelink&quot;)&lt;/i&gt;],
+	xmlEscape =
+	&lt;i&gt;(True , False)&lt;/i&gt;,
+	uriAutoExt = &lt;i&gt;&quot;.html&quot;&lt;/i&gt;
+
+|X|hax.htmlLink: &lt;i&gt;lx&lt;/i&gt;:
+	&lt;i&gt;../xtypes/&lt;/i&gt;
+&lt;/pre&gt;
+&lt;p&gt;To elaborate, for example the last one of the above, as all &lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;|X| directives&lt;/a&gt; declaring &lt;a href=&quot;../tags/x.html&quot;&gt;X-tags&lt;/a&gt; do:&lt;/p&gt;
+	&lt;ul&gt;
+		&lt;li&gt;begins with &lt;code&gt;|X|&lt;/code&gt; followed by the X-renderer identifier (here &lt;code&gt;hax.htmlLink&lt;/code&gt;)&lt;/li&gt;
+		&lt;li&gt;followed by &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon and the desired X-tag name to be used to invoke it (here &lt;code&gt;lx&lt;/code&gt;),&lt;/li&gt;
+		&lt;li&gt;followed by &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon and now &lt;i&gt;hax.htmlLink&lt;/i&gt;-&lt;b&gt;specific&lt;/b&gt; configuration:&lt;/li&gt;
+		&lt;li&gt;The relative base path for all links from this X-tag (here
+										&lt;code&gt;../xtypes&lt;/code&gt;),&lt;/li&gt;
+		&lt;li&gt;followed by a &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon if an &lt;b&gt;optional&lt;/b&gt; &lt;a href=&quot;../basics/syntax.html&quot;&gt;syntax-sensitive&lt;/a&gt; properties block follows,
+					comprised (if present at all) of &lt;i&gt;all&lt;/i&gt; the following properties in &lt;i&gt;this&lt;/i&gt; very order:&lt;ol&gt;&lt;li&gt;&lt;code&gt;attr = [ &lt;i&gt;..&lt;/i&gt; ]&lt;/code&gt; &amp;mdash; a List of all the tag attributes (each denoted in a &lt;code&gt;(&quot;&lt;i&gt;name&lt;/i&gt;&quot;,&quot;&lt;i&gt;value&lt;/i&gt;&quot;)&lt;/code&gt;
+	pair) to &lt;i&gt;always&lt;/i&gt; append (in addition to automatic &lt;code&gt;href&lt;/code&gt;) to the &lt;code&gt;&amp;lt;a&amp;gt;&lt;/code&gt; output by all instances of this
+	X-tag&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;xmlEscape = (.. , ..)&lt;/code&gt; &amp;mdash; a tuple of 2 toggles (the first for the &lt;code&gt;href&lt;/code&gt; and the second for the inner
+	content of the &lt;code&gt;&amp;lt;a&amp;gt;&lt;/code&gt; output by all instances of this X-tag) indicating whether to auto-HTML/XML-escape
+	(&lt;code&gt;True&lt;/code&gt;) or not (&lt;code&gt;False&lt;/code&gt;)&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;uriAutoExt = &quot;&lt;i&gt;..&lt;/i&gt;&quot;&lt;/code&gt; &amp;mdash; either &lt;code&gt;&amp;nbsp;&amp;quot;&amp;quot;&lt;/code&gt; (empty) or a file name extension to &lt;i&gt;always&lt;/i&gt;
+	append (if missing) to the part of &lt;code&gt;href&lt;/code&gt; prior to &lt;code&gt;&amp;nbsp;#&lt;/code&gt; of the &lt;code&gt;&amp;lt;a&amp;gt;&lt;/code&gt; output by all instances of this
+	X-tag&lt;/li&gt;&lt;/ol&gt;&lt;/li&gt;
+	&lt;/ul&gt;
+&lt;span id=&quot;args&quot;&gt;&lt;h2 id=&quot;Invocation / Parameters&quot;&gt;Invocation / Parameters&lt;/h2&gt;&lt;/span&gt;
+&lt;p&gt;
+	Usage for the 2nd example from above: &lt;code&gt;{X&lt;!----&gt;|lt:&lt;i&gt;x#Delaying%20X-tags Delaying X-tags&lt;/i&gt; |&lt;!----&gt;}&lt;/code&gt; would output
+	&lt;code&gt;&amp;lt;a class=&quot;&lt;i&gt;foo-sitelink&lt;/i&gt;&quot; href=&quot;&lt;i&gt;/tags/x&lt;/i&gt;.html&lt;i&gt;#Delaying%20X-tags&lt;/i&gt;&quot;&amp;gt;&lt;i&gt;Delaying X-tags&lt;/i&gt;&amp;lt;/a&amp;gt;&lt;/code&gt;
+	&amp;mdash; it follows that:
+&lt;/p&gt;
+&lt;ul&gt;
+	&lt;li&gt;the (X-tag-)relative URI path comes first, followed by&lt;/li&gt;
+	&lt;li&gt;a &lt;b&gt;white-space&lt;/b&gt; and the link element&apos;s inner content;&lt;/li&gt;
+	&lt;li&gt;any white-space in the URI path is to be replaced, as is standard, with &lt;code&gt;%20&lt;/code&gt;;&lt;/li&gt;
+	&lt;li&gt;if &lt;code&gt;xmlEscape&lt;/code&gt; is &lt;code&gt;False&lt;/code&gt; for &lt;code&gt;href&lt;/code&gt;, take care that the combined URI will be HTML-escaped&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    </entry><entry>
+        <title type="html">hax.htmlImage</title>
+        <summary type="html">Outputs &lt;code&gt;&amp;lt;img &lt;i&gt;..&lt;/i&gt; /&amp;gt;&lt;/code&gt; or &lt;code&gt;&amp;lt;a &lt;i&gt;..&lt;/i&gt;&amp;gt;&amp;lt;img &lt;i&gt;..&lt;/i&gt; /&amp;gt;&amp;lt;/a&amp;gt;&lt;/code&gt;.</summary>
+        <link href="../xtypes/hax.htmlImage.html"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-08-20:haxtatic/xtypes/hax.htmlImage.html</id>
+        <updated>1234-08-20T00:00:00Z</updated>
+        <content type="html">&lt;h1&gt;hax.htmlImage&lt;/h1&gt;
+	
+	&lt;p class=&quot;up&quot;&gt;Outputs &lt;code&gt;&amp;lt;img &lt;i&gt;..&lt;/i&gt; /&amp;gt;&lt;/code&gt; or &lt;code&gt;&amp;lt;a &lt;i&gt;..&lt;/i&gt;&amp;gt;&amp;lt;img &lt;i&gt;..&lt;/i&gt; /&amp;gt;&amp;lt;/a&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+	&lt;h2 id=&quot;In a nutshell&quot;&gt;In a nutshell&lt;/h2&gt;
+	&lt;ol&gt;
+		&lt;li class=&quot;up&quot;&gt;
+			&lt;a href=&quot;../xtypes/hax.htmlImage.html#decl&quot;&gt;Declaration&lt;/a&gt; of an &lt;code&gt;|X|hax.htmlImage:&lt;u&gt;&lt;i&gt;myTag&lt;/i&gt;&lt;/u&gt;:&lt;i&gt;some/rel/base/path&lt;/i&gt;: &lt;i&gt;..&lt;/i&gt;&lt;/code&gt; directive in a
+			&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; file,
+			&lt;ul&gt;&lt;li&gt;further configuring: &lt;code&gt;attrLink&lt;/code&gt;, &lt;code&gt;attrImg&lt;/code&gt;, &lt;code&gt;xmlEscape&lt;/code&gt;&lt;/li&gt;&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt;:&lt;i&gt;rel-to-base/path/no/whitespace and optionally some description text&lt;/i&gt; |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;/ol&gt;
+&lt;h3&gt;Stage:&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;../tags/index.html#stages&quot;&gt;Early&lt;/a&gt; &amp;mdash; this X-renderer does not require a page context for
+					rendering: therefore many &lt;i&gt;hax.htmlImage&lt;/i&gt;-invoking X-tags encountered during pre-templating (at
+					start-up time) may be eagerly &lt;a href=&quot;../tags/index.html#Processing&quot;&gt;processed&lt;/a&gt; immediately in-place (for overall-reduced
+					per-page processing loads).&lt;/p&gt;
+&lt;h2 id=&quot;Purpose&quot;&gt;Purpose&lt;/h2&gt;
+&lt;p&gt;
+	In a similar spirit to &lt;a href=&quot;../xtypes/hax.miniTag.html&quot;&gt;hax.miniTag&lt;/a&gt; and &lt;a href=&quot;../xtypes/hax.htmlLink.html&quot;&gt;hax.htmlLink&lt;/a&gt;, this one is for saving precious
+	keystrokes with &lt;code&gt;&amp;lt;img ..&amp;gt;&lt;/code&gt;-rich HTML contents requiring repetetive use of quickly-becoming-too-verbose markup.
+&lt;/p&gt;
+&lt;span id=&quot;decl&quot;&gt;&lt;h2 id=&quot;Declaration / Configuration&quot;&gt;Declaration / Configuration&lt;/h2&gt;&lt;/span&gt;
+&lt;p&gt;To demonstrate valid &lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; directives declaring &lt;i&gt;hax.htmlImage&lt;/i&gt;
+					&lt;a href=&quot;../tags/x.html&quot;&gt;X-tags&lt;/a&gt;:&lt;/p&gt;
+&lt;pre&gt;
+|X|hax.htmlImage:&lt;i&gt;logo&lt;/i&gt;:
+	&lt;i&gt;../pics/logos&lt;/i&gt;
+
+|X|hax.htmlImage: &lt;i&gt;photo&lt;/i&gt; : &lt;i&gt;{P&lt;!----&gt;|/pics/photos/|&lt;!----&gt;}&lt;/i&gt;:
+	attrLink = [ &lt;i&gt;(&quot;class&quot;,&quot;foo-photo&quot;)&lt;/i&gt; ],
+	attrImg = [&lt;i&gt;(&quot;class&quot; , &quot;foo-roundborder&quot;)
+		, (&quot;onload&quot;,&quot;myGallerize(this)&quot;)&lt;/i&gt;
+		],
+	xmlEscape = True
+&lt;/pre&gt;
+&lt;p&gt;To elaborate, for example the last one of the above, as all &lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;|X| directives&lt;/a&gt; declaring &lt;a href=&quot;../tags/x.html&quot;&gt;X-tags&lt;/a&gt; do:&lt;/p&gt;
+	&lt;ul&gt;
+		&lt;li&gt;begins with &lt;code&gt;|X|&lt;/code&gt; followed by the X-renderer identifier (here &lt;code&gt;hax.htmlImage&lt;/code&gt;)&lt;/li&gt;
+		&lt;li&gt;followed by &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon and the desired X-tag name to be used to invoke it (here &lt;code&gt;photo&lt;/code&gt;),&lt;/li&gt;
+		&lt;li&gt;followed by &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon and now &lt;i&gt;hax.htmlImage&lt;/i&gt;-&lt;b&gt;specific&lt;/b&gt; configuration:&lt;/li&gt;
+		&lt;li&gt;The relative base path for all images from this X-tag (here
+										&lt;a href=&quot;../tags/p.html#relpaths&quot;&gt;ensuring root-relative&lt;/a&gt;:
+										&lt;code&gt;{P&lt;!----&gt;| /pics/photos |&lt;!----&gt;}&lt;/code&gt;),&lt;/li&gt;
+		&lt;li&gt;followed by a &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon if an &lt;b&gt;optional&lt;/b&gt; &lt;a href=&quot;../basics/syntax.html&quot;&gt;syntax-sensitive&lt;/a&gt; properties block follows,
+					comprised (if present at all) of &lt;i&gt;all&lt;/i&gt; the following properties in &lt;i&gt;this&lt;/i&gt; very order:&lt;ol&gt;&lt;li&gt;&lt;code&gt;attrLink = [ &lt;i&gt;..&lt;/i&gt; ]&lt;/code&gt; &amp;mdash; a List of all the tag attributes (each denoted in a
+	&lt;code&gt;(&quot;&lt;i&gt;name&lt;/i&gt;&quot;,&quot;&lt;i&gt;value&lt;/i&gt;&quot;)&lt;/code&gt; pair) to &lt;i&gt;always&lt;/i&gt; append (in addition to automatic &lt;code&gt;href&lt;/code&gt; and &lt;code&gt;title&lt;/code&gt;)
+	to the outer &lt;code&gt;&amp;lt;a&amp;gt;&lt;/code&gt; element &lt;ul&gt;&lt;li&gt;if empty (the default), no such outer &lt;code&gt;&amp;lt;a&amp;gt;&lt;/code&gt; element will be rendered
+	(only the &lt;code&gt;&amp;lt;img&amp;gt;&lt;/code&gt; element itself)&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;attrImg = [ &lt;i&gt;..&lt;/i&gt; ]&lt;/code&gt; &amp;mdash; a List of all the tag attributes (each denoted in a &lt;code&gt;(&quot;&lt;i&gt;name&lt;/i&gt;&quot;,&quot;&lt;i&gt;value&lt;/i&gt;&quot;)&lt;/code&gt;
+	pair) to &lt;i&gt;always&lt;/i&gt; append (in addition to automatic &lt;code&gt;src&lt;/code&gt; and &lt;code&gt;alt&lt;/code&gt;) to the inner &lt;code&gt;&amp;lt;img&amp;gt;&lt;/code&gt; output by
+	all instances of this X-tag&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;xmlEscape = ..&lt;/code&gt; &amp;mdash; either &lt;code&gt;False&lt;/code&gt; (the default) or &lt;code&gt;True&lt;/code&gt;; whether to auto-HTML/XML-escape
+	the automatic &lt;code&gt;title&lt;/code&gt; / &lt;code&gt;alt&lt;/code&gt; attribute values&lt;/li&gt;&lt;/ol&gt;&lt;/li&gt;
+	&lt;/ul&gt;
+&lt;span id=&quot;args&quot;&gt;&lt;h2 id=&quot;Invocation / Parameters&quot;&gt;Invocation / Parameters&lt;/h2&gt;&lt;/span&gt;
+&lt;p&gt;
+	Usage for the above example: &lt;code&gt;{X&lt;!----&gt;|photo:&lt;i&gt;eire%202016/IMG_5.jpg Look, a &apos;geysir&apos;!&lt;/i&gt; |&lt;!----&gt;}&lt;/code&gt; would output,
+	depending on the current-page URL, perhaps something like:
+	&lt;code&gt;&amp;lt;a class=&quot;&lt;i&gt;foo-photo&lt;/i&gt;&quot; href=&quot;&lt;i&gt;../pics/photos/eire%202016/IMG_5.jpg&lt;/i&gt;&quot;
+	title=&quot;&lt;i&gt;Look, a &amp;amp;apos;geysir&amp;amp;apos;!&lt;/i&gt;&quot;&amp;gt;
+	&amp;lt;img class=&quot;&lt;i&gt;foo-roundborder&lt;/i&gt;&quot; onload=&quot;&lt;i&gt;myGallerize(this)&lt;/i&gt;&quot; src=&quot;&lt;i&gt;../pics/photos/eire%202016/IMG_5.jpg&lt;/i&gt;&quot;
+	alt=&quot;&lt;i&gt;Look, a &amp;amp;apos;geysir&amp;amp;apos;!&lt;/i&gt;&quot; /&amp;gt;&amp;lt;/a&amp;gt;&lt;/code&gt; &amp;mdash; verbose! It follows that:
+&lt;/p&gt;
+&lt;ul&gt;
+	&lt;li&gt;the (X-tag-)relative image path comes first, followed optionally&lt;/li&gt;
+	&lt;li&gt;by &lt;b&gt;a white-space&lt;/b&gt; and any manner of picture description, if any;&lt;/li&gt;
+	&lt;li&gt;any white-space in the picture URI path is to be replaced, as is standard, with &lt;code&gt;%20&lt;/code&gt;;&lt;/li&gt;
+	&lt;li&gt;if &lt;code&gt;xmlEscape&lt;/code&gt; is &lt;code&gt;False&lt;/code&gt;, the picture description &lt;b&gt;has&lt;/b&gt; to be provided HTML-escaped: manually or wrapped
+	inside an &lt;a href=&quot;../xtypes/hax.xmlEscape.html&quot;&gt;hax.xmlEscape&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    </entry><entry>
+        <title type="html">hax.htmlLinks</title>
+        <summary type="html">Helps with site navigation: outputs a sequence of &lt;code&gt;&amp;lt;a href=&amp;quot;..&amp;quot;&amp;gt; .. &amp;lt;/a&amp;gt;&lt;/code&gt; or
+	&lt;code&gt;&amp;nbsp;&amp;lt;&lt;i&gt;outerhtmltag&lt;/i&gt; ..&amp;gt;&amp;lt;a href=&amp;quot;..&amp;quot;&amp;gt; .. &amp;lt;/a&amp;gt;&amp;lt;/&lt;i&gt;outerhtmltag&lt;/i&gt;&amp;gt;&lt;/code&gt;
+	in a uniform manner.</summary>
+        <link href="../xtypes/hax.htmlLinks.html"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-08-15:haxtatic/xtypes/hax.htmlLinks.html</id>
+        <updated>1234-08-15T00:00:00Z</updated>
+        <content type="html">&lt;h1&gt;hax.htmlLinks&lt;/h1&gt;
+	
+	&lt;p class=&quot;up&quot;&gt;Helps with site navigation: outputs a sequence of &lt;code&gt;&amp;lt;a href=&amp;quot;..&amp;quot;&amp;gt; .. &amp;lt;/a&amp;gt;&lt;/code&gt; or
+	&lt;code&gt;&amp;nbsp;&amp;lt;&lt;i&gt;outerhtmltag&lt;/i&gt; ..&amp;gt;&amp;lt;a href=&amp;quot;..&amp;quot;&amp;gt; .. &amp;lt;/a&amp;gt;&amp;lt;/&lt;i&gt;outerhtmltag&lt;/i&gt;&amp;gt;&lt;/code&gt;
+	in a uniform manner.&lt;/p&gt;
+	&lt;h2 id=&quot;In a nutshell&quot;&gt;In a nutshell&lt;/h2&gt;
+	&lt;ol&gt;
+		&lt;li class=&quot;up&quot;&gt;
+			&lt;a href=&quot;../xtypes/hax.htmlLinks.html#decl&quot;&gt;Declaration&lt;/a&gt; of an &lt;code&gt;|X|hax.htmlLinks:&lt;u&gt;&lt;i&gt;myTag&lt;/i&gt;&lt;/u&gt;:&lt;i&gt;outerhtmltag&lt;/i&gt;: &lt;i&gt;..&lt;/i&gt;&lt;/code&gt; directive in a
+			&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; file,
+			&lt;ul&gt;&lt;li&gt;further configuring: &lt;code&gt;attr&lt;/code&gt;, &lt;code&gt;itemsFirst&lt;/code&gt;, &lt;code&gt;itemsLast&lt;/code&gt;, &lt;code&gt;wrapHref&lt;/code&gt;&lt;/li&gt;&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt;: items = [..] , attr = [..] |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;/ol&gt;
+&lt;p class=&quot;hd-note&quot;&gt;This topic is in a compact format for users already familiar with the essentials of
+					&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;declaring&lt;/a&gt; X-tags and invoking them. If found challenging, try the
+					&lt;a href=&quot;../xtypes/hax.miniTag.html&quot;&gt;more&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.htmlImage.html&quot;&gt;elaborate&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.htmlLink.html&quot;&gt;and&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.xmlEscape.html&quot;&gt;introductory&lt;/a&gt;
+					topics first to form a better grasp on the basics and overall mechanisms.&lt;/p&gt;
+&lt;h3&gt;Stage:&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;../tags/index.html#stages&quot;&gt;Early or Page&lt;/a&gt; &amp;mdash; this X-renderer determines dynamically (documented
+					further &lt;a href=&quot;#dynstage&quot;&gt;below&lt;/a&gt;) whether or not it requires a page context for rendering, so depending on each
+					&lt;i&gt;hax.htmlLinks&lt;/i&gt;-invoking X-tag&apos;s configuration and/or parameters:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;i&gt;some&lt;/i&gt; encountered
+					during pre-templating (at start-up time) may be eagerly &lt;a href=&quot;../tags/index.html#Processing&quot;&gt;processed&lt;/a&gt; immediately in-place
+					(for overall-reduced per-page processing loads),&lt;/li&gt; &lt;li&gt; and &lt;i&gt;others&lt;/i&gt; will be skipped over, thus only
+					process per-page, once present.&lt;/li&gt;&lt;/ul&gt;
+&lt;span id=&quot;decl&quot;&gt;&lt;h2 id=&quot;Declaration / Configuration&quot;&gt;Declaration / Configuration&lt;/h2&gt;&lt;/span&gt;
+&lt;p&gt;To demonstrate valid &lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; directives declaring &lt;i&gt;hax.htmlLinks&lt;/i&gt;
+					&lt;a href=&quot;../tags/x.html&quot;&gt;X-tags&lt;/a&gt;:&lt;/p&gt;
+&lt;pre&gt;
+|X|hax.htmlLinks:&lt;i&gt;mysidenav&lt;/i&gt;:&lt;i&gt;li&lt;/i&gt;
+
+|X|hax.htmlLinks:&lt;i&gt;mytopnav&lt;/i&gt;:&lt;i&gt;div&lt;/i&gt;:
+	attr= [ &lt;i&gt;(&quot;class&quot;,&quot;my-nav&quot;) , (&quot;&amp;amp;class&quot;,&quot;my-nav-sel&quot;)&lt;/i&gt; ],
+	itemsFirst =[ &lt;i&gt;(&quot;&quot;,&quot;Home&quot;)&lt;/i&gt; ],
+	itemsLast = [&lt;i&gt;(&quot;blog/&quot;,&quot;{T|myBlog|}&quot;)&lt;/i&gt;],
+	wrapHref = (&lt;i&gt;&quot;/&quot;&lt;/i&gt; , &lt;i&gt;&quot;index.html&quot;&lt;/i&gt;)
+&lt;/pre&gt;
+&lt;p&gt;To elaborate, for example the last one of the above, as all &lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;|X| directives&lt;/a&gt; declaring &lt;a href=&quot;../tags/x.html&quot;&gt;X-tags&lt;/a&gt; do:&lt;/p&gt;
+	&lt;ul&gt;
+		&lt;li&gt;begins with &lt;code&gt;|X|&lt;/code&gt; followed by the X-renderer identifier (here &lt;code&gt;hax.htmlLinks&lt;/code&gt;)&lt;/li&gt;
+		&lt;li&gt;followed by &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon and the desired X-tag name to be used to invoke it (here &lt;code&gt;mytopnav&lt;/code&gt;),&lt;/li&gt;
+		&lt;li&gt;followed by &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon and now &lt;i&gt;hax.htmlLinks&lt;/i&gt;-&lt;b&gt;specific&lt;/b&gt; configuration:&lt;/li&gt;
+		&lt;li&gt;The output &lt;u&gt;outer&lt;/u&gt; markup-tag name (can be empty to skip such) to contain every output
+								&lt;code&gt;&amp;lt;a&amp;gt;&lt;/code&gt; element&lt;/li&gt;
+		&lt;li&gt;followed by a &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon if an &lt;b&gt;optional&lt;/b&gt; &lt;a href=&quot;../basics/syntax.html&quot;&gt;syntax-sensitive&lt;/a&gt; properties block follows,
+					comprised (if present at all) of &lt;i&gt;all&lt;/i&gt; the following properties in &lt;i&gt;this&lt;/i&gt; very order:&lt;ol&gt;&lt;li id=&quot;dynstage&quot;&gt;&lt;code&gt;attr = [(&quot;&lt;i&gt;name&lt;/i&gt;&quot;,&quot;&lt;i&gt;value&lt;/i&gt;&quot;) , &lt;i&gt;..&lt;/i&gt;]&lt;/code&gt;
+	&amp;mdash; the output &lt;u&gt;outer&lt;/u&gt;-tag&apos;s markup attributes as name-value pairs
+		&lt;ul&gt;&lt;li&gt;Attribute names starting with &lt;code&gt;&amp;nbsp;&amp;amp;&lt;/code&gt; ampersand are only output (without it, of course) for path-wise
+		&quot;current/selected/active&quot; links with respect to the current page-context (see below paragraph for the approximate logic used
+		here)&lt;/li&gt;&lt;li&gt;use of any such dynamic &lt;code&gt;&amp;nbsp;&amp;amp;&lt;/code&gt; attribute names switches this X-tag&apos;s &lt;a href=&quot;../tags/index.html#stages&quot;&gt;stage&lt;/a&gt;
+		from &lt;i&gt;Early&lt;/i&gt; (the default) into &lt;i&gt;Page&lt;/i&gt;.&lt;/li&gt;&lt;/ul&gt;
+	&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;itemsFirst = [(&quot;&lt;i&gt;uri&lt;/i&gt;&quot;,&quot;&lt;i&gt;text&lt;/i&gt;&quot;) , &lt;i&gt;..&lt;/i&gt;]&lt;/code&gt;
+	&amp;mdash; the links to &lt;i&gt;always&lt;/i&gt; render first&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;itemsLast = [(&quot;&lt;i&gt;uri&lt;/i&gt;&quot;,&quot;&lt;i&gt;text&lt;/i&gt;&quot;) , &lt;i&gt;..&lt;/i&gt;]&lt;/code&gt;
+	&amp;mdash; the links to &lt;i&gt;always&lt;/i&gt; render last&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;wrapHref = (&quot;&quot;,&quot;&quot;)&lt;/code&gt;
+	&amp;mdash; the prefix-to-prepend &amp;amp; suffix-to-append to every rendered &lt;code&gt;&amp;lt;a&amp;gt;&lt;/code&gt; element&apos;s &lt;code&gt;href&lt;/code&gt; attribute value&lt;/li&gt;
+&lt;li&gt;No HTML/XML/etc.-escaping of inputs is performed, provide correct values for the intended output format.&lt;/li&gt;&lt;/ol&gt;&lt;/li&gt;
+	&lt;/ul&gt;
+&lt;span id=&quot;args&quot;&gt;&lt;h2 id=&quot;Invocation / Parameters&quot;&gt;Invocation / Parameters&lt;/h2&gt;&lt;/span&gt;
+&lt;p&gt;For example, &lt;code&gt;{X&lt;!----&gt;|mysidenav: items=[(&quot;foo&quot;,&quot;Foo&quot;),(&quot;bar&quot;,&quot;Bar&quot;)] , attr=[(&quot;class&quot;,&quot;my-foo&quot;)] |&lt;!----&gt;}&lt;/code&gt; to output:&lt;/p&gt;
+&lt;pre&gt;
+&amp;lt;li class=&quot;my-foo&quot;&amp;gt;&amp;lt;a href=&quot;foo&quot;&amp;gt;Foo&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;
+&amp;lt;li class=&quot;my-foo&quot;&amp;gt;&amp;lt;a href=&quot;bar&quot;&amp;gt;Bar&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;
+&lt;/pre&gt;
+&lt;p&gt;For example, &lt;code&gt;{X&lt;!----&gt;|mytopnav|&lt;!----&gt;}&lt;/code&gt; to render in all generated &lt;code&gt;/blog/*&lt;/code&gt; output files:&lt;/p&gt;
+&lt;pre&gt;
+&amp;lt;div class=&quot;my-nav&quot;&amp;gt;&amp;lt;a href=&quot;/index.html&quot;&amp;gt;Home&amp;lt;/a&amp;gt;&amp;lt;/div&amp;gt;
+&amp;lt;div class=&quot;my-nav my-nav-sel&quot;&amp;gt;&amp;lt;a href=&quot;/blog/index.html&quot;&amp;gt;My Blog&amp;lt;/a&amp;gt;&amp;lt;/div&amp;gt;
+&lt;/pre&gt;
+&lt;p&gt;&amp;mdash; whereas all others would see the same, minus the &lt;code&gt;my-nav-sel&lt;/code&gt; appendum.&lt;/p&gt;
+&lt;p&gt;No HTML/XML/etc.-escaping of inputs is performed, provide correct values for the intended output format.&lt;/p&gt;
+</content>
+    </entry><entry>
+        <title type="html">hax.htmlAnchors</title>
+        <summary type="html">Helps with page-level tables-of-content: outputs a sequence of
+	&lt;code&gt;&amp;nbsp;&amp;lt;a href=&amp;quot;#..&amp;quot;&amp;gt; .. &amp;lt;/a&amp;gt;&lt;/code&gt; or
+	&lt;code&gt;&amp;nbsp;&amp;lt;&lt;i&gt;outerhtmltag&lt;/i&gt; ..&amp;gt;&amp;lt;a href=&amp;quot;#..&amp;quot;&amp;gt; .. &amp;lt;/a&amp;gt;&amp;lt;/&lt;i&gt;outerhtmltag&lt;/i&gt;&amp;gt;&lt;/code&gt;
+	&amp;mdash; one per &lt;code&gt;&amp;nbsp;&amp;lt;&lt;i&gt;gatherhtmltag&lt;/i&gt;&amp;gt;&lt;/code&gt; element found in the content source file.</summary>
+        <link href="../xtypes/hax.htmlAnchors.html"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-07-15:haxtatic/xtypes/hax.htmlAnchors.html</id>
+        <updated>1234-07-15T00:00:00Z</updated>
+        <content type="html">&lt;h1&gt;hax.htmlAnchors&lt;/h1&gt;
+	
+	&lt;p class=&quot;up&quot;&gt;Helps with page-level tables-of-content: outputs a sequence of
+	&lt;code&gt;&amp;nbsp;&amp;lt;a href=&amp;quot;#..&amp;quot;&amp;gt; .. &amp;lt;/a&amp;gt;&lt;/code&gt; or
+	&lt;code&gt;&amp;nbsp;&amp;lt;&lt;i&gt;outerhtmltag&lt;/i&gt; ..&amp;gt;&amp;lt;a href=&amp;quot;#..&amp;quot;&amp;gt; .. &amp;lt;/a&amp;gt;&amp;lt;/&lt;i&gt;outerhtmltag&lt;/i&gt;&amp;gt;&lt;/code&gt;
+	&amp;mdash; one per &lt;code&gt;&amp;nbsp;&amp;lt;&lt;i&gt;gatherhtmltag&lt;/i&gt;&amp;gt;&lt;/code&gt; element found in the content source file.&lt;/p&gt;
+	&lt;h2 id=&quot;In a nutshell&quot;&gt;In a nutshell&lt;/h2&gt;
+	&lt;ol&gt;
+		&lt;li class=&quot;up&quot;&gt;
+			&lt;a href=&quot;../xtypes/hax.htmlAnchors.html#decl&quot;&gt;Declaration&lt;/a&gt; of an &lt;code&gt;|X|hax.htmlAnchors:&lt;u&gt;&lt;i&gt;myTag&lt;/i&gt;&lt;/u&gt;:&lt;i&gt;gatherhtmltag&lt;/i&gt;: &lt;i&gt;..&lt;/i&gt;&lt;/code&gt; directive in a
+			&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; file,
+			&lt;ul&gt;&lt;li&gt;further configuring: &lt;code&gt;considerEmpty&lt;/code&gt;, &lt;code&gt;outputIfEmpty&lt;/code&gt;, &lt;code&gt;xmlEscapeHref&lt;/code&gt;&lt;/li&gt;&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt;:&lt;i&gt;outerhtmltag&lt;/i&gt;: attr = [..] |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;/ol&gt;
+&lt;p class=&quot;hd-note&quot;&gt;This topic is in a compact format for users already familiar with the essentials of
+					&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;declaring&lt;/a&gt; X-tags and invoking them. If found challenging, try the
+					&lt;a href=&quot;../xtypes/hax.miniTag.html&quot;&gt;more&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.htmlImage.html&quot;&gt;elaborate&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.htmlLink.html&quot;&gt;and&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.xmlEscape.html&quot;&gt;introductory&lt;/a&gt;
+					topics first to form a better grasp on the basics and overall mechanisms.&lt;/p&gt;
+&lt;h3&gt;Stage:&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;../tags/index.html#stages&quot;&gt;Page&lt;/a&gt; &amp;mdash; this X-renderer requires a page context for rendering: therefore
+					any &lt;i&gt;hax.htmlAnchors&lt;/i&gt;-invoking X-tags encountered during pre-templating (at start-up time) will be
+					skipped over, thus only process per-page, once present.&lt;/p&gt;
+&lt;span id=&quot;decl&quot;&gt;&lt;h2 id=&quot;Declaration / Configuration&quot;&gt;Declaration / Configuration&lt;/h2&gt;&lt;/span&gt;
+&lt;p&gt;To demonstrate valid &lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; directives declaring &lt;i&gt;hax.htmlAnchors&lt;/i&gt;
+					&lt;a href=&quot;../tags/x.html&quot;&gt;X-tags&lt;/a&gt;:&lt;/p&gt;
+&lt;pre&gt;
+|X|hax.htmlAnchors:&lt;i&gt;pagefootnotes&lt;/i&gt;:&lt;i&gt;sup&lt;/i&gt;
+
+|X|hax.htmlAnchors:&lt;i&gt;pagechapters&lt;/i&gt;:&lt;i&gt;h2&lt;/i&gt;:
+	considerEmpty = &lt;i&gt;0&lt;/i&gt;,
+	outputIfEmpty = &quot;&lt;i&gt;Nothing to show &amp;amp;mdash; put eg. CSS here to hide&lt;/i&gt;&quot;,
+	xmlEscapeHref = &lt;i&gt;False&lt;/i&gt;
+&lt;/pre&gt;
+&lt;p&gt;To elaborate, for example the last one of the above, as all &lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;|X| directives&lt;/a&gt; declaring &lt;a href=&quot;../tags/x.html&quot;&gt;X-tags&lt;/a&gt; do:&lt;/p&gt;
+	&lt;ul&gt;
+		&lt;li&gt;begins with &lt;code&gt;|X|&lt;/code&gt; followed by the X-renderer identifier (here &lt;code&gt;hax.htmlAnchors&lt;/code&gt;)&lt;/li&gt;
+		&lt;li&gt;followed by &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon and the desired X-tag name to be used to invoke it (here &lt;code&gt;pagechapters&lt;/code&gt;),&lt;/li&gt;
+		&lt;li&gt;followed by &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon and now &lt;i&gt;hax.htmlAnchors&lt;/i&gt;-&lt;b&gt;specific&lt;/b&gt; configuration:&lt;/li&gt;
+		&lt;li&gt;The markup-tag name to &lt;i&gt;&quot;gather&quot;&lt;/i&gt; from the current content source file&lt;/li&gt;
+		&lt;li&gt;followed by a &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon if an &lt;b&gt;optional&lt;/b&gt; &lt;a href=&quot;../basics/syntax.html&quot;&gt;syntax-sensitive&lt;/a&gt; properties block follows,
+					comprised (if present at all) of &lt;i&gt;all&lt;/i&gt; the following properties in &lt;i&gt;this&lt;/i&gt; very order:&lt;ol&gt;&lt;li&gt;&lt;code&gt;considerEmpty&lt;/code&gt; &amp;mdash; any number &lt;code&gt;&amp;nbsp;0&lt;/code&gt; (the default) or greater. The listing will only commence if the number of
+gathered page elements exceeds this (eg. one might not want to show a table-of-content with just &lt;code&gt;&amp;nbsp;1&lt;/code&gt; &quot;section&quot; gathered
+from the page).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;outputIfEmpty&lt;/code&gt; &amp;mdash; the output (if any, default is none) to produce only when no listing is rendered
+&lt;ul&gt;&lt;li&gt;No HTML/XML/etc.-escaping of inputs is performed, provide correct values for the intended output format.&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;xmlEscapeHref&lt;/code&gt; &amp;mdash; &lt;code&gt;False&lt;/code&gt; (the default) or &lt;code&gt;True&lt;/code&gt;: whether to HTML/XML-escape the dynamically generated
+&lt;code&gt;href&lt;/code&gt; attribute values of all rendered &lt;code&gt;&amp;lt;a&amp;gt;&lt;/code&gt; elements.&lt;ul&gt;&lt;li&gt;If &lt;code&gt;False&lt;/code&gt;: No HTML/XML/etc.-escaping of inputs is performed, provide correct values for the intended output format.&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ol&gt;&lt;/li&gt;
+	&lt;/ul&gt;
+&lt;span id=&quot;args&quot;&gt;&lt;h2 id=&quot;Invocation / Parameters&quot;&gt;Invocation / Parameters&lt;/h2&gt;&lt;/span&gt;
+&lt;p&gt;For example: &lt;code&gt;{X&lt;!----&gt;|pagefootnotes:&lt;i&gt;div&lt;/i&gt;:attr = [ &lt;i&gt;(&quot;class&quot; , &quot;my-footnotedetail&quot;)&lt;/i&gt; ] |&lt;!----&gt;}&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;(No HTML/XML/etc.-escaping of inputs is performed, provide correct values for the intended output format.)&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;attr&lt;/code&gt; (same mechanics as the one for &lt;a href=&quot;../xtypes/hax.htmlLinks.html#args&quot;&gt;hax.htmlLinks&lt;/a&gt;) is &lt;a href=&quot;../basics/syntax.html&quot;&gt;syntax&lt;/a&gt;-sensitive but optional:
+&lt;code&gt;&lt;span&gt;&amp;lt;ul class=&quot;toc&quot;&amp;gt;&lt;/span&gt;{X&lt;!----&gt;|pagechapters: &lt;i&gt;li&lt;/i&gt; |&lt;!----&gt;}&lt;span&gt;&amp;lt;/ul&amp;gt;&lt;/span&gt;&lt;/code&gt; outputs a
+&lt;code&gt;&amp;lt;li&amp;gt;&amp;lt;a href=&quot;#&lt;i&gt;heading content&lt;/i&gt;&quot;&amp;gt;&lt;i&gt;heading content&lt;/i&gt;&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;&lt;/code&gt;
+for every &lt;code&gt;&amp;lt;h2 id=&quot;&lt;i&gt;heading content&lt;/i&gt;&quot;&amp;gt;&lt;i&gt;heading content&lt;/i&gt;&amp;lt;/h2&amp;gt;&lt;/code&gt; in the content source file.&lt;/p&gt;
+&lt;p class=&quot;hd-note&quot;&gt;In the present version, a known issue: this does not currently really &lt;i&gt;read&lt;/i&gt; the &lt;code&gt;id&lt;/code&gt; attribute of the
+gathered elements, only their entire inner contents, so the only way for &lt;b&gt;hax.htmlAnchors&lt;/b&gt; linkage to work at present is for
+&lt;code&gt;id&lt;/code&gt; to have the exact same content as the element&apos;s inner content. To be rectified in a future release.&lt;/p&gt;
+</content>
+    </entry><entry>
+        <title type="html">hax.dtFormat</title>
+        <summary type="html">Outputs in a designated output format any input date/time text-values encoded in a designated input format.</summary>
+        <link href="../xtypes/hax.dtFormat.html"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-07-01:haxtatic/xtypes/hax.dtFormat.html</id>
+        <updated>1234-07-01T00:00:00Z</updated>
+        <content type="html">&lt;h1&gt;hax.dtFormat&lt;/h1&gt;
+	
+	&lt;p class=&quot;up&quot;&gt;Outputs in a designated output format any input date/time text-values encoded in a designated input format.&lt;/p&gt;
+	&lt;h2 id=&quot;In a nutshell&quot;&gt;In a nutshell&lt;/h2&gt;
+	&lt;ol&gt;
+		&lt;li class=&quot;up&quot;&gt;
+			&lt;a href=&quot;../xtypes/hax.dtFormat.html#decl&quot;&gt;Declaration&lt;/a&gt; of an &lt;code&gt;|X|hax.dtFormat:&lt;u&gt;&lt;i&gt;myTag&lt;/i&gt;&lt;/u&gt;:&lt;i&gt;dtf_in&lt;/i&gt;:&lt;i&gt;dtf_out&lt;/i&gt;&lt;/code&gt; directive in a
+			&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; file,
+			&lt;ul&gt;&lt;li&gt;further configuring: &lt;i&gt;(no other settings)&lt;/i&gt;&lt;/li&gt;&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt;: &lt;i&gt;any date/time value currently formatted as inputdtfname or as YYYY-MM-DD&lt;/i&gt; |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;/ol&gt;
+&lt;p class=&quot;hd-note&quot;&gt;This topic is in a compact format for users already familiar with the essentials of
+					&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;declaring&lt;/a&gt; X-tags and invoking them. If found challenging, try the
+					&lt;a href=&quot;../xtypes/hax.miniTag.html&quot;&gt;more&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.htmlImage.html&quot;&gt;elaborate&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.htmlLink.html&quot;&gt;and&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.xmlEscape.html&quot;&gt;introductory&lt;/a&gt;
+					topics first to form a better grasp on the basics and overall mechanisms.&lt;/p&gt;
+&lt;h3&gt;Stage:&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;../tags/index.html#stages&quot;&gt;Early&lt;/a&gt; &amp;mdash; this X-renderer does not require a page context for
+					rendering: therefore many &lt;i&gt;hax.dtFormat&lt;/i&gt;-invoking X-tags encountered during pre-templating (at
+					start-up time) may be eagerly &lt;a href=&quot;../tags/index.html#Processing&quot;&gt;processed&lt;/a&gt; immediately in-place (for overall-reduced
+					per-page processing loads).&lt;/p&gt;
+&lt;span id=&quot;decl&quot;&gt;&lt;h2 id=&quot;Declaration / Configuration&quot;&gt;Declaration / Configuration&lt;/h2&gt;&lt;/span&gt;
+&lt;p&gt;&lt;b&gt;Assuming &lt;i&gt;first&lt;/i&gt;,&lt;/b&gt; the existence of the following (exemplary) &lt;a href=&quot;../basics/datetime.html#dtformats&quot;&gt;named custom date-time formats&lt;/a&gt;:&lt;/p&gt;
+&lt;pre&gt;
+|C|dtformat:&lt;i&gt;&lt;u&gt;mydtf_germanstyle&lt;/u&gt;&lt;/i&gt;:	%d.%m.%Y
+|C|dtformat:&lt;i&gt;&lt;u&gt;mydtf_longmonth&lt;/u&gt;&lt;/i&gt;:	%d %B
+|C|dtformat:&lt;i&gt;&lt;u&gt;mydtf_shortmonth&lt;/u&gt;&lt;/i&gt;:	%b %d
+&lt;/pre&gt;
+&lt;p&gt;To demonstrate valid &lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; directives declaring &lt;i&gt;hax.dtFormat&lt;/i&gt;
+					&lt;a href=&quot;../tags/x.html&quot;&gt;X-tags&lt;/a&gt;:&lt;/p&gt;
+&lt;pre&gt;
+|X|hax.dtFormat:&lt;i&gt;dt_std2german&lt;/i&gt;:
+	: &lt;u&gt;mydtf_germanstyle&lt;/u&gt;
+|X|hax.dtFormat:&lt;i&gt;dt_short2long&lt;/i&gt;:
+	&lt;u&gt;mydtf_shortmonth&lt;/u&gt; : &lt;u&gt;mydtf_longmonth&lt;/u&gt;
+|X|hax.dtFormat:&lt;i&gt;dt_std2short&lt;/i&gt;:
+	: &lt;u&gt;mydtf_shortmonth&lt;/u&gt;
+|X|hax.dtFormat:&lt;i&gt;dt_german2iso&lt;/i&gt;:
+	&lt;u&gt;mydtf_germanstyle&lt;/u&gt; : _hax_dtformat_iso8601
+|X|hax.dtFormat:&lt;i&gt;dt_long2std&lt;/i&gt;:
+	&lt;u&gt;mydtf_longmonth&lt;/u&gt; :
+&lt;/pre&gt;
+&lt;span id=&quot;args&quot;&gt;&lt;h2 id=&quot;Invocation / Parameters&quot;&gt;Invocation / Parameters&lt;/h2&gt;&lt;/span&gt;
+&lt;p&gt;To test the above X-tag declarations:&lt;/p&gt;
+&lt;ul&gt;
+	&lt;li&gt;&lt;code&gt;{X&lt;!----&gt;|dt_std2german&lt;i&gt;: {P&lt;!----&gt;|srcTime|&lt;!----&gt;} &lt;/i&gt;|&lt;!----&gt;}&lt;/code&gt;
+	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;11.02.2017&lt;/span&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;{X&lt;!----&gt;|dt_short2long&lt;i&gt;: Mar 14 &lt;/i&gt;|&lt;!----&gt;}&lt;/code&gt;
+	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;14 March&lt;/span&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;{X&lt;!----&gt;|dt_std2short&lt;i&gt;: 1982-02-19 &lt;/i&gt;|&lt;!----&gt;}&lt;/code&gt;
+	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;Feb 19&lt;/span&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;{X&lt;!----&gt;|dt_german2iso&lt;i&gt;: 19.02.1982 &lt;/i&gt;|&lt;!----&gt;}&lt;/code&gt;
+	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;1982-02-19T00:00:00&lt;/span&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;{X&lt;!----&gt;|dt_long2std&lt;i&gt;: December 24 &lt;/i&gt;|&lt;!----&gt;}&lt;/code&gt;
+	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;1970-12-24&lt;/span&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    </entry><entry>
+        <title type="html">hax.unMarkup</title>
+        <summary type="html">Outputs the given content with HTML/XML/etc. markup tags (but not entities outside such tags) naively replaced by space characters.</summary>
+        <link href="../xtypes/hax.unMarkup.html"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-06-22:haxtatic/xtypes/hax.unMarkup.html</id>
+        <updated>1234-06-22T00:00:00Z</updated>
+        <content type="html">&lt;h1&gt;hax.unMarkup&lt;/h1&gt;
+	
+	&lt;p class=&quot;up&quot;&gt;Outputs the given content with HTML/XML/etc. markup tags (but not entities outside such tags) naively replaced by space characters.&lt;/p&gt;
+	&lt;h2 id=&quot;In a nutshell&quot;&gt;In a nutshell&lt;/h2&gt;
+	&lt;ol&gt;
+		&lt;li class=&quot;up&quot;&gt;
+			&lt;a href=&quot;../xtypes/hax.unMarkup.html#decl&quot;&gt;Declaration&lt;/a&gt; of an &lt;code&gt;|X|hax.unMarkup:&lt;u&gt;&lt;i&gt;myTag&lt;/i&gt;&lt;/u&gt;&lt;/code&gt; directive in a
+			&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; file,
+			&lt;ul&gt;&lt;li&gt;further configuring: &lt;i&gt;(no other settings)&lt;/i&gt;&lt;/li&gt;&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt;: &lt;i&gt;any content to plain-text-ify&lt;/i&gt; |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;/ol&gt;
+&lt;span id=&quot;decl&quot;&gt;
+&lt;p class=&quot;hd-note&quot;&gt;This topic is in a compact format for users already familiar with the essentials of
+					&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;declaring&lt;/a&gt; X-tags and invoking them. If found challenging, try the
+					&lt;a href=&quot;../xtypes/hax.miniTag.html&quot;&gt;more&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.htmlImage.html&quot;&gt;elaborate&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.htmlLink.html&quot;&gt;and&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.xmlEscape.html&quot;&gt;introductory&lt;/a&gt;
+					topics first to form a better grasp on the basics and overall mechanisms.&lt;/p&gt;
+&lt;h3&gt;Stage:&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;../tags/index.html#stages&quot;&gt;Early&lt;/a&gt; &amp;mdash; this X-renderer does not require a page context for
+					rendering: therefore many &lt;i&gt;hax.unMarkup&lt;/i&gt;-invoking X-tags encountered during pre-templating (at
+					start-up time) may be eagerly &lt;a href=&quot;../tags/index.html#Processing&quot;&gt;processed&lt;/a&gt; immediately in-place (for overall-reduced
+					per-page processing loads).&lt;/p&gt;
+&lt;/span&gt;
+&lt;h2 id=&quot;Purpose&quot;&gt;Purpose&lt;/h2&gt;
+&lt;p&gt;
+	Plain-text-ify markup input for use in &lt;i&gt;still&lt;/i&gt; ultimately markup target formats: this allows ignoring ie. keeping entities
+	(outside tags) and replacing all tag characters (everything inside and including &lt;code&gt;&amp;nbsp;&amp;lt;&lt;/code&gt; and &lt;code&gt;&amp;nbsp;&amp;gt;&lt;/code&gt;) simply
+	and naively (but, speedily!) with a sequence of space characters (since the final effective display mechanism will, once again,
+	collapse them all into one).
+&lt;/p&gt;
+</content>
+    </entry><entry>
+        <title type="html">hax.noOp</title>
+        <summary type="html">Outputs either the given content exactly-as-specified, or ignores it and outputs the pre-configured &quot;constant&quot; content.</summary>
+        <link href="../xtypes/hax.noOp.html"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-06-20:haxtatic/xtypes/hax.noOp.html</id>
+        <updated>1234-06-20T00:00:00Z</updated>
+        <content type="html">&lt;h1&gt;hax.noOp&lt;/h1&gt;
+	
+	&lt;p class=&quot;up&quot;&gt;Outputs either the given content exactly-as-specified, or ignores it and outputs the pre-configured &quot;constant&quot; content.&lt;/p&gt;
+	&lt;h2 id=&quot;In a nutshell&quot;&gt;In a nutshell&lt;/h2&gt;
+	&lt;ol&gt;
+		&lt;li class=&quot;up&quot;&gt;
+			&lt;a href=&quot;../xtypes/hax.noOp.html#decl&quot;&gt;Declaration&lt;/a&gt; of an &lt;code&gt;|X|hax.noOp:&lt;u&gt;&lt;i&gt;myTag&lt;/i&gt;&lt;/u&gt;&lt;/code&gt; or &lt;code&gt;|X|hax.noOp:&lt;i&gt;myTag&lt;/i&gt;:&lt;i&gt;constant-content-here&lt;/i&gt;&lt;/code&gt; directive in a
+			&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; file,
+			&lt;ul&gt;&lt;li&gt;further configuring: &lt;i&gt;(no other settings)&lt;/i&gt;&lt;/li&gt;&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt;: &lt;i&gt;any content to output or discard here&lt;/i&gt; |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;/ol&gt;
+&lt;span id=&quot;decl&quot;&gt;
+&lt;p class=&quot;hd-note&quot;&gt;This topic is in a compact format for users already familiar with the essentials of
+					&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;declaring&lt;/a&gt; X-tags and invoking them. If found challenging, try the
+					&lt;a href=&quot;../xtypes/hax.miniTag.html&quot;&gt;more&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.htmlImage.html&quot;&gt;elaborate&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.htmlLink.html&quot;&gt;and&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.xmlEscape.html&quot;&gt;introductory&lt;/a&gt;
+					topics first to form a better grasp on the basics and overall mechanisms.&lt;/p&gt;
+&lt;h3&gt;Stage:&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;../tags/index.html#stages&quot;&gt;Early&lt;/a&gt; &amp;mdash; this X-renderer does not require a page context for
+					rendering: therefore many &lt;i&gt;hax.noOp&lt;/i&gt;-invoking X-tags encountered during pre-templating (at
+					start-up time) may be eagerly &lt;a href=&quot;../tags/index.html#Processing&quot;&gt;processed&lt;/a&gt; immediately in-place (for overall-reduced
+					per-page processing loads).&lt;/p&gt;
+&lt;/span&gt;
+&lt;h2 id=&quot;Purpose&quot;&gt;Purpose&lt;/h2&gt;
+&lt;p&gt;
+	The same as that of the very common &lt;code&gt;id&lt;/code&gt; and &lt;code&gt;const&lt;/code&gt; functions in idiomatic pure functional programming.
+&lt;/p&gt;
+</content>
+    </entry><entry>
+        <title type="html">hax.snippet</title>
+        <summary type="html">Renders the named &quot;snippet&quot; (aka. &quot;controls&quot; / &quot;components&quot; / &quot;sub-templates&quot;) substituting the specified
+	named-parameter values.</summary>
+        <link href="../xtypes/hax.snippet.html"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-06-15:haxtatic/xtypes/hax.snippet.html</id>
+        <updated>1234-06-15T00:00:00Z</updated>
+        <content type="html">&lt;h1&gt;hax.snippet&lt;/h1&gt;
+	
+	&lt;p class=&quot;up&quot;&gt;Renders the named &quot;snippet&quot; (aka. &quot;controls&quot; / &quot;components&quot; / &quot;sub-templates&quot;) substituting the specified
+	named-parameter values.&lt;/p&gt;
+	&lt;h2 id=&quot;In a nutshell&quot;&gt;In a nutshell&lt;/h2&gt;
+	&lt;ol&gt;
+		&lt;li class=&quot;up&quot;&gt;
+			&lt;a href=&quot;../xtypes/hax.snippet.html#decl&quot;&gt;Declaration&lt;/a&gt; of an &lt;code&gt;|X|hax.snippet:&lt;u&gt;&lt;i&gt;myTag&lt;/i&gt;&lt;/u&gt;: &lt;i&gt;..&lt;/i&gt;&lt;/code&gt; directive in a
+			&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; file,
+			&lt;ul&gt;&lt;li&gt;further configuring: &lt;code&gt;vars&lt;/code&gt;, &lt;code&gt;content&lt;/code&gt;&lt;/li&gt;&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt;: vars = [..], content = &amp;quot;..&amp;quot; |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;/ol&gt;
+
+&lt;p class=&quot;hd-note&quot;&gt;This topic is in a compact format for users already familiar with the essentials of
+					&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;declaring&lt;/a&gt; X-tags and invoking them. If found challenging, try the
+					&lt;a href=&quot;../xtypes/hax.miniTag.html&quot;&gt;more&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.htmlImage.html&quot;&gt;elaborate&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.htmlLink.html&quot;&gt;and&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.xmlEscape.html&quot;&gt;introductory&lt;/a&gt;
+					topics first to form a better grasp on the basics and overall mechanisms.&lt;/p&gt;
+
+&lt;h3&gt;Stage:&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;../tags/index.html#stages&quot;&gt;Early&lt;/a&gt; &amp;mdash; this X-renderer does not require a page context for
+					rendering: therefore many &lt;i&gt;hax.snippet&lt;/i&gt;-invoking X-tags encountered during pre-templating (at
+					start-up time) may be eagerly &lt;a href=&quot;../tags/index.html#Processing&quot;&gt;processed&lt;/a&gt; immediately in-place (for overall-reduced
+					per-page processing loads).&lt;/p&gt;
+
+&lt;span id=&quot;decl&quot;&gt;&lt;h2 id=&quot;Declaration / Configuration&quot;&gt;Declaration / Configuration&lt;/h2&gt;&lt;/span&gt;
+&lt;p&gt;To demonstrate valid &lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; directives declaring &lt;i&gt;hax.snippet&lt;/i&gt;
+					&lt;a href=&quot;../tags/x.html&quot;&gt;X-tags&lt;/a&gt;:&lt;/p&gt;
+&lt;pre&gt;
+|X|hax.snippet:&lt;i&gt;greeting&lt;/i&gt;:
+	vars = [(&lt;i&gt;&quot;&lt;u&gt;greetname&lt;/u&gt;&quot;,&quot;Mr. No-Name&quot;&lt;/i&gt;)],
+	content=&gt;
+&lt;i&gt;Hello, &amp;lt;b&amp;gt;&lt;/i&gt;{%&lt;i&gt;&lt;u&gt;greetname&lt;/u&gt;&lt;/i&gt;%}&lt;i&gt;&amp;lt;/b&amp;gt;!&lt;/i&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;To elaborate, for example the last one of the above, as all &lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;|X| directives&lt;/a&gt; declaring &lt;a href=&quot;../tags/x.html&quot;&gt;X-tags&lt;/a&gt; do:&lt;/p&gt;
+	&lt;ul&gt;
+		&lt;li&gt;begins with &lt;code&gt;|X|&lt;/code&gt; followed by the X-renderer identifier (here &lt;code&gt;hax.snippet&lt;/code&gt;)&lt;/li&gt;
+		&lt;li&gt;followed by &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon and the desired X-tag name to be used to invoke it (here &lt;code&gt;greeting&lt;/code&gt;),&lt;/li&gt;
+		&lt;li&gt;followed by &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon and now &lt;i&gt;hax.snippet&lt;/i&gt;-&lt;b&gt;specific&lt;/b&gt; configuration:&lt;/li&gt;
+		
+		&lt;li&gt;a &lt;b&gt;mandatory&lt;/b&gt; and &lt;a href=&quot;../basics/syntax.html&quot;&gt;syntax-sensitive&lt;/a&gt; properties block,
+					comprised of &lt;i&gt;all&lt;/i&gt; the following properties in &lt;i&gt;this&lt;/i&gt; very order:&lt;ol&gt;&lt;li&gt;&lt;code&gt;vars&lt;/code&gt; &amp;mdash; a list of 0 or more name-value pairs declaring the names and default values of placeholders contained
+in &lt;code&gt;content&lt;/code&gt; to be substituted as instructed by the calling &lt;code&gt;{X&lt;!----&gt;|greeting ..|&lt;!----&gt;}&lt;/code&gt; X-tag during rendering&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;content&lt;/code&gt; &amp;mdash; the principal content that this X-tag renders; other than any haXtags this may also contain special
+placeholder notation referencing the so-declared &lt;code&gt;vars&lt;/code&gt;&lt;/li&gt;&lt;/ol&gt;&lt;/li&gt;
+	&lt;/ul&gt;
+
+&lt;p class=&quot;hd-note&quot;&gt;Any such &lt;b&gt;hax.snippet&lt;/b&gt; declaration may also be stored in its own external file (specifically
+&lt;a href=&quot;../basics/tmplsnip.html#snippets&quot;&gt;tmpl/*.haxsnip.html&lt;/a&gt;), in which case the |X| directive header (up to and including the X-tag name) is
+&lt;i&gt;omitted&lt;/i&gt; and hence that file is to begin &lt;i&gt;directly&lt;/i&gt; with the properties block.&lt;/p&gt;
+
+&lt;span id=&quot;subst&quot;&gt;&lt;h2 id=&quot;Placeholder substitution&quot;&gt;Placeholder substitution&lt;/h2&gt;&lt;/span&gt;
+&lt;p&gt;Those &lt;code&gt;{%&lt;i&gt;varname&lt;/i&gt;%}&lt;/code&gt; placeholders that &lt;code&gt;content&lt;/code&gt; may contain are no proper &lt;a href=&quot;../tags/index.html&quot;&gt;haXtags&lt;/a&gt; with their
+typical versatile processing pipeline. On the contrary, these notations just signal very simple rudimentary text-for-text
+(or value-for-name) substitutions, as such must not have extraneous white-space and indeed must consist of nothing-but: the
+variable-parameter name (correct case/spelling with respect to its above declaration in &lt;code&gt;vars&lt;/code&gt;) inside the delimiters.&lt;/p&gt;
+&lt;p&gt;Of course, their values (or default values) &lt;i&gt;can&lt;/i&gt; contain anything including other placeholder references or haXtags. Just
+be careful to ensure properly escaped outputs of anything that might produce &lt;a href=&quot;../basics/syntax.html&quot;&gt;quote marks&lt;/a&gt; in such scenarios.&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Special inner-content placeholder&lt;/b&gt;: in addition to those custom ones declared in &lt;code&gt;vars&lt;/code&gt; there is a special
+predefined placeholder, &lt;code&gt;{:c:}&lt;/code&gt;, which outputs in-place the &lt;code&gt;content&lt;/code&gt; specified and passed by the calling X-tag:&lt;/p&gt;
+
+&lt;span id=&quot;args&quot;&gt;&lt;h2 id=&quot;Invocation / Parameters&quot;&gt;Invocation / Parameters&lt;/h2&gt;&lt;/span&gt;
+&lt;p&gt;For example: &lt;code&gt;{X&lt;!----&gt;|greeting: vars = [ &lt;i&gt;(&quot;greetname&quot; , &quot;&lt;u&gt;Mr. Curry&lt;/u&gt;&quot;)&lt;/i&gt; ], content=&gt; |&lt;!----&gt;}&lt;/code&gt; to
+output as per the above example |X| declaration directive: &lt;code&gt;Hello, &amp;lt;b&amp;gt;&lt;i&gt;&lt;u&gt;Mr. Curry&lt;/u&gt;&lt;/i&gt;&amp;lt;/b&amp;gt;!&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;The properties block after the X-tag name is (once again) &lt;a href=&quot;../basics/syntax.html&quot;&gt;syntax&lt;/a&gt;-sensitive. The &lt;code&gt;vars&lt;/code&gt; supply any named
+variable-parameter values for &lt;a href=&quot;#subst&quot;&gt;placeholder substitution&lt;/a&gt; and &lt;code&gt;content&lt;/code&gt; defines the value of the snippet&apos;s
+&lt;code&gt;{:c:}&lt;/code&gt; special-placeholder (as described further above, required whether the snippet&apos;s &lt;i&gt;own&lt;/i&gt; &lt;code&gt;content&lt;/code&gt;
+uses it or not, may be empty of course).&lt;/p&gt;
+</content>
+    </entry><entry>
+        <title type="html">hax.iterator</title>
+        <summary type="html">Outputs a sequence of values from the specified enumerator, applying the specified filtering/ordering/limits.</summary>
+        <link href="../xtypes/hax.iterator.html"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-05-15:haxtatic/xtypes/hax.iterator.html</id>
+        <updated>1234-05-15T00:00:00Z</updated>
+        <content type="html">&lt;h1&gt;hax.iterator&lt;/h1&gt;
+	
+	&lt;p class=&quot;up&quot;&gt;Outputs a sequence of values from the specified enumerator, applying the specified filtering/ordering/limits.&lt;/p&gt;
+	&lt;h2 id=&quot;In a nutshell&quot;&gt;In a nutshell&lt;/h2&gt;
+	&lt;ol&gt;
+		&lt;li class=&quot;up&quot;&gt;
+			&lt;a href=&quot;../xtypes/hax.iterator.html#decl&quot;&gt;Declaration&lt;/a&gt; of an &lt;code&gt;|X|hax.iterator:&lt;u&gt;&lt;i&gt;myTag&lt;/i&gt;&lt;/u&gt;: &lt;i&gt;..&lt;/i&gt;&lt;/code&gt; directive in a
+			&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; file,
+			&lt;ul&gt;&lt;li&gt;further configuring: &lt;code&gt;prefix&lt;/code&gt;, &lt;code&gt;suffix&lt;/code&gt;, &lt;code&gt;joinVia&lt;/code&gt;, &lt;code&gt;content&lt;/code&gt;&lt;/li&gt;&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt;: ..  |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;/ol&gt;
+
+&lt;p class=&quot;up&quot;&gt;Hence, formatting and structure of the output is mostly defined in the X-tag&apos;s one-off
+&lt;a href=&quot;#decl&quot;&gt;declaration / configuration&lt;/a&gt;, while the per-tag &lt;a href=&quot;#args&quot;&gt;invocation / parameters&lt;/a&gt; define
+&lt;i&gt;what values&lt;/i&gt; to enumerate, which ones to show, in what order etc.&lt;/p&gt;
+
+&lt;p class=&quot;hd-note&quot;&gt;This topic is in a compact format for users already familiar with the essentials of
+					&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;declaring&lt;/a&gt; X-tags and invoking them. If found challenging, try the
+					&lt;a href=&quot;../xtypes/hax.miniTag.html&quot;&gt;more&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.htmlImage.html&quot;&gt;elaborate&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.htmlLink.html&quot;&gt;and&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.xmlEscape.html&quot;&gt;introductory&lt;/a&gt;
+					topics first to form a better grasp on the basics and overall mechanisms.&lt;/p&gt;
+
+&lt;h3&gt;Stage:&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;../tags/index.html#stages&quot;&gt;Early or Page&lt;/a&gt; &amp;mdash; this X-renderer determines dynamically (documented
+					further &lt;a href=&quot;#dynstage&quot;&gt;below&lt;/a&gt;) whether or not it requires a page context for rendering, so depending on each
+					&lt;i&gt;hax.iterator&lt;/i&gt;-invoking X-tag&apos;s configuration and/or parameters:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;i&gt;some&lt;/i&gt; encountered
+					during pre-templating (at start-up time) may be eagerly &lt;a href=&quot;../tags/index.html#Processing&quot;&gt;processed&lt;/a&gt; immediately in-place
+					(for overall-reduced per-page processing loads),&lt;/li&gt; &lt;li&gt; and &lt;i&gt;others&lt;/i&gt; will be skipped over, thus only
+					process per-page, once present.&lt;/li&gt;&lt;/ul&gt;
+
+&lt;span id=&quot;decl&quot;&gt;&lt;h2 id=&quot;Declaration / Configuration&quot;&gt;Declaration / Configuration&lt;/h2&gt;&lt;/span&gt;
+&lt;p&gt;To demonstrate valid &lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; directives declaring &lt;i&gt;hax.iterator&lt;/i&gt;
+					&lt;a href=&quot;../tags/x.html&quot;&gt;X-tags&lt;/a&gt;:&lt;/p&gt;
+&lt;pre&gt;
+|X|hax.iterator:&lt;i&gt;myenum&lt;/i&gt;
+
+|X|hax.iterator:&lt;i&gt;myenumlist&lt;/i&gt;:
+	prefix = &quot;&lt;i&gt;&amp;lt;ul class=\&quot;my-blogs\&quot;&gt;&amp;lt;li&amp;gt;&lt;/i&gt;&quot;,
+	suffix = &quot;&lt;i&gt;&amp;lt;/li&amp;gt;&amp;lt;/ul&amp;gt;&lt;/i&gt;&quot;,
+	joinVia = &quot;&lt;i&gt;&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;&lt;/i&gt;&quot;,
+	content =&amp;gt;
+&lt;i&gt;&amp;lt;a id=&quot;b_link_&lt;/i&gt;{:i:}&lt;i&gt;&quot; href=&quot;/&lt;/i&gt;{:v:}&lt;i&gt;/index.html&quot;&amp;gt;	{B&lt;!----&gt;|title: &lt;/i&gt;{:v:}&lt;i&gt; |&lt;!----&gt;}	&amp;lt;/a&amp;gt;&lt;/i&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;To elaborate, for example the last one of the above, as all &lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;|X| directives&lt;/a&gt; declaring &lt;a href=&quot;../tags/x.html&quot;&gt;X-tags&lt;/a&gt; do:&lt;/p&gt;
+	&lt;ul&gt;
+		&lt;li&gt;begins with &lt;code&gt;|X|&lt;/code&gt; followed by the X-renderer identifier (here &lt;code&gt;hax.iterator&lt;/code&gt;)&lt;/li&gt;
+		&lt;li&gt;followed by &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon and the desired X-tag name to be used to invoke it (here &lt;code&gt;myenumlist&lt;/code&gt;),&lt;/li&gt;
+		&lt;li&gt;followed by &lt;code&gt;&amp;nbsp;:&lt;/code&gt; colon and now &lt;i&gt;hax.iterator&lt;/i&gt;-&lt;b&gt;specific&lt;/b&gt; configuration:&lt;/li&gt;
+		
+		&lt;li&gt;a &lt;a href=&quot;../basics/syntax.html&quot;&gt;syntax-sensitive&lt;/a&gt; but &lt;b&gt;optional&lt;/b&gt; properties block,
+					comprised of &lt;i&gt;all&lt;/i&gt; the following properties in &lt;i&gt;this&lt;/i&gt; very order:&lt;ol&gt;&lt;li&gt;&lt;code&gt;prefix&lt;/code&gt; &amp;mdash; (empty by default) the output to produce once immediately prior to enumeration&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;suffix&lt;/code&gt; &amp;mdash; (empty by default) the output to produce once immediately following enumeration&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;joinVia&lt;/code&gt; &amp;mdash; (&lt;code&gt;,&amp;nbsp;&lt;/code&gt; by default) the output to produce in-between all enumerated items&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;content&lt;/code&gt; &amp;mdash; the principal content output for each enumerated item&lt;ul&gt;
+	&lt;li&gt;The placeholder &lt;code&gt;&amp;nbsp;{&lt;!----&gt;:i:&lt;!----&gt;}&lt;/code&gt; outputs an iteration index: 0 for the first enumerated item and afterwards
+		increments by 1 for each further item, regardless of its value or which ordering/filtering was active (ie. no gaps ever
+		between successive such increments).&lt;/li&gt;
+	&lt;li&gt;The placeholder &lt;code&gt;&amp;nbsp;{&lt;!----&gt;:v:&lt;!----&gt;}&lt;/code&gt; outputs the current item in plain-text form as returned by the chosen
+		&lt;a href=&quot;#Enumerators&quot;&gt;enumerator&lt;/a&gt;.&lt;/li&gt;
+	&lt;li&gt;The placeholder &lt;code&gt;&amp;nbsp;{&lt;!----&gt;:n:&lt;!----&gt;}&lt;/code&gt; outputs the equivalent to &lt;code&gt;&amp;nbsp;{&lt;!----&gt;:i:&lt;!----&gt;}&lt;/code&gt; + 1.&lt;/li&gt;
+	&lt;li&gt;The placeholder &lt;code&gt;&amp;nbsp;{&lt;!----&gt;:l:&lt;!----&gt;}&lt;/code&gt; outputs the total number (&quot;&lt;b&gt;l&lt;/b&gt;ength of list&quot;) of all items being
+		currently enumerated.&lt;/li&gt;
+	&lt;li&gt;If &lt;code&gt;content&lt;/code&gt; is empty (the default), this is equivalent to it being &lt;code&gt;&amp;nbsp;{&lt;!----&gt;:v:&lt;!----&gt;}&lt;/code&gt;.&lt;/li&gt;
+	&lt;li&gt;If &lt;code&gt;content&lt;/code&gt; does not contain any of these 2 placeholders, it will obviously be output repeatedly, identically,
+	once per item.&lt;/li&gt;
+	&lt;/ul&gt;&lt;/li&gt;&lt;/ol&gt;&lt;/li&gt;
+	&lt;/ul&gt;
+
+&lt;span id=&quot;args&quot;&gt;&lt;h2 id=&quot;Invocation / Parameters&quot;&gt;Invocation / Parameters&lt;/h2&gt;&lt;/span&gt;
+&lt;p&gt;For example, given the above example |X| declaration directive:&lt;br/&gt;
+&lt;code&gt;{X&lt;!----&gt;|myenumlist: BlokNames |&lt;!----&gt;}&lt;/code&gt;
+to output (displayed here with added line-wraps for readability)&lt;/p&gt;
+&lt;pre&gt;
+&lt;i&gt;&amp;lt;ul class=&quot;my-blogs&quot;&amp;gt;&lt;br/&gt;&amp;lt;li&amp;gt;&amp;lt;a id=&quot;b_link_&lt;/i&gt;0&lt;i&gt;&quot; href=&quot;/&lt;/i&gt;basics&lt;i&gt;/index.html&quot;&amp;gt;	&lt;/i&gt;Basics&lt;i&gt;	&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;&lt;br/&gt;&amp;lt;li&amp;gt;&amp;lt;a id=&quot;b_link_&lt;/i&gt;1&lt;i&gt;&quot; href=&quot;/&lt;/i&gt;tags&lt;i&gt;/index.html&quot;&amp;gt;	&lt;/i&gt;haXtags&lt;i&gt;	&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;&lt;br/&gt;&amp;lt;li&amp;gt;&amp;lt;a id=&quot;b_link_&lt;/i&gt;2&lt;i&gt;&quot; href=&quot;/&lt;/i&gt;xtypes&lt;i&gt;/index.html&quot;&amp;gt;	&lt;/i&gt;X-renderers&lt;i&gt;	&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;&lt;br/&gt;&amp;lt;/ul&amp;gt;&lt;/i&gt;
+&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;BlokNames&lt;/code&gt; is one of a handful of built-in &lt;i&gt;enumerators&lt;/i&gt; &amp;mdash; full list &lt;a href=&quot;#Enumerators&quot;&gt;below&lt;/a&gt;. But for now,
+continuing this first exploration, to apply a sort order to the very same &lt;i&gt;enumerator&lt;/i&gt;, prepend a so-called &lt;i&gt;modifier&lt;/i&gt;:
+&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenumlist: &lt;/i&gt;But(Ordered Descending)&lt;i&gt; BlokNames |&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;, this will instead output:&lt;/p&gt;
+&lt;pre&gt;
+&lt;i&gt;&amp;lt;ul class=&quot;my-blogs&quot;&amp;gt;&lt;br/&gt;&amp;lt;li&amp;gt;&amp;lt;a id=&quot;b_link_&lt;/i&gt;0&lt;i&gt;&quot; href=&quot;/&lt;/i&gt;xtypes&lt;i&gt;/index.html&quot;&amp;gt;	&lt;/i&gt;X-renderers&lt;i&gt;	&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;&lt;br/&gt;&amp;lt;li&amp;gt;&amp;lt;a id=&quot;b_link_&lt;/i&gt;1&lt;i&gt;&quot; href=&quot;/&lt;/i&gt;tags&lt;i&gt;/index.html&quot;&amp;gt;	&lt;/i&gt;haXtags&lt;i&gt;	&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;&lt;br/&gt;&amp;lt;li&amp;gt;&amp;lt;a id=&quot;b_link_&lt;/i&gt;2&lt;i&gt;&quot; href=&quot;/&lt;/i&gt;basics&lt;i&gt;/index.html&quot;&amp;gt;	&lt;/i&gt;Basics&lt;i&gt;	&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;&lt;br/&gt;&amp;lt;/ul&amp;gt;&lt;/i&gt;
+&lt;/pre&gt;
+&lt;p&gt;Here, the &lt;code&gt;But&lt;/code&gt; clause allows expressing the &lt;code&gt;Ordered&lt;/code&gt; &lt;i&gt;modifier&lt;/i&gt;, one of &lt;a href=&quot;#Modifiers&quot;&gt;a handful&lt;/a&gt; of
+built-in such &lt;i&gt;modifiers&lt;/i&gt;. Another is &lt;code&gt;LimitTo&lt;/code&gt; for applying a limit
+&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenumlist: &lt;/i&gt;But(LimitTo 2)&lt;i&gt; BlokNames |&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt; to output:&lt;/p&gt;
+&lt;pre&gt;
+&lt;i&gt;&amp;lt;ul class=&quot;my-blogs&quot;&amp;gt;&lt;br/&gt;&amp;lt;li&amp;gt;&amp;lt;a id=&quot;b_link_&lt;/i&gt;0&lt;i&gt;&quot; href=&quot;/&lt;/i&gt;basics&lt;i&gt;/index.html&quot;&amp;gt;	&lt;/i&gt;Basics&lt;i&gt;	&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;&lt;br/&gt;&amp;lt;li&amp;gt;&amp;lt;a id=&quot;b_link_&lt;/i&gt;1&lt;i&gt;&quot; href=&quot;/&lt;/i&gt;tags&lt;i&gt;/index.html&quot;&amp;gt;	&lt;/i&gt;haXtags&lt;i&gt;	&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;&lt;br/&gt;&amp;lt;/ul&amp;gt;&lt;/i&gt;
+&lt;/pre&gt;
+&lt;p&gt;Or applying that limit &lt;i&gt;after&lt;/i&gt; sorting
+&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenumlist: &lt;/i&gt;But(LimitTo 2) (But(Ordered Descending)&lt;i&gt; BlokNames &lt;/i&gt;)&lt;i&gt;|&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt; to output:&lt;/p&gt;
+&lt;pre&gt;
+&lt;i&gt;&amp;lt;ul class=&quot;my-blogs&quot;&amp;gt;&lt;br/&gt;&amp;lt;li&amp;gt;&amp;lt;a id=&quot;b_link_&lt;/i&gt;0&lt;i&gt;&quot; href=&quot;/&lt;/i&gt;xtypes&lt;i&gt;/index.html&quot;&amp;gt;	&lt;/i&gt;X-renderers&lt;i&gt;	&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;&lt;br/&gt;&amp;lt;li&amp;gt;&amp;lt;a id=&quot;b_link_&lt;/i&gt;1&lt;i&gt;&quot; href=&quot;/&lt;/i&gt;tags&lt;i&gt;/index.html&quot;&amp;gt;	&lt;/i&gt;haXtags&lt;i&gt;	&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;&lt;br/&gt;&amp;lt;/ul&amp;gt;&lt;/i&gt;
+&lt;/pre&gt;
+&lt;p&gt;&lt;b&gt;By now, this is starting to become unwieldy:&lt;/b&gt; multiple such nested &lt;code&gt;But&lt;/code&gt;s can be somewhat verbose and keeping track of
+correct parenthesis placement easily error-prone, plus their right-to-left flow (ie. above: first-sort-then-limit logic written as
+&lt;i&gt;first&lt;/i&gt; the &lt;i&gt;limit&lt;/i&gt; part, &lt;i&gt;then&lt;/i&gt; the &lt;i&gt;sort&lt;/i&gt; part) possibly counterintuitive for non-programmers. The (functionally
+equivalent &lt;code&gt;But&lt;/code&gt; &lt;i&gt;alternative&lt;/i&gt;, the) &lt;code&gt;With&lt;/code&gt; clause avoids such nesting-via-parens and flips that right-to-left flow over.
+So the same output as above can be achieved with a much simpler notation:
+&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenumlist: &lt;/i&gt;With BlokNames [Ordered Descending , LimitTo 2]&lt;i&gt; |&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt; &amp;mdash; ie. &quot;with the
+enumerated values, but ordered this way: give us the first 2&quot;:&lt;/p&gt;
+&lt;pre&gt;
+&lt;i&gt;&amp;lt;ul class=&quot;my-blogs&quot;&amp;gt;&lt;br/&gt;&amp;lt;li&amp;gt;&amp;lt;a id=&quot;b_link_&lt;/i&gt;0&lt;i&gt;&quot; href=&quot;/&lt;/i&gt;xtypes&lt;i&gt;/index.html&quot;&amp;gt;	&lt;/i&gt;X-renderers&lt;i&gt;	&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;&lt;br/&gt;&amp;lt;li&amp;gt;&amp;lt;a id=&quot;b_link_&lt;/i&gt;1&lt;i&gt;&quot; href=&quot;/&lt;/i&gt;tags&lt;i&gt;/index.html&quot;&amp;gt;	&lt;/i&gt;haXtags&lt;i&gt;	&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;&lt;br/&gt;&amp;lt;/ul&amp;gt;&lt;/i&gt;
+&lt;/pre&gt;
+&lt;h2 id=&quot;Enumerators&quot;&gt;Enumerators&lt;/h2&gt;
+&lt;ul&gt;
+	&lt;li&gt;&lt;code&gt;Range &lt;i&gt;startnum&lt;/i&gt; &lt;i&gt;endnum&lt;/i&gt;&lt;/code&gt;
+		&amp;mdash; a range of numbers,&lt;ul&gt;&lt;li&gt;
+		eg. &lt;code&gt;{X&lt;!----&gt;|myenum: Range &lt;i&gt;2 7&lt;/i&gt; |&lt;!----&gt;}&lt;/code&gt;
+		gives: &lt;span class=&quot;hd-note&quot;&gt;2, 3, 4, 5, 6, 7&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;Values [&lt;i&gt;..&lt;/i&gt;]&lt;/code&gt;
+		&amp;mdash; a given list of text values,&lt;ul&gt;&lt;li&gt;
+		eg. &lt;code&gt;{X&lt;!----&gt;|myenum: Values [&lt;i&gt;&quot;Hudak&quot;, &quot;Wadler&quot;, &quot;Peyton-Jones&quot;, &quot;Bird&quot;, &quot;Okasaki&quot;&lt;/i&gt;] |&lt;!----&gt;}&lt;/code&gt;
+		gives: &lt;span class=&quot;hd-note&quot;&gt;Hudak, Wadler, Peyton-Jones, Bird, Okasaki&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;BlokNames&lt;/code&gt;
+		&amp;mdash; names of all &lt;a href=&quot;../basics/bloks.html&quot;&gt;Bloks&lt;/a&gt; defined in the project,&lt;ul&gt;&lt;li&gt;
+		eg. &lt;code&gt;{X&lt;!----&gt;|myenum: BlokNames |&lt;!----&gt;}&lt;/code&gt;
+		gives: &lt;span class=&quot;hd-note&quot;&gt;basics, tags, xtypes&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;FeedNames &lt;i&gt;blokstoo?&lt;/i&gt;&lt;/code&gt;
+		&amp;mdash; names of all &lt;a href=&quot;../basics/haxproj.html#pdecl&quot;&gt;&quot;feeds&quot;&lt;/a&gt; known in the project, including or excluding the above &lt;code&gt;BlokNames&lt;/code&gt;
+		&lt;ul&gt;&lt;li&gt;eg. &lt;code&gt;{X&lt;!----&gt;|myenum: FeedNames &lt;i&gt;True&lt;/i&gt; |&lt;!----&gt;}&lt;/code&gt;
+		gives: &lt;span class=&quot;hd-note&quot;&gt;xdesc, basics, tags, xtypes&lt;/span&gt;&lt;/li&gt;
+		&lt;li&gt;eg. &lt;code&gt;{X&lt;!----&gt;|myenum: FeedNames &lt;i&gt;False&lt;/i&gt; |&lt;!----&gt;}&lt;/code&gt;
+		gives: &lt;span class=&quot;hd-note&quot;&gt;xdesc&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;FeedPosts&lt;/code&gt; and &lt;code&gt;FeedValues&lt;/code&gt; &amp;mdash; a bit more involved:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;Feed enumerators&quot;&gt;Feed enumerators&lt;/h2&gt;
+&lt;p&gt;In addition to the simpler enumerators outlined above, &lt;code&gt;FeedValues&lt;/code&gt; and &lt;code&gt;FeedPosts&lt;/code&gt; enumerate items derived on the fly
+from the project&apos;s &lt;a href=&quot;../basics/bloks.html&quot;&gt;Blok&lt;/a&gt; pages (if any) and/or the project&apos;s &lt;a href=&quot;../basics/haxproj.html#pdecl&quot;&gt;&quot;feed-posts&quot;&lt;/a&gt; (if any). These 2
+enumerators have quite a few commonalities:&lt;/p&gt;
+&lt;ul&gt;
+	&lt;li&gt;A &lt;i&gt;filter query&lt;/i&gt; and another 2nd parameter, the full forms being:&lt;ul&gt;
+		&lt;li&gt;&lt;code&gt;FeedPosts &lt;i&gt;&amp;lt;filter&amp;gt;&lt;/i&gt; []&lt;/code&gt; and&lt;/li&gt;
+		&lt;li&gt;&lt;code&gt;FeedValues &lt;i&gt;&amp;lt;filter&amp;gt;&lt;/i&gt; &quot;&lt;i&gt;&amp;lt;fieldname&amp;gt;&lt;/i&gt;&quot;&lt;/code&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+	&lt;li&gt;The first (the &lt;i&gt;filter&lt;/i&gt;) part is either simply &lt;code&gt;All&lt;/code&gt; (no filtering, anything goes), or the functionally exactly
+		equivalent &lt;code&gt;Some{ feeds=[], cats=[], dates=&lt;i&gt;AnyDate&lt;/i&gt; }&lt;/code&gt; (also no filtering), or the same &lt;a href=&quot;../basics/syntax.html&quot;&gt;syntax&lt;/a&gt;-sensitive form but
+		with some or all of these 3 properties set:&lt;ul&gt;
+			&lt;li&gt;&lt;i&gt;feeds&lt;/i&gt; &amp;mdash; a list of &lt;a href=&quot;../basics/haxproj.html#pdecl&quot;&gt;&quot;feed&quot; names&lt;/a&gt; and/or &lt;a href=&quot;../basics/haxproj.html#bdecl&quot;&gt;Blok names&lt;/a&gt; to include
+				when enumerating items (empty &lt;code&gt;&amp;nbsp;[]&lt;/code&gt; means &quot;all of them&quot;)&lt;/li&gt;
+			&lt;li&gt;&lt;i&gt;cats&lt;/i&gt; &amp;mdash; the list of &lt;nobr&gt;&lt;code&gt;cat&lt;/code&gt;egories&lt;/nobr&gt; to include (only for &lt;a href=&quot;../basics/haxproj.html#pdecl&quot;&gt;&quot;feed&quot;posts&lt;/a&gt;, not
+				Bloks; empty &lt;code&gt;&amp;nbsp;[]&lt;/code&gt; means &quot;all of them&quot;)&lt;/li&gt;
+			&lt;li&gt;&lt;i&gt;dates&lt;/i&gt; &amp;mdash; either &lt;code&gt;AnyDate&lt;/code&gt; to indicate &quot;from any date&quot; or
+				&lt;code&gt;Between &quot;&lt;i&gt;from&lt;/i&gt;&quot; &quot;&lt;i&gt;up-until&lt;/i&gt;&quot;&lt;/code&gt; with both text values of course encoding dates in the well-known,
+				machine-friendly format &lt;code&gt;&quot;YYYY-MM-DD&quot;&lt;/code&gt;&lt;/li&gt;
+	&lt;/ul&gt;&lt;/li&gt;
+	&lt;li&gt;The second part gives:&lt;ul&gt;
+		&lt;li&gt;for &lt;code&gt;FeedPosts&lt;/code&gt; the list of &lt;a href=&quot;../basics/haxproj.html#pdecl&quot;&gt;custom&lt;/a&gt; field names to include (in addition to the
+			&lt;a href=&quot;#fields&quot;&gt;standard&lt;/a&gt; ones) in the syntactic de-facto &lt;code&gt;vars&lt;/code&gt; that will be output (explained further below)&lt;/li&gt;
+		&lt;li&gt;for &lt;code&gt;FeedValues&lt;/code&gt; the name of the &quot;post&quot; &lt;a href=&quot;#fields&quot;&gt;field&lt;/a&gt; (&lt;a href=&quot;../basics/haxproj.html#pdecl&quot;&gt;custom&lt;/a&gt; or standard) whose
+			value should be output (at most once per iteration)&lt;/li&gt;
+	&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p class=&quot;hd-note&quot;&gt;&lt;b&gt;In the current version, a known issue:&lt;/b&gt; in a project &lt;i&gt;with&lt;/i&gt; &lt;a href=&quot;../basics/bloks.html&quot;&gt;Blok&lt;/a&gt; pages, using &lt;b&gt;&lt;i&gt;in&lt;/i&gt;
+Blok pages&lt;/b&gt; either &lt;code&gt;All&lt;/code&gt; or any &lt;code&gt;Some&lt;/code&gt; that effectively selects &lt;i&gt;any&lt;/i&gt; Bloks as &lt;i&gt;feeds&lt;/i&gt; is &quot;not currently supported&quot;
+(ie. expect incorrect, inconsistent or missing results). &lt;b&gt;All other pages are OK&lt;/b&gt; for such uses, however, as are all
+&lt;a href=&quot;../basics/bloks.html#auto&quot;&gt;auto-generated Blok &apos;index&apos; pages&lt;/a&gt; (if any). To be rectified in a future release &amp;mdash; still, the functionality as-is
+is valuable enough for the already-working-today use cases.&lt;/p&gt;
+&lt;h3&gt;FeedValues&lt;/h3&gt;
+&lt;p&gt;In this site, &lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: FeedValues &lt;/i&gt;All &quot;cat&quot;&lt;i&gt; |&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt; produces some peculiar outputs:
+&lt;span class=&quot;hd-note&quot;&gt;demoSimplest, demoCfgArgs, hax.miniTag, hax.htmlImage, hax.htmlLink, hax.htmlLinks, hax.htmlAnchors, hax.xmlEscape, hax.dtFormat, hax.unMarkup, hax.noOp, hax.snippet, hax.iterator, hax.feedView,&lt;/span&gt; &amp;mdash;that final comma baffles, for one&amp;mdash; here&apos;s how and why:&lt;/p&gt;
+&lt;ul&gt;
+	&lt;li&gt;&lt;code&gt;All&lt;/code&gt; uses as &lt;i&gt;input&lt;/i&gt; feeds essentially what the described-earlier &lt;code&gt;FeedNames True&lt;/code&gt; enumerator
+	&lt;i&gt;outputs&lt;/i&gt;: &lt;code&gt;xdesc, basics, tags, xtypes&lt;/code&gt; &amp;mdash; in this site there are 3 &lt;a href=&quot;../basics/bloks.html&quot;&gt;Bloks&lt;/a&gt; defined and 1
+	&lt;a href=&quot;../basics/haxproj.html#pdecl&quot;&gt;&quot;feed&quot;&lt;/a&gt; (named &lt;code&gt;xdesc&lt;/code&gt;, in the bottom ~80-90 lines of
+	&lt;a href=&quot;http://github.com/metaleap/haxtatic/blob/master/dox-demo/default.haxproj&quot;&gt;default.haxproj&lt;/a&gt;).&lt;/li&gt;
+	&lt;li&gt;The latter&apos;s numerous individual &quot;posts&quot; in &lt;code&gt;xdesc&lt;/code&gt; all have (perhaps somewhat-unusually-so) each a unique
+	&lt;nobr&gt;&lt;code&gt;cat&lt;/code&gt;egory&lt;/nobr&gt; set (all beginning with &lt;code&gt;hax.*&lt;/code&gt; but that&apos;s simply due to the content semantics of this site:
+	&lt;i&gt;documenting&lt;/i&gt; &lt;i&gt;HaXtatic&lt;/i&gt;) &amp;mdash; Blok pages however don&apos;t have such &lt;nobr&gt;&lt;code&gt;cat&lt;/code&gt;egories&lt;/nobr&gt; and hence the final (seemingly
+	superfluous) comma in the output above: from also outputting that empty value once.&lt;/li&gt;
+	&lt;li&gt;The final implication then is that &lt;code&gt;FeedValues&lt;/code&gt; in particular &lt;b&gt;doesn&apos;t output duplicate values&lt;/b&gt; (only 1
+	faux-&lt;code&gt;cat&lt;/code&gt; was output from a few dozen Blok &quot;posts&quot;) &amp;mdash; making &lt;code&gt;FeedValues&lt;/code&gt; the appropriate choice for &lt;b&gt;grouping&lt;/b&gt;
+	for example &lt;i&gt;actual&lt;/i&gt; posts together in individual (to be dynamically assembled from such unique-value outputs) sub-ordinate
+	&lt;code&gt;hax.iterator&lt;/code&gt;s.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;So much for &lt;code&gt;All&lt;/code&gt;, now to demonstrate &lt;code&gt;Some&lt;/code&gt; more examples:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: FeedValues &lt;/i&gt;Some{ feeds=[],cats=[],dates=AnyDate }&lt;i&gt; &quot;&lt;/i&gt;dt:year&lt;i&gt;&quot;|&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
+	&amp;mdash; as mentioned, such a &lt;code&gt;Some&lt;/code&gt; is identical to &lt;code&gt;All&lt;/code&gt;, but here instead of a post&apos;s &lt;code&gt;cat&lt;/code&gt;, its date&apos;s year
+	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;1234, 2016&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: FeedValues Some{ feeds=[&lt;/i&gt;&quot;xdesc&quot;&lt;i&gt;],cats=[],dates=AnyDate } &quot;dt:year&quot;|&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
+	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;1234&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: FeedValues Some{ feeds=[&quot;xdesc&quot;],cats=[],dates=AnyDate } &lt;/i&gt;&quot;cat&quot;&lt;i&gt; |&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
+	&amp;mdash; as we saw, &lt;code&gt;xdesc&lt;/code&gt; has 11 &quot;posts&quot; but each has a uniquely distinct &lt;code&gt;cat&lt;/code&gt;:
+	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;demoSimplest, demoCfgArgs, hax.miniTag, hax.htmlImage, hax.htmlLink, hax.htmlLinks, hax.htmlAnchors, hax.xmlEscape, hax.dtFormat, hax.unMarkup, hax.noOp, hax.snippet, hax.iterator, hax.feedView&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: FeedValues Some{ feeds=[&quot;xdesc&quot;],cats=[],dates=AnyDate } &lt;/i&gt;&quot;link&quot;&lt;i&gt;|&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
+	&amp;mdash; however, most of them share the same (empty, hence the below extra comma) &lt;code&gt;link&lt;/code&gt;:
+	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;http://github.com/metaleap/haxtatic/blob/master/src/X/DemoSimplest.hs, http://github.com/metaleap/haxtatic/blob/master/src/X/DemoCfgArgs.hs,&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: FeedValues Some{ feeds=[&quot;xdesc&quot;],cats=[],dates=&lt;/i&gt;Between &quot;1234-11-&quot; &quot;1234-12-31&quot;&lt;i&gt; } &quot;dt&quot;|&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
+	&amp;mdash; filtering by date range:
+	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;1234-12-15, 1234-11-15&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: FeedValues Some{ feeds=[&quot;xdesc&quot;],cats=[],dates=Between &quot;1234-11-&quot; &quot;1234-12-31&quot;} &quot;&lt;/i&gt;cfgmore&lt;i&gt;&quot;|&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
+	&amp;mdash; but both these results from that date-range filter &lt;a href=&quot;http://github.com/metaleap/haxtatic/blob/master/dox-demo/default.haxproj&quot;&gt;share&lt;/a&gt; the same &lt;code&gt;cfgmore&lt;/code&gt; (&lt;a href=&quot;../basics/haxproj.html#pdecl&quot;&gt;custom&lt;/a&gt; &lt;code&gt;more&lt;/code&gt; field) value:
+	&amp;rarr; &lt;span class=&quot;hd-note&quot;&gt;&lt;i&gt;(no other settings)&lt;/i&gt;&lt;/span&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;feedposts&quot;&gt;FeedPosts&lt;/h3&gt;
+&lt;p&gt;So the above outlines exhaustively how &lt;code&gt;FeedValues&lt;/code&gt; operates, hoes does &lt;code&gt;FeedPosts&lt;/code&gt; differ?&lt;/p&gt;
+&lt;ul&gt;
+	&lt;li&gt;Whereas &lt;code&gt;FeedValues&lt;/code&gt; enumerated unique &lt;b&gt;single-field&lt;/b&gt; values for all &quot;posts&quot; selected,&lt;/li&gt;
+	&lt;li&gt;with &lt;code&gt;FeedPosts&lt;/code&gt; the &lt;i&gt;entire&lt;/i&gt; (if passing the &lt;i&gt;filter&lt;/i&gt;) post (&lt;b&gt;all&lt;/b&gt; its field values) is output.&lt;/li&gt;
+	&lt;li&gt;All selected &quot;posts&quot; from selected &quot;feeds&quot; are enumerated pre-sorted &quot;newest/latest first&quot; according to the post date
+	&lt;a href=&quot;#fields&quot;&gt;field&lt;/a&gt;, unless an &lt;code&gt;Ordered&lt;/code&gt; &lt;a href=&quot;#modord&quot;&gt;modifier&lt;/a&gt; overrides this order.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For this, clearly &lt;code&gt;FeedPosts&lt;/code&gt; shouldn&apos;t just dictate some particular output formatting or other for such data records! Instead,
+all that it outputs for each item is a syntactic notation of &lt;code&gt;vars&lt;/code&gt; to then be fed directly into an outer &lt;a href=&quot;../xtypes/hax.snippet.html&quot;&gt;hax.snippet&lt;/a&gt;. So
+just a moderate grasp of &lt;a href=&quot;../basics/tmplsnip.html#snippets&quot;&gt;snippets&lt;/a&gt; and how to populate their &lt;code&gt;vars&lt;/code&gt; when invoking them via X-tags, plus
+the above &lt;code&gt;joinVia&lt;/code&gt;/&lt;code&gt;content&lt;/code&gt; &lt;a href=&quot;#decl&quot;&gt;directive properties&lt;/a&gt; (plus possibly the below &lt;code&gt;WrapEachIn&lt;/code&gt;
+&lt;a href=&quot;#Modifiers&quot;&gt;modifier&lt;/a&gt;) clears the path to infinitely versatile micro-content rendering.&lt;/p&gt;
+&lt;p&gt;To give an impression of this in practice, here&apos;s just the output produced when selecting:
+&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: FeedPosts Some{ feeds=[&quot;&lt;/i&gt;xdesc&lt;i&gt;&quot;], cats=[&quot;&lt;/i&gt;hax.snippet&lt;i&gt;&quot;], dates=AnyDate} [&quot;&lt;/i&gt;cfgmore&lt;i&gt;&quot;] |&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt; &amp;mdash; ie. selecting from this site&apos;s &lt;code&gt;xdesc&lt;/code&gt; &quot;feed&quot; just the &quot;post&quot; describing &lt;b&gt;hax.snippet&lt;/b&gt; with not-only all standard
+fields (more &lt;a href=&quot;#fields&quot;&gt;below&lt;/a&gt;) but-also the &lt;a href=&quot;../basics/haxproj.html#pdecl&quot;&gt;custom&lt;/a&gt; &lt;code&gt;more&lt;/code&gt; field &lt;b&gt;cfgmore&lt;/b&gt;:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;(&amp;quot;cfgmore&amp;quot;,&amp;quot;&amp;lt;code&amp;gt;vars&amp;lt;/code&amp;gt;, &amp;lt;code&amp;gt;content&amp;lt;/code&amp;gt;&amp;quot;),(&amp;quot;feed&amp;quot;,&amp;quot;xdesc&amp;quot;),(&amp;quot;dt&amp;quot;,&amp;quot;1234-06-05&amp;quot;),(&amp;quot;dt:year&amp;quot;,&amp;quot;1234&amp;quot;),(&amp;quot;cat&amp;quot;,&amp;quot;hax.snippet&amp;quot;),(&amp;quot;title&amp;quot;,&amp;quot;&amp;quot;),(&amp;quot;link&amp;quot;,&amp;quot;&amp;quot;),(&amp;quot;content&amp;quot;,&amp;quot;Renders the named \&amp;quot;snippet\&amp;quot; (aka. \&amp;quot;controls\&amp;quot; / \&amp;quot;components\&amp;quot; / \&amp;quot;sub-templates\&amp;quot;) substituting the specified\n\tnamed-parameter values.&amp;quot;)&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;A simple &lt;a href=&quot;../basics/syntax.html&quot;&gt;list of name-value-pair tuples&lt;/a&gt; &amp;mdash; just without the enclosing &lt;code&gt;&amp;nbsp;[]&lt;/code&gt; square brackets that are
+not to be forgotten when ensuring the wrapping of these per-item outputs inside what will typically (effectively have to) end up amounting
+to both &lt;code&gt;{X&lt;!----&gt;|&lt;i&gt;mysnippet&lt;/i&gt;: vars=[&lt;/code&gt; and &lt;code&gt;], content=&gt; |&lt;!----&gt;}&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;&quot;That sounds more complicated than necessary, wouldn&apos;t it be nicer if&lt;/b&gt; one could specify just-the-&lt;i&gt;name&lt;/i&gt; of any
+&lt;a href=&quot;../basics/tmplsnip.html#snippets&quot;&gt;snippet&lt;/a&gt; and &lt;code&gt;FeedPosts&lt;/code&gt; then invoked it directly, instead of outputting syntax to then wrap other syntax
+around?&quot; Certainly true, but this would lose the flexibility to include further additional &lt;code&gt;vars&lt;/code&gt; (or even &lt;code&gt;content=&gt;&lt;/code&gt;, or
+future parameters) with the snippet&apos;s X-tag. Maybe such a shortcut will appear in a future release.&lt;/p&gt;
+&lt;h3 id=&quot;fields&quot;&gt;&quot;Post&quot; field names&lt;/h3&gt;
+&lt;p&gt;In addition to the specified &lt;a href=&quot;../basics/haxproj.html#pdecl&quot;&gt;haxproj&lt;/a&gt; custom &lt;code&gt;more&lt;/code&gt; fields, the following standard fields are always returned (even
+if empty) as de-facto &lt;code&gt;vars&lt;/code&gt; by &lt;code&gt;FeedPosts&lt;/code&gt;, and also all understood by &lt;code&gt;FeedValues&lt;/code&gt;:&lt;/p&gt;
+&lt;ul&gt;
+	&lt;li&gt;&lt;code&gt;feed&lt;/code&gt; &amp;mdash; the post&apos;s &quot;feed&quot; name or Blok name&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;dt&lt;/code&gt; &amp;mdash; post date in the standard format &lt;code&gt;YYYY-MM-DD&lt;/code&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;dt:year&lt;/code&gt; &amp;mdash; post date&apos;s year only (eg. for grouping with &lt;code&gt;FeedValues&lt;/code&gt;)&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;cat&lt;/code&gt; &amp;mdash; for Blok &quot;posts&quot;: empty &amp;mdash; otherwise: as &lt;a href=&quot;../basics/haxproj.html#pdecl&quot;&gt;set&lt;/a&gt; for the post&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;title&lt;/code&gt; &amp;mdash; for Blok &quot;posts&quot;: detected from &lt;code&gt;&amp;lt;h1&amp;gt;&lt;/code&gt; &lt;a href=&quot;../tags/p.html&quot;&gt;like&lt;/a&gt; &lt;code&gt;{P&lt;!----&gt;|title|&lt;!----&gt;}&lt;/code&gt; &amp;mdash;
+		otherwise: as &lt;a href=&quot;../basics/haxproj.html#pdecl&quot;&gt;set&lt;/a&gt; for the post&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;link&lt;/code&gt; &amp;mdash; for Blok &quot;posts&quot;: relative URI path to the page &amp;mdash;
+		otherwise: as &lt;a href=&quot;../basics/haxproj.html#pdecl&quot;&gt;set&lt;/a&gt; for the post&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;content&lt;/code&gt; &amp;mdash; for Blok &quot;posts&quot;: content of the first &lt;code&gt;&amp;lt;p&amp;gt;&lt;/code&gt; if any &amp;mdash;
+		otherwise: as &lt;a href=&quot;../basics/haxproj.html#pdecl&quot;&gt;set&lt;/a&gt; for the post&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;Modifiers&quot;&gt;Modifiers&lt;/h2&gt;
+&lt;p&gt;So &lt;i&gt;enumerators&lt;/i&gt; are built-in routines that know how to iterate certain ranges, collections, lists, etc. Can their result sets be
+&quot;tweaked&quot;/mangled/sliced/diced/etc prior to the final output? This is achieved by adding to the 1 &lt;i&gt;enumerator&lt;/i&gt; possible per
+&lt;b&gt;hax.iterator&lt;/b&gt; X-tag any number of &lt;i&gt;modifiers&lt;/i&gt;.&lt;/p&gt;
+&lt;p&gt;As explained &lt;a href=&quot;#args&quot;&gt;above&lt;/a&gt;, any such modifiers can be expressed either one-per-&lt;code&gt;But&lt;/code&gt; (which in turn can be nested),
+or stated as an ordered sequence of multiple such modifiers per &lt;code&gt;With&lt;/code&gt; clause.&lt;/p&gt;
+&lt;p&gt;&lt;small&gt;(Technically, one &lt;i&gt;could&lt;/i&gt; also specify a complete &lt;code&gt;But&lt;/code&gt; clause (in parens) as the
+&lt;i&gt;enumerator&lt;/i&gt; in a &lt;code&gt;With&lt;/code&gt; clause, or one &lt;i&gt;could&lt;/i&gt; also specify a complete &lt;code&gt;With&lt;/code&gt; clause (in parens) as the
+&lt;i&gt;enumerator&lt;/i&gt; in a &lt;code&gt;But&lt;/code&gt; clause, but practically there&apos;s no good reason one should want to.)&lt;/small&gt;&lt;/p&gt;
+&lt;p&gt;
+	Syntax: using &lt;code&gt;With (&lt;i&gt;enumerator&lt;/i&gt;) [&lt;i&gt;modifier 1st&lt;/i&gt; , &lt;i&gt;modifier 2nd&lt;/i&gt; , .. , &lt;i&gt;modifier last&lt;/i&gt;]&lt;/code&gt;, always wrap the
+	&lt;i&gt;enumerator&lt;/i&gt; in parentheses and all &lt;i&gt;modifiers&lt;/i&gt; together in 1 set of square brackets. Using &lt;code&gt;But (&lt;i&gt;only modifier&lt;/i&gt;)
+	(&lt;i&gt;enumerator-or-another-&lt;/i&gt;But)&lt;/code&gt;, always wrap the 1 &lt;i&gt;modifier&lt;/i&gt; in parentheses and then subsequently the &lt;i&gt;enumerator&lt;/i&gt;
+	too.
+&lt;/p&gt;
+&lt;h3&gt;LimitTo &lt;i&gt;&amp;lt;number&amp;gt;&lt;/i&gt;&lt;/h3&gt;
+&lt;p&gt;Limits the number of items:&lt;/p&gt;
+&lt;ul&gt;
+	&lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: But &lt;/i&gt;(LimitTo 2)&lt;i&gt; (FeedNames True) |&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
+	produces &lt;span class=&quot;hd-note&quot;&gt;xdesc, basics&lt;/span&gt;
+	instead of &lt;span class=&quot;hd-note&quot;&gt;xdesc, basics, tags, xtypes&lt;/span&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Skip &lt;i&gt;&amp;lt;number&amp;gt;&lt;/i&gt;&lt;/h3&gt;
+&lt;p&gt;Skips a number of items:&lt;/p&gt;
+&lt;ul&gt;
+	&lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: With (Range 12 3) &lt;/i&gt;[Skip 4]&lt;i&gt; |&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
+	produces &lt;span class=&quot;hd-note&quot;&gt;8, 7, 6, 5, 4, 3&lt;/span&gt;
+	instead of &lt;span class=&quot;hd-note&quot;&gt;12, 11, 10, 9, 8, 7, 6, 5, 4, 3&lt;/span&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;WrapEachIn &lt;i&gt;(&amp;lt;prefix&amp;gt; , &amp;lt;suffix&amp;gt;)&lt;/i&gt;&lt;/h3&gt;
+&lt;p&gt;Encloses every item within a given prefix and suffix:&lt;/p&gt;
+&lt;ul&gt;
+	&lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: But &lt;/i&gt;( WrapEachIn (&quot;/&quot; , &quot;/index.html&quot;) )&lt;i&gt; (BlokNames) |&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
+	produces &lt;span class=&quot;hd-note&quot;&gt;/basics/index.html, /tags/index.html, /xtypes/index.html&lt;/span&gt;
+	instead of &lt;span class=&quot;hd-note&quot;&gt;basics, tags, xtypes&lt;/span&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;modord&quot;&gt;Ordered &lt;i&gt;&amp;lt;sortorder&amp;gt;&lt;/i&gt;&lt;/h3&gt;
+&lt;p&gt;Re-orders the items either &lt;code&gt;Ascending&lt;/code&gt; or &lt;code&gt;Descending&lt;/code&gt; or &lt;nobr&gt;&lt;code&gt;Shuffle&lt;/code&gt;d&lt;/nobr&gt;:&lt;/p&gt;
+&lt;ul&gt;
+	&lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: With (FeedNames True) &lt;/i&gt;[Ordered Descending]&lt;i&gt; |&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
+	produces &lt;span class=&quot;hd-note&quot;&gt;xtypes, xdesc, tags, basics&lt;/span&gt;
+	instead of &lt;span class=&quot;hd-note&quot;&gt;xdesc, basics, tags, xtypes&lt;/span&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: But &lt;/i&gt;(Ordered Ascending)&lt;i&gt; (Values [&quot;zeta&quot;,&quot;phi&quot;,&quot;gamma&quot;,&quot;beta&quot;,&quot;alpha&quot;]) |&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
+	produces &lt;span class=&quot;hd-note&quot;&gt;alpha, beta, gamma, phi, zeta&lt;/span&gt;
+	instead of &lt;span class=&quot;hd-note&quot;&gt;zeta, phi, gamma, beta, alpha&lt;/span&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: With (Range 1 23) &lt;/i&gt;[Ordered (Shuffle False) , LimitTo 6, WrapEachIn (&quot;#&quot;,&quot;. &quot;)]&lt;i&gt; |&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
+	produces &lt;span class=&quot;hd-note&quot;&gt;#21. , #17. , #4. , #20. , #23. , #22.&lt;/span&gt;
+	instead of &lt;span class=&quot;hd-note&quot;&gt;1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23&lt;/span&gt;
+		&lt;ul&gt;&lt;li&gt;Only either &lt;code&gt;(Shuffle True)&lt;/code&gt; or &lt;code&gt;(Shuffle False)&lt;/code&gt; are valid. When used in a central project file such as a
+		&lt;a href=&quot;../basics/haxproj.html&quot;&gt;*.haxproj&lt;/a&gt;, a &lt;a href=&quot;../basics/tmplsnip.html&quot;&gt;template&lt;/a&gt; or a &lt;a href=&quot;../basics/tmplsnip.html#snippets&quot;&gt;snippet&lt;/a&gt; (rather than directly inside a
+		content source file), &lt;code&gt;Shuffle True&lt;/code&gt; shuffles differently for each output file while &lt;code&gt;Shuffle False&lt;/code&gt; shuffles
+		identically for all output files during this processing run (but still varying with each processing run).&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: With (Values [&quot;foo&quot;,&quot;bar&quot;]) &lt;/i&gt;[Ordered None]&lt;i&gt; |&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
+	&quot;produces&quot; &lt;span class=&quot;hd-note&quot;&gt;foo, bar&lt;/span&gt;
+	&quot;instead of&quot; &lt;span class=&quot;hd-note&quot;&gt;foo, bar&lt;/span&gt; &amp;mdash; ie. &lt;code&gt;None&lt;/code&gt; does not touch the items at all: useless
+	perhaps, except for example when quickly and temporarily wanting to disable reordering somewhere inside some &lt;code&gt;But&lt;/code&gt; nesting.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;As noted &lt;a href=&quot;#feedposts&quot;&gt;earlier&lt;/a&gt;, the &lt;code&gt;FeedPosts&lt;/code&gt; enumerator already orders items returned (not alphabetically
+but by post date), and &lt;i&gt;always&lt;/i&gt; does so: defaulting to &lt;i&gt;descending&lt;/i&gt; absent any &lt;code&gt;Ordered&lt;/code&gt; placed to the contrary. So
+&lt;code&gt;Ordered Descending&lt;/code&gt;, &lt;code&gt;Ordered None&lt;/code&gt; or no &lt;code&gt;Ordered&lt;/code&gt; modifier whatsoever all result in identical outputs, while
+&lt;code&gt;Ordered Ascending&lt;/code&gt; shows &quot;oldest first&quot; and of course a &lt;code&gt;Shuffle&lt;/code&gt; just randomizes the sort order as described above.&lt;/p&gt;
+&lt;span id=&quot;dynstage&quot;&gt;&lt;h2 id=&quot;Render stage&quot;&gt;Render stage&lt;/h2&gt;&lt;/span&gt;
+&lt;p&gt;An X-tag of type &lt;code&gt;hax.iterator&lt;/code&gt; defaults to &lt;a href=&quot;../tags/index.html#stages&quot;&gt;Early&lt;/a&gt; but is delayed to &lt;a href=&quot;../tags/index.html#stages&quot;&gt;Page&lt;/a&gt; stage
+whenever:&lt;/p&gt;
+&lt;ul&gt;
+	&lt;li&gt;it contains an &lt;code&gt;Ordered (Shuffle True)&lt;/code&gt; modifier (see &lt;a href=&quot;#modord&quot;&gt;above&lt;/a&gt;)&lt;/li&gt;
+	&lt;li&gt;the project has &lt;a href=&quot;../basics/bloks.html&quot;&gt;Blok&lt;/a&gt; pages &lt;b&gt;and&lt;/b&gt; the X-tag uses a &lt;code&gt;FeedValues&lt;/code&gt; or &lt;code&gt;FeedPosts&lt;/code&gt; enumerator (see
+	&lt;a href=&quot;#Feed enumerators&quot;&gt;above&lt;/a&gt;) selecting &lt;i&gt;either&lt;/i&gt; &lt;code&gt;All&lt;/code&gt; &lt;i&gt;or&lt;/i&gt; &lt;code&gt;Some&lt;/code&gt; that will effectively
+	include any such Bloks via its specified &lt;code&gt;feeds&lt;/code&gt; property.&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    </entry><entry>
+        <title type="html">hax.feedView</title>
+        <summary type="html">Renders posts from the specified feeds grouped as specified, delegating display logic to the specified X-tags.</summary>
+        <link href="../xtypes/hax.feedView.html"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-05-01:haxtatic/xtypes/hax.feedView.html</id>
+        <updated>1234-05-01T00:00:00Z</updated>
+        <content type="html">&lt;h1&gt;hax.feedView&lt;/h1&gt;
+	
+	&lt;p class=&quot;up&quot;&gt;Renders posts from the specified feeds grouped as specified, delegating display logic to the specified X-tags.&lt;/p&gt;
+	&lt;h2 id=&quot;In a nutshell&quot;&gt;In a nutshell&lt;/h2&gt;
+	&lt;ol&gt;
+		&lt;li class=&quot;up&quot;&gt;
+			&lt;a href=&quot;../xtypes/hax.feedView.html#decl&quot;&gt;Declaration&lt;/a&gt; of an &lt;code&gt;|X|hax.feedView:&lt;u&gt;&lt;i&gt;myTag&lt;/i&gt;&lt;/u&gt;: &lt;i&gt;..&lt;/i&gt;&lt;/code&gt; directive in a
+			&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; file,
+			&lt;ul&gt;&lt;li&gt;further configuring: &lt;code&gt;xnameGroupHeading&lt;/code&gt;, &lt;code&gt;feedWrap&lt;/code&gt;, &lt;code&gt;xnameFeedItem&lt;/code&gt;, &lt;code&gt;feedMore&lt;/code&gt;&lt;/li&gt;&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt;: feeds = [..] , groups = [..] , xVars = [..]  |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;/ol&gt;
+&lt;span id=&quot;decl&quot;&gt;
+&lt;p class=&quot;hd-note&quot;&gt;This topic is in a compact format for users already familiar with the essentials of
+					&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;declaring&lt;/a&gt; X-tags and invoking them. If found challenging, try the
+					&lt;a href=&quot;../xtypes/hax.miniTag.html&quot;&gt;more&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.htmlImage.html&quot;&gt;elaborate&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.htmlLink.html&quot;&gt;and&lt;/a&gt;-&lt;a href=&quot;../xtypes/hax.xmlEscape.html&quot;&gt;introductory&lt;/a&gt;
+					topics first to form a better grasp on the basics and overall mechanisms.&lt;/p&gt;
+&lt;h3&gt;Stage:&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;../tags/index.html#stages&quot;&gt;Early or Page&lt;/a&gt; &amp;mdash; this X-renderer determines dynamically (documented
+					further &lt;a href=&quot;#dynstage&quot;&gt;below&lt;/a&gt;) whether or not it requires a page context for rendering, so depending on each
+					&lt;i&gt;hax.feedView&lt;/i&gt;-invoking X-tag&apos;s configuration and/or parameters:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;i&gt;some&lt;/i&gt; encountered
+					during pre-templating (at start-up time) may be eagerly &lt;a href=&quot;../tags/index.html#Processing&quot;&gt;processed&lt;/a&gt; immediately in-place
+					(for overall-reduced per-page processing loads),&lt;/li&gt; &lt;li&gt; and &lt;i&gt;others&lt;/i&gt; will be skipped over, thus only
+					process per-page, once present.&lt;/li&gt;&lt;/ul&gt;
+&lt;/span&gt;
+&lt;h2 id=&quot;Purpose&quot;&gt;Purpose&lt;/h2&gt;
+&lt;p&gt;
+	Until this topic gets some proper attention, purpose usage and possibilities are best grasped by examining in the &lt;i&gt;HaXtatic&lt;/i&gt;
+	project-directory for this very Docs site:
+&lt;/p&gt;
+&lt;ul&gt;
+	&lt;li&gt;&lt;a href=&quot;http://github.com/metaleap/haxtatic/blob/master/dox-demo/tmpl/_hax_blokindex.haxsnip.html&quot;&gt;tmpl/_hax_blokindex.haxsnip.html&lt;/a&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;a href=&quot;http://github.com/metaleap/haxtatic/blob/master/dox-demo/default.haxproj&quot;&gt;default.haxproj&lt;/a&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;a href=&quot;http://github.com/metaleap/haxtatic/blob/master/dox-demo/tmpl/dox-topicitem.haxsnip.html&quot;&gt;tmpl/dox-topicitem.haxsnip.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    </entry><entry>
+        <title type="html">demoSimplest</title>
+        <summary type="html">Outputs &lt;code&gt;&amp;lt;h1&amp;gt;Hello World!&amp;lt;/h1&amp;gt;&lt;/code&gt;.</summary>
+        <link href="../xtypes/demoSimplest.html"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-01-20:haxtatic/xtypes/demoSimplest.html</id>
+        <updated>1234-01-20T00:00:00Z</updated>
+        <content type="html">
+&lt;h1&gt;demoSimplest&lt;/h1&gt;
+	
+	&lt;p class=&quot;up&quot;&gt;Outputs &lt;code&gt;&amp;lt;h1&amp;gt;Hello World!&amp;lt;/h1&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+	&lt;h2 id=&quot;In a nutshell&quot;&gt;In a nutshell&lt;/h2&gt;
+	&lt;ol&gt;
+		&lt;li class=&quot;up&quot;&gt;
+			&lt;a href=&quot;../xtypes/demoSimplest.html#decl&quot;&gt;Declaration&lt;/a&gt; of an &lt;code&gt;|X|demoSimplest:&lt;u&gt;&lt;i&gt;myTag&lt;/i&gt;&lt;/u&gt;&lt;/code&gt; directive in a
+			&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; file,
+			&lt;ul&gt;&lt;li&gt;further configuring: &lt;i&gt;(no other settings)&lt;/i&gt;&lt;/li&gt;&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt; |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;/ol&gt;
+&lt;span id=&quot;decl&quot;&gt;
+&lt;h3&gt;Stage:&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;../tags/index.html#stages&quot;&gt;Early&lt;/a&gt; &amp;mdash; this X-renderer does not require a page context for
+					rendering: therefore many &lt;i&gt;demoSimplest&lt;/i&gt;-invoking X-tags encountered during pre-templating (at
+					start-up time) may be eagerly &lt;a href=&quot;../tags/index.html#Processing&quot;&gt;processed&lt;/a&gt; immediately in-place (for overall-reduced
+					per-page processing loads).&lt;/p&gt;
+&lt;/span&gt;
+&lt;h2 id=&quot;Purpose&quot;&gt;Purpose&lt;/h2&gt;&lt;p&gt;This &quot;verging on useless&quot; X-renderer exists solely to serve as a
+					&lt;a href=&quot;http://github.com/metaleap/haxtatic/blob/master/src/X/DemoSimplest.hs&quot;&gt;code sample&lt;/a&gt; to start from when
+					wanting to develop custom X-renderers within the &lt;i&gt;HaXtatic&lt;/i&gt; code-base in Haskell.&lt;/p&gt;
+</content>
+    </entry><entry>
+        <title type="html">demoCfgArgs</title>
+        <summary type="html">Outputs &lt;code&gt;&amp;lt;h4&amp;gt;Hello, &amp;lt;b&amp;gt;&lt;i&gt;greetname&lt;/i&gt;!&amp;lt;/b&amp;gt;&amp;lt;/h4&amp;gt;&lt;/code&gt;.</summary>
+        <link href="../xtypes/demoCfgArgs.html"/><author><name>metaleap.github.io</name></author>
+        <id>tag:metaleap.github.io,1234-01-10:haxtatic/xtypes/demoCfgArgs.html</id>
+        <updated>1234-01-10T00:00:00Z</updated>
+        <content type="html">
+&lt;h1&gt;demoCfgArgs&lt;/h1&gt;
+	
+	&lt;p class=&quot;up&quot;&gt;Outputs &lt;code&gt;&amp;lt;h4&amp;gt;Hello, &amp;lt;b&amp;gt;&lt;i&gt;greetname&lt;/i&gt;!&amp;lt;/b&amp;gt;&amp;lt;/h4&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+	&lt;h2 id=&quot;In a nutshell&quot;&gt;In a nutshell&lt;/h2&gt;
+	&lt;ol&gt;
+		&lt;li class=&quot;up&quot;&gt;
+			&lt;a href=&quot;../xtypes/demoCfgArgs.html#decl&quot;&gt;Declaration&lt;/a&gt; of an &lt;code&gt;|X|demoCfgArgs:&lt;u&gt;&lt;i&gt;myTag&lt;/i&gt;&lt;/u&gt;&lt;/code&gt; or &lt;code&gt;|X|demoCfgArgs:&lt;i&gt;myTag&lt;/i&gt;:&lt;i&gt;greetname&lt;/i&gt;&lt;/code&gt; directive in a
+			&lt;a href=&quot;../basics/haxproj.html#xdecl&quot;&gt;*.haxproj&lt;/a&gt; file,
+			&lt;ul&gt;&lt;li&gt;further configuring: &lt;i&gt;(no other settings)&lt;/i&gt;&lt;/li&gt;&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;Usage anywhere: &lt;code&gt;{X&lt;!----&gt;|&lt;u&gt;myTag&lt;/u&gt;|&lt;!----&gt;}&lt;/code&gt; or &lt;code&gt;{X&lt;!----&gt;|&lt;i&gt;myTag&lt;/i&gt;:&lt;i&gt;greetname&lt;/i&gt; |&lt;!----&gt;}&lt;/code&gt;&lt;/li&gt;
+	&lt;/ol&gt;
+&lt;span id=&quot;decl&quot;&gt;
+&lt;h3&gt;Stage:&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;../tags/index.html#stages&quot;&gt;Early&lt;/a&gt; &amp;mdash; this X-renderer does not require a page context for
+					rendering: therefore many &lt;i&gt;demoCfgArgs&lt;/i&gt;-invoking X-tags encountered during pre-templating (at
+					start-up time) may be eagerly &lt;a href=&quot;../tags/index.html#Processing&quot;&gt;processed&lt;/a&gt; immediately in-place (for overall-reduced
+					per-page processing loads).&lt;/p&gt;
+&lt;/span&gt;
+&lt;h2 id=&quot;Purpose&quot;&gt;Purpose&lt;/h2&gt;&lt;p&gt;This &quot;verging on useless&quot; X-renderer exists solely to serve as a
+					&lt;a href=&quot;http://github.com/metaleap/haxtatic/blob/master/src/X/DemoCfgArgs.hs&quot;&gt;code sample&lt;/a&gt; to start from when
+					wanting to develop custom X-renderers within the &lt;i&gt;HaXtatic&lt;/i&gt; code-base in Haskell.&lt;/p&gt;
+</content>
+    </entry>
+</feed>

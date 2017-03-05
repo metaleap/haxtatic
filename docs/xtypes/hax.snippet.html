@@ -1,0 +1,94 @@
+<!DOCTYPE html><html lang="en"><head>
+    <title>hax.snippet | HaXtatic Docs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../haxtatic.css" rel="stylesheet" />
+	<!--	xtypes/hax.snippet.html
+			generated on 1234-06-15
+			from /home/roxor/dev/hs/haxtatic/dox-demo/pages/xtypes/1234-06-15.hax.snippet.html	-->
+</head><body>
+    <h4>HaXtatic Docs</h4>
+	<ul class="hd-nav">
+		<li class="hd-nav"><a id="__hax_htmlLinks__" href="../index.html">Intro</a></li><li class="hd-nav"><a id="__hax_htmlLinks__basics" href="../basics/index.html">Basics</a></li><li class="hd-nav"><a id="__hax_htmlLinks__tags" href="../tags/index.html">haXtags</a></li><li class="hd-nav hd-nav-sel"><a id="__hax_htmlLinks__xtypes" href="../xtypes/index.html">X-renderers</a></li>
+	</ul>
+	<div class="hd-toc">
+		<input type="checkbox" checked="checked" id="chk_showtoc"/>
+		<label for="chk_showtoc">On this page:</label>
+		<ul>
+			<li><a href="#In a nutshell">In a nutshell</a></li><li><a href="#Declaration / Configuration">Declaration / Configuration</a></li><li><a href="#Placeholder substitution">Placeholder substitution</a></li><li><a href="#Invocation / Parameters">Invocation / Parameters</a></li>
+		</ul>
+	</div>
+
+
+<!-- begins content source page -->
+<h1>hax.snippet</h1>
+	
+	<p class="up">Renders the named "snippet" (aka. "controls" / "components" / "sub-templates") substituting the specified
+	named-parameter values.</p>
+	<h2 id="In a nutshell">In a nutshell</h2>
+	<ol>
+		<li class="up">
+			<a href="../xtypes/hax.snippet.html#decl">Declaration</a> of an <code>|X|hax.snippet:<u><i>myTag</i></u>: <i>..</i></code> directive in a
+			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
+			<ul><li>further configuring: <code>vars</code>, <code>content</code></li></ul>
+		</li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>: vars = [..], content = &quot;..&quot; |<!---->}</code></li>
+	</ol>
+
+<p class="hd-note">This topic is in a compact format for users already familiar with the essentials of
+					<a href="../basics/haxproj.html#xdecl">declaring</a> X-tags and invoking them. If found challenging, try the
+					<a href="../xtypes/hax.miniTag.html">more</a>-<a href="../xtypes/hax.htmlImage.html">elaborate</a>-<a href="../xtypes/hax.htmlLink.html">and</a>-<a href="../xtypes/hax.xmlEscape.html">introductory</a>
+					topics first to form a better grasp on the basics and overall mechanisms.</p>
+
+<h3>Stage:</h3><p><a href="../tags/index.html#stages">Early</a> &mdash; this X-renderer does not require a page context for
+					rendering: therefore many <i>hax.snippet</i>-invoking X-tags encountered during pre-templating (at
+					start-up time) may be eagerly <a href="../tags/index.html#Processing">processed</a> immediately in-place (for overall-reduced
+					per-page processing loads).</p>
+
+<span id="decl"><h2 id="Declaration / Configuration">Declaration / Configuration</h2></span>
+<p>To demonstrate valid <a href="../basics/haxproj.html#xdecl">*.haxproj</a> directives declaring <i>hax.snippet</i>
+					<a href="../tags/x.html">X-tags</a>:</p>
+<pre>
+|X|hax.snippet:<i>greeting</i>:
+	vars = [(<i>"<u>greetname</u>","Mr. No-Name"</i>)],
+	content=>
+<i>Hello, &lt;b&gt;</i>{%<i><u>greetname</u></i>%}<i>&lt;/b&gt;!</i>
+</pre>
+
+<p>To elaborate, for example the last one of the above, as all <a href="../basics/haxproj.html#xdecl">|X| directives</a> declaring <a href="../tags/x.html">X-tags</a> do:</p>
+	<ul>
+		<li>begins with <code>|X|</code> followed by the X-renderer identifier (here <code>hax.snippet</code>)</li>
+		<li>followed by <code>&nbsp;:</code> colon and the desired X-tag name to be used to invoke it (here <code>greeting</code>),</li>
+		<li>followed by <code>&nbsp;:</code> colon and now <i>hax.snippet</i>-<b>specific</b> configuration:</li>
+		
+		<li>a <b>mandatory</b> and <a href="../basics/syntax.html">syntax-sensitive</a> properties block,
+					comprised of <i>all</i> the following properties in <i>this</i> very order:<ol><li><code>vars</code> &mdash; a list of 0 or more name-value pairs declaring the names and default values of placeholders contained
+in <code>content</code> to be substituted as instructed by the calling <code>{X<!---->|greeting ..|<!---->}</code> X-tag during rendering</li>
+<li><code>content</code> &mdash; the principal content that this X-tag renders; other than any haXtags this may also contain special
+placeholder notation referencing the so-declared <code>vars</code></li></ol></li>
+	</ul>
+
+<p class="hd-note">Any such <b>hax.snippet</b> declaration may also be stored in its own external file (specifically
+<a href="../basics/tmplsnip.html#snippets">tmpl/*.haxsnip.html</a>), in which case the |X| directive header (up to and including the X-tag name) is
+<i>omitted</i> and hence that file is to begin <i>directly</i> with the properties block.</p>
+
+<span id="subst"><h2 id="Placeholder substitution">Placeholder substitution</h2></span>
+<p>Those <code>{%<i>varname</i>%}</code> placeholders that <code>content</code> may contain are no proper <a href="../tags/index.html">haXtags</a> with their
+typical versatile processing pipeline. On the contrary, these notations just signal very simple rudimentary text-for-text
+(or value-for-name) substitutions, as such must not have extraneous white-space and indeed must consist of nothing-but: the
+variable-parameter name (correct case/spelling with respect to its above declaration in <code>vars</code>) inside the delimiters.</p>
+<p>Of course, their values (or default values) <i>can</i> contain anything including other placeholder references or haXtags. Just
+be careful to ensure properly escaped outputs of anything that might produce <a href="../basics/syntax.html">quote marks</a> in such scenarios.</p>
+<p><b>Special inner-content placeholder</b>: in addition to those custom ones declared in <code>vars</code> there is a special
+predefined placeholder, <code>{:c:}</code>, which outputs in-place the <code>content</code> specified and passed by the calling X-tag:</p>
+
+<span id="args"><h2 id="Invocation / Parameters">Invocation / Parameters</h2></span>
+<p>For example: <code>{X<!---->|greeting: vars = [ <i>("greetname" , "<u>Mr. Curry</u>")</i> ], content=> |<!---->}</code> to
+output as per the above example |X| declaration directive: <code>Hello, &lt;b&gt;<i><u>Mr. Curry</u></i>&lt;/b&gt;!</code></p>
+<p>The properties block after the X-tag name is (once again) <a href="../basics/syntax.html">syntax</a>-sensitive. The <code>vars</code> supply any named
+variable-parameter values for <a href="#subst">placeholder substitution</a> and <code>content</code> defines the value of the snippet's
+<code>{:c:}</code> special-placeholder (as described further above, required whether the snippet's <i>own</i> <code>content</code>
+uses it or not, may be empty of course).</p>
+
+<!-- end of content source page -->
+<a name="down"></a>
+</body></html>
