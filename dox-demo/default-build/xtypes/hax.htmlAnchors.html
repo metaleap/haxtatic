@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="en"><head>
+    <title>hax.htmlAnchors | HaXtatic Docs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../haxtatic.css" rel="stylesheet" />
+	<!--	xtypes\hax.htmlAnchors.html
+			generated on 1234-07-15
+			from D:\dev\hs\haxtatic\dox-demo\pages\xtypes\1234-07-15.hax.htmlAnchors.html	-->
+</head><body>
+    <h4>HaXtatic Docs</h4>
+	<ul class="hd-nav">
+		<li class="hd-nav"><a id="__hax_htmlLinks__" href="../index.html">Intro</a></li><li class="hd-nav"><a id="__hax_htmlLinks__basics" href="../basics/index.html">Basics</a></li><li class="hd-nav"><a id="__hax_htmlLinks__tags" href="../tags/index.html">haXtags</a></li><li class="hd-nav hd-nav-sel"><a id="__hax_htmlLinks__xtypes" href="../xtypes/index.html">X-renderers</a></li>
+	</ul>
+	<div class="hd-toc">
+		<input type="checkbox" checked="checked" id="chk_showtoc"/>
+		<label for="chk_showtoc">On this page:</label>
+		<ul>
+			<li><a href="#In a nutshell">In a nutshell</a></li><li><a href="#Declaration / Configuration">Declaration / Configuration</a></li><li><a href="#Invocation / Parameters">Invocation / Parameters</a></li>
+		</ul>
+	</div>
+
+
+<!-- begins content source page -->
+<h1>hax.htmlAnchors</h1>
+	
+	<p class="up">Helps with page-level tables-of-content: outputs a sequence of
+	<code>&nbsp;&lt;a href=&quot;#..&quot;&gt; .. &lt;/a&gt;</code> or
+	<code>&nbsp;&lt;<i>outerhtmltag</i> ..&gt;&lt;a href=&quot;#..&quot;&gt; .. &lt;/a&gt;&lt;/<i>outerhtmltag</i>&gt;</code>
+	&mdash; one per <code>&nbsp;&lt;<i>gatherhtmltag</i>&gt;</code> element found in the content source file.</p>
+	<h2 id="In a nutshell">In a nutshell</h2>
+	<ol>
+		<li class="up">
+			<a href="../xtypes/hax.htmlAnchors.html#decl">Declaration</a> of an <code>|X|hax.htmlAnchors:<u><i>myTag</i></u>:<i>gatherhtmltag</i>: <i>..</i></code> directive in a
+			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
+			<ul><li>further configuring: <code>considerEmpty</code>, <code>outputIfEmpty</code>, <code>xmlEscapeHref</code></li></ul>
+		</li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>:<i>outerhtmltag</i>: attr = [..] |<!---->}</code></li>
+	</ol>
+<p class="hd-note">This topic is in a compact format for users already familiar with the essentials of
+					<a href="../basics/haxproj.html#xdecl">declaring</a> X-tags and invoking them. If found challenging, try the
+					<a href="../xtypes/hax.miniTag.html">more</a>-<a href="../xtypes/hax.htmlImage.html">elaborate</a>-<a href="../xtypes/hax.htmlLink.html">and</a>-<a href="../xtypes/hax.xmlEscape.html">introductory</a>
+					topics first to form a better grasp on the basics and overall mechanisms.</p>
+<h3>Stage:</h3><p><a href="../tags/index.html#stages">Page</a> &mdash; this X-renderer requires a page context for rendering: therefore
+					any <i>hax.htmlAnchors</i>-invoking X-tags encountered during pre-templating (at start-up time) will be
+					skipped over, thus only process per-page, once present.</p>
+<span id="decl"><h2 id="Declaration / Configuration">Declaration / Configuration</h2></span>
+<p>To demonstrate valid <a href="../basics/haxproj.html#xdecl">*.haxproj</a> directives declaring <i>hax.htmlAnchors</i>
+					<a href="../tags/x.html">X-tags</a>:</p>
+<pre>
+|X|hax.htmlAnchors:<i>pagefootnotes</i>:<i>sup</i>
+
+|X|hax.htmlAnchors:<i>pagechapters</i>:<i>h2</i>:
+	considerEmpty = <i>0</i>,
+	outputIfEmpty = "<i>Nothing to show &amp;mdash; put eg. CSS here to hide</i>",
+	xmlEscapeHref = <i>False</i>
+</pre>
+<p>To elaborate, for example the last one of the above, as all <a href="../basics/haxproj.html#xdecl">|X| directives</a> declaring <a href="../tags/x.html">X-tags</a> do:</p>
+	<ul>
+		<li>begins with <code>|X|</code> followed by the X-renderer identifier (here <code>hax.htmlAnchors</code>)</li>
+		<li>followed by <code>&nbsp;:</code> colon and the desired X-tag name to be used to invoke it (here <code>pagechapters</code>),</li>
+		<li>followed by <code>&nbsp;:</code> colon and now <i>hax.htmlAnchors</i>-<b>specific</b> configuration:</li>
+		<li>The markup-tag name to <i>"gather"</i> from the current content source file</li>
+		<li>followed by a <code>&nbsp;:</code> colon if an <b>optional</b> <a href="../basics/syntax.html">syntax-sensitive</a> properties block follows,
+					comprised (if present at all) of <i>all</i> the following properties in <i>this</i> very order:<ol><li><code>considerEmpty</code> &mdash; any number <code>&nbsp;0</code> (the default) or greater. The listing will only commence if the number of
+gathered page elements exceeds this (eg. one might not want to show a table-of-content with just <code>&nbsp;1</code> "section" gathered
+from the page).</li>
+<li><code>outputIfEmpty</code> &mdash; the output (if any, default is none) to produce only when no listing is rendered
+<ul><li>No HTML/XML/etc.-escaping of inputs is performed, provide correct values for the intended output format.</li></ul></li>
+<li><code>xmlEscapeHref</code> &mdash; <code>False</code> (the default) or <code>True</code>: whether to HTML/XML-escape the dynamically generated
+<code>href</code> attribute values of all rendered <code>&lt;a&gt;</code> elements.<ul><li>If <code>False</code>: No HTML/XML/etc.-escaping of inputs is performed, provide correct values for the intended output format.</li></ul></li></ol></li>
+	</ul>
+<span id="args"><h2 id="Invocation / Parameters">Invocation / Parameters</h2></span>
+<p>For example: <code>{X<!---->|pagefootnotes:<i>div</i>:attr = [ <i>("class" , "my-footnotedetail")</i> ] |<!---->}</code></p>
+<p>(No HTML/XML/etc.-escaping of inputs is performed, provide correct values for the intended output format.)</p>
+<p><code>attr</code> (same mechanics as the one for <a href="../xtypes/hax.htmlLinks.html#args">hax.htmlLinks</a>) is <a href="../basics/syntax.html">syntax</a>-sensitive but optional:
+<code><span>&lt;ul class="toc"&gt;</span>{X<!---->|pagechapters: <i>li</i> |<!---->}<span>&lt;/ul&gt;</span></code> outputs a
+<code>&lt;li&gt;&lt;a href="#<i>heading content</i>"&gt;<i>heading content</i>&lt;/a&gt;&lt;/li&gt;</code>
+for every <code>&lt;h2 id="<i>heading content</i>"&gt;<i>heading content</i>&lt;/h2&gt;</code> in the content source file.</p>
+<p class="hd-note">In the present version, a known issue: this does not currently really <i>read</i> the <code>id</code> attribute of the
+gathered elements, only their entire inner contents, so the only way for <b>hax.htmlAnchors</b> linkage to work at present is for
+<code>id</code> to have the exact same content as the element's inner content. To be rectified in a future release.</p>
+
+<!-- end of content source page -->
+<a name="down"></a>
+</body></html>

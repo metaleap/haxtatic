@@ -1,0 +1,67 @@
+<h1>hax.htmlLink</h1>
+	
+	<p class="up">Outputs <code>&lt;a <i>..</i>&gt;<i>..</i>&lt;/a&gt;</code>.</p>
+	<h2 id="In a nutshell">In a nutshell</h2>
+	<ol>
+		<li class="up">
+			<a href="../xtypes/hax.htmlLink.html#decl">Declaration</a> of an <code>|X|hax.htmlLink:<u><i>myTag</i></u>:<i>some/rel/base/path</i>: <i>..</i></code> directive in a
+			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
+			<ul><li>further configuring: <code>attr</code> , <code>xmlEscape</code> , <code>uriAutoExt</code> </li></ul>
+		</li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>:<i>rel-to-base/path/no/whitespace and then the link text text</i> |<!---->}</code></li>
+	</ol>
+<h3>Stage:</h3><p><a href="../tags/index.html#stages">Early</a> &mdash; this X-renderer does not require a page context for
+					rendering: therefore many <i>hax.htmlLink</i>-invoking X-tags encountered during pre-templating (at
+					start-up time) may be eagerly <a href="../tags/index.html#Processing">processed</a> immediately in-place (for overall-reduced
+					per-page processing loads).</p>
+<h2 id="Purpose">Purpose</h2>
+<p>
+	In a similar spirit to <a href="../xtypes/hax.miniTag.html">hax.miniTag</a> and <a href="../xtypes/hax.htmlImage.html">hax.htmlImage</a>, this one is for saving precious
+	keystrokes with <code>&lt;a ..&gt;</code>-rich HTML contents requiring repetetive use of quickly-becoming-too-verbose markup.
+</p>
+<span id="decl"><h2 id="Declaration / Configuration">Declaration / Configuration</h2></span>
+<p>To demonstrate valid <a href="../basics/haxproj.html#xdecl">*.haxproj</a> directives declaring <i>hax.htmlLink</i>
+					<a href="../tags/x.html">X-tags</a>:</p>
+<pre>
+|X|hax.htmlLink:<i>lb</i>: <i>{P<!---->|/basics|<!---->}</i>
+
+|X|hax.htmlLink:<i>lt</i>: <i>/tags</i>:
+	attr = [ <i>("class",
+	"foo-sitelink")</i>],
+	xmlEscape =
+	<i>(True , False)</i>,
+	uriAutoExt = <i>".html"</i>
+
+|X|hax.htmlLink: <i>lx</i>:
+	<i>../xtypes/</i>
+</pre>
+<p>To elaborate, for example the last one of the above, as all <a href="../basics/haxproj.html#xdecl">|X| directives</a> declaring <a href="../tags/x.html">X-tags</a> do:</p>
+	<ul>
+		<li>begins with <code>|X|</code> followed by the X-renderer identifier (here <code>hax.htmlLink</code>)</li>
+		<li>followed by <code>&nbsp;:</code> colon and the desired X-tag name to be used to invoke it (here <code>lx</code>),</li>
+		<li>followed by <code>&nbsp;:</code> colon and now <i>hax.htmlLink</i>-<b>specific</b> configuration:</li>
+		<li>The relative base path for all links from this X-tag (here
+										<code>../xtypes</code>),</li>
+		<li>followed by a <code>&nbsp;:</code> colon if an <b>optional</b> <a href="../basics/syntax.html">syntax-sensitive</a> properties block follows,
+					comprised (if present at all) of <i>all</i> the following properties in <i>this</i> very order:<ol><li><code>attr = [ <i>..</i> ]</code> &mdash; a List of all the tag attributes (each denoted in a <code>("<i>name</i>","<i>value</i>")</code>
+	pair) to <i>always</i> append (in addition to automatic <code>href</code>) to the <code>&lt;a&gt;</code> output by all instances of this
+	X-tag</li>
+	<li><code>xmlEscape = (.. , ..)</code> &mdash; a tuple of 2 toggles (the first for the <code>href</code> and the second for the inner
+	content of the <code>&lt;a&gt;</code> output by all instances of this X-tag) indicating whether to auto-HTML/XML-escape
+	(<code>True</code>) or not (<code>False</code>)</li>
+	<li><code>uriAutoExt = "<i>..</i>"</code> &mdash; either <code>&nbsp;&quot;&quot;</code> (empty) or a file name extension to <i>always</i>
+	append (if missing) to the part of <code>href</code> prior to <code>&nbsp;#</code> of the <code>&lt;a&gt;</code> output by all instances of this
+	X-tag</li></ol></li>
+	</ul>
+<span id="args"><h2 id="Invocation / Parameters">Invocation / Parameters</h2></span>
+<p>
+	Usage for the 2nd example from above: <code>{X<!---->|lt:<i>x#Delaying%20X-tags Delaying X-tags</i> |<!---->}</code> would output
+	<code>&lt;a class="<i>foo-sitelink</i>" href="<i>/tags/x</i>.html<i>#Delaying%20X-tags</i>"&gt;<i>Delaying X-tags</i>&lt;/a&gt;</code>
+	&mdash; it follows that:
+</p>
+<ul>
+	<li>the (X-tag-)relative URI path comes first, followed by</li>
+	<li>a <b>white-space</b> and the link element's inner content;</li>
+	<li>any white-space in the URI path is to be replaced, as is standard, with <code>%20</code>;</li>
+	<li>if <code>xmlEscape</code> is <code>False</code> for <code>href</code>, take care that the combined URI will be HTML-escaped</li>
+</ul>

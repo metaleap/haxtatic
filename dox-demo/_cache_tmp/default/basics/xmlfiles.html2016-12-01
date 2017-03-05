@@ -1,0 +1,23 @@
+<h1>Additional XML output files</h1>
+<p class="up">
+	During processing, <i>HaXtatic</i> may generate (when so set up <i>and</i> fresh content changes indicate the need) additional XML output files of 2 kinds: <i>sitemap.xml</i> and <i>*.atom</i> feeds.
+</p>
+<h2 id="sitemap.xml">sitemap.xml</h2>
+<p>
+	uses <a href="http://en.wikipedia.org/wiki/Sitemaps">a trivial format</a>, is cheap to generate and written to <code>/sitemap.xml</code> during processing by default:
+</p>
+<ul>
+	<li>this can be changed or disabled via a <code>|C|_hax_relpath_sitemap:</code> <a href="../basics/haxproj.html#cmisc"><i>*.haxproj</i> directive</a>.</li>
+	<li>All site pages are included in the resulting <i>sitemap.xml</i> output file except pages associated with <a href="../basics/bloks.html">Bloks</a> that have <a href="../basics/haxproj.html#bdecl">declared otherwise</a>.</li>
+	<li>Each generated <code>loc</code> value is <i>required</i> (needlessly and wastefully so, but that's the format) to include a full domain-name and unless a custom <code>|C|_hax_domainname:</code> <a href="../basics/haxproj.html#cmisc"><i>*.haxproj</i> directive</a> was explicitly declared, <i>HaXtatic</i> falls back on the project-directory's name for that.</li>
+	<li>Each generated <code>priority</code> value is guesstimated by a naive heuristic based loosely on page path length/depth/complexity and not currently user-customizable.</li>
+	<li>Each generated <code>lastmod</code> value refers to the <i>custom-set page date</i> <b>only</b> if that was <a href="../basics/datetime.html#fname">explicitly encoded in the content source file's name</a>, otherwise it falls back to the content source file's currently set "<i>last modified</i>" timestamp.</li>
+</ul>
+<span id="blokatoms"><h2 id="*.atom files for Bloks">*.atom files for Bloks</h2></span>
+<p>
+	Whether and where these are written is specified in a |B| directive's <code>atomFile</code> <a href="../basics/haxproj.html#bdecl">property</a>. Every page associated with the Blok is (during generation of its corresponding <i>*.atom</i> feed) translated in its entirety into one equivalent <code>&lt;entry&gt;</code> (of course sans the <a href="../basics/tmplsnip.html">outer template</a>). To not reprocess all <a href="../tags/index.html">haXtags</a> for each, a cached (already-processed and thus haXtag-free) in-memory version of the page content is used for that. However, <i>that</i> in turn forced <i>HaXtatic</i> to reprocess and re-generate (prior to generating any <i>*.atom</i>s) <i>any and all</i> pages that will end up in any <i>*.atom</i> feed determined to need re-generation during this run. This behavior will be improved in the future.
+</p>
+<h2 id="*.atom files for |P| &quot;feeds&quot;">*.atom files for |P| &quot;feeds&quot;</h2>
+<p>
+	These are not by default generated unless a <code>|C|_hax_relpath_postatoms:</code> <a href="../basics/haxproj.html#cmisc"><i>*.haxproj</i> directive</a> explicitly specifies a site-root-relative (aka. build-directory-relative) path to the location they should be written to (can be <code>&nbsp;/</code> too). One such output file is then generated there per every <a href="../basics/haxproj.html#pdecl">"feed"</a> (auto-named <code><i>&lt;feed-name&gt;</i>.atom</code>). All the content/meta-data for each "post" belonging to the "feed" is translated into one equivalent <code>&lt;entry&gt;</code>.
+</p>

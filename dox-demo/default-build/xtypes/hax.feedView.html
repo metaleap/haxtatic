@@ -1,0 +1,60 @@
+<!DOCTYPE html><html lang="en"><head>
+    <title>hax.feedView | HaXtatic Docs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../haxtatic.css" rel="stylesheet" />
+	<!--	xtypes\hax.feedView.html
+			generated on 1234-05-01
+			from D:\dev\hs\haxtatic\dox-demo\pages\xtypes\1234-05-01.hax.feedView.html	-->
+</head><body>
+    <h4>HaXtatic Docs</h4>
+	<ul class="hd-nav">
+		<li class="hd-nav"><a id="__hax_htmlLinks__" href="../index.html">Intro</a></li><li class="hd-nav"><a id="__hax_htmlLinks__basics" href="../basics/index.html">Basics</a></li><li class="hd-nav"><a id="__hax_htmlLinks__tags" href="../tags/index.html">haXtags</a></li><li class="hd-nav hd-nav-sel"><a id="__hax_htmlLinks__xtypes" href="../xtypes/index.html">X-renderers</a></li>
+	</ul>
+	<div class="hd-toc">
+		<input type="checkbox" checked="checked" id="chk_showtoc"/>
+		<label for="chk_showtoc">On this page:</label>
+		<ul>
+			<li><a href="#In a nutshell">In a nutshell</a></li><li><a href="#Purpose">Purpose</a></li>
+		</ul>
+	</div>
+
+
+<!-- begins content source page -->
+<h1>hax.feedView</h1>
+	
+	<p class="up">Renders posts from the specified feeds grouped as specified, delegating display logic to the specified X-tags.</p>
+	<h2 id="In a nutshell">In a nutshell</h2>
+	<ol>
+		<li class="up">
+			<a href="../xtypes/hax.feedView.html#decl">Declaration</a> of an <code>|X|hax.feedView:<u><i>myTag</i></u>: <i>..</i></code> directive in a
+			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
+			<ul><li>further configuring: <code>xnameGroupHeading</code>, <code>feedWrap</code>, <code>xnameFeedItem</code>, <code>feedMore</code></li></ul>
+		</li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u>: feeds = [..] , groups = [..] , xVars = [..]  |<!---->}</code></li>
+	</ol>
+<span id="decl">
+<p class="hd-note">This topic is in a compact format for users already familiar with the essentials of
+					<a href="../basics/haxproj.html#xdecl">declaring</a> X-tags and invoking them. If found challenging, try the
+					<a href="../xtypes/hax.miniTag.html">more</a>-<a href="../xtypes/hax.htmlImage.html">elaborate</a>-<a href="../xtypes/hax.htmlLink.html">and</a>-<a href="../xtypes/hax.xmlEscape.html">introductory</a>
+					topics first to form a better grasp on the basics and overall mechanisms.</p>
+<h3>Stage:</h3><p><a href="../tags/index.html#stages">Early or Page</a> &mdash; this X-renderer determines dynamically (documented
+					further <a href="#dynstage">below</a>) whether or not it requires a page context for rendering, so depending on each
+					<i>hax.feedView</i>-invoking X-tag's configuration and/or parameters:</p><ul><li><i>some</i> encountered
+					during pre-templating (at start-up time) may be eagerly <a href="../tags/index.html#Processing">processed</a> immediately in-place
+					(for overall-reduced per-page processing loads),</li> <li> and <i>others</i> will be skipped over, thus only
+					process per-page, once present.</li></ul>
+</span>
+<h2 id="Purpose">Purpose</h2>
+<p>
+	Until this topic gets some proper attention, purpose usage and possibilities are best grasped by examining in the <i>HaXtatic</i>
+	project-directory for this very Docs site:
+</p>
+<ul>
+	<li><a href="http://github.com/metaleap/haxtatic/blob/master/dox-demo/tmpl/_hax_blokindex.haxsnip.html">tmpl/_hax_blokindex.haxsnip.html</a></li>
+	<li><a href="http://github.com/metaleap/haxtatic/blob/master/dox-demo/default.haxproj">default.haxproj</a></li>
+	<li><a href="http://github.com/metaleap/haxtatic/blob/master/dox-demo/tmpl/dox-topicitem.haxsnip.html">tmpl/dox-topicitem.haxsnip.html</a></li>
+</ul>
+
+<!-- end of content source page -->
+<a name="down"></a>
+</body></html>

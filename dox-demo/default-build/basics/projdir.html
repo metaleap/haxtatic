@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="en"><head>
+    <title>The project directory | HaXtatic Docs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../haxtatic.css" rel="stylesheet" />
+	<!--	basics\projdir.html
+			generated on 2016-12-21
+			from D:\dev\hs\haxtatic\dox-demo\pages\basics\2016-12-21.projdir.html	-->
+</head><body>
+    <h4>HaXtatic Docs</h4>
+	<ul class="hd-nav">
+		<li class="hd-nav"><a id="__hax_htmlLinks__" href="../index.html">Intro</a></li><li class="hd-nav hd-nav-sel"><a id="__hax_htmlLinks__basics" href="../basics/index.html">Basics</a></li><li class="hd-nav"><a id="__hax_htmlLinks__tags" href="../tags/index.html">haXtags</a></li><li class="hd-nav"><a id="__hax_htmlLinks__xtypes" href="../xtypes/index.html">X-renderers</a></li>
+	</ul>
+	<div class="hd-toc">
+		<input type="checkbox" checked="checked" id="chk_showtoc"/>
+		<label for="chk_showtoc">On this page:</label>
+		<ul>
+			<li><a href="#Get started">Get started</a></li><li><a href="#Standard folders">Standard folders</a></li><li><a href="#Standard files">Standard files</a></li>
+		</ul>
+	</div>
+
+
+<!-- begins content source page -->
+<h1>The project directory</h1>
+<p class="up">Any project resides in its own project-directory with a predefined (auto-generated) minimal-structure of 4-5 standard folders and 3-4 standard files. Just the usual, bog-standard "content/templates/static/config" stuff! But here's some more color on the finer details, starting with the standard folders belonging to the project-directory:</p>
+<ul class="up">
+    <li><b>default-build/</b> &mdash; generated output</li>
+    <li><b>pages/</b> &mdash; all authored content source pages: likely-mostly-unstyled/unthemed/inner-body-only HTML files (but technically, any text files that need processing of <a href="../tags/index.html">haXtags</a>)</li>
+    <li><b>static/</b> &mdash; raw files to batch-copy unprocessed straight into <b>default-build</b></li>
+    <li><b>tmpl/</b> &mdash; templates and snippets</li>
+    <li><b>_cache_tmp/</b> &mdash; temporary cache files</li></ul>
+<p class="hd-note">Of course, these names are ultimately customizable and multiple <i>build</i>, <i>static</i> and <i>pages</i>
+directories are possible, once comfortable with the overall operations of <i>HaXtatic</i> &mdash;details <a href="../basics/haxproj.html#cdecl">here</a>&mdash;
+but throughout the documentation the above defaults will be used for <b>simplicity</b> and may be be mentally translated to
+equally apply to any customized project-directory structurings.</p>
+<span id="run"><h2 id="Get started">Get started</h2></span>
+<p>As <a href="../index.html#&quot;Quick&quot; start">described earlier</a>, one runs <i>HaXtatic</i> specifying "the project-directory to process" and any missing parts from the above essentials will be (re)created in-place.</p>
+<p>Example, to create a new site project named <b>mydemosite.foo</b> (inside the existing <i>~/dev/</i> directory in this case) <ul><li>just run from inside the <i>HaXtatic</i> code-base's <i>src</i> directory:<br/><code><a href="http://www.haskell.org/downloads#stack">stack</a> ./@HaxMain.hs ~/dev/mydemosite.foo</code></li><li>or with a compiled executable binary (eg. for extra speed if so inclined), of course<br/><code>my-haxtatic-exe ~/dev/mydemosite.foo</code> works equally</li></ul> and the following is generated:</p>
+<p><img src="../-pics/otiosely/long/path/fresh%20project-directory.png" alt="A 'freshly made' project-directory" title="A 'freshly made' project-directory"/></p>
+<p>The on-screen output will be something like:</p>
+<pre>
+==== HAXTATIC ====
+
+
+1/6     Reading essential project files (or creating them)..
+        &gt;&gt;      default.haxproj [ OK ]
+        &gt;&gt;      tmpl\default.haxtmpl.html [ OK ]
+        &gt;&gt;      tmpl\_hax_blokindex.haxsnip.html [ OK ]
+
+2/6     Planning the work..
+        -&gt;      No content-source files whatsoever.. making one for you:
+        &gt;&gt;      pages\index.html [ OK ]
+        -&gt;      Static files: will copy 0, skipping 0
+        -&gt;      Content pages: will generate 1+0, skipping 0
+        -&gt;      XML files: will generate 0 feeds, skipping 0
+                           plus 1 sitemap(s)
+
+3/6     Copying 0/0 file(s) to:
+        ~&gt;      D:\dev\mydemosite.foo\default-build
+
+4/6     Generating 1/1 file(s) in:
+        ~&gt;      D:\dev\mydemosite.foo\default-build
+        &gt;&gt;      index.html [ OK ]
+
+5/6     Writing 1/1 XML file(s) to:
+        ~&gt;      D:\dev\mydemosite.foo\default-build
+        &gt;&gt;      sitemap.xml [ OK ]
+
+6/6     Copying only the 2 newly (over)written file(s) also to:
+        ~&gt;      (skipping this step.)
+
+
+Wrote 2 files in 0.07s:
+        0.01s pre-templating &amp; planning
+        0.03s page templating &amp; generation (1x ~0.036s)
+        0.01s XML file generation (1x ~0.01s)
+        0s misc. &amp; file-copying
+
+==== Bye now! ====
+</pre>
+<p>
+	Now just proceed creating/modifying contents/templates/settings/etc. within this directory structure and then simply run the same command-line again to refresh <b>default-build</b> with any changes made since the last run.
+</p>
+<p>Of note: <i>HaXtatic</i> <b>never deletes</b> any files whatsoever; and also <b>only writes</b> files to the designated <i>build</i> folder(s) and <i>_cache_tmp/</i> &mdash; plus re-creating the handful of standard folders/files described here <b>only</b> if entirely missing.</p>
+<h2 id="Standard folders">Standard folders</h2>
+<h3>default-build/</h3>
+<p>Contains the complete generated site after a successful run. (Technically, contains all outputs from all previous runs ever since the directory was created or last cleaned up manually.)</p>
+<h3>static/</h3>
+<p>All (changed or new) files and folders (if any) will just be batch-copied over straight into <b>default-build</b> (with no processing) as the first step.</p>
+<h3>pages/</h3>
+<p>All (changed or new) files and folders in here will then be processed by applying a <a href="../basics/tmplsnip.html">template</a> and the resulting corresponding output file goes into <b>default-build</b>.</p>
+<p>If and <i>only</i> if <b>pages</b> has <i>no files at all</i>, will a default <code>index.html</code> be created once (to get new projects started with).</p>
+<h3>tmpl/</h3>
+<p>To contain custom as well as the auto-generated default <a href="../basics/tmplsnip.html">templates</a> and <a href="../basics/tmplsnip.html#snippets">snippets</a> used during processing of the content source files from <b>pages</b>.</p>
+<h3>_cache_tmp/</h3>
+<p>Cached per-processed-page intermediate-representations to slightly speed up rebuilds. This may be manually cleared (or <a href="../basics/haxproj.html#cmisc">changed/disabled</a>) whenever deemed prudent (such as while customizing <i>HaXtatic</i>'s Haskell code-base itself).</p>
+<span id="files"><h2 id="Standard files">Standard files</h2></span>
+<h3>Always created if missing:</h3>
+<ul>
+	<li><a href="../basics/haxproj.html"><b>default.haxproj</b></a> &mdash; initially near-empty file (and may well be completely empty) that will over time contain all sorts of custom project-specific definitions used in the project's content source pages, <a href="../basics/tmplsnip.html">templates</a> or <a href="../basics/tmplsnip.html#snippets">snippets</a>.</li>
+	<li><a href="../basics/tmplsnip.html"><b>tmpl/default.haxtmpl.html</b></a> &mdash; contains the complete outer HTML scaffolding markup that every generated HTML page will embed its own unique (processed) contents into. If empty, all generated output HTML pages will be empty. Needs at least the <code>{P<!---->|:content:|<!---->}</code> <a href="../tags/p.html#Built-in">haxTag</a> for output pages to contain their source pages' processed contents.</li>
+	<li><a href="../basics/bloks.html#auto"><b>tmpl/_hax_blokindex.haxsnip.html</b></a> &mdash; unused in the initial/minimum/default project structure</li>
+</ul>
+<h3>Only created in new and content-free projects:</h3>
+<ul>
+	<li><b>pages/index.html</b> &mdash; <i>only</i> created <i>whenever</i> the <b>pages</b> directory is totally devoid of any files, as a handy example content source page to get started with.</li>
+</ul>
+
+<!-- end of content source page -->
+<a name="down"></a>
+</body></html>

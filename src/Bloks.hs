@@ -17,7 +17,6 @@ import qualified Data.Map.Strict
 import qualified System.FilePath
 
 
-
 data Blok
     = From {
         title :: String,

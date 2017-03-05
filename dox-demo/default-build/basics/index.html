@@ -1,0 +1,49 @@
+<!DOCTYPE html><html lang="en"><head>
+    <title>Basics | HaXtatic Docs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../haxtatic.css" rel="stylesheet" />
+	<!--	basics\index.html
+			generated on 2016-12-21
+			from :B|/2016-12-21.basics	-->
+</head><body>
+    <h4>HaXtatic Docs</h4>
+	<ul class="hd-nav">
+		<li class="hd-nav"><a id="__hax_htmlLinks__" href="../index.html">Intro</a></li><li class="hd-nav hd-nav-sel"><a id="__hax_htmlLinks__basics" href="../basics/index.html">Basics</a></li><li class="hd-nav"><a id="__hax_htmlLinks__tags" href="../tags/index.html">haXtags</a></li><li class="hd-nav"><a id="__hax_htmlLinks__xtypes" href="../xtypes/index.html">X-renderers</a></li>
+	</ul>
+	<div class="hd-toc">
+		<input type="checkbox" checked="checked" id="chk_showtoc"/>
+		<label for="chk_showtoc">On this page:</label>
+		<ul>
+			<style type='text/css'>.hd-toc { display: none; }</style>
+		</ul>
+	</div>
+
+
+<!-- begins content source page -->
+<h1>Basics</h1>
+	<p>This material may appear "unduly exhaustive" at
+	first glance, but this is all blatantly-simple-stuff
+	and mostly just spelled out in (almost) every last
+	minor detail for completeness and future reference.</p>
+	<p>Notably no article on <b>"how to author pages"</b>.
+	That's because there's nothing to it once a quick note
+	is made of <a href="../basics/projdir.html">where to place them</a>,
+	<a href="../basics/tmplsnip.html">which outer-template is applied during processing &amp; how</a>,
+	as well as the diverse range of <a href="../tags/index.html">haXtags</a>
+	that any page (indeed any user-authored/-customized file
+	in a project) may embed and combine in any manner.</p>
+	<h2 id="Topics">Topics</h2>
+	<ul id="doxindexlisting" class="hd-feed"><li><a class="hd-feed-title" href="../basics/projdir.html">The project directory</a>
+		<blockquote class="hd-feed-desc">Any project resides in its own project-directory with a predefined (auto-generated) minimal-structure of 4-5 standard folders and 3-4 standard files. Just the usual, bog-standard "content/templates/static/config" stuff! But here's some more color on the finer details, starting with the standard folders belonging to the project-directory:</blockquote></li><li><a class="hd-feed-title" href="../basics/bloks.html">Bloks: sections-of-pages</a>
+		<blockquote class="hd-feed-desc">A collection of <b>related pages sharing a common path prefix</b> can be associated together via the notion of the "Blok": a lightweight set of a handful of shared meta-data and processing properties. <span class="hd-note">For example, in this site the Bloks are <b>Basics</b>, <b>haXtags</b> and <b>X-renderers</b>.</span></blockquote></li><li><a class="hd-feed-title" href="../basics/datetime.html">Page date &amp; date-time formats</a>
+		<blockquote class="hd-feed-desc">For some projects it seems prudent to display or otherwise utilize "the Page Date": moreover, specifically a custom, explicitly-set one (effectively equivalent to "this is hereby decreed to have <i>really</i> been authored/published on..") rather than one blindly parroting the OS-set <i>file-last-modified</i> timestamp (often de-facto equivalent to "this minor typo of no substantive import was belatedly fixed up quickly on..").
+	<!--_hax_dtformat_iso8601--></blockquote></li><li><a class="hd-feed-title" href="../basics/tmplsnip.html">Templates and snippets in tmpl/</a>
+		<blockquote class="hd-feed-desc">When processing a content source file to generate its corresponding output file, <i>HaXtatic</i>'s first step is always determining the appropriate <i>tmpl/*.haxtmpl.*</i> file to apply.</blockquote></li><li><a class="hd-feed-title" href="../basics/haxproj.html">Project setup: *.haxproj files</a>
+		<blockquote class="hd-feed-desc">A near-empty <code>default.haxproj</code> was <a href="../basics/projdir.html#files">created</a> during project creation. This plain-text file exists to contain any number of (fairly trivial) "directives" &mdash; lean-yet-expressive statements that may: define reusable micro-contents, fine-tune the overall processing flow, associate certain content pages with one another, or compose and direct custom rendering logic.</blockquote></li><li><a class="hd-feed-title" href="../basics/namedsetups.html">Named setups &amp; multiple *.haxproj</a>
+		<blockquote class="hd-feed-desc">A near-empty <code><i>default</i>.haxproj</code> file was <a href="../basics/projdir.html#files">created</a> during project creation, as were a pre-authored <code>tmpl/<i>default</i>.haxtmpl.html</code> file and a <code><i>default</i>-build</code> directory. Here's why they all share <b>default</b> in their names and how "setup names" can be leveraged for more finegrained project experiments / variations.</blockquote></li><li><a class="hd-feed-title" href="../basics/syntax.html">Syntactic rules (in places)</a>
+		<blockquote class="hd-feed-desc">Certain <b>directives</b> (placed in <a href="../basics/haxproj.html">*.haxproj</a> files or implied in <a href="../basics/tmplsnip.html#snippets">*.haxsnip.html</a>s' headers) and certain <b>haXtags</b> (placed anywhere) &mdash; specifically:</blockquote></li><li><a class="hd-feed-title" href="../basics/xmlfiles.html">Additional XML output files</a>
+		<blockquote class="hd-feed-desc">During processing, <i>HaXtatic</i> may generate (when so set up <i>and</i> fresh content changes indicate the need) additional XML output files of 2 kinds: <i>sitemap.xml</i> and <i>*.atom</i> feeds.</blockquote></li></ul>
+	
+<!-- end of content source page -->
+<a name="down"></a>
+</body></html>

@@ -1,0 +1,22 @@
+
+<h1>demoSimplest</h1>
+	
+	<p class="up">Outputs <code>&lt;h1&gt;Hello World!&lt;/h1&gt;</code>.</p>
+	<h2 id="In a nutshell">In a nutshell</h2>
+	<ol>
+		<li class="up">
+			<a href="../xtypes/demoSimplest.html#decl">Declaration</a> of an <code>|X|demoSimplest:<u><i>myTag</i></u></code> directive in a
+			<a href="../basics/haxproj.html#xdecl">*.haxproj</a> file,
+			<ul><li>further configuring: <i>(no other settings)</i></li></ul>
+		</li>
+		<li>Usage anywhere: <code>{X<!---->|<u>myTag</u> |<!---->}</code></li>
+	</ol>
+<span id="decl">
+<h3>Stage:</h3><p><a href="../tags/index.html#stages">Early</a> &mdash; this X-renderer does not require a page context for
+					rendering: therefore many <i>demoSimplest</i>-invoking X-tags encountered during pre-templating (at
+					start-up time) may be eagerly <a href="../tags/index.html#Processing">processed</a> immediately in-place (for overall-reduced
+					per-page processing loads).</p>
+</span>
+<h2 id="Purpose">Purpose</h2><p>This "verging on useless" X-renderer exists solely to serve as a
+					<a href="http://github.com/metaleap/haxtatic/blob/master/src/X/DemoSimplest.hs">code sample</a> to start from when
+					wanting to develop custom X-renderers within the <i>HaXtatic</i> code-base in Haskell.</p>
