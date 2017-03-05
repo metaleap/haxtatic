@@ -1,1 +1,0 @@
-{%P|triple=<span class="hd-note">&nbsp;<b>%s</b>.haxproj&nbsp;&nbsp;+&nbsp;&nbsp;tmpl/<b>%s</b>.haxtmpl.html&nbsp;&nbsp;+&nbsp;&nbsp;<b>%s-build</b>/&nbsp;</span>|%}
