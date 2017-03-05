@@ -915,7 +915,7 @@ or stated as an ordered sequence of multiple such modifiers per &lt;code&gt;With
 	produces &lt;span class=&quot;hd-note&quot;&gt;alpha, beta, gamma, phi, zeta&lt;/span&gt;
 	instead of &lt;span class=&quot;hd-note&quot;&gt;zeta, phi, gamma, beta, alpha&lt;/span&gt;&lt;/li&gt;
 	&lt;li&gt;&lt;code&gt;&lt;i&gt;{X&lt;!----&gt;|myenum: With (Range 1 23) &lt;/i&gt;[Ordered (Shuffle False) , LimitTo 6, WrapEachIn (&quot;#&quot;,&quot;. &quot;)]&lt;i&gt; |&lt;!----&gt;}&lt;/i&gt;&lt;/code&gt;
-	produces &lt;span class=&quot;hd-note&quot;&gt;#21. , #17. , #4. , #20. , #23. , #22.&lt;/span&gt;
+	produces &lt;span class=&quot;hd-note&quot;&gt;#23. , #22. , #21. , #19. , #16. , #14.&lt;/span&gt;
 	instead of &lt;span class=&quot;hd-note&quot;&gt;1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23&lt;/span&gt;
 		&lt;ul&gt;&lt;li&gt;Only either &lt;code&gt;(Shuffle True)&lt;/code&gt; or &lt;code&gt;(Shuffle False)&lt;/code&gt; are valid. When used in a central project file such as a
 		&lt;a href=&quot;../basics/haxproj.html&quot;&gt;*.haxproj&lt;/a&gt;, a &lt;a href=&quot;../basics/tmplsnip.html&quot;&gt;template&lt;/a&gt; or a &lt;a href=&quot;../basics/tmplsnip.html#snippets&quot;&gt;snippet&lt;/a&gt; (rather than directly inside a
