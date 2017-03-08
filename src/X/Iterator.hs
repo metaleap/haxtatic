@@ -197,7 +197,7 @@ postFieldsToPairs more post =
 
 
 moreFromHtmlSplit more =
-    (more ~| is)>=~Posts.moreFromHtmlSplit where
+    (more ~| is) >=~ Posts.moreFromHtmlSplit where
         is ('<':val) = elem '>' val ; is _ = False
 
 
