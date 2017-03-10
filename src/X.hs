@@ -23,8 +23,10 @@ data Reg
     }
 
 
-data Render = Early Renderer | EarlyOrWait Renderer | WaitForPage Renderer
-type Renderer = ((Maybe Tmpl.CtxPage , String) -> Maybe String)
+data Render
+    = Early Renderer | EarlyOrWait Renderer | WaitForPage Renderer
+type Renderer
+    = ((Maybe Tmpl.CtxPage , String) -> Maybe String)
 
 
 

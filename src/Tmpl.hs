@@ -10,7 +10,6 @@ import qualified Files
 import qualified Util
 
 import qualified Data.Time.Clock
-import System.FilePath ( (</>) )
 import qualified Text.Printf
 
 

@@ -108,7 +108,7 @@ feedPosts maybectxbuild projposts projbloks query blokcat morefromhtmls =
 feedGroups maybectxbuild projposts projbloks query fieldname =
     Util.unique$ case findfield wellKnownFields of
         Just field -> allposts >~ field
-        Nothing -> allposts >=~ (findfield.more)
+        Nothing -> allposts >=~ (findfield . more)
     where
     findfield = Lst.lookup fieldname
     allposts = feedPosts maybectxbuild projposts projbloks query "" []
@@ -132,19 +132,18 @@ parseProjChunks projcfg chunkssplits =
     feednames = Util.unique (posts>~feed)
     posts = Util.sortDesc$ chunkssplits >=~ foreach
     foreach (pfeedcat:pvalsplits) =
-        let
-            pstr = Lst.join ':' pvalsplits ~> Str.trim
-            parsestr' = (Tmpl.fixParseStr "content" pstr)
-            parsestr = "From {" ++ parsestr' ++ ",feed=\"" ++ pfeedcat ++ "\"}"
-            post = Str.tryParseOr errpost parsestr
-            errpost = From {
-                    title = if projcfg-:ProjC.parsingFailEarly
-                                then ProjC.raiseParseErr "*.haxproj" ("|P|"++pfeedcat++":") parsestr'
-                                else "{!|P| syntax issue, couldn't parse this post |!}",
-                    content = "<pre>" ++ (Html.escape pstr) ++ "</pre>",
-                    feed = pfeedcat, dt = "9999-12-31", cat = "_hax_cat", link = "*.haxproj", more = []
-                }
-        in Just post
+        Just post where
+        post = Str.tryParseOr errpost parsestr
+        parsestr = "From {" ++ parsestr' ++ ",feed=\"" ++ pfeedcat ++ "\"}"
+        parsestr' = (Tmpl.fixParseStr "content" pstr)
+        pstr = Lst.join ':' pvalsplits ~> Str.trim
+        errpost = From {
+                title = if projcfg-:ProjC.parsingFailEarly
+                            then ProjC.raiseParseErr "*.haxproj" ("|P|"++pfeedcat++":") parsestr'
+                            else "{!|P| syntax issue, couldn't parse this post |!}",
+                content = "<pre>" ++ (Html.escape pstr) ++ "</pre>",
+                feed = pfeedcat, dt = "9999-12-31", cat = "_hax_cat", link = "*.haxproj", more = []
+            }
     foreach _ =
         Nothing
 
