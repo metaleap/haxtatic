@@ -311,8 +311,9 @@ indexOf item (this:rest)
         (1 + (indexOf item rest))
 
 
-
-_indexof_droptil :: (Eq a)=>  a  ->  Int  ->  [a]  ->  (Int , [a])
+_indexof_droptil    :: (Eq a)
+                    =>  a  ->  Int  ->  [a]
+                    ->  (Int , [a])
 _indexof_droptil delim = _indexof_droptil' (delim==)
 
 _indexof_droptil' ::  (a->Bool)  ->  Int  ->  [a]  ->  (Int , [a])
