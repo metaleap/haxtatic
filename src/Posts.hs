@@ -190,7 +190,6 @@ wellKnownFields =
     [ "feed"=:feed, "dt"=:dt, "dt:year"=:dtYear, "cat"=:cat, "title"=:title, "link"=:link, "content"=:content ]
 
 
-
 writeAtoms _ _ [] =
     pure ()
 writeAtoms ctxbuild domainname outjobs =
