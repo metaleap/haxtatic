@@ -464,7 +464,7 @@ replaceWith repl@(old , new) list
 _replcore   ::  (String->String)  ->  (String->String)  ->  (Int , String , Int)  ->  String
             ->  String
 _replcore   recurse tonew (idx , old , oldlen) str
-    = if idx<0 then str else
+    = if idx < 0 then str else
         let pre = take idx str
             rest = drop (idx + oldlen) str
         in pre ++ tonew old ++ recurse rest

@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wmissing-signatures #-}
 module Posts where
 
 import Base
@@ -14,7 +15,6 @@ import qualified Util
 
 import qualified Data.Map.Strict
 import qualified System.FilePath
-import System.FilePath ( (</>) )
 
 
 data Ctx
@@ -59,7 +59,7 @@ data Query
 data QueryDate
     = AnyDate
     | Between String String
-    deriving Read
+    deriving (Read)
 
 
 buildPlan modtimeproj relpathpostatoms feednames =
