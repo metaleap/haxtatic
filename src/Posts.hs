@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wmissing-signatures #-}
 module Posts where
 
 import Base
