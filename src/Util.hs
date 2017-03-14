@@ -269,7 +269,7 @@ unique  list
             | otherwise                 = x : xs (Data.Set.insert x cache)
 
 
-uniqueBy::  (a->a->Bool)  ->  [a]
+uniqueBy    ::  (a->a->Bool)  ->  [a]
             ->  [a]
 uniqueBy    = Data.List.nubBy
 
