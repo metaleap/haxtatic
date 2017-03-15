@@ -18,11 +18,11 @@ import qualified System.FilePath
 
 data Ctx
     = BuildContext {
-        lookupCachedPageRender :: FilePath->Maybe Tmpl.CtxPage,
-        allPagesFiles :: [(FilePath , Files.File)],
-        projBloks :: Data.Map.Strict.Map String Bloks.Blok,
-        projPosts :: [Item],
-        projCfg :: ProjC.Config
+        lookupCachedPageRender  :: FilePath->Maybe Tmpl.CtxPage,
+        allPagesFiles           :: [(FilePath , Files.File)],
+        projBloks               :: Data.Map.Strict.Map String Bloks.Blok,
+        projPosts               :: [Item],
+        projCfg                 :: ProjC.Config
     }
 
 data Item

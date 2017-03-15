@@ -100,7 +100,8 @@ clamp   (minval , maxval)
 
 duration    ::  Data.Time.Clock.UTCTime  ->  Data.Time.Clock.UTCTime
             ->  Data.Time.Clock.NominalDiffTime
-duration    = flip Data.Time.Clock.diffUTCTime
+duration
+    = flip Data.Time.Clock.diffUTCTime
 
 
 cropOn1st   ::  Char  ->  Int  ->  [Char]  ->  (String->String)  ->  String
@@ -176,14 +177,14 @@ substitute  ::  (Eq a)
             ->  [a]
 substitute  old new
     | old==new  = id
-    | otherwise = fmap$ \ item -> if item==old then new else item
+    | _         = fmap$ \item -> if item==old then new else item
 
 
 substitute' ::  (Eq a)
             =>  [a] -> a -> [a]
             -> [a]
 substitute' olds new
-    = fmap$ \ item -> elem item olds |? new |! item
+    = fmap$ \item -> elem item olds |? new |! item
 
 
 
