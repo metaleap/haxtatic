@@ -177,7 +177,7 @@ substitute  ::  (Eq a)
             ->  [a]
 substitute  old new
     | old==new  = id
-    | _         = fmap$ \item -> if item==old then new else item
+    | otherwise = fmap$ \item -> if item==old then new else item
 
 
 substitute' ::  (Eq a)
