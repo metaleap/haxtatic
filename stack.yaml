@@ -5,10 +5,8 @@ packages:
 - '.'
 
 dump-logs: all
-install-ghc: true
 compiler-check: newer-minor
 allow-newer: true
-allow-different-user: true
 
 extra-deps:
 - text-1.2.2.1
