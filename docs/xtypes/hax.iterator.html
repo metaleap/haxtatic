@@ -1,25 +1,42 @@
-<!DOCTYPE html><html lang="en"><head>
-    <title>hax.iterator | HaXtatic Docs</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="../haxtatic.css" rel="stylesheet" />
+<!DOCTYPE html><html lang="en" id="{P|mlhtmlid|}">
+    <head>
+        <title>hax.iterator | HaXtatic Docs</title>
+        <script type="text/javascript" lang="JavaScript" src="http://metaleap.net/metaleap.js" defer="defer">
+        </script>
+        <link href='https://fonts.googleapis.com/css?family=Share+Tech+Mono' rel='stylesheet' type='text/css'/>
+        <!-- link href='https://fonts.googleapis.com/css?family=VT323' rel='stylesheet' type='text/css'/ -->
+        <link href="http://metaleap.net/metaleap.css" rel="stylesheet"/>
+    	<!-- link href="../haxtatic.css" rel="stylesheet" /-->
+        <link href="../fontawesome/css/font-awesome.min.css" rel="stylesheet"/>
+        <!-- link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700' bla='700italic' rel='stylesheet' type='text/css'/ -->
+        <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link href="http://metaleap.net/favicon.png" rel="icon" type="image/png"/>
+        <link href="http://metaleap.net/favicon.png" rel="shortcut icon" type="image/png"/>
+    </head>
 	<!--	xtypes/hax.iterator.html
 			generated on 1234-05-15
-			from /home/roxor/dev/hs/haxtatic/dox-demo/pages/xtypes/1234-05-15.hax.iterator.html	-->
-</head><body>
-    <h4>HaXtatic Docs</h4>
-	<ul class="hd-nav">
-		<li class="hd-nav"><a id="__hax_htmlLinks__" href="../index.html">Intro</a></li><li class="hd-nav"><a id="__hax_htmlLinks__basics" href="../basics/index.html">Basics</a></li><li class="hd-nav"><a id="__hax_htmlLinks__tags" href="../tags/index.html">haXtags</a></li><li class="hd-nav hd-nav-sel"><a id="__hax_htmlLinks__xtypes" href="../xtypes/index.html">X-renderers</a></li>
-	</ul>
-	<div class="hd-toc">
-		<input type="checkbox" checked="checked" id="chk_showtoc"/>
-		<label for="chk_showtoc">On this page:</label>
-		<ul>
-			<li><a href="#In a nutshell">In a nutshell</a></li><li><a href="#Declaration / Configuration">Declaration / Configuration</a></li><li><a href="#Invocation / Parameters">Invocation / Parameters</a></li><li><a href="#Enumerators">Enumerators</a></li><li><a href="#Feed enumerators">Feed enumerators</a></li><li><a href="#Modifiers">Modifiers</a></li><li><a href="#Render stage">Render stage</a></li>
-		</ul>
-	</div>
+			from /home/rox/c/hs/haxtatic/dox-demo/pages/xtypes/1234-05-15.hax.iterator.html	-->
+    <body id="ml_main" class="ml-pic-contain">
+        <div class="ml-bg ml-head-bg"></div>
+        <div class="ml-head">
+            <a href="/" class="ml-home">
+                <h4 id="ml_sitename"><b>&nbsp;</b><br/>HaXtatic Docs</h4>
+            </a>
+            <ul class="ml-nav">
+<li class="ml-nav"><a id="__hax_htmlLinks__" href="../index.html">Intro</a></li><li class="ml-nav"><a id="__hax_htmlLinks__basics" href="../basics/index.html">Basics</a></li><li class="ml-nav"><a id="__hax_htmlLinks__tags" href="../tags/index.html">haXtags</a></li><li class="ml-nav ml-nav-sel"><a id="__hax_htmlLinks__xtypes" href="../xtypes/index.html">X-renderers</a></li>
+            </ul>
+        </div>
 
 
-<!-- begins content source page -->
+
+        <div class="ml-bg ml-preflex"></div>
+        <div id="ml_flex" class="ml-album-nodyn">
+            <div class="ml-flex-main">
+                <div id="ml_body">
+                    <small class="ml-prehead ml-date"></small>
+                    <small class="ml-prehead ml-desc"></small>
+                    <div id="ml_gen">
 <h1>hax.iterator</h1>
 	
 	<p class="up">Outputs a sequence of values from the specified enumerator, applying the specified filtering/ordering/limits.</p>
@@ -170,7 +187,7 @@ enumerators have quite a few commonalities:</p>
 			value should be output (at most once per iteration)</li>
 	</ul></li>
 </ul>
-<p class="hd-note"><b>In the current version, a known issue:</b> in a project <i>with</i> <a href="../basics/bloks.html">Blok</a> pages, using <b><i>in</i>
+<p class="ml-info"><b>In the current version, a known issue:</b> in a project <i>with</i> <a href="../basics/bloks.html">Blok</a> pages, using <b><i>in</i>
 Blok pages</b> either <code>All</code> or any <code>Some</code> that effectively selects <i>any</i> Bloks as <i>feeds</i> is "not currently supported"
 (ie. expect incorrect, inconsistent or missing results). <b>All other pages are OK</b> for such uses, however, as are all
 <a href="../basics/bloks.html#auto">auto-generated Blok 'index' pages</a> (if any). To be rectified in a future release &mdash; still, the functionality as-is
@@ -228,7 +245,7 @@ the above <code>joinVia</code>/<code>content</code> <a href="#decl">directive pr
 <p>To give an impression of this in practice, here's just the output produced when selecting:
 <code><i>{X<!---->|myenum: FeedPosts Some{ feeds=["</i>xdesc<i>"], cats=["</i>hax.snippet<i>"], dates=AnyDate} ["</i>cfgmore<i>"] |<!---->}</i></code> &mdash; ie. selecting from this site's <code>xdesc</code> "feed" just the "post" describing <b>hax.snippet</b> with not-only all standard
 fields (more <a href="#fields">below</a>) but-also the <a href="../basics/haxproj.html#pdecl">custom</a> <code>more</code> field <b>cfgmore</b>:</p>
-<p><code>(&quot;cfgmore&quot;,&quot;&lt;code&gt;vars&lt;/code&gt;, &lt;code&gt;content&lt;/code&gt;&quot;),(&quot;feed&quot;,&quot;xdesc&quot;),(&quot;dt&quot;,&quot;1234-06-05&quot;),(&quot;dt:year&quot;,&quot;1234&quot;),(&quot;cat&quot;,&quot;hax.snippet&quot;),(&quot;title&quot;,&quot;&quot;),(&quot;link&quot;,&quot;&quot;),(&quot;content&quot;,&quot;Renders the named \&quot;snippet\&quot; (aka. \&quot;controls\&quot; / \&quot;components\&quot; / \&quot;sub-templates\&quot;) substituting the specified\n\tnamed-parameter values.&quot;)</code></p>
+<p><code>(&quot;cfgmore&quot;,&quot;&lt;code&gt;vars&lt;/code&gt;, &lt;code&gt;content&lt;/code&gt;&quot;),(&quot;feed&quot;,&quot;xdesc&quot;),(&quot;dt&quot;,&quot;1234-06-05&quot;),(&quot;dt:year&quot;,&quot;1234&quot;),(&quot;cat&quot;,&quot;hax.snippet&quot;),(&quot;title&quot;,&quot;&quot;),(&quot;link&quot;,&quot;&quot;),(&quot;content&quot;,&quot;Renders the named \&quot;snippet\&quot; (aka. \&quot;controls\&quot; / \&quot;components\&quot; / \&quot;sub-templates\&quot;) substituting the specified\r\n\tnamed-parameter values.&quot;)</code></p>
 <p>A simple <a href="../basics/syntax.html">list of name-value-pair tuples</a> &mdash; just without the enclosing <code>&nbsp;[]</code> square brackets that are
 not to be forgotten when ensuring the wrapping of these per-item outputs inside what will typically (effectively have to) end up amounting
 to both <code>{X<!---->|<i>mysnippet</i>: vars=[</code> and <code>], content=> |<!---->}</code>.</p>
@@ -297,7 +314,7 @@ or stated as an ordered sequence of multiple such modifiers per <code>With</code
 	produces <span class="hd-note">alpha, beta, gamma, phi, zeta</span>
 	instead of <span class="hd-note">zeta, phi, gamma, beta, alpha</span></li>
 	<li><code><i>{X<!---->|myenum: With (Range 1 23) </i>[Ordered (Shuffle False) , LimitTo 6, WrapEachIn ("#",". ")]<i> |<!---->}</i></code>
-	produces <span class="hd-note">#23. , #22. , #21. , #19. , #16. , #14.</span>
+	produces <span class="hd-note">#2. , #19. , #7. , #14. , #6. , #10.</span>
 	instead of <span class="hd-note">1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23</span>
 		<ul><li>Only either <code>(Shuffle True)</code> or <code>(Shuffle False)</code> are valid. When used in a central project file such as a
 		<a href="../basics/haxproj.html">*.haxproj</a>, a <a href="../basics/tmplsnip.html">template</a> or a <a href="../basics/tmplsnip.html#snippets">snippet</a> (rather than directly inside a
@@ -322,6 +339,42 @@ whenever:</p>
 	include any such Bloks via its specified <code>feeds</code> property.</li>
 </ul>
 
-<!-- end of content source page -->
-<a name="down"></a>
-</body></html>
+                        <a name="pagetoc">&nbsp;</a><a name="down">&nbsp;</a>
+                    </div>
+                </div>
+            </div>
+            <div class="ml-flex-sides ml-flex-hax.iterator" id="toc">
+                <div class="ml-flex-side ml-box-toc" id="box_toc">
+                    <div class="ml-box">
+<h5>&hellip;Scroll to:<i class="fa fa-map-signs"></i></h5>
+<ul>
+<li><a href="#In a nutshell">In a nutshell</a></li><li><a href="#Declaration / Configuration">Declaration / Configuration</a></li><li><a href="#Invocation / Parameters">Invocation / Parameters</a></li><li><a href="#Enumerators">Enumerators</a></li><li><a href="#Feed enumerators">Feed enumerators</a></li><li><a href="#Modifiers">Modifiers</a></li><li><a href="#Render stage">Render stage</a></li>
+</ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="ml-bg ml-footer">
+            <div class="ml-footer-icos ml-footer-inner">
+                <div class="ml-footer-ico ml-footer-ico-left ml-footer-default">
+                    <a title="Opens your mail app to contact me" class="fa fa-envelope-o" href="mailto:info@metaleap.net"></a>
+                </div>
+                <div class="ml-footer-ico ml-footer-ico-left ml-footer-albums">
+                    <a class="fa fa-ellipsis-v" title="Toggle gallery &amp; text" href="javascript:mlToggleUi()" id="ml_piccontrols"></a><a class="fa fa-arrow-circle-left" title="Back to article" href="#" onclick="return(mlGoBack(event,false))" style="display: none" id="ml_picclose"></a><a class="fa fa-expand" id="ml_piccover" title="Zoom in (detailed close-up, pan by scrolling)" href="javascript:mlZoomIn()"></a><a class="fa fa-compress" id="ml_piccontain" title="Zoom out (entire shot)" href="javascript:mlZoomOut()"></a>
+                </div>
+                <span class="ml-footer-ico ml-footer-default" id="footermenu">
+                    <a title="Page contents" class="fa fa-ellipsis-h" href="#pagetoc" id="menushow" style="display: inline-block; font-size: 0.8em; padding-top: 0.15em;"></a><a class="fa fa-chevron-circle-up" href="#" onclick="history.back();return(event.returnValue=!(event.cancelBubble=true))" id="menuhide" style="display: none;"></a>
+                </span>
+                <div class="ml-footer-ico ml-footer-ico-right ml-footer-default">
+                    <a title="HaXtatic @ Github" class="fa fa-github" href="http://github.com/metaleap/haxtatic"></a>
+                </div>
+                <div class="ml-footer-ico ml-footer-ico-right ml-footer-albums">
+                    <a class="fa fa-chevron-circle-left" href="javascript:mlPhotoGoTo(mlBack)" title="Previous shot"></a><a class="fa fa-chevron-circle-right" href="javascript:mlPhotoGoTo(mlNext)" title="Next shot"></a>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

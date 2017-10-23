@@ -125,13 +125,13 @@ turn on whatever syntax highlighting for eased grokkage..
 |X|hax.dtFormat:dt_long2std: mydtf_longmonth:
 
 |X|hax.htmlLinks:doxtopnav:li:
-	 attr = [("class","hd-nav"),("&class","hd-nav-sel")],
+	 attr = [("class","ml-nav"),("&class","ml-nav-sel")],
 		 itemsFirst = [("" , "Intro")],
 		 itemsLast = [("xtypes/" , "{B|title:xtypes|}")],
 	 wrapHref = ("{P|/" , "index.html|}")
 
 |X|hax.htmlAnchors:doxpagetoc:h2:
-	considerEmpty = 1,
+	considerEmpty = 0,
 	outputIfEmpty = "<style type='text/css'>.hd-toc { display: none; }</style>",
 	xmlEscapeHref = False
 

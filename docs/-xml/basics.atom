@@ -30,7 +30,7 @@
     &lt;li&gt;&lt;b&gt;static/&lt;/b&gt; &amp;mdash; raw files to batch-copy unprocessed straight into &lt;b&gt;default-build&lt;/b&gt;&lt;/li&gt;
     &lt;li&gt;&lt;b&gt;tmpl/&lt;/b&gt; &amp;mdash; templates and snippets&lt;/li&gt;
     &lt;li&gt;&lt;b&gt;_cache_tmp/&lt;/b&gt; &amp;mdash; temporary cache files&lt;/li&gt;&lt;/ul&gt;
-&lt;p class=&quot;hd-note&quot;&gt;Of course, these names are ultimately customizable and multiple &lt;i&gt;build&lt;/i&gt;, &lt;i&gt;static&lt;/i&gt; and &lt;i&gt;pages&lt;/i&gt;
+&lt;p class=&quot;ml-info&quot;&gt;Of course, these names are ultimately customizable and multiple &lt;i&gt;build&lt;/i&gt;, &lt;i&gt;static&lt;/i&gt; and &lt;i&gt;pages&lt;/i&gt;
 directories are possible, once comfortable with the overall operations of &lt;i&gt;HaXtatic&lt;/i&gt; &amp;mdash;details &lt;a href=&quot;../basics/haxproj.html#cdecl&quot;&gt;here&lt;/a&gt;&amp;mdash;
 but throughout the documentation the above defaults will be used for &lt;b&gt;simplicity&lt;/b&gt; and may be be mentally translated to
 equally apply to any customized project-directory structurings.&lt;/p&gt;
@@ -249,7 +249,7 @@ Wrote 2 files in 0.07s:
 &lt;p class=&quot;up&quot;&gt;
 	A near-empty &lt;code&gt;default.haxproj&lt;/code&gt; was &lt;a href=&quot;../basics/projdir.html#files&quot;&gt;created&lt;/a&gt; during project creation. This plain-text file exists to contain any number of (fairly trivial) &quot;directives&quot; &amp;mdash; lean-yet-expressive statements that may: define reusable micro-contents, fine-tune the overall processing flow, associate certain content pages with one another, or compose and direct custom rendering logic.
 &lt;/p&gt;
-&lt;p class=&quot;up hd-note&quot;&gt;
+&lt;p class=&quot;up ml-info&quot;&gt;
 	(Note that &lt;a href=&quot;../basics/namedsetups.html&quot;&gt;you can combine multiple &lt;i&gt;*.haxproj&lt;/i&gt; files&lt;/a&gt; &amp;mdash; eg. if they grow too big to grasp at once, or for more advanced purposes such as temporary overriding of some directives or separately co-existing &quot;named setups&quot; in a single project.)
 &lt;/p&gt;
 &lt;h2 id=&quot;Directives&quot;&gt;Directives&lt;/h2&gt;
@@ -301,7 +301,7 @@ Wrote 2 files in 0.07s:
 	&lt;li&gt;&lt;code&gt;atomFile&lt;/code&gt; and &lt;code&gt;blokIndexPageFile&lt;/code&gt; both describe a site-root-relative (aka. &lt;i&gt;build&lt;/i&gt;-directory-relative) file path and if empty, these files will not be generated.&lt;/li&gt;
 	&lt;li&gt;&lt;code&gt;inSitemap&lt;/code&gt; includes or excludes &lt;i&gt;all&lt;/i&gt; pages associated with this Blok in/from the generated &lt;a href=&quot;../basics/xmlfiles.html&quot;&gt;sitemap.xml&lt;/a&gt; (if any)&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p class=&quot;hd-note&quot;&gt;The values set for the above properties can be output anywhere via &lt;a href=&quot;../tags/b.html&quot;&gt;B-tags&lt;/a&gt; &amp;mdash; so in essence each &lt;b&gt;|B|&lt;/b&gt; directive automatically defines 5 uniquely distinct B-tags.&lt;/p&gt;
+&lt;p class=&quot;ml-info&quot;&gt;The values set for the above properties can be output anywhere via &lt;a href=&quot;../tags/b.html&quot;&gt;B-tags&lt;/a&gt; &amp;mdash; so in essence each &lt;b&gt;|B|&lt;/b&gt; directive automatically defines 5 uniquely distinct B-tags.&lt;/p&gt;
 &lt;span id=&quot;xdecl&quot;&gt;&lt;h2 id=&quot;|X| directives: for rendering&quot;&gt;|X| directives: for rendering&lt;/h2&gt;&lt;/span&gt;
 &lt;p&gt;
 	Just as each &lt;a href=&quot;#tdecl&quot;&gt;|T| directive&lt;/a&gt; practically defines a uniquely distinct &lt;a href=&quot;../tags/t.html&quot;&gt;T-tag&lt;/a&gt; that can be embedded many times anywhere (to effect in-place text substitution), so each and every &lt;b&gt;|X| directive&lt;/b&gt; in essence defines a uniquely distinct &lt;a href=&quot;../tags/x.html&quot;&gt;X-tag&lt;/a&gt; that can be embedded many times anywhere (to effect in-place output rendering by some custom logic).

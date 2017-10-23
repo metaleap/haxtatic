@@ -2,7 +2,7 @@
 <p class="up">
 	A near-empty {X|c: default.haxproj|} was {X|lb:projdir#files created|} during project creation. This plain-text file exists to contain any number of (fairly trivial) "directives" &mdash; lean-yet-expressive statements that may: define reusable micro-contents, fine-tune the overall processing flow, associate certain content pages with one another, or compose and direct custom rendering logic.
 </p>
-<p class="up hd-note">
+<p class="up ml-info">
 	(Note that {X|lb:namedsetups you can combine multiple <i>*.haxproj</i> files|} &mdash; eg. if they grow too big to grasp at once, or for more advanced purposes such as temporary overriding of some directives or separately co-existing "named setups" in a single project.)
 </p>
 {X|h: Directives |}
@@ -44,7 +44,7 @@
 	<li>{X|c:atomFile|} and {X|c:blokIndexPageFile|} both describe a site-root-relative (aka. <i>build</i>-directory-relative) file path and if empty, these files will not be generated.</li>
 	<li>{X|c:inSitemap|} includes or excludes <i>all</i> pages associated with this Blok in/from the generated {X|lb:xmlfiles sitemap.xml|} (if any)</li>
 </ul>
-<p class="hd-note">The values set for the above properties can be output anywhere via {X|lt:b B-tags|} &mdash; so in essence each <b>|B|</b> directive automatically defines 5 uniquely distinct B-tags.</p>
+<p class="ml-info">The values set for the above properties can be output anywhere via {X|lt:b B-tags|} &mdash; so in essence each <b>|B|</b> directive automatically defines 5 uniquely distinct B-tags.</p>
 <span id="xdecl">{X|h: |X| directives: for rendering |}</span>
 <p>
 	Just as each <a href="#tdecl">|T| directive</a> practically defines a uniquely distinct {X|lt:t T-tag|} that can be embedded many times anywhere (to effect in-place text substitution), so each and every <b>|X| directive</b> in essence defines a uniquely distinct {X|lt:x X-tag|} that can be embedded many times anywhere (to effect in-place output rendering by some custom logic).
