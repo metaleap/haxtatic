@@ -1,0 +1,140 @@
+/* Section 1: overrides of outer GUI for album experience */
+#ml_hostalbum .ml-album-nodyn p {
+	margin: 0.33em 0 0 0;
+}
+#ml_hostalbum .ml-album-nodyn p,
+#ml_hostalbum #ml_album > label > span,
+#ml_hostalbum #ml_album > div > div {
+	text-shadow: 0.033em 0.044em 0.166em #000000;
+	color: #fefcf9;
+}
+#ml_hostalbum .ml-album-nodyn .ml-flex-main {
+	flex: 0 1 838.65em;
+}
+#ml_hostalbum .ml-footer-albums {
+	display: inline !important;
+}
+#ml_hostalbum .ml-preflex,
+#ml_hostalbum .ml-footer {
+	background: rgba(112, 144, 160, 0.66);
+}
+#ml_hostalbum .ml-footer {
+	text-shadow: 0.066em 0.066em 0 #234;
+}
+#ml_hostalbum .ml-head {
+	text-shadow: 0.085em 0.07em 0 #234;
+}
+#ml_hostalbum .ml-head-bg {
+	background: rgba(80, 112, 128, 0.66);
+}
+#ml_hostalbum .ml-pic-cover #ml_piccontain,
+#ml_hostalbum .ml-pic-contain #ml_piccover {
+	display: inline-block;
+}
+#ml_hostalbum .ml-pic-cover #ml_piccover,
+#ml_hostalbum .ml-pic-contain #ml_piccontain,
+#ml_hostalbum .ml-footer-default,
+#ml_hostalbum .ml-album-nodyn .ml-flex-sides {
+	display: none !important;
+}
+
+
+/* Section 2: stuff that only occurs inside an #ml_album */
+#ml_hostalbum #ml_album {
+	display: block;
+	width: 4.5em;
+	will-change: min-height;
+}
+#ml_hostalbum #ml_album > input,
+#ml_hostalbum #ml_album > label,
+#ml_hostalbum #ml_album > img {
+	cursor: pointer;
+}
+#ml_hostalbum #ml_album > input {
+	max-width: 0; max-height: 0; width: 0; height: 0;
+	z-index: -99999;
+	display: inline-block;
+	position: relative;
+}
+#ml_hostalbum #ml_album > label {
+	display: block;
+	background-image: url('files/img/spin.svg');
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 3.33em;
+}
+#ml_hostalbum #ml_album > input:active + label > img,
+#ml_hostalbum #ml_album > input:checked + label > img {
+	border-color: #FFB800;
+	border-radius: 1.23em;
+	filter: grayscale(0.22);
+}
+#ml_hostalbum #ml_album > label > img {
+	display: block;
+	width: 100%;
+	border-radius: 0.123em;
+	border: 0.14em solid #d5d8d0;
+	box-shadow: 0 0.1em 0.33em #234;
+	z-index:1000;
+	filter: grayscale(0.77);
+	transition: border-radius 0.333333s ease;
+	will-change: filter, border-color, border-radius;
+}
+#ml_hostalbum #ml_album > div > div {
+	position: fixed;
+	padding: 0;
+	bottom: 2.88em;
+	left: 6.44em;
+	right: 0.44em;
+	text-align: right;
+	/*vertical-align: text-bottom;*/
+}
+#ml_hostalbum #ml_album > div > div > i {
+	display: block;
+	opacity: 1.0;
+	will-change: opacity;
+}
+#ml_hostalbum .ml-pic-cover .ml-album-hideui #ml_album > div > div,
+#ml_hostalbum .ml-pic-cover .ml-album-hideui #ml_album > label {
+	visibility: hidden;
+}
+#ml_hostalbum .ml-pic-contain .ml-album-hideui #ml_album > div > div,
+#ml_hostalbum .ml-pic-contain .ml-album-hideui #ml_album > label {
+	display: none;
+}
+#ml_hostalbum #ml_album > div {
+	background-position: 50% 50%;
+	background-color: #bfbcb2;
+	background-repeat: no-repeat;
+	image-rendering: optimizeQuality;
+	position: fixed;
+	width: 100%;
+	top: 0; left: 0; right: 0; bottom: 0;
+	z-index: -1;
+	display: none;
+	transition: background-position 0.333333s linear;
+	will-change: background-position, background-size, display, z-index;
+}
+#ml_hostalbum #ml_album > input:checked + label + div {
+	display: block;
+}
+#ml_hostalbum .ml-album-hideui #ml_album > div {
+	z-index: 9999;
+}
+#ml_hostalbum .ml-pic-cover #ml_album > div {
+	background-size: cover;
+}
+#ml_hostalbum .ml-pic-contain #ml_album > div {
+	background-size: contain;
+}
+
+/* Section 3: dyn-specific stuff */
+#ml_hostalbum .ml-album-dyn #ml_gen > div#ml_album input,
+#ml_hostalbum .ml-album-dyn #ml_gen > div#ml_album label {
+	display: none;
+}
+#ml_hostalbum .ml-album-dyn #ml_gen > div#ml_album > div {
+	background-color: #c3c5c0;
+	background-color: rgba(195, 197, 192, 0.88);
+	z-index: 100000;
+}

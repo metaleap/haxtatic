@@ -1,0 +1,9 @@
+.ml-date {
+	display: none;
+}
+.ml-desc {
+	display: inline;
+}
+#ml_hostalbum #ml_gen p:first-of-type {
+	display: none;
+}

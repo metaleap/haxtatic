@@ -1,0 +1,546 @@
+body, h1, h2, h3, h4, h5, h6, code, pre,
+.ml-head, .ml-home, .ml-nav, #ml_flex, .ml-box ul, .ml-footer-ico, .ml-footer {
+	padding: 0;
+	margin: 0;
+	font-variant-ligatures: contextual;
+}
+img {
+	image-rendering: optimizeQuality;
+}
+body {
+	image-rendering: optimizeQuality;
+	/*font-family: "Ubuntu Mono", "Roboto Mono", "Droid Sans Mono", "San Francisco Mono", "DejaVu Sans Mono", "Segoe UI Mono", "Terminus", "ProFont", "PragmataPro", "monofur", "Letter Gothic", "Inconsolata", "Everson Mono", "Monaco", "Andale Mono", "HyperFont", "Consolas", "Lucida Console", monospace;*/
+	font-family: "Share Tech Mono", "Iosevka Slab", "Iosevka", "IosevkaCC", "Din Mono", "CamingoCode", "Anka/Coder Condensed", "San Francisco Mono", "Roboto Mono", "Menlo", "Droid Sans Mono", "Fira Mono", "DejaVu Sans Mono", "Segoe UI Mono", "Terminus", "ProFont", "PragmataPro", "monofur", "Letter Gothic", "Inconsolata", "Everson Mono", "Monaco", "Andale Mono", "Ubuntu Mono", "HyperFont", "Consolas", "Lucida Console", monospace;
+
+	background-color: #f7f4ed;
+	color: #707880;
+	letter-spacing: -0.044em;
+}
+blockquote {
+	font-style: italic;
+}
+table {
+	border-spacing: 0;
+}
+td {
+	line-height: 1.23em;
+	vertical-align: top;
+	padding: 0.88em 0 0.88em 0.25em;
+}
+thead td {
+	border-bottom: solid 0.088em #d6d6d0;
+	font-weight: bold;
+	font-style: italic;
+	padding: 0.5em 0 0.1em 0;
+}
+thead td:last-of-type {
+	width: 75%;
+}
+a {
+	text-decoration: none;
+}
+a img, img {
+	border: 0 none;
+}
+.ml-bg {
+/*	image-rendering: -moz-crisp-edges;
+	image-rendering: crisp-edges;
+	image-rendering: pixelated;
+	files/img/bg.jpg
+*/	position: fixed; width: 100%; z-index: 999990;
+	background: #7090A0 url('files/img/life/2012-2015-asia-accommodations/7.jpg') center center;
+	background-size: cover;
+	background-repeat: no-repeat;
+}
+
+
+
+.ml-head-bg {
+	top: 0;
+	box-shadow: 0 0.122em 1.66em 0.122em #505860;
+	height: 2.83em;
+	background-position: center top;
+}
+.ml-head {
+	position: fixed; top: 0; z-index: 999998; width:100%;
+	text-shadow: 0.085em 0.07em 0 #456;
+}
+.ml-home {
+	color: #cba;
+	display: inline-block;
+	float: right;
+	margin: 0 3.11em 0 0;
+}
+.ml-home img {
+	position: fixed;
+	z-index: 999991;
+	top: -0.33em;
+	right: -2.88em;
+	display: inline-block;
+	border-radius: 999em;
+	box-shadow: 0 0.1em 0.4em 0.033em #456;
+}
+@media (max-width: 16.5em) {
+	.ml-home img {
+		display: none;
+	}
+}
+h4 {
+	color: #fefdfc;
+	padding-top: 1.488em;
+	display: inline-block;
+	/*font-family: "Share Tech Mono", "Ubuntu Mono", "Roboto Mono", "Droid Sans Mono", "San Francisco Mono", "DejaVu Sans Mono", "Segoe UI Mono", "Terminus", "ProFont", "PragmataPro", "monofur", "Letter Gothic", "Inconsolata", "Everson Mono", "Monaco", "Andale Mono", "HyperFont", "Consolas", "Lucida Console", monospace;*/
+	font-weight: normal;
+	font-size: 1.11em;
+	line-height: 0.85em;
+	text-align: center;
+	white-space: nowrap;
+	text-transform: lowercase;
+	letter-spacing: 0.325em;
+}
+h4 b {
+	font-size: 1.33em;
+	letter-spacing: 0.02em;
+}
+@media (max-width: 37.33em) {
+	h4 {
+		margin-right: -5.95em;
+	}
+}
+@media (max-width: 32em) {
+	h4 {
+		display: none;
+	}
+}
+ul.ml-nav {
+	position: fixed;
+	z-index: 999999;
+	display: inline-block;
+	padding: 0.5em;
+	margin: 0 0 0 0.22em;
+	overflow: hidden;
+	white-space: nowrap;
+}
+li.ml-nav {
+	/*font-family: "Share Tech Mono", "Ubuntu Mono", "Roboto Mono", "Droid Sans Mono", "San Francisco Mono", "DejaVu Sans Mono", "Segoe UI Mono", "Terminus", "ProFont", "PragmataPro", "monofur", "Letter Gothic", "Inconsolata", "Everson Mono", "Monaco", "Andale Mono", "HyperFont", "Consolas", "Lucida Console", monospace;*/
+	font-weight: bold;
+	font-size: 1.75em;
+	letter-spacing: -0.066em;
+	text-transform: uppercase;
+	padding: 0.43em 0.22em 0.88em 0.22em;
+	display: inline-block;
+	border-radius: 0.1em;
+	list-style-type: none;
+}
+.ml-nav a {
+	color: #fefdfc;
+}
+li.ml-nav-sel {
+	background: linear-gradient(to bottom,#fefdfc 1.44em, transparent 97%);
+	box-shadow: 0 -0.07em 0.04em 0em #567;
+}
+li.ml-nav-sel a {
+	text-shadow: none;
+	color: #789;
+}
+
+
+
+.ml-preflex {
+	position: static;
+	height: 6.88em;
+	background-color: #507080;
+	background-position: center center;
+}
+@media (max-width: 36em) {
+	.ml-preflex {
+		height: 5.67em;
+	}
+}
+h1 {
+	color: #fefdfc;
+	font-size: 2.09em;
+	letter-spacing: -0.1em;
+	line-height: 1.288em;
+}
+small.ml-prehead, h1, .ml-pic-para {
+	text-shadow: 0 -0.015em 0.2em #000;
+}
+small.ml-prehead {
+	color: #fefdfc;
+	padding: 1.6em 0 0 0.123em;
+	line-height: 0.05em;
+	font-size: 0.88em;
+	float: right;
+	letter-spacing: -0.088em;
+}
+h2 {
+	/*font-family: "Share Tech Mono", "Ubuntu Mono", "Roboto Mono", "Droid Sans Mono", "San Francisco Mono", "DejaVu Sans Mono", "Segoe UI Mono", "Terminus", "ProFont", "PragmataPro", "monofur", "Letter Gothic", "Inconsolata", "Everson Mono", "Monaco", "Andale Mono", "HyperFont", "Consolas", "Lucida Console", monospace;*/
+	font-weight: normal;
+	font-size: 1.88em;
+	letter-spacing: -0.11em;
+	color: #A8C8B8;
+	text-align: center;
+	text-transform: uppercase;
+	line-height: 0.8em;
+	margin-top: 1.33em;
+	padding: 0.077em 0 0 0;
+	border-top: 0.033em dotted #A8C8B8;
+	border-bottom: 0.033em dotted #A8C8B8;
+}
+#ml_flex a {
+	text-decoration: none;
+	font-weight: bold;
+}
+#ml_flex a[href] {
+	color: #80A0B0;
+}
+#ml_flex a[href]:active, #ml_flex a[href]:hover, a.ml-active {
+	background: #80A0B0;
+	color: #fefdfc;
+}
+a.ml-pic:hover {
+	background: none !important;
+}
+a.ml-pic {
+	padding: 1.5em;
+	display: block;
+	overflow: auto;
+	text-align: center;
+}
+a.ml-pic img {
+	max-width: 99%;
+	box-shadow: 0 0.1em 1.33em #456;
+}
+code, pre {
+	background: #ece8e0;
+	color: #567;
+	font-family: Menlo, "Din Mono", "Fira Code", "Hasklig", "Monoid", "Space Mono", "Iosevka Term", "Iosevka", "IosevkaCC", "CamingoCode", "Anka/Coder", "San Francisco Mono", "Roboto Mono", "Droid Sans Mono", "Fira Mono", "DejaVu Sans Mono", "Segoe UI Mono", "Terminus", "ProFont", "PragmataPro", "monofur", "Letter Gothic", "Inconsolata", "Everson Mono", "Monaco", "Andale Mono", "Ubuntu Mono", "HyperFont", "Consolas", "Lucida Console", monospace;
+	font-weight: 400;
+	font-size: 0.88em;
+	white-space: pre-wrap;
+	border: 0.066em solid #d6d6d0;
+	border-radius: 0.44em;
+}
+code {
+	padding: 0.088em 0.2em;
+}
+pre {
+	padding: 0.33em 1.44em;
+	line-height: 1.66em;
+	overflow: auto;
+	font-size: 0.75em;
+}
+#ml_body {
+	padding: 0 1.44em 1.88em 1.44em;
+}
+.ml-box {
+	padding: 1em 1.23em;
+}
+
+
+#ml_flex {
+	padding: 0 0 2em 0;
+	margin-top: -1.77em;
+	font-size: 1.23em;
+
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: center;
+	align-items: flex-start;
+}
+.ml-flex-main {
+	line-height: 1.66em;
+
+	flex: 1 1 37.33em;
+}
+#ml_gen > p, #ml_gen > ul, #ml_gen > ol {
+	font-size: 0.88em;
+	font-family: "Fira Code", Menlo, Hasklig, "Din Mono", "CamingoCode", "Monoid", "Space Mono", "Iosevka Term", "Iosevka", "IosevkaCC", "Anka/Coder", "San Francisco Mono", "Roboto Mono", "Droid Sans Mono", "Fira Mono", "DejaVu Sans Mono", "Segoe UI Mono", "Terminus", "ProFont", "PragmataPro", "monofur", "Letter Gothic", "Inconsolata", "Everson Mono", "Monaco", "Andale Mono", "Ubuntu Mono", "HyperFont", "Consolas", "Lucida Console", monospace;
+	padding-left: 1.23em;
+}
+#ml_gen a[href] {
+	color: #b84838;
+}
+.ml-flex-sides {
+	font-size: 0.75em;
+	color: #A0A8A4;
+	line-height: 1.33em;
+	z-index: 99999;
+	margin-top: 1.633em;
+
+	flex: 1 1;
+	display: flex;
+	flex-flow: wrap;
+	justify-content: center;
+	align-items: baseline;
+	align-content: space-around;
+}
+.ml-flex-side {
+	/*background: linear-gradient(to bottom, rgba(224,221,211,0.66) 0%, #f7f4ed 88%);*/
+	background: linear-gradient(to bottom, rgba(199, 222, 233, 0.66) 0%, #f7f4ed 1.23em);
+
+	flex: 1 1 15em;
+	display: inline-block;
+	padding-bottom: 1em;
+	min-width: 15em;
+}
+.ml-flex-side:nth-child(1) {
+	border-top-left-radius: 1em;
+}
+
+ul.ml-feed {
+	list-style-type: none;
+	line-height: 1.33em;
+	padding: 0;
+
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: center;
+	align-items: baseline;
+	align-content: space-around;
+}
+ul.ml-feed > li {
+	display: inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	padding: 0.33em;
+	margin: 0.66em 0.33em;
+	box-shadow: 0 1.33em 2.22em -0.44em #d9d5cd;
+
+	min-width: 35%;
+	max-height: 6.44em;
+	flex: 1 1 10.25em; /* last 1 doesn't matter (use it just for headlines) thanks to min-width above */
+}
+ul.ml-feed > li ul {
+	padding-left: 1em;
+}
+ul.ml-feed > li a, ul.ml-feed > li a:hover, ul.ml-feed > li a:active {
+	color: #908888 !important;
+	background: none !important;
+	font-weight: normal !important;
+}
+ul.ml-feed > li a:hover h3, ul.ml-feed > li a:active h3 {
+	text-decoration: underline;
+}
+.ml-feed-cat {
+	text-transform: uppercase;
+	font-size: 0.8em;
+	letter-spacing: 0.15em;
+	color: #A0ABA6;
+	padding: 0.4em;
+	line-height: 1em;
+}
+.ml-feed-title {
+	padding-left: 0.123em;
+	font-weight: bold;
+	line-height: 1.11em;
+}
+.ml-feed-desc {
+	padding: 0.33em;
+	font-size: 0.88em;
+}
+.ml-feed-desc span {
+	color: #80A0B0;
+	font-style: italic;
+
+}
+.ml-notrimdesc ul.ml-feed > li, .ml-feed-life ul.ml-feed > li {
+	max-height: 999em;
+}
+
+
+.ml-box div {
+	padding-left: 0.2em;
+}
+.ml-box ul {
+	margin: 0 0 0 1.11em;
+}
+ul.ml-blog {
+	list-style-type: none;
+}
+ul.ml-blog li {
+	margin-left: 4.9em;
+	text-indent: -4.9em;
+}
+ul.ml-blog li span::after {
+	content: "\0000a0\0022C5\0000a0";
+}
+.ml-box-blog ul {
+	border-bottom: 0.05em dotted #B8B6B0;
+	margin: 0.2em 0 0.8em;
+}
+.ml-box-blog ul:last-of-type {
+	border-bottom: 0 none;
+	margin-bottom: 0;
+}
+.ml-box-credits {
+	font-size: 0.9em;
+	text-align: center;
+}
+
+
+h6 {
+	font-size: 1.3em;
+	color: #B8B6B0;
+	text-align: center;
+}
+h5 {
+	font-weight: normal;
+	text-align: left;
+	text-transform: lowercase;
+	font-size: 1.77em;
+	/*font-family: "VT323", "Share Tech Mono", "Iosevka Term", "Iosevka", "IosevkaCC", Menlo, "Din Mono", "CamingoCode", "Anka/Coder Condensed", "San Francisco Mono", "Roboto Mono", "Droid Sans Mono", "Fira Mono", "DejaVu Sans Mono", "Segoe UI Mono", "Terminus", "ProFont", "PragmataPro", "monofur", "Letter Gothic", "Inconsolata", "Everson Mono", "Monaco", "Andale Mono", "Ubuntu Mono", "HyperFont", "Consolas", "Lucida Console", monospace;*/
+	font-style: italic;
+	letter-spacing: -0.133em;
+	margin-bottom: 0.66em;
+	margin-top: -0.75em;
+	line-height: 0.572em;
+	color: #fefdfc;
+	text-shadow: 0 0 0.11em #432;
+}
+h5 i.fa {
+	float: right;
+	margin-right: 0.044em;
+	margin-top: -0.166em;
+	font-size: 1.11em;
+	color: #ece8e0;
+	text-shadow: 0 0 0.066em #000;
+}
+.ml-quotee {
+	display: block;
+	text-align: right;
+	margin: 0.5em 0 0 0;
+	border-top: 0.077em dotted #c9c0b0;
+}
+
+
+#ml_gen {
+	line-height: 1.66em;
+	padding-bottom: 2em;
+}
+p.ml-work {
+	padding: 0;
+}
+.ml-work p, .ml-work ul {
+	margin: 0;
+}
+.ml-work > a {
+	display: block;
+}
+h3, .ml-work > a {
+/*	color: #8999A9;
+	color: #8BA0B0;
+*/	color: #d08040;
+	letter-spacing: -0.088em;
+	font-size: 1.48em;
+	font-weight: normal !important;
+}
+img.ml-logo, .ml-feed img {
+	float: right;
+	max-width: 31%;
+	max-height: 1.75em;
+	margin: 0 0 0.33em 0.33em;
+}
+.ml-feed img.ml-feed-autoicon {
+	border-radius: 0.22em;
+	border: 0.05em solid #ffffff;
+	box-shadow: 0 0.1em 0.33em #456;
+	margin-right: 0.15em;
+	max-height: 2.15em;
+}
+img.ml-photo-l, img.ml-photo-r {
+	max-width: 48%;
+	max-height: 6em;
+	border-radius: 0.22em;
+	border: 0.15em solid #ffffff;
+	box-shadow: 0 0.1em 0.33em #456;
+}
+img.ml-photo-l {
+	float: left;
+	margin: 0.33em 1.66em 0.33em -1.11em;
+}
+img.ml-photo-r {
+	float: right;
+	margin: 0.33em 0 0.11em 0.66em;
+}
+.ml-info {
+	font-size: 0.75em;
+	background: #fffdef;
+	line-height: 1.23em;
+	padding: 0.33em;
+	border-radius: 0.33em;
+	border: 0.05em solid #789;
+	box-shadow: 0 0.033em 0.22em #789;
+}
+div.ml-info {
+	margin: 1em 0 1em 0;
+}
+
+
+.ml-footer {
+	bottom: 0;
+	background-position: center bottom;
+	padding: 0.123em 0 2.05em 0;
+	box-shadow: 0 0.1em 0.88em 0.11em #456;
+	text-align: center;
+	text-shadow: 0.066em 0.066em 0 #456;
+}
+.ml-footer-ico-left {
+	left: 0;
+}
+.ml-footer-ico-right {
+	right: 0;
+}
+.ml-footer-ico {
+	display: inline-block;
+	white-space: nowrap;
+	overflow: hidden;
+	position: absolute;
+	font-size: 1.88em;
+	line-height: 0;
+}
+.ml-footer-ico a {
+	display: inline-block;
+	color: #fefdfc;
+	text-decoration: none;
+	min-width: 1.23em;
+}
+.ml-footer-albums, .ml-desc {
+	display: none;
+}
+#ml_album {
+	display: none;
+}
+#footermenu {
+	left: 2em;
+	right: 2em;
+	display: none;
+}
+@media (max-width: 51.1em) {
+	#footermenu {
+		display: inline-block;
+	}
+}
+.fa-feed, .fa-reddit-alien, .fa-yc, .fa-github-square {
+	font-size: 0.8em !important;
+}
+@media (max-width: 20.0em) {
+	a.fa-reddit-alien, a.fa-yc {
+		display: none;
+	}
+}
+
+@media print {
+	h2 {
+		page-break-after: avoid;
+	}
+	.ml-footer, .ml-head, .ml-head-bg, .ml-flex-sides {
+		display: none;
+	}
+}
+
+#ml_flex div.ml-sourcery a {
+	font-weight: normal;
+	font-style: italic;
+}

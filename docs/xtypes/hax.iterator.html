@@ -1,18 +1,18 @@
 <!DOCTYPE html><html lang="en" id="{P|mlhtmlid|}">
     <head>
         <title>hax.iterator | HaXtatic Docs</title>
-        <script type="text/javascript" lang="JavaScript" src="http://metaleap.net/metaleap.js" defer="defer">
+        <script type="text/javascript" lang="JavaScript" src="../metaleap.js" defer="defer">
         </script>
         <link href='https://fonts.googleapis.com/css?family=Share+Tech+Mono' rel='stylesheet' type='text/css'/>
         <!-- link href='https://fonts.googleapis.com/css?family=VT323' rel='stylesheet' type='text/css'/ -->
-        <link href="http://metaleap.net/metaleap.css" rel="stylesheet"/>
+        <link href="../metaleap.css" rel="stylesheet"/>
     	<!-- link href="../haxtatic.css" rel="stylesheet" /-->
         <link href="../fontawesome/css/font-awesome.min.css" rel="stylesheet"/>
         <!-- link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700' bla='700italic' rel='stylesheet' type='text/css'/ -->
         <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link href="http://metaleap.net/favicon.png" rel="icon" type="image/png"/>
-        <link href="http://metaleap.net/favicon.png" rel="shortcut icon" type="image/png"/>
+        <link href="../favicon.png" rel="icon" type="image/png"/>
+        <link href="../favicon.png" rel="shortcut icon" type="image/png"/>
     </head>
 	<!--	xtypes/hax.iterator.html
 			generated on 1234-05-15
@@ -314,7 +314,7 @@ or stated as an ordered sequence of multiple such modifiers per <code>With</code
 	produces <span class="hd-note">alpha, beta, gamma, phi, zeta</span>
 	instead of <span class="hd-note">zeta, phi, gamma, beta, alpha</span></li>
 	<li><code><i>{X<!---->|myenum: With (Range 1 23) </i>[Ordered (Shuffle False) , LimitTo 6, WrapEachIn ("#",". ")]<i> |<!---->}</i></code>
-	produces <span class="hd-note">#2. , #19. , #7. , #14. , #6. , #10.</span>
+	produces <span class="hd-note">#12. , #10. , #8. , #7. , #6. , #4.</span>
 	instead of <span class="hd-note">1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23</span>
 		<ul><li>Only either <code>(Shuffle True)</code> or <code>(Shuffle False)</code> are valid. When used in a central project file such as a
 		<a href="../basics/haxproj.html">*.haxproj</a>, a <a href="../basics/tmplsnip.html">template</a> or a <a href="../basics/tmplsnip.html#snippets">snippet</a> (rather than directly inside a
